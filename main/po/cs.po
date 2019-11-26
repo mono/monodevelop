@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-11 11:56:08+0100\n"
+"POT-Creation-Date: 2019-11-26 12:38:03+0100\n"
 "PO-Revision-Date: 2010-05-28 16:54:24+0200\n"
 "Last-Translator: David Makovský <yakeen@sannyas-on.net>\n"
 "Language-Team: cs <cs@li.org>\n"
@@ -330,7 +330,7 @@ msgstr "(probíhá instalace)"
 msgid "(keyword)"
 msgstr "(klíčové slovo)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1017
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1038
 msgid "(latest stable)"
 msgstr "(poslední stabilní)"
 
@@ -430,9 +430,8 @@ msgid ".NET Core Command Line"
 msgstr "Příkazový řádek .NET Core"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.GlobalTools/DotNetCoreGlobalToolManager.cs:101
-#, fuzzy
 msgid ".NET Core Global tool manager"
-msgstr "Správce certifikátů .NET Core"
+msgstr "Správce nástroje .NET Core Global"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetMigrate.cs:180
 msgid ".NET Core Migration"
@@ -466,15 +465,14 @@ msgstr ""
 "aktualizaci sady .NET Core {0} SDK."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreRuntime.cs:146
-#, fuzzy
 msgid ""
 ".NET Core {0} runtime is required to run this application, and is not "
 "installed. Install the latest update to the .NET Core {0} runtime by "
 "visiting {1}"
 msgstr ""
-"K sestavení této aplikace se vyžaduje sada .NET Core {0} SDK, která ale není "
-"nainstalovaná. Přejděte na {1}, odkud si můžete nainstalovat nejnovější "
-"aktualizaci sady .NET Core {0} SDK."
+"Ke spuštění této aplikace se vyžaduje modul runtime .NET Core {0}, který ale "
+"není nainstalovaný. Přejděte na {1}, odkud si můžete nainstalovat nejnovější "
+"aktualizaci modulu runtime .NET Core {0}."
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
 msgid ""
@@ -505,9 +503,8 @@ msgid ".NET Resource Files"
 msgstr "Soubory prostředků .NET"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:150
-#, fuzzy
 msgid ".NET Runtime"
-msgstr "Moduly .NET runtime"
+msgstr "Modul runtime .NET"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:25
 msgid ".NET Runtimes"
@@ -1329,7 +1326,6 @@ msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr "Projekt pro vytvoření knihovny tříd Razor určené pro .NET Standard"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:206
-#, fuzzy
 msgid ""
 "A project for creating a Razor class library that targets .NET Standard."
 msgstr "Projekt pro vytvoření knihovny tříd Razor určené pro .NET Standard"
@@ -1372,7 +1368,6 @@ msgid ""
 msgstr "Šablona projektu pro vytvoření aplikace ASP.NET Core pomocí Angularu"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:219
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular."
 msgstr "Šablona projektu pro vytvoření aplikace ASP.NET Core pomocí Angularu"
@@ -1394,7 +1389,6 @@ msgstr ""
 "Šablona projektu pro vytvoření aplikace ASP.NET Core pomocí React.js a Reduxu"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:245
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux."
@@ -1402,7 +1396,6 @@ msgstr ""
 "Šablona projektu pro vytvoření aplikace ASP.NET Core pomocí React.js a Reduxu"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js."
 msgstr "Šablona projektu pro vytvoření aplikace ASP.NET Core pomocí React.js"
@@ -1639,6 +1632,19 @@ msgstr ""
 msgid "API"
 msgstr "Rozhraní API"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/EmptyApiControllerScaffolder.cs:34
+#, fuzzy
+msgid "API Controller - Empty"
+msgstr "Třída kontroleru rozhraní Web API"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerEntityFrameworkScaffolder.cs:38
+msgid "API Controller with actions using Entity Framework"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerWithActionsScaffolder.cs:33
+msgid "API Controller with read / write actions"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "API Documentation"
 msgstr "Dokumentace k rozhraní API"
@@ -1673,10 +1679,9 @@ msgstr "Ovládací prvky ASP.NET"
 msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:177
-#, fuzzy
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:208
 msgid "ASP.NET Core Scaffolder"
-msgstr "ASP.NET Core"
+msgstr "ASP.NET Core Scaffolder"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:253
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:280
@@ -1840,7 +1845,7 @@ msgid "Abort Update"
 msgstr "Přerušit aktualizaci"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:637
+#: ../src/addins/MacPlatform/MacPlatform.cs:639
 msgid "About {0}"
 msgstr "O produktu {0}"
 
@@ -2029,7 +2034,7 @@ msgstr "Aktivní rozložení"
 msgid "Active Runtime"
 msgstr "Aktivní modul runtime"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:465
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:490
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:67
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:206
@@ -2109,6 +2114,11 @@ msgstr "Přidat položky..."
 msgid "Add New Repository"
 msgstr "Přidat nové úložiště"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:54
+#, fuzzy
+msgid "Add New Scaffolding"
+msgstr "_Přidat nové řešení..."
+
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
 msgid "Add NuGet _Packages..."
 msgstr "_Přidat balíčky NuGet..."
@@ -2121,12 +2131,12 @@ msgstr "Přidat balíčky NuGet do projektu"
 msgid "Add Open"
 msgstr "Přidat otevření"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:890
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:442
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:198
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:927
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:452
+#, fuzzy
 msgid "Add Package"
-msgid_plural "Add Packages"
-msgstr[0] "Přidat balíčky"
-msgstr[1] "Přidat balíčky"
+msgstr "Přidat balíčky"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:47
 msgid "Add Package Source"
@@ -2177,7 +2187,7 @@ msgstr "Přidat zobrazení z kontroleru..."
 msgid "Add View..."
 msgstr "Přidat zobrazení..."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:972
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:964
 msgid "Add Watch"
 msgstr "Přidat kukátko"
 
@@ -2244,9 +2254,8 @@ msgid "Add an ASP.NET MVC view"
 msgstr "Přidat zobrazení ASP.NET MVC"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:68
-#, fuzzy
 msgid "Add an environment variable"
-msgstr "Proměnné prostředí"
+msgstr "Přidat proměnnou prostředí"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:214
 msgid "Add an existing item to the selected workspace"
@@ -2282,6 +2291,13 @@ msgstr "Přidat výraz na panel kukátka"
 msgid "Add files"
 msgstr "Přidat soubory"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:304
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:68
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:128
+#, fuzzy
+msgid "Add item to watch"
+msgstr "Přidat položky do sady nástrojů"
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:204
 msgid "Add items to toolbox"
 msgstr "Přidat položky do sady nástrojů"
@@ -2290,8 +2306,7 @@ msgstr "Přidat položky do sady nástrojů"
 msgid "Add method not found in {0}"
 msgstr "Metodu Add se v {0} nepodařilo najít."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:67
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:126
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:229
 msgid "Add new expression"
 msgstr "Přidat nový výraz"
 
@@ -2411,14 +2426,12 @@ msgid "Added   {0}"
 msgstr "Přidáno   {0}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:361
-#, fuzzy
 msgid "Added breakpoint, line {0}, file {1}"
-msgstr "Zarážka. Řádek {0}"
+msgstr "Přidala se zarážka, řádek {0}, soubor {1}."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:611
-#, fuzzy
 msgid "Added line"
-msgstr "Přidáno"
+msgstr "Přidaný řádek"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1429
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:812
@@ -2523,7 +2536,7 @@ msgstr "Přejít na další řádek"
 msgid "Advanced"
 msgstr "Upřesnit"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:842
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:848
 msgid "Advanced Conditions"
 msgstr "Pokročilé podmínky"
 
@@ -2619,7 +2632,7 @@ msgstr ""
 msgid "All files"
 msgstr "Všechny soubory"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:116
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:117
 msgid "All members"
 msgstr "Všechny členy"
 
@@ -2990,7 +3003,7 @@ msgid "Application to record audio/video files"
 msgstr "Aplikace pro nahrávání audio/video souborů"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:801
+#: ../src/addins/MacPlatform/MacPlatform.cs:803
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3389,7 +3402,7 @@ msgstr "Nenašlo se sestavení pro architekturu {0} (v {1})."
 msgid "Assembly:\t{0}"
 msgstr "Sestavení:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:397
 msgid "Assistive Technology Detected"
 msgstr "Zjistila se technologie pro usnadnění."
 
@@ -3449,7 +3462,7 @@ msgstr "Sféra ověření: "
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:190
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:126
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:285
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:295
 msgid "Author"
 msgstr "Autor"
 
@@ -3468,7 +3481,7 @@ msgstr "Jméno autora:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.AuthorSectionAccessible.cs:65
 msgid "Author {0} Date {1} Revision {2} Message {3}"
-msgstr ""
+msgstr "Autor {0} Datum {1} Revize {2} Zpráva {3}"
 
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:134
 msgid "Author:"
@@ -3481,9 +3494,8 @@ msgstr "Autoři"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.cs:390
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.AuthorSectionAccessible.cs:61
-#, fuzzy
 msgid "Authors Overview"
-msgstr "Autoři"
+msgstr "Přehled autorů"
 
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:116
 msgid "Authors:"
@@ -3787,27 +3799,23 @@ msgstr "Větve"
 msgid "Breadcrumb Bar"
 msgstr "Navigační panel s popisem cesty"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:763
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:769
 msgid "Breakpoint Action"
 msgstr "Akce na zarážce"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:708
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:711
 msgid "Breakpoint Exception"
 msgstr "Výjimka zarážky"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:682
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:685
 msgid "Breakpoint Expression"
 msgstr "Výraz zarážky"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:695
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:698
 msgid "Breakpoint Function"
 msgstr "Funkce zarážky"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:734
-msgid "Breakpoint Hit Count Type"
-msgstr "Typ počtu dosažení zarážky"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:725
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:728
 msgid "Breakpoint Location"
 msgstr "Umístění zarážky"
 
@@ -4069,7 +4077,7 @@ msgstr "Řetězec C"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:916
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:111
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:334
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:177
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:131
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1461
 msgid "C#"
@@ -4368,11 +4376,11 @@ msgstr "Kategorie"
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:674
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:675
 msgid "Cause the program to pause when the breakpoint is hit"
 msgstr "Způsobí, že se program při dosažení zarážky pozastaví."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:678
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:680
 msgid ""
 "Cause the program to print a message and continue when the breakpoint is hit"
 msgstr "Způsobí, že při dosažení zarážky program vytiskne zprávu a pokračuje."
@@ -4918,6 +4926,10 @@ msgstr "Zaškrtněte, pokud se má použít stejná verze, jakou má řešení."
 msgid "Check to wrap the lines at 60 characters"
 msgstr "Zaškrtněte, pokud se mají řádky zalamovat při délce 60 znaků."
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:100
+msgid "Checking if needed NuGet packages are already installed...\n"
+msgstr ""
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1615
 msgid "Checking out file '{0}'"
 msgstr "Rezervuje se soubor {0}."
@@ -5001,9 +5013,8 @@ msgid "Choose files to include in the project"
 msgstr "Vybrat soubory, které se mají zahrnout do projektu"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:87
-#, fuzzy
 msgid "Choose the directory to run the project in."
-msgstr "Zadejte kořenový adresář projektu."
+msgstr "Zvolte adresář, ve kterém se má projekt spustit."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:53
 msgid "Choose the reference assemblies for your NuGet package."
@@ -5196,7 +5207,6 @@ msgid "Click here to add a new variable"
 msgstr "Kliknutím sem přidejte novou proměnnou."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:410
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:308
 msgid "Click here to add a new watch"
 msgstr "Kliknutím sem můžete přidat nové kukátko."
 
@@ -5284,7 +5294,7 @@ msgstr "Klonování…"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:459
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 msgid "Close"
 msgstr "Zavřít"
@@ -5697,13 +5707,14 @@ msgstr "Informatická aplikace"
 msgid "Condition"
 msgstr "Podmínka"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:749
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:742
+#, fuzzy
+msgid "Condition Hit Count"
+msgstr "Podmínka"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:753
 msgid "Conditional Breakpoint Expression"
 msgstr "Podmíněný výraz zarážky"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:744
-msgid "Conditional Breakpoint Hit Type"
-msgstr "Typ podmíněného dosažení zarážky"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:412
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:420
@@ -5753,7 +5764,7 @@ msgstr "Konfigurace"
 msgid "Configure"
 msgstr "Konfigurovat"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:55
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:56
 msgid "Configure Sources..."
 msgstr "Konfigurovat zdroje..."
 
@@ -5820,7 +5831,7 @@ msgstr "Konflikt {0}"
 msgid "Conflicting local changes found"
 msgstr "Našly se kolidující místní změny."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:819
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:844
 msgid "Conflicts:"
 msgstr "Konflikty:"
 
@@ -5871,11 +5882,11 @@ msgstr ""
 msgid "Console input not supported"
 msgstr "Vstup konzoly se nepodporuje."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:123
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:130
 msgid "Consolidate"
 msgstr "Konsolidovat"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:900
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:937
 msgid "Consolidate Package"
 msgid_plural "Consolidate Packages"
 msgstr[0] "Konsolidovat balíčky"
@@ -5893,11 +5904,11 @@ msgid_plural "Consolidate the packages in the projects:"
 msgstr[0] "Konsolidovat balíčky v projektech:"
 msgstr[1] "Konsolidovat balíčky v projektech:"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:794
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:832
 msgid "Consolidating {0} packages..."
 msgstr "Konsolidují se balíčky ({0})..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:786
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:824
 msgid "Consolidating {0}..."
 msgstr "Konsoliduje se {0}..."
 
@@ -5957,6 +5968,11 @@ msgstr ""
 msgid "Control not found!"
 msgstr "Ovládací prvek se nenašel."
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerEntityFrameworkScaffolder.cs:50
+#, fuzzy
+msgid "Controller name:"
+msgstr "Kontroler..."
+
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Controller..."
 msgstr "Kontroler..."
@@ -5996,7 +6012,7 @@ msgstr "Převést na konce řádků {0}"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:690
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:279
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:357
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:978
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:970
 #: ../external/xwt/Xwt/Xwt/Command.cs:69
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:138
 msgid "Copy"
@@ -6078,11 +6094,11 @@ msgstr "Kompatibilitu balíčku nešlo zkontrolovat."
 msgid "Could not close solution '{0}'."
 msgstr "Nepodařilo se zavřít řešení {0}."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:796
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:834
 msgid "Could not consolidate packages."
 msgstr "Balíčky se nepovedlo konsolidovat."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:826
 msgid "Could not consolidate {0}."
 msgstr "Nepovedlo se konsolidovat {0}."
 
@@ -6202,7 +6218,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:751
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
 msgid "Could not remove packages."
 msgstr "Balíčky nebylo možné odebrat."
 
@@ -6253,7 +6269,7 @@ msgstr "Nešlo aktualizovat soubor {0}."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:775
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:813
 msgid "Could not update packages."
 msgstr "Balíčky nešlo aktualizovat."
 
@@ -6377,13 +6393,17 @@ msgid "Create a project directory within the solution directory."
 msgstr "Vytvořit adresář projektu v adresáři řešení"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:11
-#, fuzzy
 msgid "Create a project which can generate packages for a solution."
 msgstr "Vytvořit projekt, který může generovat balíčky pro řešení"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 msgid "Create an initial commit first."
 msgstr "Nejprve vytvořte počáteční potvrzení."
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:34
+#, fuzzy
+msgid "Create as a partial view"
+msgstr "Vytvoří stránku částečného zobrazení MVC Razor."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewConfigurationDialog.cs:116
 msgid "Create configurations for all solution items"
@@ -6452,7 +6472,6 @@ msgstr "Vytvoří soubor položky desktopu."
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:10
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:10
-#, fuzzy
 msgid "Creates a Gtk Window."
 msgstr "Vytvoří okno Gtk."
 
@@ -6466,19 +6485,16 @@ msgid "Creates a Gtk# 2.0 project."
 msgstr "Vytvoří projekt Gtk# 2.0."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Import Page."
-msgstr "Vytvoří stránku zobrazení MVC."
+msgstr "Vytvoří stránku importu zobrazení MVC."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Page."
 msgstr "Vytvoří stránku zobrazení MVC."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewStartPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Start Page."
-msgstr "Vytvoří stránku zobrazení MVC."
+msgstr "Vytvoří úvodní stránku zobrazení MVC."
 
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:13
 msgid "Creates a NuGet Packaging project."
@@ -6489,14 +6505,12 @@ msgid "Creates a NuGet package"
 msgstr "Vytvoří balíček NuGet."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPageWithPageModel.xft.xml:13
-#, fuzzy
 msgid "Creates a Razor page with a page model."
-msgstr "Stránka Razor s modelem stránky"
+msgstr "Vytvoří stránku Razor s modelem stránky."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPage.xft.xml:13
-#, fuzzy
 msgid "Creates a Razor page without a page model."
-msgstr "Stránka Razor bez modelu stránky"
+msgstr "Vytvoří stránku Razor bez modelu stránky."
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitTestClass.xft.xml:9
 msgid "Creates a Test Fixture."
@@ -6515,14 +6529,12 @@ msgid "Creates a Windows app manifest."
 msgstr "Vytvoří manifest aplikace Windows."
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:13
-#, fuzzy
 msgid "Creates a blank solution."
-msgstr "Vytvořit nové řešení"
+msgstr "Vytvoří prázdné řešení."
 
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:11
-#, fuzzy
 msgid "Creates a blank workspace."
-msgstr "Vytvořit nový pracovní prostor"
+msgstr "Vytvoří prázdný pracovní prostor."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/StartupClass.xft.xml:13
 msgid "Creates a class to configure your application."
@@ -6537,9 +6549,8 @@ msgid "Creates a class to write your middleware."
 msgstr "Vytvoří třídu pro zápis middlewaru."
 
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:13
-#, fuzzy
 msgid "Creates a console VB.Net project."
-msgstr "Vytvořit projekt konzoly VB.Net"
+msgstr "Vytvoří projekt konzoly VB.Net."
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Widget.xft.xml:10
 #: ../src/addins/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml:10
@@ -6693,7 +6704,6 @@ msgid "Creates a new xUnit test project."
 msgstr "Vytvoří nový projekt testů xUnit."
 
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:12
-#, fuzzy
 msgid "Creates a project that allows sharing files between projects."
 msgstr "Vytvoří projekt, který umožňuje sdílení souborů mezi projekty."
 
@@ -6706,11 +6716,10 @@ msgid "Creates a resx resource file."
 msgstr "Vytvoří soubor prostředků resx."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorComponent.xft.xml:13
-#, fuzzy
 msgid "Creates a reusable UI component implemented with Razor."
 msgstr ""
-"Opětovně použitelná komponenta uživatelského rozhraní implementovaná pomocí "
-"Razoru"
+"Vytvoří opětovně použitelnou komponentu uživatelského rozhraní "
+"implementovanou pomocí Razoru."
 
 #: ../src/addins/MonoDevelop.Gettext/templates/TranslationProject.xpt.xml:10
 msgid "Creates a translation project."
@@ -6810,9 +6819,8 @@ msgid "Creates an ASP.NET web.config file for a subdirectory."
 msgstr "Vytvoří soubor web.config pro podadresář ASP.NET."
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:13
-#, fuzzy
 msgid "Creates an IL Console Project."
-msgstr "Vytvoří nový projekt konzoly C#."
+msgstr "Vytvoří projekt konzoly IL."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:13
 msgid ""
@@ -6845,7 +6853,6 @@ msgstr "Vytvoří stránku zobrazení MVC."
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitProject.xpt.xml:10
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitProjectVBNet.xpt.xml:10
-#, fuzzy
 msgid "Creates an NUnit library."
 msgstr "Vytvoří knihovnu NUnit."
 
@@ -6858,7 +6865,6 @@ msgid "Creates an empty ASP.NET user control."
 msgstr "Vytvoří prázdný uživatelský ovládací prvek ASP.NET."
 
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:13
-#, fuzzy
 msgid "Creates an empty C# class library."
 msgstr "Vytvoří prázdnou knihovnu tříd C#."
 
@@ -6919,9 +6925,8 @@ msgid "Creates an implementation for:"
 msgstr "Vytvoří implementaci pro:"
 
 #: ../src/addins/AspNet/Templates/npmConfigurationFile.xft.xml:12
-#, fuzzy
 msgid "Creates an npm Configuration File for package.json."
-msgstr "Konfigurační soubor NPM pro package.json"
+msgstr "Vytvoří konfigurační soubor NPM pro package.json."
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:321
 msgid "Creates new method"
@@ -7001,7 +7006,7 @@ msgstr "Aktuální profil:"
 msgid "Current Project"
 msgstr "Aktuální projekt"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:383
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:393
 msgid "Current Version:"
 msgstr "Aktuální verze: "
 
@@ -7205,6 +7210,11 @@ msgstr "Datum"
 msgid "Date/Time"
 msgstr "Datum a čas"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ScaffolderBase.cs:53
+#, fuzzy
+msgid "DbContext class to use:"
+msgstr "_Převádět tabulátory na mezery"
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:296
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:302
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:308
@@ -7319,7 +7329,7 @@ msgstr "Deklarujte, že tato hlavní stránka implementuje rozhraní."
 msgid "Declare that this page implements an interface."
 msgstr "Deklarujte, že tato stránka implementuje rozhraní."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:458
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:463
 msgid "Declaring Type"
 msgstr "Deklarující typ"
 
@@ -7444,13 +7454,13 @@ msgstr "Pozdržet podepsání sestavení"
 msgid "Delegate {0}. {1}"
 msgstr "Delegát {0}. {1}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:462
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:487
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:700
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:208
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:791
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:31
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:528
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:987
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:979
 #: ../external/xwt/Xwt/Xwt/Command.cs:65
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:153
 msgid "Delete"
@@ -7580,7 +7590,7 @@ msgstr "Odstraňování       {0}"
 msgid "Deleting Files..."
 msgstr "Odstraňování souborů..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:354
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:39
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:66
@@ -7775,9 +7785,8 @@ msgid "Did you know?"
 msgstr "Víte, že..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:75
-#, fuzzy
 msgid "Diff View"
-msgstr "Zobrazení času"
+msgstr "Rozdílové zobrazení"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/EditIconDialog.cs:102
 msgid "Direction"
@@ -8130,7 +8139,7 @@ msgid "DocumentPath is illegal."
 msgstr "Cesta k dokumentu není platná."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:231
 msgid "Documentation"
 msgstr "Dokumentace"
 
@@ -8178,7 +8187,8 @@ msgstr "Velikost ke stažení"
 msgid "Downloading {0}"
 msgstr "Stahování {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:313
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:622
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:323
 msgid "Downloads"
 msgstr "Stažené soubory"
 
@@ -8212,7 +8222,7 @@ msgstr "Duplikovat konfiguraci"
 msgid "Duplicate line"
 msgstr "Duplicitní řádek"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:827
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:852
 msgid "Duplicates:"
 msgstr "Duplikáty:"
 
@@ -8695,7 +8705,7 @@ msgstr "Vylepšit výstupní soubor Sample"
 msgid "Enter Full Screen"
 msgstr "Spustit režim zobrazení na celé obrazovce"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:750
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:754
 msgid ""
 "Enter a C# boolean expression to act as a condition for this breakpoint. The "
 "scope of the expression is local to the breakpoint"
@@ -8876,7 +8886,7 @@ msgstr "Zadejte popis balíčku NuGet."
 msgid "Enter the directory for the command to execute in"
 msgstr "Zadejte adresář, ve kterém se má příkaz spustit."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:683
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:686
 msgid ""
 "Enter the expression you wish to have printed to the console. Place simple "
 "C# expressions within {} to interpolate them."
@@ -8884,7 +8894,7 @@ msgstr ""
 "Zadejte výraz, který se má vytisknout na konzole. Vložte jednoduché výrazy "
 "C# mezi znaky {}, aby se interpolovaly."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:726
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:729
 msgid "Enter the file and line number of the breakpoint location"
 msgstr "Zadejte soubor a číslo řádku umístění zarážky."
 
@@ -8904,7 +8914,7 @@ msgstr "Zadejte název souboru pro vygenerovanou dokumentaci XML."
 msgid "Enter the filepath for the new project"
 msgstr "Zadejte cestu k souboru nového projektu."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:740
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:743
 msgid "Enter the hit count required for the condition"
 msgstr "Zadejte počet dosažení vyžadovaný pro tuto podmínku."
 
@@ -8932,7 +8942,7 @@ msgstr "Zadejte název nového řešení."
 msgid "Enter the name for this package source"
 msgstr "Zadejte název zdroje tohoto balíčku."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:696
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:699
 msgid "Enter the name of the breakpoint function"
 msgstr "Zadejte název funkce zarážky."
 
@@ -8965,14 +8975,12 @@ msgid "Enter the password (if required) for this package source"
 msgstr "Zadejte heslo (pokud se vyžaduje) zdroje tohoto balíčku."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:65
-#, fuzzy
 msgid "Enter the path"
 msgstr "Zadejte cestu."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:61
-#, fuzzy
 msgid "Enter the port"
-msgstr "Zadejte cestu."
+msgstr "Zadejte port."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Enter the project URL for the NuGet package"
@@ -8987,23 +8995,20 @@ msgid "Enter the project version"
 msgstr "Zadejte verzi projektu."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:53
-#, fuzzy
 msgid "Enter the protocol to use"
-msgstr "Zadejte název projektu."
+msgstr "Zadejte protokol, který se má použít."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:124
 msgid "Enter the release notes for this NuGet package"
 msgstr "Zadejte zprávu k vydání verze pro tento balíček NuGet."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:49
-#, fuzzy
 msgid "Enter the repository url"
-msgstr "Zadejte verzi."
+msgstr "Zadejte adresu URL úložiště."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:57
-#, fuzzy
 msgid "Enter the server"
-msgstr "Zadejte verzi."
+msgstr "Zadejte server."
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:92
 msgid "Enter the summary for the NuGet package"
@@ -9018,9 +9023,8 @@ msgid "Enter the tags for this NuGet package"
 msgstr "Zadejte značky pro tento balíček NuGet."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:92
-#, fuzzy
 msgid "Enter the target directory"
-msgstr "Zadejte výstupní adresář."
+msgstr "Zadejte cílový adresář."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:115
 msgid "Enter the text to be used for the standard header"
@@ -9039,14 +9043,13 @@ msgstr "Zadejte název balíčku NuGet."
 msgid "Enter the trademark statement"
 msgstr "Zadejte prohlášení o ochranných známkách."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:709
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:712
 msgid "Enter the type of the breakpoint exception"
 msgstr "Zadejte typ výjimky zarážky."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:69
-#, fuzzy
 msgid "Enter the user"
-msgstr "Zadejte verzi."
+msgstr "Zadejte uživatele."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:104
 msgid "Enter the username (if required) for this package source"
@@ -9242,7 +9245,7 @@ msgstr ""
 msgid "Error while loading theme: {0}"
 msgstr "Došlo k chybě při načítání motivu: {0}"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:948
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:954
 msgid "Error while opening assembly {0}."
 msgstr "Při otevírání sestavení {0} došlo k chybě."
 
@@ -9338,8 +9341,9 @@ msgstr "Vyhodnocování"
 msgid "Evaluating..."
 msgstr "Vyhodnocování..."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:849
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:148
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:845
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:152
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:351
 msgid "Evaluating…"
 msgstr "Vyhodnocování…"
 
@@ -9430,15 +9434,15 @@ msgstr "Spustit v modulu runtime .NET:"
 msgid "Execute target name:"
 msgstr "Název cíle Spustit:"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:691
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:694
 msgid "Execute the action when a function is entered"
 msgstr "Provede akci při zadání funkce."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:704
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:707
 msgid "Execute the action when an exception is thrown"
 msgstr "Provede akci při vyvolání výjimky."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:721
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:724
 msgid "Execute the action when the program reaches a location in a file"
 msgstr "Provede akci, když program dosáhne umístění v souboru."
 
@@ -9685,7 +9689,7 @@ msgstr "Správa úložiště rozšíření"
 msgid "Extension packages"
 msgstr "Balíčky rozšíření"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:558
+#: ../src/addins/MacPlatform/MacPlatform.cs:560
 msgid "Extensions..."
 msgstr "Rozšíření..."
 
@@ -9694,9 +9698,8 @@ msgid "External Encodings"
 msgstr "Externí kódování"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:109
-#, fuzzy
 msgid "External Program"
-msgstr "Spustit externí program:"
+msgstr "Externí program"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:16
 msgid "External Tools"
@@ -10741,6 +10744,11 @@ msgstr "Generovat soubory pravidel"
 msgid "Generate Makefiles..."
 msgstr "Generovat soubory pravidel..."
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:33
+#, fuzzy
+msgid "Generate PageModel class"
+msgstr "Generovat vše"
+
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:130
 msgid "Generate Type"
 msgstr "Generovat typ"
@@ -11399,7 +11407,7 @@ msgstr "Skrýt podrobnosti"
 msgid "Hide other applications' windows"
 msgstr "Skrýt okna ostatních aplikací"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:642
+#: ../src/addins/MacPlatform/MacPlatform.cs:644
 msgid "Hide {0}"
 msgstr "Skrýt {0}"
 
@@ -11433,7 +11441,6 @@ msgid "History software"
 msgstr "Aplikace pro historiky"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:155
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:739
 msgid "Hit Count"
 msgstr "Počet volání"
 
@@ -11482,7 +11489,7 @@ msgstr "ID:"
 msgid "IDE application"
 msgstr "Aplikace IDE"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:174
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:176
 msgid "IL"
 msgstr "IL"
 
@@ -11528,7 +11535,7 @@ msgstr "Ikona:"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:108
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:266
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:276
 msgid "Id"
 msgstr "ID"
 
@@ -12124,7 +12131,7 @@ msgstr "Vložit zarážku"
 msgid "Insert ChangeLog Entry"
 msgstr "Vložit položku protokolu změn"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:900
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:894
 msgid "Insert Code"
 msgstr "Vložit kód"
 
@@ -12132,7 +12139,7 @@ msgstr "Vložit kód"
 msgid "Insert Documentation Comments"
 msgstr "Vložit komentáře dokumentace"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:891
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:885
 msgid "Insert Field"
 msgstr "Vložit pole"
 
@@ -12140,11 +12147,11 @@ msgstr "Vložit pole"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "Vložit GUID (globálně jedinečný identifikátor)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:894
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:888
 msgid "Insert Method"
 msgstr "Vložit metodu"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:897
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:891
 msgid "Insert Property"
 msgstr "Vložit vlastnost"
 
@@ -12310,9 +12317,8 @@ msgid "Install Project"
 msgstr "Nainstalovat projekt"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.GlobalTools/DotNetCoreGlobalToolManager.cs:74
-#, fuzzy
 msgid "Install failed. dotnet install returned {0}"
-msgstr "Příkaz dotnet publish vrátil: {0}"
+msgstr "Instalace neproběhla úspěšně. Příkaz dotnet install vrátil {0}."
 
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:339
 msgid "Install from file..."
@@ -12335,7 +12341,7 @@ msgstr "Instalace se zrušila."
 msgid "Installation failed"
 msgstr "Instalace nebyla úspěšná."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:111
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:114
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:136
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:117
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:259
@@ -12738,7 +12744,7 @@ msgid "Label indentation"
 msgstr "Odsazení návěští"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:272
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:274
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:137
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:440
 msgid "Language"
@@ -12853,6 +12859,10 @@ msgstr "Sledování nevracení"
 msgid "Leave block on single line"
 msgstr "Nechat blok na jednom řádku"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:37
+msgid "Leave empty if is set in a Razor _viewstart file"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:50
 msgid "Leave line endings as is"
 msgstr "Nechat konce řádků beze změn"
@@ -12893,7 +12903,7 @@ msgid "Library name must not exceed 100 characters."
 msgstr "Název knihovny nesmí překročit 100 znaků."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:80
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:326
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
 msgid "License"
 msgstr "Licence"
 
@@ -12929,9 +12939,8 @@ msgid "Line is not a number."
 msgstr "Řádek není číslo."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:622
-#, fuzzy
 msgid "Line {0}, Text {1}"
-msgstr "Přejmenovat {0} na {1}"
+msgstr "Řádek {0}, text {1}"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/Gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:120
 msgid "Link"
@@ -13003,12 +13012,11 @@ msgid "Loading data..."
 msgstr "Načítání dat..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:483
-#, fuzzy
 msgid "Loading data…"
-msgstr "Načítání dat..."
+msgstr "Načítají se data…"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:256
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:183
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:296
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:193
 msgid "Loading package list..."
 msgstr "Načítá se seznam balíčků..."
 
@@ -13049,7 +13057,7 @@ msgid "Loading..."
 msgstr "Načítání..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:913
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:909
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/LoadingObjectValueNode.cs:33
 msgid "Loading…"
 msgstr "Načítání…"
@@ -13258,9 +13266,18 @@ msgstr "Projekt MSTest"
 msgid "MVC"
 msgstr "MVC"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/EmptyMvcControllerScaffolder.cs:33
+#, fuzzy
+msgid "MVC Controller - Empty"
+msgstr "Třída kontroleru MVC"
+
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:8
 msgid "MVC Controller Class"
 msgstr "Třída kontroleru MVC"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/MvcControllerWithActionsScaffolder.cs:33
+msgid "MVC Controller with read / write actions"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:8
 msgid "MVC View Imports Page"
@@ -13365,7 +13382,7 @@ msgstr "Spravovat větve a vzdálené větve"
 msgid "Manage NuGet Packages – Solution"
 msgstr "Spravovat balíčky NuGet – Řešení"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:140
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:160
 msgid "Manage NuGet Packages – {0}"
 msgstr "Spravovat balíčky NuGet – {0}"
 
@@ -13615,7 +13632,7 @@ msgstr "Maximum atributů na řádek"
 msgid "Medical software"
 msgstr "Lékařská aplikace"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:446
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:451
 msgid "Member"
 msgstr "Člen"
 
@@ -13623,7 +13640,7 @@ msgstr "Člen"
 msgid "Member Overloads"
 msgstr "Přetížení členů"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:158
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:160
 msgid "Members"
 msgstr "Členy"
 
@@ -13799,6 +13816,10 @@ msgstr "Chybí znak : pro deklaraci na řádku."
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:272
 msgid "Missing: {0} v{1}"
 msgstr "Chybí: {0} verze {1}"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ScaffolderBase.cs:58
+msgid "Model class to use:"
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:200
 msgid "Modified"
@@ -14133,8 +14154,8 @@ msgstr "Ná_zev:"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:117
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:59
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:329
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:217
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:98
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:213
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:97
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:60
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:42
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:78
@@ -14159,6 +14180,11 @@ msgstr "Název není nakonfigurovaný."
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:54
 msgid "Name of enum"
 msgstr "Název výčtu"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:38
+#, fuzzy
+msgid "Name of the Razor Page:"
+msgstr "Název nového rozhraní:"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:90
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ImplicitFrameworkAssemblyReferenceDescriptor.cs:43
@@ -14225,7 +14251,7 @@ msgstr ""
 "můžete použít jednoduché uvozovky, například \\k'char'."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:505
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:510
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -14397,7 +14423,7 @@ msgstr "Nová skupina"
 msgid "New Group..."
 msgstr "Nová skupina..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:368
 msgid "New Instance"
 msgstr "Nová instance"
 
@@ -14427,8 +14453,8 @@ msgstr "Nový projekt..."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:893
 #, fuzzy
-msgid "New Scaffolded Item...."
-msgstr "Nové národní prostředí..."
+msgid "New Scaffolding..."
+msgstr "Nová vygenerovaná položka..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:69
 msgid "New Solution..."
@@ -14443,7 +14469,7 @@ msgstr "Nový úkol"
 msgid "New Tool"
 msgstr "Nový nástroj"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:409
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:419
 msgid "New Version:"
 msgstr "Nová verze:"
 
@@ -14570,7 +14596,7 @@ msgstr "Následující dokument"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:400
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14667,7 +14693,7 @@ msgstr ""
 msgid "No matches"
 msgstr "Žádné shody"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:198
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:208
 msgid "No matching packages found."
 msgstr "Nenašly se žádné odpovídající balíčky."
 
@@ -14786,7 +14812,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:359
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -14996,7 +15022,7 @@ msgstr "Online šablony"
 msgid "Only one '{0}' directive is permitted"
 msgstr "Je povolená jenom jedna direktiva {0}."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:115
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:116
 msgid "Only public members"
 msgstr "Jenom veřejné členy"
 
@@ -15377,9 +15403,8 @@ msgid "P_roject version:"
 msgstr "_Verze projektu:"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1607
-#, fuzzy
 msgid "Pack"
-msgstr "Balíček"
+msgstr "Zabalit"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:305
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:97
@@ -15423,6 +15448,11 @@ msgstr "ID balíčku"
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:818
 msgid "Package References"
 msgstr "Odkazy na balíček"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:140
+#, fuzzy
+msgid "Package Search"
+msgstr "Přidat zdroj balíčků"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:92
 msgid "Package Settings"
@@ -15582,7 +15612,7 @@ msgstr "Parametr"
 msgid "Parameter:"
 msgstr "Parametr:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:481
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:486
 msgid "Parent"
 msgstr "Nadřazený"
 
@@ -15719,7 +15749,7 @@ msgstr "Připnout panel výstupu"
 msgid "Pin results pad"
 msgstr "Připnout panel výsledků"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:56
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:59
 msgid "Pin to the editor"
 msgstr "Připnout k editoru"
 
@@ -15910,7 +15940,7 @@ msgstr "Zásady, které se mají exportovat:"
 msgid "Policies to set or replace:"
 msgstr "Zásady, které se mají nastavit nebo nahradit:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:557
 msgid "Policies..."
 msgstr "Zásady..."
 
@@ -16097,7 +16127,7 @@ msgstr "Preferovat výraz throw"
 msgid "Preferences"
 msgstr "Předvolby"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:554
+#: ../src/addins/MacPlatform/MacPlatform.cs:556
 msgid "Preferences..."
 msgstr "Předvolby..."
 
@@ -16312,7 +16342,7 @@ msgstr "Průběh"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:307
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:173
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:217
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:257
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:68
 msgid "Project"
@@ -16397,7 +16427,7 @@ msgstr "Název projektu:"
 msgid "Project Options"
 msgstr "Možnosti projektu"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:340
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
 msgid "Project Page"
 msgstr "Stránka projektu"
 
@@ -16661,7 +16691,7 @@ msgstr "Publikovat do {0} – {1}"
 msgid "Publish your app to a folder or a file share"
 msgstr "Publikovat aplikaci do běžné nebo sdílené složky"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:300
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:310
 msgid "Published"
 msgstr "Publikováno"
 
@@ -16893,6 +16923,7 @@ msgstr "Knihovna tříd Razor"
 msgid "Razor Component"
 msgstr "Komponenta Razor"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolder.cs:37
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPage.xft.xml:8
 msgid "Razor Page"
 msgstr "Stránka Razor"
@@ -16900,6 +16931,15 @@ msgstr "Stránka Razor"
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPageWithPageModel.xft.xml:8
 msgid "Razor Page (with page model)"
 msgstr "Stránka Razor (s modelem stránky)"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkScaffolder.cs:42
+#, fuzzy
+msgid "Razor Page using Entity Framework"
+msgstr "Cílová architektura"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkCrudScaffolder.cs:41
+msgid "Razor Page using Entity Framework (CRUD)"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorTagHelper.xft.xml:8
 msgid "Razor Tag Helper"
@@ -17123,6 +17163,11 @@ msgstr "Zadejte odkaz na stránku nebo uživatelský ovládací prvek."
 msgid "Reference an assembly."
 msgstr "Zadejte referenci na sestavení."
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:35
+#, fuzzy
+msgid "Reference script libraries"
+msgstr "Referenční sestavení"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:89
 msgid "Reference..."
 msgstr "Odkaz..."
@@ -17162,7 +17207,7 @@ msgstr "Aktualizovat"
 msgid "Refresh the tree"
 msgstr "Aktualizovat strom"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:66
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:69
 msgid "Refresh value"
 msgstr "Aktualizovat hodnotu"
 
@@ -17383,9 +17428,8 @@ msgstr[0] "Odebrat balíčky z projektů:"
 msgstr[1] "Odebrat balíčky z projektů:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:79
-#, fuzzy
 msgid "Remove the selected environment variable"
-msgstr "Odebrat vybranou složku ze seznamu"
+msgstr "Odebrat vybranou proměnnou prostředí"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:63
 msgid "Remove the selected folder from the list"
@@ -17405,12 +17449,11 @@ msgstr "Odebrat {0}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:360
 msgid "Removed breakpoint, line {0}, file {1}"
-msgstr ""
+msgstr "Odebrala se zarážka, řádek {0}, soubor {1}."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:614
-#, fuzzy
 msgid "Removed line"
-msgstr "Odebrat soubor"
+msgstr "Odebraný řádek"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:374
 msgid "Removing all .mo files."
@@ -17418,7 +17461,7 @@ msgstr "Odebírají se všechny soubory .mo."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:749
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
 msgid "Removing {0} packages..."
 msgstr "Odebírají se balíčky ({0})..."
 
@@ -17439,7 +17482,7 @@ msgstr "Odebírání..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:196
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:262
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:81
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:981
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:973
 msgid "Rename"
 msgstr "Přejmenovat"
 
@@ -17761,7 +17804,7 @@ msgstr "Restartovat s laděním"
 msgid "Restart Without Debugging"
 msgstr "Restartovat bez ladění"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:399
 msgid "Restart and enable"
 msgstr "Restartovat a povolit"
 
@@ -17837,7 +17880,7 @@ msgstr "Výsledek"
 msgid "Result message:"
 msgstr "Zpráva výsledku:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:468
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:473
 msgid "Results"
 msgstr "Výsledky"
 
@@ -17933,14 +17976,12 @@ msgid "Revert changes from this revision"
 msgstr "Obnovit změny z této revize"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:69
-#, fuzzy
 msgid "Revert changes margin"
-msgstr "Obnovit změny z této revize"
+msgstr "Okraj pro vrácení změn"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
 msgid "Revert left changes button"
-msgstr "Obnovit tuto změnu"
+msgstr "Tlačítko pro vrácení změn vlevo"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
@@ -17948,9 +17989,8 @@ msgid "Revert operation completed."
 msgstr "Operace obnovení se dokončila."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
 msgid "Revert right changes button"
-msgstr "Obnovit tuto změnu"
+msgstr "Tlačítko pro vrácení změn vpravo"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:121
 msgid "Revert this change"
@@ -17970,15 +18010,15 @@ msgstr "Chcete se vrátit neuložené změny v dokumentu {0}?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:486
 msgid "Revert {0} inserted lines starting at {1}"
-msgstr ""
+msgstr "Vrátit následující počet vložených řádků začínajících od {1}: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:488
 msgid "Revert {0} removed lines starting at {1}"
-msgstr ""
+msgstr "Vrátit následující počet odebraných řádků začínajících od {1}: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:490
 msgid "Revert {0} replaced lines starting at {1}"
-msgstr ""
+msgstr "Vrátit následující počet nahrazených řádků začínajících od {1}: {0}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1362
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:767
@@ -18642,7 +18682,7 @@ msgstr "Nas_tavit projekty po spuštění..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:162
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:232
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:168
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:193
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -18726,7 +18766,7 @@ msgstr "Vyhledat a nahradit text"
 msgid "Search for and replace text in all files of a directory"
 msgstr "Hledat a nahradit text ve všech souborech v adresáři"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:253
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:255
 msgid "Search for members"
 msgstr "Hledat členy"
 
@@ -18738,11 +18778,11 @@ msgstr "Hledat text"
 msgid "Search for text in all files of a directory"
 msgstr "Hledat text ve všech souborech adresáře"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:250
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:252
 msgid "Search for types"
 msgstr "Hledat typy"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:247
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:249
 msgid "Search for types and members"
 msgstr "Hledat typy a členy"
 
@@ -18802,19 +18842,19 @@ msgstr "Čas hledání: {0} s"
 msgid "Search:"
 msgstr "Hledat:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:590
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:595
 msgid "Searching member..."
 msgstr "Hledá se člen..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:258
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:298
 msgid "Searching packages..."
 msgstr "Hledají se balíčky..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:593
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:598
 msgid "Searching type..."
 msgstr "Hledá se typ..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:596
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:601
 msgid "Searching types and members..."
 msgstr "Hledají se typy a členy..."
 
@@ -18940,6 +18980,11 @@ msgstr "Vybrat projekty"
 msgid "Select Repository"
 msgstr "Vybrat úložiště"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderTemplateSelectPage.cs:44
+#, fuzzy
+msgid "Select Scaffolder"
+msgstr "Vybrat složku"
+
 #: ../src/addins/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.addin.xml:84
 msgid "Select Test at Caret"
 msgstr "Vybrat test v místě kurzoru"
@@ -19001,7 +19046,7 @@ msgstr "Vyberte složku pro tuto položku."
 msgid "Select a font"
 msgstr "Vyberte písmo."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:735
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:738
 msgid "Select a hit count condition for this breakpoint"
 msgstr "Vyberte podmínku počtu dosažení této zarážky."
 
@@ -19064,7 +19109,7 @@ msgstr "Vybrat typ akce"
 msgid "Select all text"
 msgstr "Vybrat veškerý text"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:745
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:748
 msgid "Select an extra condition for this breakpoint"
 msgstr "Vyberte další podmínku pro tuto zarážku."
 
@@ -19131,7 +19176,7 @@ msgstr "Vybrat balíčky k přidání do nového balícího projektu"
 msgid "Select policy, current: {0}"
 msgstr "Vyberte zásady. Aktuální: {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:412
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:452
 msgid "Select projects and a version for a consolidation."
 msgstr "Vyberte projekty a verzi, které se konsolidují."
 
@@ -19339,9 +19384,8 @@ msgid "Select the public members which are added to the interface"
 msgstr "Vyberte veřejné členy, které se přidají do rozhraní."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:88
-#, fuzzy
 msgid "Select the repository type"
-msgstr "Vybrat úložiště"
+msgstr "Vyberte typ úložiště."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RuntimeOptionsPanel.cs:119
 msgid "Select the target framework"
@@ -19440,7 +19484,7 @@ msgid "Select whether to add this new file to an existing project"
 msgstr ""
 "Vyberte, jestli se tento nový soubor má přidat do existujícího projektu."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:717
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:720
 msgid "Select whether to also break on exception subclasses"
 msgstr "Vyberte, zda má dojít k přerušení i u podtříd výjimek."
 
@@ -19580,9 +19624,8 @@ msgid "Service Capabilities"
 msgstr "Schopnosti služeb"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:167
-#, fuzzy
 msgid "Service Icon"
-msgstr "Služby"
+msgstr "Ikona služby"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences/Library.cs:77
 msgid "Service: {0}"
@@ -19607,14 +19650,12 @@ msgid "Set To Default"
 msgstr "Nastavit na výchozí hodnoty"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:97
-#, fuzzy
 msgid "Set additional environment variables for the project."
-msgstr "Některé další změny v jiném souboru nebo projektu."
+msgstr "Nastavte další proměnné prostředí pro projekt."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:81
-#, fuzzy
 msgid "Set any additional arguments to pass to the project."
-msgstr "Některé další změny v jiném souboru nebo projektu."
+msgstr "Nastavte všechny další argumenty, které se mají předat projektu."
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:78
 msgid "Set as Default"
@@ -19805,9 +19846,10 @@ msgid "Show MonoDevelop preferences window"
 msgstr "Zobrazit okno předvoleb MonoDevelop"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1214
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:860
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:856
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:76
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:154
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:158
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:355
 msgid "Show More"
 msgstr "Zobrazit více"
 
@@ -19884,14 +19926,16 @@ msgid "Show Test Time"
 msgstr "Zobrazit čas testu"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1199
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:847
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:146
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:843
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:150
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:349
 msgid "Show Value"
 msgstr "Zobrazit hodnotu"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1216
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:862
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:156
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:858
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:160
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:357
 msgid "Show Values"
 msgstr "Zobrazit hodnoty"
 
@@ -20011,7 +20055,7 @@ msgstr "Zobrazit výstup"
 msgid "Show page setup"
 msgstr "Zobrazit nastavení stránky"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:435
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:445
 msgid "Show pre-release packages"
 msgstr "Zobrazit balíčky v předběžné verzi"
 
@@ -20381,7 +20425,7 @@ msgstr "Řešení"
 msgid "Some additional changes on another file of the project."
 msgstr "Některé další změny v jiném souboru nebo projektu."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:226
 msgid "Some dependencies need to be updated"
 msgstr "Některé závislosti se musí aktualizovat."
 
@@ -21171,7 +21215,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:254
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:143
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:146
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:173
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:264
 msgid "Summary"
 msgstr "Souhrn"
@@ -21687,6 +21731,11 @@ msgstr "Šablona pro metodu void Main"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1045
 msgid "Template for while block"
 msgstr "Šablona pro blok while"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkScaffolder.cs:59
+#, fuzzy
+msgid "Template:"
+msgstr "Šab_lona:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:96
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:117
@@ -22417,8 +22466,9 @@ msgid "The minimum GTK# version required to use this component."
 msgstr "Minimální verze GTK# vyžadovaná pro použití této komponenty."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1179
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:830
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:130
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:826
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:132
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:335
 msgid "The name '{0}' does not exist in the current context."
 msgstr "Název {0} v aktuálním kontextu neexistuje."
 
@@ -23443,23 +23493,23 @@ msgstr ""
 msgid "There is a search already in progress. Do you want to stop it?"
 msgstr "Hledání už probíhá. Chcete ho zastavit?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:730
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:733
 msgid "There is a warning for the breakpoint location"
 msgstr "Pro umístění zarážky existuje upozornění."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:754
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:758
 msgid "There is a warning for the condition expression"
 msgstr "Pro výraz podmínky existuje upozornění."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:713
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:716
 msgid "There is a warning for the exception type"
 msgstr "Pro typ výjimky existuje upozornění."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:700
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:703
 msgid "There is a warning for the function name"
 msgstr "Pro název funkce existuje upozornění."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:687
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:690
 msgid "There is a warning for the print expression"
 msgstr "Pro tištěný výraz existuje upozornění."
 
@@ -23570,11 +23620,11 @@ msgstr "Toto je souhrn všech typů souborů použitých v projektu nebo řešen
 msgid "This is only used when xbuild is not being used."
 msgstr "Používá se jenom v případě, že se nepoužívá xbuild."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:618
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:643
 msgid "This key combination is already bound to command '{0}'"
 msgstr "Tato kombinace kláves je už přiřazená k příkazu {0}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:611
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:636
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
 msgstr ""
@@ -23604,7 +23654,7 @@ msgstr "Tento typ projektu vyžaduje, aby bylo nainstalované prostředí {0}."
 msgid "This service has no dependencies"
 msgstr "Tato služba nemá žádné závislosti."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:815
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:840
 msgid ""
 "This shortcut is assigned to another command that is available\n"
 "in the same context. Please set a different shortcut."
@@ -23968,13 +24018,13 @@ msgstr "Dva sloupce editoru"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:474
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:63
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:492
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:497
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.SignatureChange/SignatureChangeDialog.cs:183
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:153
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:376
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:272
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:113
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:268
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:112
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
 msgid "Type"
@@ -24044,11 +24094,11 @@ msgid "TypeScript file"
 msgstr "Soubor TypeScriptu"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:145
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:147
 msgid "Types"
 msgstr "Typy"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:132
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:134
 msgid "Types and Members"
 msgstr "Typy a členy"
 
@@ -24219,9 +24269,8 @@ msgid "Unavailable"
 msgstr "Nedostupné"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:617
-#, fuzzy
 msgid "Unchanged line"
-msgstr "Jeden řádek"
+msgstr "Nezměněný řádek"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:102
 msgid "Uncomment selected lines of code"
@@ -24297,7 +24346,7 @@ msgstr "Zrušit odsazení vybraných řádků kódu"
 msgid "Uninstall"
 msgstr "Odinstalovat"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:896
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:933
 msgid "Uninstall Package"
 msgid_plural "Uninstall Packages"
 msgstr[0] "Odinstalovat balíčky"
@@ -24465,8 +24514,8 @@ msgstr "Aktualizovat všechny balíčky (řešení)"
 msgid "Update Identifiers"
 msgstr "Aktualizovat identifikátory"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:892
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:898
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:929
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:935
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:57
 msgid "Update Package"
 msgstr "Aktualizovat balíček"
@@ -24532,7 +24581,7 @@ msgstr[1] "Aktualizované webové reference"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:117
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:122
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:125
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:373
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
@@ -24594,7 +24643,7 @@ msgstr[1] "Aktualizace webových referencí"
 msgid "Updating {0}"
 msgstr "Aktualizuje se {0}."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:773
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:811
 msgid "Updating {0} packages..."
 msgstr "Aktualizují se balíčky ({0})..."
 
@@ -24657,6 +24706,10 @@ msgstr "Po_užít okno výstupu"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:120
 msgid "Use a file selector to select a custom command"
 msgstr "Pomocí voliče souborů vyberte vlastní příkaz."
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:36
+msgid "Use a layout page"
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:149
 msgid "Use bullets"
@@ -24885,8 +24938,8 @@ msgstr "Platnost"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:45
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:83
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:346
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:235
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:105
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:231
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:104
 msgid "Value"
 msgstr "Hodnota"
 
@@ -24948,7 +25001,7 @@ msgstr "Sprá_va verzí"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:226
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:266
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
@@ -25082,7 +25135,7 @@ msgid "View ChangeLog..."
 msgstr "Zobrazit protokol změn..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:135
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:331
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:341
 msgid "View License"
 msgstr "Zobrazit licenci"
 
@@ -25106,11 +25159,11 @@ msgstr "Zobrazit zpětný překlad v {0}"
 msgid "View..."
 msgstr "Zobrazení..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:262
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:264
 msgid "Visibility"
 msgstr "Viditelnost"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:345
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
 msgid "Visit Page"
 msgstr "Navštívit stránku"
 
@@ -25441,7 +25494,7 @@ msgstr ""
 "umožňuje například zobrazení názvů spravovaných rámců u zpětných trasování "
 "GDB."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:795
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:801
 msgid "When to Take Action"
 msgstr "Kdy provést akci"
 
@@ -27497,9 +27550,8 @@ msgid "e.g. colorName == \"Red\""
 msgstr "např. colorName == \"Red\""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:477
-#, fuzzy
 msgid "empty"
-msgstr "Prázdné"
+msgstr "prázdný"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:200
 msgid "enum member ({0})"
@@ -28079,7 +28131,7 @@ msgstr[1] "Počet změn: {0}"
 msgid "{0} condition"
 msgstr "Podmínka {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:827
 msgid "{0} consolidated with warnings."
 msgstr "{0} se konsolidovalo s upozorněními."
 
@@ -28156,7 +28208,7 @@ msgstr[1] ""
 "Celkový počet zpracovaných souborů: {0}. Počet úspěšně vygenerovaných: {1}, "
 "s upozorněními: {2}, s chybami: {3}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:398
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -28282,13 +28334,13 @@ msgstr "{0} příkaz-řazení {1}"
 msgid "{0} packages added with warnings."
 msgstr "Balíčky ({0}) se přidaly s upozorněními."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:797
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
 msgid "{0} packages consolidated with warnings."
 msgstr "Balíčky ({0}) se konsolidovaly s upozorněními."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:150
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:752
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:790
 msgid "{0} packages removed with warnings."
 msgstr "Balíčky ({0}) byly odebrány s upozorněními."
 
@@ -28300,13 +28352,13 @@ msgstr "Cílení balíčků ({0}) se změnilo s upozorněními."
 msgid "{0} packages successfully added."
 msgstr "Balíčky ({0}) se úspěšně přidaly."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:795
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:833
 msgid "{0} packages successfully consolidated."
 msgstr "Balíčky ({0}) se úspěšně konsolidovaly."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:750
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
 msgid "{0} packages successfully removed."
 msgstr "Balíčky ({0}) byly úspěšně odebrány."
 
@@ -28314,11 +28366,11 @@ msgstr "Balíčky ({0}) byly úspěšně odebrány."
 msgid "{0} packages successfully retargeted."
 msgstr "Cílení balíčků ({0}) se úspěšně změnilo."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:774
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:812
 msgid "{0} packages successfully updated."
 msgstr "Balíčky ({0}) se úspěšně aktualizovaly."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:776
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:814
 msgid "{0} packages updated with warnings."
 msgstr "Balíčky ({0}) se aktualizovaly s upozorněními."
 
@@ -28381,7 +28433,7 @@ msgstr ""
 msgid "{0} removed with warnings."
 msgstr "{0} se odebral s upozorněními."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:227
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -28429,7 +28481,7 @@ msgstr "{0} příkaz {1} (výraz);"
 msgid "{0} successfully added."
 msgstr "Úspěšně jste přidali {0}."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:825
 msgid "{0} successfully consolidated."
 msgstr "{0} se úspěšně konsolidovalo."
 
@@ -28615,1091 +28667,10 @@ msgstr "|"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:156
 msgid "…"
-msgstr ""
+msgstr "…"
 
-#~ msgid "';' should be avoided. Use '{}' instead"
-#~ msgstr "Znak ; by se tu neměl používat. Použijte radši znaky {}."
+#~ msgid "Breakpoint Hit Count Type"
+#~ msgstr "Typ počtu dosažení zarážky"
 
-#~ msgid "'?:' expression has identical true and false branches"
-#~ msgstr "Výraz ?: má identické větve true a false."
-
-#~ msgid "'EndsWith' is culture-aware and missing a StringComparison argument"
-#~ msgstr ""
-#~ "EndsWith zohledňuje jazykovou verzi a chybí v něm argument "
-#~ "StringComparison."
-
-#~ msgid "'IndexOf' is culture-aware and missing a StringComparison argument"
-#~ msgstr ""
-#~ "IndexOf zohledňuje jazykovou verzi a chybí v něm argument "
-#~ "StringComparison."
-
-#~ msgid ""
-#~ "'LastIndexOf' is culture-aware and missing a StringComparison argument"
-#~ msgstr ""
-#~ "LastIndexOf zohledňuje jazykovou verzi a chybí v něm argument "
-#~ "StringComparison."
-
-#~ msgid ""
-#~ "'StartsWith' is culture-aware and missing a StringComparison argument"
-#~ msgstr ""
-#~ "StartsWith zohledňuje jazykovou verzi a chybí v něm argument "
-#~ "StringComparison."
-
-#~ msgid "'base.' is redundant and can safely be removed"
-#~ msgstr "Výraz base. je redundantní a je možné ho bezpečně odebrat."
-
-#~ msgid "'case' label is redundant"
-#~ msgstr "Popisek case je redundantní."
-
-#~ msgid "'for' loop control variable is never modified"
-#~ msgstr "Řídicí proměnná smyčky for se nikdy nemění."
-
-#~ msgid "'if' statement can be re-written as 'switch' statement"
-#~ msgstr "Příkaz if se může přepsat jako příkaz switch"
-
-#~ msgid "'sealed' modifier is redundant in sealed classes"
-#~ msgstr "Modifikátor sealed je v třídách sealed redundantní."
-
-#~ msgid "'string.CompareTo' is culture-aware"
-#~ msgstr "string.CompareTo zohledňuje jazykovou verzi."
-
-#~ msgid "'true' is redundant as for statement condition"
-#~ msgstr "Výraz true je redundantní jako podmínka příkazu for."
-
-#~ msgid "'unsafe' modifier is redundant"
-#~ msgstr "Modifikátor unsafe je redundantní"
-
-#~ msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
-#~ msgstr "{0} obsahuje velké písmeno za prvním znakem. (Pravidlo {1})"
-
-#~ msgid "'{0}' contains lower case letters. (Rule '{1}')"
-#~ msgstr "{0} obsahuje malá písmena. (Pravidlo {1})"
-
-#~ msgid "'{0}' contains upper case letters. (Rule '{1}')"
-#~ msgstr "{0} obsahuje velká písmena. (Pravidlo {1})"
-
-#~ msgid "'{0}' should not separate words with an underscore. (Rule '{1}')"
-#~ msgstr ""
-#~ "V názvu {0} by neměla být slova oddělená podtržítkem. (Pravidlo {1})"
-
-#~ msgid "'{0}' should start with a lower case letter. (Rule '{1}')"
-#~ msgstr "Název {0} by měl začínat malým písmenem. (Pravidlo {1})"
-
-#~ msgid "'{0}' should start with an upper case letter. (Rule '{1}')"
-#~ msgstr "Název {0} by měl začínat velkým písmenem. (Pravidlo {1})"
-
-#~ msgid "A MVC View Import Page"
-#~ msgstr "Stránka pro import zobrazení MVC"
-
-#~ msgid "A MVC View Page"
-#~ msgstr "Stránka pro zobrazení MVC"
-
-#~ msgid "A MVC View Start Page"
-#~ msgstr "Počáteční stránka pro zobrazení MVC"
-
-#~ msgid "A blank solution"
-#~ msgstr "Prázdné řešení"
-
-#~ msgid "A blank workspace"
-#~ msgstr "Prázdný pracovní prostor"
-
-#~ msgid "A catch clause that catches System.Exception and has an empty body"
-#~ msgstr ""
-#~ "Klauzule catch, který zachytává System.Exception a má prázdný základní "
-#~ "text"
-
-#~ msgid "Add '\"{0}\"' parameter."
-#~ msgstr "Přidat parametr \"{0}\""
-
-#~ msgid "Add 'Is Nothing' check for parameter"
-#~ msgstr "Přidat kontrolu IsNothing pro parametr"
-
-#~ msgid "Add all optional parameters"
-#~ msgstr "Přidat všechny volitelné parametry"
-
-#~ msgid "Add another accessor"
-#~ msgstr "Přidat další přístupový objekt"
-
-#~ msgid "Add argument name '{0}'"
-#~ msgstr "Přidat název argumentu {0}"
-
-#~ msgid "Add braces to '{0}'"
-#~ msgstr "Přidat závorky k {0}"
-
-#~ msgid "Add check for Nothing"
-#~ msgstr "Přidat kontrolu na Nothing"
-
-#~ msgid "Add exception description"
-#~ msgstr "Přidat popis výjimky"
-
-#~ msgid "Add null check"
-#~ msgstr "Přidat kontrolu hodnot null"
-
-#~ msgid "Add optional parameter \"{0}\""
-#~ msgstr "Přidat volitelný parametr \"{0}\""
-
-#~ msgid "An empty public constructor without parameters is redundant."
-#~ msgstr "Prázdný veřejný konstruktor bez parametrů je nadbytečný."
-
-#~ msgid "Anonymous method can be simplified to method group"
-#~ msgstr "Anonymní metoda se dá zjednodušit na skupinu metod."
-
-#~ msgid "Argument is not used in format string"
-#~ msgstr "Argument není použitý v řetězci formátu."
-
-#~ msgid "Asynchronous method '{0}' should not return void"
-#~ msgstr "Asynchronní metoda {0} by neměla vrátit void."
-
-#~ msgid "Asynchronous methods should return a Task instead of void"
-#~ msgstr "Asynchronní metody by měly vrátit Task a ne void."
-
-#~ msgid "Base method '{0}' has a 'params' modifier"
-#~ msgstr "Základní metoda {0} má modifikátor params."
-
-#~ msgid "Base parameter has 'params' modifier, but missing in overrider"
-#~ msgstr "Základní parametr má modifikátor params, ale chybí v přepisovači."
-
-#~ msgid "Bitwise operation on enum not marked with [Flags] attribute"
-#~ msgstr "Bitová operace výčtu není označená atributem [Flags]."
-
-#~ msgid "Bitwise operation on enum which has no [Flags] attribute"
-#~ msgstr "Bitová operace nebo výčet bez atributu [Flags]"
-
-#~ msgid "Breakpoint added"
-#~ msgstr "Přidala se zarážka."
-
-#~ msgid "Breakpoint removed"
-#~ msgstr "Odebrala se zarážka."
-
-#~ msgid "C# doesn't support optional 'ref' or 'out' parameters"
-#~ msgstr "C# nepodporuje volitelné parametry ref nebo out."
-
-#~ msgid "Call to base member with implicit default parameters"
-#~ msgstr "Volání základního členu s implicitními výchozími parametry"
-
-#~ msgid ""
-#~ "Call to base.Equals resolves to Object.Equals, which is reference equality"
-#~ msgstr ""
-#~ "Volání base.Equals se přeloží jako Object.Equals, což vede k nerovnosti "
-#~ "odkazů."
-
-#~ msgid "Call to static member via a derived class"
-#~ msgstr "Volání statického členu prostřednictvím odvozené třídy"
-
-#~ msgid "Cannot find reference '{0}'"
-#~ msgstr "Referenci {0} nejde najít."
-
-#~ msgid "Cannot resolve symbol in text argument"
-#~ msgstr "Nejde vyřešit symbol v textovém argumentu."
-
-#~ msgid "Change field type"
-#~ msgstr "Změnit typ pole"
-
-#~ msgid "Change local variable type"
-#~ msgstr "Změnit typ lokální proměnné"
-
-#~ msgid "Change return type of method"
-#~ msgstr "Změnit návratový typ metody"
-
-#~ msgid "Check 'If {0}.TryGetValue({1}, val)'"
-#~ msgstr "Zkontrolovat If {0}.TryGetValue({1}, val)"
-
-#~ msgid "Check 'if ({0}.Count > {1})'"
-#~ msgstr "Zkontrolovat if ({0}.Count > {1})"
-
-#~ msgid "Check 'if ({0}.Length > {1})'"
-#~ msgstr "Zkontrolovat if ({0}.Length > {1})"
-
-#~ msgid ""
-#~ "Check for inequality before assignment is redundant if (x != value) x = "
-#~ "value;"
-#~ msgstr ""
-#~ "Kontrola nerovnosti před přiřazením je redundantní, pokud (x != hodnota) "
-#~ "x = hodnota;"
-
-#~ msgid "Class is declared partial but has only one part"
-#~ msgstr "Třída je deklarovaná jako částečná, ale má jenom jednu část."
-
-#~ msgid "Comparing equal expression for equality is usually useless"
-#~ msgstr "Porovnání shodných výrazů z hlediska rovnosti je obvykle zbytečné."
-
-#~ msgid "Comparison of floating point numbers with equality operator"
-#~ msgstr ""
-#~ "Porovnání čísla s plovoucí desetinnou čárkou čísla pomocí operátoru "
-#~ "rovnosti"
-
-#~ msgid "Compute constant value"
-#~ msgstr "Vypočítat konstantní hodnotu"
-
-#~ msgid "Condition is always 'true' or always 'false'"
-#~ msgstr "Podmínka je vždy true nebo vždy false."
-
-#~ msgid "Condition is always '{0}'"
-#~ msgstr "Podmínka je vždy {0}."
-
-#~ msgid "Conditional expression can be simplified"
-#~ msgstr "Podmínka se dá zjednodušit."
-
-#~ msgid "Constructor in abstract class should not be public"
-#~ msgstr "Konstruktor v abstraktní třídě by neměl být veřejný."
-
-#~ msgid "Convert 'Nullable<T>' to the short form 'T?'"
-#~ msgstr "Převést Nullable<T> na krátkou formu T?"
-
-#~ msgid "Convert 'TryCast' to 'DirectCast'"
-#~ msgstr "Převést TryCast na DirectCast"
-
-#~ msgid "Convert 'as' to cast"
-#~ msgstr "Převést as na přetypování"
-
-#~ msgid "Convert 'foreach' loop to optimized 'for'"
-#~ msgstr "Převést smyčku foreach na optimalizované for"
-
-#~ msgid "Convert 'if' to '&&' expression"
-#~ msgstr "Převést if na výraz &&"
-
-#~ msgid "Convert 'if' to '||' expression"
-#~ msgstr "Převést if na výraz ||"
-
-#~ msgid "Convert 'if-do-while' to 'while' statement"
-#~ msgstr "Převést příkaz if-do-while na while"
-
-#~ msgid "Convert anonymous method to method group"
-#~ msgstr "Převést anonymní metodu na skupinu metod"
-
-#~ msgid "Convert cast to 'TryCast'"
-#~ msgstr "Převést cast na TryCast"
-
-#~ msgid "Convert cast to 'as'"
-#~ msgstr "Převést přetypování na as"
-
-#~ msgid "Convert foreach loop to LINQ expression"
-#~ msgstr "Převést smyčku foreach na výraz LINQ"
-
-#~ msgid "Convert static method call to extension method call"
-#~ msgstr "Převést volání statické metody na volání rozšiřující metody"
-
-#~ msgid "Convert to '&&' expression"
-#~ msgstr "Převést na výraz &&"
-
-#~ msgid "Convert to 'switch' statement"
-#~ msgstr "Převést na příkaz switch"
-
-#~ msgid "Convert to auto-property"
-#~ msgstr "Převést na automatickou vlastnost"
-
-#~ msgid "Convert to custom event"
-#~ msgstr "Převést na vlastní událost"
-
-#~ msgid "Convert to static method"
-#~ msgstr "Převést na statickou metodu"
-
-#~ msgid "Copy comments from base"
-#~ msgstr "Kopírovat komentáře ze základu"
-
-#~ msgid "Copy comments from interface"
-#~ msgstr "Kopírovat komentáře z rozhraní"
-
-#~ msgid "Create changed event"
-#~ msgstr "Vytvořit událost změny"
-
-#~ msgid "Create custom event implementation"
-#~ msgstr "Vytvořit vlastní implementaci události"
-
-#~ msgid "Create delegate"
-#~ msgstr "Vytvořit delegáta"
-
-#~ msgid "Create event invocator"
-#~ msgstr "Vytvořit vyvolávač události"
-
-#~ msgid "Create overload without parameter"
-#~ msgstr "Vytvořit přetížení bez parametru"
-
-#~ msgid "Default underlying type of enums is already int"
-#~ msgstr "Výchozí podkladový typ výčtů už je int."
-
-#~ msgid "Delegate subtraction has unpredictable result"
-#~ msgstr "Odpočet delegáta má nepředvídatelný výsledek."
-
-#~ msgid "Double negation is redundant"
-#~ msgstr "Dvojitá negace je redundantní."
-
-#~ msgid "Empty argument list is redundant"
-#~ msgstr "Prázdný seznam argumentů je redundantní."
-
-#~ msgid "Empty constructor is redundant"
-#~ msgstr "Prázdný konstruktor je redundantní."
-
-#~ msgid "Empty control statement body"
-#~ msgstr "Prázdné tělo řídicího příkazu"
-
-#~ msgid "Empty destructor is redundant"
-#~ msgstr "Prázdný destruktor je redundantní."
-
-#~ msgid "Empty general catch clause suppresses any error"
-#~ msgstr "Prázdná obecná klauzule catch potlačí jakoukoliv chybu."
-
-#~ msgid "Empty namespace declaration is redundant"
-#~ msgstr "Prázdná deklarace oboru názvů je redundantní."
-
-#~ msgid "Empty statement is redundant"
-#~ msgstr "Prázdný příkaz je redundantní."
-
-#~ msgid "Event unsubscription via anonymous delegate is useless"
-#~ msgstr ""
-#~ "Zrušení odběru událostí prostřednictvím anonymního delegáta je k ničemu."
-
-#~ msgid "Explicit delegate creation expression is redundant"
-#~ msgstr "Výraz vytvoření explicitního delegáta je redundantní."
-
-#~ msgid "Expression can be replaced with '{0}'"
-#~ msgstr "Výraz se dá nahradit výrazem {0}."
-
-#~ msgid "Expression can be simlified to 'FirstOrDefault<T>()'"
-#~ msgstr "Výraz se dá zjednodušit na FirstOrDefault<T>()."
-
-#~ msgid "Expression can be simlified to 'LastOrDefault<T>()'"
-#~ msgstr "Výraz se dá zjednodušit na LastOrDefault<T>()."
-
-#~ msgid "Expression is always 'true' or always 'false'"
-#~ msgstr "Výraz je vždycky true nebo vždycky false."
-
-#~ msgid "Expression is always '{0}'"
-#~ msgstr "Výraz je vždycky {0}."
-
-#~ msgid "Extension methods must be declared static"
-#~ msgstr "Metody rozšíření musí být deklarované jako statické."
-
-#~ msgid "Extract anonymous method"
-#~ msgstr "Extrahovat anonymní metodu"
-
-#~ msgid "Extract condition to internal 'if' statement"
-#~ msgstr "Extrahovat podmínku do interního příkazu if"
-
-#~ msgid ""
-#~ "Finds calls to ToString() which would be generated automatically by the "
-#~ "compiler"
-#~ msgstr ""
-#~ "Vyhledá volání metody ToString(), které kompilátor vygeneruje automaticky."
-
-#~ msgid "Finds issues with format strings"
-#~ msgstr "Vyhledá problémy s řetězci formátu."
-
-#~ msgid "Finds potentially erroneous calls to Object.Equals"
-#~ msgstr "Hledá potenciálně chybná volání metody Object.Equals."
-
-#~ msgid "Finds redundant null coalescing expressions such as expr ?? expr"
-#~ msgstr ""
-#~ "Vyhledá redundantní slučovací výrazy s hodnotou null, jako je expr ?? "
-#~ "expr."
-
-#~ msgid "Fix constructor"
-#~ msgstr "Opravit konstruktor"
-
-#~ msgid "Flip 'Equals' target and argument"
-#~ msgstr "Zaměnit cíl a argument pro Equals"
-
-#~ msgid "Flip '{0}' operands"
-#~ msgstr "Překlopit operandy {0}"
-
-#~ msgid "Flip '{0}' operator to '{1}'"
-#~ msgstr "Překlopit operátor {0} na {1}"
-
-#~ msgid "Generate getter"
-#~ msgstr "Generovat getter"
-
-#~ msgid "IL Console Project"
-#~ msgstr "Projekt konzoly IL"
-
-#~ msgid ""
-#~ "If all fields, properties and methods members are static, the class can "
-#~ "be made static."
-#~ msgstr ""
-#~ "Pokud všechna pole vlastností a členy metod jsou statické, může být třída "
-#~ "vytvořená jako statická."
-
-#~ msgid ""
-#~ "If an extension method is called as static method convert it to method "
-#~ "syntax"
-#~ msgstr ""
-#~ "Pokud se rozšiřující metoda volá jako statická, převeďte ji do syntaxe "
-#~ "metody."
-
-#~ msgid "Import static class with using"
-#~ msgstr "Importovat statickou třídu pomocí using"
-
-#~ msgid "Indexer"
-#~ msgstr "Indexer"
-
-#~ msgid "Initialize auto-property from parameter"
-#~ msgstr "Inicializovat automatickou vlastnost z parametru"
-
-#~ msgid "Initialize field from parameter"
-#~ msgstr "Inicializovat pole z parametru"
-
-#~ msgid "Initialize readonly auto-property from parameter"
-#~ msgstr "Inicializovat automatickou vlastnost jen pro čtení z parametru"
-
-#~ msgid "Initializing field by default value is redundant"
-#~ msgstr "Inicializace pole výchozí hodnotou je redundantní."
-
-#~ msgid "Initializing field with default value is redundant"
-#~ msgstr "Inicializace pole pomocí výchozí hodnoty je redundantní."
-
-#~ msgid "Insert format argument"
-#~ msgstr "Vložit argument formátu"
-
-#~ msgid "Insert signature"
-#~ msgstr "Vložit podpis"
-
-#~ msgid "Invert '?:'"
-#~ msgstr "Invertovat ?:"
-
-#~ msgid "Invert '{0}'"
-#~ msgstr "Invertovat {0}"
-
-#~ msgid "Join declaration and assignment"
-#~ msgstr "Propojit deklaraci a přiřazení"
-
-#~ msgid "Join strings"
-#~ msgstr "Spojit řetězce"
-
-#~ msgid "Lambda expression can be simplified to method group"
-#~ msgstr "Výraz lambda se dá zjednodušit na skupinu metod."
-
-#~ msgid "Local variable '{0}' hides {1} '{2}'"
-#~ msgstr "Lokální proměnná {0} skrývá {1} {2}"
-
-#~ msgid "Local variable has the same name as a member and hides it"
-#~ msgstr "Lokální proměnná má stejný název jako člen a skrývá ho."
-
-#~ msgid "Long literal ends with 'l' instead of 'L'"
-#~ msgstr "Dlouhý literál končí znakem l místo L."
-
-#~ msgid "Lowercase 'l' is often confused with '1'"
-#~ msgstr "Malé písmeno I se často zaměňuje za číslo 1."
-
-#~ msgid "Make the field static"
-#~ msgstr "Nastavit pole jako statické"
-
-#~ msgid "Member hides static member from outer class"
-#~ msgstr "Člen skrývá statický člen z vnější třídy."
-
-#~ msgid "Method"
-#~ msgstr "Metoda"
-
-#~ msgid "Method with optional parameter is hidden by overload"
-#~ msgstr "Metoda s volitelným parametrem je při přetížení skrytá."
-
-#~ msgid ""
-#~ "Multiple:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "Více:\n"
-#~ "{0}"
-
-#~ msgid "NUnit test methods should be public"
-#~ msgstr "Testovací metody NUnit by měly být veřejné."
-
-#~ msgid "Name has forbidden prefix '{0}'. (Rule '{1}')"
-#~ msgstr "Název má zakázanou předponu {0}. (Pravidlo {1})"
-
-#~ msgid "Name has forbidden suffix '{0}'. (Rule '{1}')"
-#~ msgstr "Název má zakázanou příponu {0}. (Pravidlo {1})"
-
-#~ msgid "Name should have prefix '{0}'. (Rule '{1}')."
-#~ msgstr "Název by měl mít předponu {0}. (Pravidlo {1})"
-
-#~ msgid "Name should have suffix '{0}'. (Rule '{1}')"
-#~ msgstr "Název by měl mít příponu {0}. (Pravidlo {1})"
-
-#~ msgid "Negate '{0}'"
-#~ msgstr "Negovat {0}"
-
-#~ msgid "Non public methods are not found by NUnit"
-#~ msgstr "NUnit nehledá neveřejné metody."
-
-#~ msgid "Non-readonly field referenced in 'GetHashCode()'"
-#~ msgstr "GetHashCode() odkazuje na pole, které není jen pro čtení."
-
-#~ msgid "Not implemented"
-#~ msgstr "Neimplementováno"
-
-#~ msgid "Nullable type can be simplified"
-#~ msgstr "Typ s možnou hodnotou null jde zjednodušit."
-
-#~ msgid "Operator 'is' can be used"
-#~ msgstr "Operátor is se nedá použít."
-
-#~ msgid ""
-#~ "Operator Is can be used instead of comparing object GetType() and "
-#~ "instances of System.Type object"
-#~ msgstr ""
-#~ "Operátor Is je možné použít namísto porovnání objektu GetType() a "
-#~ "instancí objektu System.Type."
-
-#~ msgid "Parameter '{0}' hides event '{1}'"
-#~ msgstr "Parametr {0} skrývá událost {1}."
-
-#~ msgid "Parameter '{0}' hides field '{1}'"
-#~ msgstr "Parametr {0} skrývá pole {1}."
-
-#~ msgid "Parameter '{0}' hides member '{1}'"
-#~ msgstr "Parametr {0} skrývá člen {1}."
-
-#~ msgid "Parameter '{0}' hides method '{1}'"
-#~ msgstr "Parametr {0} skrývá metodu {1}."
-
-#~ msgid "Parameter '{0}' hides property '{1}'"
-#~ msgstr "Parametr {0} skrývá vlastnost {1}."
-
-#~ msgid "Parameter '{0}' not found"
-#~ msgstr "Parametr {0} se nenašel."
-
-#~ msgid "Parameter has the same name as a member and hides it"
-#~ msgstr "Parametr má stejný název jako člen a skrývá ho."
-
-#~ msgid "Parameter name differs in base declaration"
-#~ msgstr "Název parametru se v základní deklaraci liší."
-
-#~ msgid "Parameter name differs in partial method definition"
-#~ msgstr "Název parametru se liší v definici dílčí metody."
-
-#~ msgid "Parameter name differs in partial method definition should be '{0}'"
-#~ msgstr "Název parametru se liší v definici dílčí metody, měl by být {0}."
-
-#~ msgid "Parentheses are redundant if attribute has no arguments"
-#~ msgstr "Pokud atribut nemá žádné argumenty, jsou závorky redundantní."
-
-#~ msgid "Partial class with single part"
-#~ msgstr "Částečná třída s jednou částí"
-
-#~ msgid "Possible compare of value type with 'null'"
-#~ msgstr "Možné porovnání typu hodnoty, která je null"
-
-#~ msgid "Possible mistaken call to 'object.GetType()'"
-#~ msgstr "Pravděpodobně chybné volání metody object.GetType()"
-
-#~ msgid "Possible unassigned object created by 'new'"
-#~ msgstr "Možný nepřiřazený objekt vytvořený pomocí new"
-
-#~ msgid "Possible unassigned object created by 'new' expression"
-#~ msgstr "Možný nepřiřazený objekt vytvořený příkazem new"
-
-#~ msgid "Redundant 'ToString()' call"
-#~ msgstr "Redundantní volání metody ToString()"
-
-#~ msgid "Redundant 'else' keyword"
-#~ msgstr "Redundantní klíčové slovo else"
-
-#~ msgid "Redundant 'string.ToCharArray()' call"
-#~ msgstr "Redundantní volání string.ToCharArray()"
-
-#~ msgid "Redundant Where() call with predicate followed by {0}()"
-#~ msgstr "Redundantní volání Where() s predikátem, za kterým následuje {0}()"
-
-#~ msgid "Redundant argument name specification"
-#~ msgstr "Redundantní specifikace názvu argumentu"
-
-#~ msgid "Redundant array creation expression"
-#~ msgstr "Redundantní výraz vytváření pole"
-
-#~ msgid "Redundant base constructor call"
-#~ msgstr "Redundantní volání konstruktoru base"
-
-#~ msgid "Redundant case label"
-#~ msgstr "Redundantní jmenovka case"
-
-#~ msgid "Redundant comma in array initializer"
-#~ msgstr "Redundantní čárka v inicializátoru pole"
-
-#~ msgid "Redundant condition check before assignment"
-#~ msgstr "Redundantní kontrola podmínky před přiřazením"
-
-#~ msgid "Redundant conditional expression"
-#~ msgstr "Redundantní podmíněný výraz"
-
-#~ msgid "Redundant empty 'default' switch branch"
-#~ msgstr "Redundantní prázdná větev přepínače default"
-
-#~ msgid "Redundant empty finally block"
-#~ msgstr "Redundantní prázdný blok finally"
-
-#~ msgid "Redundant explicit argument name specification"
-#~ msgstr "Redundantní specifikace explicitního názvu argumentu"
-
-#~ msgid "Redundant explicit delegate declaration"
-#~ msgstr "Redundantní deklarace explicitního delegáta"
-
-#~ msgid "Redundant explicit nullable type creation"
-#~ msgstr "Redundantní vytvoření explicitního typu s možnou hodnotou null "
-
-#~ msgid "Redundant explicit property name"
-#~ msgstr "Redundantní název explicitní vlastnosti"
-
-#~ msgid "Redundant explicit size in array creation"
-#~ msgstr "Redundantní explicitní velikost při vytváření pole"
-
-#~ msgid "Remove 'case {0}' label"
-#~ msgstr "Odebrat popisek case {0}"
-
-#~ msgid "Remove 'case {0}' switch section"
-#~ msgstr "Odebrat oddíl přepínače case {0}"
-
-#~ msgid "Remove 'partial'"
-#~ msgstr "Odebrat modifikátor partial"
-
-#~ msgid "Remove attribute"
-#~ msgstr "Odebrat atribut"
-
-#~ msgid "Remove braces from '{0}'"
-#~ msgstr "Odebrat závorky z {0}"
-
-#~ msgid "Remove redundant statement"
-#~ msgstr "Odebrat redundantní příkaz"
-
-#~ msgid "Remove region/endregion directives"
-#~ msgstr "Odebrat direktivy region/endregion"
-
-#~ msgid "Remove returned expression"
-#~ msgstr "Odebrat vrácený výraz"
-
-#~ msgid "Remove the redundant size indicator"
-#~ msgstr "Odebrat redundantní indikátor velikosti"
-
-#~ msgid "Remove unused label"
-#~ msgstr "Odebrat nepoužitý popisek"
-
-#~ msgid "Rename to '{0}'"
-#~ msgstr "Přejmenovat na {0}"
-
-#~ msgid "Replace '??' operator with '?:' expression"
-#~ msgstr "Nahradit operátor ?? výrazem ?:"
-
-#~ msgid "Replace '{0}++' with '{0} += 1'"
-#~ msgstr "Nahradit {0}++ za {0} += 1"
-
-#~ msgid "Replace '{0}--' with '{0} -= 1'"
-#~ msgstr "Nahradit {0}-- za {0} -= 1"
-
-#~ msgid "Replace usages of 'Count()' with call to 'Any()'"
-#~ msgstr "Nahrazuje použití metody Count() pomocí volání metody Any()."
-
-#~ msgid "Replace with '\"{0}\"'."
-#~ msgstr "Nahradit za \"{0}\""
-
-#~ msgid "Replace with '&='"
-#~ msgstr "Nahradit výrazem &="
-
-#~ msgid "Replace with '='"
-#~ msgstr "Nahradit výrazem ="
-
-#~ msgid "Replace with '??'"
-#~ msgstr "Nahradit výrazem ??"
-
-#~ msgid "Replace with 'OfType<T>()'"
-#~ msgstr "Nahradit metodou OfType<T>()"
-
-#~ msgid "Replace with 'OfType<T>().{0}()'"
-#~ msgstr "Nahradit voláním OfType<T>().{0}()"
-
-#~ msgid "Replace with 'if' statement"
-#~ msgstr "Nahradit příkazem if"
-
-#~ msgid "Replace with '{0}'"
-#~ msgstr "Nahradit výrazem {0}"
-
-#~ msgid "Replace with call to FirstOrDefault<T>()"
-#~ msgstr "Nahradit voláním metody FirstOrDefault<T>()"
-
-#~ msgid "Replace with call to LastOrDefault<T>()"
-#~ msgstr "Nahradit voláním metody LastOrDefault<T>()"
-
-#~ msgid "Replace with call to OfType<T>"
-#~ msgstr "Nahradit voláním OfType<T>"
-
-#~ msgid "Replace with call to OfType<T>().{0}()"
-#~ msgstr "Nahradit voláním OfType<T>().{0}()"
-
-#~ msgid "Replace with method group"
-#~ msgstr "Nahradit skupinou metod"
-
-#~ msgid "Replace with simple assignment"
-#~ msgstr "Nahradit jednoduchým přiřazením"
-
-#~ msgid "Replace with single call to '{0}()'"
-#~ msgstr "Nahradit jedním voláním {0}()"
-
-#~ msgid "Reverse 'for' loop'"
-#~ msgstr "Revertovat smyčku for"
-
-#~ msgid "Revision {0}\"t{1}\"t{2}"
-#~ msgstr "Revize {0}\"t{1}\"t{2}"
-
-#~ msgid "Shows NotImplementedException throws in the quick task bar"
-#~ msgstr "Zobrazí aktivace NotImplementedException v panelu rychlých úloh"
-
-#~ msgid "Simplify conditional expression"
-#~ msgstr "Zjednodušit podmíněný výraz"
-
-#~ msgid "Split declaration and assignment"
-#~ msgstr "Rozdělit deklaraci a přiřazení"
-
-#~ msgid "Split declaration list"
-#~ msgstr "Rozdělit seznam deklarací"
-
-#~ msgid "Split into two 'if' statements"
-#~ msgstr "Rozdělit na dva příkazy if"
-
-#~ msgid "Split string literal"
-#~ msgstr "Rozdělit řetězcový literál"
-
-#~ msgid "Statement can be simplified to 'while' statement"
-#~ msgstr "Příkaz se dá zjednodušit na příkaz while."
-
-#~ msgid "Statement is redundant"
-#~ msgstr "Příkaz je redundantní."
-
-#~ msgid "Static field in generic type"
-#~ msgstr "Statické pole v obecném typu"
-
-#~ msgid "Suggest the usage of the NameOf operator"
-#~ msgstr "Navrhnout použití operátoru NameOf"
-
-#~ msgid "Suggest the usage of the nameof operator"
-#~ msgstr "Navrhnout použití operátoru nameof"
-
-#~ msgid "Suggests using the class declaring a static function when calling it"
-#~ msgstr "Navrhne použití třídy deklarující statickou funkci při svém volání."
-
-#~ msgid "Swap parameter"
-#~ msgstr "Překlopit parametr"
-
-#~ msgid ""
-#~ "The default underlying type of enums is int, so defining it explicitly is "
-#~ "redundant."
-#~ msgstr ""
-#~ "Výchozí základní typ výčtů je int, není tedy potřeba ho definovat "
-#~ "explicitně."
-
-#~ msgid "The index '{0}' is out of bounds of the passed arguments"
-#~ msgstr "Index {0} je mimo hranice předaných argumentů."
-
-#~ msgid "The name can be inferred from the initializer expression"
-#~ msgstr "Název jde odvodit z inicializačního výrazu."
-
-#~ msgid "The parameter '{0}' can't be resolved"
-#~ msgstr "Parametr {0} nejde vyřešit."
-
-#~ msgid "The parameter name is on the wrong argument"
-#~ msgstr "Název parametru je v nesprávném argumentu."
-
-#~ msgid "The {0} does not use the 'value' parameter"
-#~ msgstr "{0} nepoužívá parametr value."
-
-#~ msgid "This class is recommended to be defined as static"
-#~ msgstr "Tuto třídu se doporučuje definovat jako statickou."
-
-#~ msgid "This is a constructor"
-#~ msgstr "Toto je konstruktor."
-
-#~ msgid "This is a void method"
-#~ msgstr "Toto je metoda void."
-
-#~ msgid "This is generated by the compiler and can be safely removed"
-#~ msgstr "Tento blok vygeneroval kompilátor a můžete ho bezpečně odebrat."
-
-#~ msgid "ThreadStatic does nothing on instance fields"
-#~ msgstr "ThreadStatic s poli instance nic nedělá."
-
-#~ msgid "To \" + String.Join(\" "
-#~ msgstr "Do \" + String.Join(\" "
-
-#~ msgid "To '!='"
-#~ msgstr "Na !="
-
-#~ msgid "To '*'"
-#~ msgstr "Na *"
-
-#~ msgid "To '/'"
-#~ msgstr "Na /"
-
-#~ msgid "To '<<'"
-#~ msgstr "Na <<"
-
-#~ msgid "To '=='"
-#~ msgstr "Na =="
-
-#~ msgid "To '>>'"
-#~ msgstr "Na >>"
-
-#~ msgid "To 'Enum.HasFlag'"
-#~ msgstr "Na Enum.HasFlag"
-
-#~ msgid "To 'Equals' call"
-#~ msgstr "Na volání Equals"
-
-#~ msgid "To 'NameOf({0})'"
-#~ msgstr "Na NameOf({0})"
-
-#~ msgid "To 'ReferenceEquals' call"
-#~ msgstr "Na volání ReferenceEquals"
-
-#~ msgid "To 'Select Case'"
-#~ msgstr "Na Select Case"
-
-#~ msgid "To 'catch (Exception)'"
-#~ msgstr "Na catch (Exception)"
-
-#~ msgid "To 'catch'"
-#~ msgstr "Na catch"
-
-#~ msgid "To 'do...while'"
-#~ msgstr "Na do...while"
-
-#~ msgid "To 'for'"
-#~ msgstr "Na for"
-
-#~ msgid "To 'if'"
-#~ msgstr "Na if"
-
-#~ msgid "To 'nameof({0})'"
-#~ msgstr "Na nameof({0})"
-
-#~ msgid "To 'switch'"
-#~ msgstr "Na switch"
-
-#~ msgid "To 'while { ... }'"
-#~ msgstr "Na while { ... }"
-
-#~ msgid "To 'while'"
-#~ msgstr "Na while"
-
-#~ msgid "To '{0}++'"
-#~ msgstr "Na {0}++"
-
-#~ msgid "To '{0}--'"
-#~ msgstr "Na {0}--"
-
-#~ msgid "To '{0}='"
-#~ msgstr "Na {0}="
-
-#~ msgid "To abstract"
-#~ msgstr "Nastavit jako abstraktní"
-
-#~ msgid "To anonymous method"
-#~ msgstr "Na anonymní metodu"
-
-#~ msgid "To bitwise flag comparison"
-#~ msgstr "Na porovnání bitového příznaku"
-
-#~ msgid "To dec"
-#~ msgstr "Na dec"
-
-#~ msgid "To explicit implementation"
-#~ msgstr "Na explicitní implementaci"
-
-#~ msgid "To expression body"
-#~ msgstr "Na základní text výrazu"
-
-#~ msgid "To format string"
-#~ msgstr "Na řetězec formátu"
-
-#~ msgid "To hex"
-#~ msgstr "Na hex"
-
-#~ msgid "To implicit implementation"
-#~ msgstr "Na implicitní implementaci"
-
-#~ msgid "To interpolated string"
-#~ msgstr "Na interpolovaný řetězec"
-
-#~ msgid "To lambda expression"
-#~ msgstr "Na výraz lambda"
-
-#~ msgid "To lambda statement"
-#~ msgstr "Na příkaz lambda"
-
-#~ msgid "To non-abstract"
-#~ msgstr "Nastavit jako neabstraktní"
-
-#~ msgid "To non-virtual"
-#~ msgstr "Nastavit jako nevirtuální"
-
-#~ msgid "To statement body"
-#~ msgstr "Na základní text příkazu"
-
-#~ msgid "To static invocation"
-#~ msgstr "Na statické volání"
-
-#~ msgid "To virtual"
-#~ msgstr "Nastavit jako virtuální"
-
-#~ msgid "Type parameter '{0}' is never used"
-#~ msgstr "Parametr typu {0} se nikdy nepoužil."
-
-#~ msgid "Type parameter '{0}' not found"
-#~ msgstr "Parametr typu {0} se nenašel."
-
-#~ msgid "Type parameter is never used"
-#~ msgstr "Parametr typu se nikde nepoužívá."
-
-#~ msgid "Unallowed usage of Roslyn features in this context."
-#~ msgstr "Nepovolené použití funkcí Roslyn v tomto kontextu."
-
-#~ msgid ""
-#~ "Unsafe modifier in redundant in unsafe context or when no unsafe "
-#~ "constructs are used"
-#~ msgstr ""
-#~ "Modifikátor unsafe je redundantní v kontextu unsafe nebo když nejsou "
-#~ "použité žádné konstrukty unsafe."
-
-#~ msgid "Use 'NameOf({0})' expression instead."
-#~ msgstr "Použije místo toho výraz NameOf({0})."
-
-#~ msgid "Use 'System.Environment.NewLine'"
-#~ msgstr "Použít System.Environment.NewLine"
-
-#~ msgid "Use 'as' and check for null"
-#~ msgstr "Použít příkaz as a zkontrolovat hodnoty null"
-
-#~ msgid "Use 'if ({0}.TryGetValue({1}, out val))'"
-#~ msgstr "Použít if ({0}.TryGetValue({1}, out val))"
-
-#~ msgid "Use 'nameof({0})' expression instead."
-#~ msgstr "Použije místo toho výraz nameof({0})."
-
-#~ msgid "Use 'string.Empty'"
-#~ msgstr "Použít string.Empty"
-
-#~ msgid "Use 'string.Format()'"
-#~ msgstr "Použít string.Format()"
-
-#~ msgid "Use '{0}' for increased performance"
-#~ msgstr "Použít {0} pro zvýšení výkonu."
-
-#~ msgid "Use culture-aware comparison"
-#~ msgstr "Použít porovnání zohledňující jazykovou verzi"
-
-#~ msgid "Use ordinal comparison"
-#~ msgstr "Použít řadové porovnání"
-
-#~ msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
-#~ msgstr "Používá volání string.IsNullOrEmpty namísto delší podmínky."
-
-#~ msgid "Validate Xml docs"
-#~ msgstr "Ověřit dokumenty xml"
-
-#~ msgid "Value types are implicitly convertible to nullables"
-#~ msgstr ""
-#~ "Typy hodnot jsou implicitně konvertibilní na typy s možnou hodnotou null."
-
-#~ msgid "Virtual member call in constructor"
-#~ msgstr "Volání virtuálního členu v konstruktoru"
-
-#~ msgid ""
-#~ "Warns about calls to virtual member functions occuring in the constructor"
-#~ msgstr ""
-#~ "Upozorňuje na volání funkcí virtuálních členů, ke kterým dochází v "
-#~ "konstruktoru."
-
-#~ msgid ""
-#~ "Warns about property or indexer setters and event adders or removers that "
-#~ "do not use the value parameter"
-#~ msgstr ""
-#~ "Upozorňuje na nastavení vlastnosti nebo indexeru a přidání nebo odebrání "
-#~ "události, u kterých se nepoužívá parametr value."
-
-#~ msgid "Warns about static fields in generic types"
-#~ msgstr "Upozorní na statická pole v generických typech."
-
-#~ msgid "Warns when a culture-aware 'EndsWith' call is used by default."
-#~ msgstr ""
-#~ "Upozorní, když je jako výchozí použité volání EndsWith zohledňující "
-#~ "jazykovou verzi."
-
-#~ msgid "Warns when a culture-aware 'IndexOf' call is used by default."
-#~ msgstr ""
-#~ "Upozorní, když je jako výchozí použité volání IndexOf zohledňující "
-#~ "jazykovou verzi."
-
-#~ msgid "Warns when a culture-aware 'LastIndexOf' call is used by default."
-#~ msgstr ""
-#~ "Upozorní, když je jako výchozí použité volání LastIndexOf zohledňující "
-#~ "jazykovou verzi."
-
-#~ msgid "Warns when a culture-aware 'StartsWith' call is used by default."
-#~ msgstr ""
-#~ "Upozorní, když je jako výchozí použité volání StartsWith zohledňující "
-#~ "jazykovou verzi."
-
-#~ msgid ""
-#~ "Warns when a culture-aware 'string.CompareTo' call is used by default"
-#~ msgstr ""
-#~ "Upozorní, když je jako výchozí použité volání string.CompareTo "
-#~ "zohledňující jazykovou verzi."
-
-#~ msgid ""
-#~ "When initializing explicitly typed local variable or array type, array "
-#~ "creation expression can be replaced with array initializer."
-#~ msgstr ""
-#~ "Když inicializujete explicitní typ pole nebo lokální proměnné, výraz "
-#~ "vytvoření pole se dá nahradit inicializátorem pole."
-
-#~ msgid ""
-#~ "When object creation uses object or collection initializer, empty "
-#~ "argument list is redundant"
-#~ msgstr ""
-#~ "Když se při vytvoření objektu používá inicializátor objektu nebo kolekce, "
-#~ "je prázdný seznam argumentů redundantní."
-
-#~ msgid "Xml comment is not placed before a valid language element"
-#~ msgstr "Komentář XML není před platným elementem jazyka."
-
-#~ msgid "[ThreadStatic] doesn't work with instance fields"
-#~ msgstr "[ThreadStatic] nefunguje s poli instance."
-
-#~ msgid "add accessor"
-#~ msgstr "přidat přístupový objekt"
-
-#~ msgid "after '_' a lower letter should follow. (Rule '{0}')"
-#~ msgstr "Za znakem _ by mělo následovat malé písmeno. (Pravidlo {0})"
-
-#~ msgid "after '_' an upper letter should follow. (Rule '{0}')"
-#~ msgstr "Za znakem _ by mělo následovat velké písmeno. (Pravidlo {0})"
-
-#~ msgid "event"
-#~ msgstr "událost"
-
-#~ msgid "field"
-#~ msgstr "pole"
-
-#~ msgid "member"
-#~ msgstr "člen"
-
-#~ msgid "method"
-#~ msgstr "metoda"
-
-#~ msgid "property"
-#~ msgstr "vlastnost"
-
-#~ msgid "remove accessor"
-#~ msgstr "odebrat přístupový objekt"
-
-#~ msgid "setter"
-#~ msgstr "nastavovací kód"
-
-#~ msgid ""
-#~ "true is redundant as for statement condition, thus can be safely ommited"
-#~ msgstr ""
-#~ "Výraz true je redundantní jako podmínka příkazu for a jde ho tedy "
-#~ "bezpečně vypustit."
-
-#~ msgid "{0}"
-#~ msgstr "{0}"
-
-#~ msgid "{0} '{1}' hides {2} from outer class"
-#~ msgstr "{0} {1} skrývá {2} z vnější třídy."
-
-#~ msgid "{0} with optional parameter is hidden by overload"
-#~ msgstr "{0} s volitelným parametrem je skrytý kvůli přetížení."
+#~ msgid "Conditional Breakpoint Hit Type"
+#~ msgstr "Typ podmíněného dosažení zarážky"
