@@ -17,19 +17,11 @@ DEP[0]=md-addins
 DEP_NAME[0]=MDADDINS
 DEP_PATH[0]=${top_srcdir}/../md-addins
 DEP_MODULE[0]=git@github.com:xamarin/md-addins.git
-DEP_NEEDED_VERSION[0]=b57e0f1445681b6c558a01ee778803c505d2292c
+DEP_NEEDED_VERSION[0]=3e7154f5d371afd00ac224d88440132750779759
 DEP_BRANCH_AND_REMOTE[0]="release-8.5 origin/release-8.5"
 
-# heap-shot
-DEP[1]=heap-shot
-DEP_NAME[1]=HEAPSHOT
-DEP_PATH[1]=${top_srcdir}/../heap-shot
-DEP_MODULE[1]=git://github.com/mono/heap-shot.git
-DEP_NEEDED_VERSION[1]=d726360d50d3a294ce6bdfcb2a82f9593e61c78c
-DEP_BRANCH_AND_REMOTE[1]="master origin/master"
-
 # other dependencies
-# DEP[2]=...
+# DEP[1]=...
 # ...
 
 function fetch_variables

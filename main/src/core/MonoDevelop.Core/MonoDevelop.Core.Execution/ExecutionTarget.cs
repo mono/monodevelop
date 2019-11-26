@@ -220,6 +220,20 @@ namespace MonoDevelop.Core.Execution
 		}
 
 		#endregion
+
+		#region Helper methods
+
+		public void AddRange (IEnumerable<ExecutionTarget> collection)
+		{
+			targets.AddRange (collection);
+		}
+
+		public void InsertRange (int index, IEnumerable<ExecutionTarget> collection)
+		{
+			targets.InsertRange (index, collection);
+		}
+
+		#endregion
 	}
 
 	public class MultiProjectExecutionTarget : ExecutionTarget

@@ -1050,27 +1050,6 @@ namespace MonoDevelop.Ide.Gui
 			WindowReordered?.Invoke (this, new WindowReorderedEventArgs { OldPosition = oldPlacement, NewPosition = newPlacement });
 		}
 
-		internal string GetUniqueTabName (FilePath fileName)
-		{
-			string baseName = fileName.FileNameWithoutExtension;
-			int number = 1;
-			bool found = true;
-			var myUntitledTitle = baseName + fileName.Extension;
-			while (found) {
-				found = false;
-				foreach (var window in viewContentCollection) {
-					string title = window.Title;
-					if (title == myUntitledTitle) {
-						myUntitledTitle = baseName + number + fileName.Extension;
-						found = true;
-						++number;
-						break;
-					}
-				}
-			}
-			return myUntitledTitle;
-		}
-
 		public event EventHandler<WindowReorderedEventArgs> WindowReordered;
 
 
