@@ -68,6 +68,7 @@ namespace MonoDevelop.PackageManagement
 		Label installedLabel;
 		Label updatesLabel;
 		Label consolidateLabel;
+		HBox tabGroup;
 		VBox projectsListViewVBox;
 		Label projectsListViewLabel;
 		ListView projectsListView;
@@ -99,6 +100,8 @@ namespace MonoDevelop.PackageManagement
 			packageSourceComboBox.MinWidth = 200;
 			topHBox.PackStart (packageSourceComboBox);
 
+			tabGroup = new HBox ();
+
 			int tabLabelMinWidth = 60;
 			browseLabel = new Label ();
 			browseLabel.Text = GettextCatalog.GetString ("Browse");
@@ -106,33 +109,30 @@ namespace MonoDevelop.PackageManagement
 			browseLabel.MinWidth = tabLabelMinWidth;
 			browseLabel.MarginLeft = 10;
 			browseLabel.CanGetFocus = true;
-			browseLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
-
-			topHBox.PackStart (browseLabel);
+			tabGroup.PackStart (browseLabel);
 
 			installedLabel = new Label ();
 			installedLabel.Text = GettextCatalog.GetString ("Installed");
 			installedLabel.Tag = installedLabel.Text;
 			installedLabel.MinWidth = tabLabelMinWidth;
 			installedLabel.CanGetFocus = true;
-			installedLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
-			topHBox.PackStart (installedLabel);
+			tabGroup.PackStart (installedLabel);
 
 			updatesLabel = new Label ();
 			updatesLabel.Text = GettextCatalog.GetString ("Updates");
 			updatesLabel.Tag = updatesLabel.Text;
 			updatesLabel.MinWidth = tabLabelMinWidth;
 			updatesLabel.CanGetFocus = true;
-			updatesLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
-			topHBox.PackStart (updatesLabel);
+			tabGroup.PackStart (updatesLabel);
 
 			consolidateLabel = new Label ();
 			consolidateLabel.Text = GettextCatalog.GetString ("Consolidate");
 			consolidateLabel.Tag = consolidateLabel.Text;
 			consolidateLabel.MinWidth = tabLabelMinWidth;
 			consolidateLabel.CanGetFocus = true;
-			consolidateLabel.Accessible.Role = Xwt.Accessibility.Role.Button;
-			topHBox.PackStart (consolidateLabel);
+			tabGroup.PackStart (consolidateLabel);
+
+			topHBox.PackStart (tabGroup);
 
 			packageSearchEntry = new SearchTextEntry ();
 			packageSearchEntry.Name = "managePackagesDialogSearchEntry";
