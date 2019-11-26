@@ -413,7 +413,15 @@ namespace MonoDevelop.Debugger
 			}
 
 			LoggingService.LogInfo ("Evaluating expression '{0}'", expression);
-			var node = Frame.EvaluateExpression (expression);
+
+			ObjectValueNode node;
+			if (Frame != null) {
+				node = Frame.EvaluateExpression (expression);
+			} else {
+				var value = ObjectValue.CreateUnknown (expression);
+				node = new DebuggerObjectValueNode (value);
+			}
+
 			AddValue (node);
 
 			ExpressionAdded?.Invoke (this, new ExpressionAddedEventArgs (expression));
