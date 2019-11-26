@@ -61,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
+		Label noPackagesFoundLabel;
 		ComboBox packageVersionComboBox;
 		HBox packageVersionsHBox;
 		Label packageVersionsLabel;
@@ -94,9 +95,19 @@ namespace MonoDevelop.PackageManagement
 			var topHBox = new HBox ();
 			topHBox.Margin = new WidgetSpacing (8, 5, 6, 5);
 
+			// HACK: VoiceOver does not work when using Accessible.Label so workaround this by using
+			// Accessible.LabelWidget and hide the label since we do not need it.
+			var packageSourceLabel = new Label ();
+			packageSourceLabel.Text = GettextCatalog.GetString ("Package source");
+			packageSourceLabel.Visible = false;
+			topHBox.PackStart (packageSourceLabel);
+
 			packageSourceComboBox = new ComboBox ();
 			packageSourceComboBox.Name = "packageSourceComboBox";
 			packageSourceComboBox.MinWidth = 200;
+			// Does not work:
+			//packageSourceComboBox.Accessible.Label = GettextCatalog.GetString ("Package source");
+			packageSourceComboBox.Accessible.LabelWidget = packageSourceLabel;
 			topHBox.PackStart (packageSourceComboBox);
 
 			int tabLabelMinWidth = 60;
@@ -137,6 +148,7 @@ namespace MonoDevelop.PackageManagement
 			packageSearchEntry = new SearchTextEntry ();
 			packageSearchEntry.Name = "managePackagesDialogSearchEntry";
 			packageSearchEntry.WidthRequest = 187;
+			packageSearchEntry.PlaceholderText = GettextCatalog.GetString ("Search");
 			packageSearchEntry.Accessible.Label = GettextCatalog.GetString ("Package Search");
 			topHBox.PackEnd (packageSearchEntry);
 
@@ -179,6 +191,7 @@ namespace MonoDevelop.PackageManagement
 			packagesListView = new ListView ();
 			packagesListView.BorderVisible = false;
 			packagesListView.HeadersVisible = false;
+			packagesListView.Accessible.Label = GettextCatalog.GetString ("Packages");
 			packagesListVBox.PackStart (packagesListView, true, true);
 
 			// Loading spinner.
@@ -204,7 +217,7 @@ namespace MonoDevelop.PackageManagement
 			var noPackagesFoundHBox = new HBox ();
 			noPackagesFoundHBox.HorizontalPlacement = WidgetPlacement.Center;
 
-			var noPackagesFoundLabel = new Label ();
+			noPackagesFoundLabel = new Label ();
 			noPackagesFoundLabel.Text = GettextCatalog.GetString ("No matching packages found.");
 			noPackagesFoundHBox.PackEnd (noPackagesFoundLabel);
 
@@ -273,17 +286,19 @@ namespace MonoDevelop.PackageManagement
 
 			var packageIdLabel = new Label ();
 			packageIdLabel.Font = packageInfoBoldFont;
-			packageIdLabel.Text = GettextCatalog.GetString ("Id");
+			packageIdLabel.Text = GettextCatalog.GetString ("ID");
 			packageIdHBox.PackStart (packageIdLabel);
 
 			packageId = new Label ();
 			packageId.Ellipsize = EllipsizeMode.End;
 			packageId.TextAlignment = Alignment.End;
 			packageId.Font = packageInfoSmallFont;
+			packageId.Accessible.LabelWidget = packageIdLabel;
 			packageIdLink = new LinkLabel ();
 			packageIdLink.Ellipsize = EllipsizeMode.End;
 			packageIdLink.TextAlignment = Alignment.End;
 			packageIdLink.Font = packageInfoSmallFont;
+			packageIdLink.Accessible.LabelWidget = packageIdLabel;
 			packageIdHBox.PackEnd (packageIdLink, true);
 			packageIdHBox.PackEnd (packageId, true);
 
@@ -300,6 +315,7 @@ namespace MonoDevelop.PackageManagement
 			packageAuthor.TextAlignment = Alignment.End;
 			packageAuthor.Ellipsize = EllipsizeMode.End;
 			packageAuthor.Font = packageInfoSmallFont;
+			packageAuthor.Accessible.LabelWidget = packageAuthorLabel;
 			packageAuthorHBox.PackEnd (packageAuthor, true);
 
 			// Package published
@@ -313,6 +329,7 @@ namespace MonoDevelop.PackageManagement
 
 			packagePublishedDate = new Label ();
 			packagePublishedDate.Font = packageInfoSmallFont;
+			packagePublishedDate.Accessible.LabelWidget = packagePublishedLabel;
 			packagePublishedHBox.PackEnd (packagePublishedDate);
 
 			// Package downloads
@@ -326,6 +343,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageDownloads = new Label ();
 			packageDownloads.Font = packageInfoSmallFont;
+			packageDownloads.Accessible.LabelWidget = packageDownloadsLabel;
 			packageDownloadsHBox.PackEnd (packageDownloads);
 
 			// Package license.
@@ -354,6 +372,7 @@ namespace MonoDevelop.PackageManagement
 			packageProjectPageLink = new LinkLabel ();
 			packageProjectPageLink.Text = GettextCatalog.GetString ("Visit Page");
 			packageProjectPageLink.Font = packageInfoSmallFont;
+			packageProjectPageLink.Accessible.Label = GettextCatalog.GetString ("Visit Project Page");
 			packageProjectPageHBox.PackEnd (packageProjectPageLink);
 
 			// Package dependencies
@@ -368,6 +387,7 @@ namespace MonoDevelop.PackageManagement
 			packageDependenciesNoneLabel = new Label ();
 			packageDependenciesNoneLabel.Text = GettextCatalog.GetString ("None");
 			packageDependenciesNoneLabel.Font = packageInfoSmallFont;
+			packageDependenciesNoneLabel.Accessible.LabelWidget = packageDependenciesLabel;
 			packageDependenciesHBox.PackEnd (packageDependenciesNoneLabel);
 
 			// Package dependencies list.
@@ -379,6 +399,7 @@ namespace MonoDevelop.PackageManagement
 			packageDependenciesList.Wrap = WrapMode.WordAndCharacter;
 			packageDependenciesList.Margin = new WidgetSpacing (5);
 			packageDependenciesList.Font = packageInfoSmallFont;
+			packageDependenciesList.Accessible.LabelWidget = packageDependenciesLabel;
 			packageDependenciesListHBox.PackStart (packageDependenciesList, true);
 
 			// Current package version.
@@ -400,11 +421,13 @@ namespace MonoDevelop.PackageManagement
 
 			currentPackageVersion = new Label ();
 			currentPackageVersion.Font = packageInfoSmallFont;
+			currentPackageVersion.Accessible.LabelWidget = currentPackageVersionLabel;
 			currentPackageVersionWithInfoPopoverHBox.PackStart (currentPackageVersion);
 
 			currentPackageVersionInfoPopoverWidget = new InformationPopoverWidget ();
 			currentPackageVersionInfoPopoverWidget.Severity = Ide.Tasks.TaskSeverity.Information;
 			currentPackageVersionInfoPopoverWidget.Margin = new WidgetSpacing (5, 0, 0, 2);
+			currentPackageVersionInfoPopoverWidget.Accessible.LabelWidget = currentPackageVersionLabel;
 			currentPackageVersionWithInfoPopoverHBox.PackStart (currentPackageVersionInfoPopoverWidget);
 
 			currentPackageVersionHBox.PackStart (currentPackageVersionWithInfoPopoverHBox);
@@ -422,6 +445,7 @@ namespace MonoDevelop.PackageManagement
 
 			packageVersionComboBox = new ComboBox ();
 			packageVersionComboBox.Name = "packageVersionComboBox";
+			packageVersionComboBox.Accessible.LabelWidget = packageVersionsLabel;
 			packageVersionsHBox.Spacing = 15;
 			packageVersionsHBox.PackStart (packageVersionComboBox, true, true);
 
