@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -304,6 +305,8 @@ namespace MonoDevelop.PackageManagement
 			if (!String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
 				packagesListView.Visible = false;
 				noPackagesFoundFrame.Visible = true;
+
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (noPackagesFoundLabel.Text);
 			}
 		}
 
@@ -553,6 +556,7 @@ namespace MonoDevelop.PackageManagement
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
 				ClearPackages ();
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (loadingSpinnerLabel.Text);
 			} else {
 				HideLoadingMessage ();
 			}
@@ -607,6 +611,11 @@ namespace MonoDevelop.PackageManagement
 
 			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
 				packagesListView.SelectRow (0);
+
+				string message = string.IsNullOrWhiteSpace (packageSearchEntry.Text)
+					? GettextCatalog.GetString ("Packages loaded")
+					: GettextCatalog.GetString ("Search completed");
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (message);
 			}
 
 			if (!viewModel.IsReadingPackages && (packageStore.RowCount == 0)) {
@@ -885,6 +894,8 @@ namespace MonoDevelop.PackageManagement
 		{
 			viewModel.SearchTerms = this.packageSearchEntry.Text;
 			viewModel.Search ();
+
+			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (loadingSpinnerLabel.Text);
 
 			return false;
 		}

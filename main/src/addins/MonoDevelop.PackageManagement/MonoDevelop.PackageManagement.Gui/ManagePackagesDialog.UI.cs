@@ -61,6 +61,7 @@ namespace MonoDevelop.PackageManagement
 		Label errorMessageLabel;
 		Label loadingSpinnerLabel;
 		FrameBox noPackagesFoundFrame;
+		Label noPackagesFoundLabel;
 		ComboBox packageVersionComboBox;
 		HBox packageVersionsHBox;
 		Label packageVersionsLabel;
@@ -216,7 +217,7 @@ namespace MonoDevelop.PackageManagement
 			var noPackagesFoundHBox = new HBox ();
 			noPackagesFoundHBox.HorizontalPlacement = WidgetPlacement.Center;
 
-			var noPackagesFoundLabel = new Label ();
+			noPackagesFoundLabel = new Label ();
 			noPackagesFoundLabel.Text = GettextCatalog.GetString ("No matching packages found.");
 			noPackagesFoundHBox.PackEnd (noPackagesFoundLabel);
 
