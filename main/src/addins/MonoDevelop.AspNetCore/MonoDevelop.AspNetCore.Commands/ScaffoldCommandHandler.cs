@@ -40,7 +40,10 @@ namespace MonoDevelop.AspNetCore.Commands
 			string parentFolder = folder?.Path ?? project.BaseDirectory;
 
 			Xwt.Toolkit.NativeEngine.Invoke (() => {
-				var w = new ScaffolderWizard (project, parentFolder);
+				var args = new ScaffolderArgs ();
+				var selectionPage = new ScaffolderTemplateSelectPage (args);
+
+				var w = new ScaffolderWizard (project, parentFolder, selectionPage, args);
 				var res = w.RunWizard ();
 			});
 		}
