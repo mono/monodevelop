@@ -37,6 +37,7 @@ using MonoDevelop.Ide.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Classification;
 
 namespace MonoDevelop.Debugger
 {
@@ -101,10 +102,19 @@ namespace MonoDevelop.Debugger
 			textBufferFactory = CompositionManager.Instance.GetExportedValue<ITextBufferFactoryService> ();
 			var factory = CompositionManager.Instance.GetExportedValue<ICocoaTextEditorFactoryService> ();
 			contentType = contentTypeRegistry.GetContentType (DebuggerCompletion.ContentType);
+			var editorFormatMapService = CompositionManager.Instance.GetExportedValue<IEditorFormatMapService> ();
+			var appearanceCategory = Guid.NewGuid ().ToString ();
+			var editorFormat = editorFormatMapService.GetEditorFormatMap (appearanceCategory);
+
+			var resourceDictionary = editorFormat.GetProperties ("Plain Text");
+			resourceDictionary [ClassificationFormatDefinition.TypefaceId] = TextField.Font;
+			resourceDictionary [ClassificationFormatDefinition.FontRenderingSizeId] = TextField.Font.PointSize - 1;
+			editorFormat.SetProperties ("Plain Text", resourceDictionary);
+
 			var textBuffer = textBufferFactory.CreateTextBuffer ("", contentType);
 			editor = factory.CreateTextView (textBuffer);
 			editor.Options.SetOptionValue(DefaultTextViewOptions.UseVisibleWhitespaceId, false);
-
+			editor.Options.SetOptionValue (DefaultTextViewOptions.AppearanceCategory, appearanceCategory);
 			editor.VisualElement.TranslatesAutoresizingMaskIntoConstraints = false;
 			editorTextView = new NSView { TranslatesAutoresizingMaskIntoConstraints = false, WantsLayer = true };
 			editorTextView.Layer.BackgroundColor = NSColor.White.CGColor;
@@ -273,8 +283,8 @@ namespace MonoDevelop.Debugger
 					AddSubview (textView);
 				}
 
-				constraints.Add (textView.TopAnchor.ConstraintEqualToAnchor (TopAnchor, -1));
-				constraints.Add (textView.BottomAnchor.ConstraintEqualToAnchor (BottomAnchor, -1));
+				constraints.Add (textView.TopAnchor.ConstraintEqualToAnchor (TopAnchor, (nfloat)editor.FormattedLineSource.BaseIndentation));
+				constraints.Add (textView.BottomAnchor.ConstraintEqualToAnchor (BottomAnchor, (nfloat)editor.FormattedLineSource.BaseIndentation));
 			} else {
 				textView = TextField;
 
