@@ -30,6 +30,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
+using Foundation;
 using Gtk;
 
 using Mono.Debugging.Client;
@@ -56,6 +57,7 @@ namespace MonoDevelop.Debugger
 		VBox vboxAroundInnerExceptionMessage, rightVBox, container;
 		Button close, helpLinkButton, innerExceptionHelpLinkButton;
 		TreeView exceptionValueTreeView, stackTraceTreeView;
+		MacObjectValueTreeView macExceptionValueTreeView;
 		Expander expanderProperties, expanderStacktrace;
 		InnerExceptionsTree innerExceptionsTreeView;
 		ObjectValueTreeViewController controller;
@@ -181,12 +183,17 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 		Widget CreateExceptionValueTreeView ()
 		{
+			Widget scrolledWidget = null;
 			if (useNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (DebuggingService.CurrentFrame);
 				controller.AllowExpanding = true;
 
-				exceptionValueTreeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ExceptionCaughtFlags);
+				if (Platform.IsMac) {
+					macExceptionValueTreeView = controller.GetMacControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
+				} else {
+					exceptionValueTreeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ExceptionCaughtFlags);
+				}
 			} else {
 				var objValueTreeView = new ObjectValueTreeView ();
 				objValueTreeView.Frame = DebuggingService.CurrentFrame;
@@ -199,26 +206,54 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				exceptionValueTreeView = objValueTreeView;
 			}
 
-			exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
-			exceptionValueTreeView.ModifyBase (StateType.Active, Styles.ObjectValueTreeActiveBackgroundColor.ToGdkColor ());
-			exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			exceptionValueTreeView.RulesHint = false;
-			exceptionValueTreeView.CanFocus = true;
-			exceptionValueTreeView.Show ();
+			if (useNewTreeView && Platform.IsMac) {
+				var scrolled = new AppKit.NSScrollView {
+					DocumentView = macExceptionValueTreeView,
+					AutohidesScrollers = false,
+					HasVerticalScroller = true,
+					HasHorizontalScroller = true,
+				};
 
-			var scrolled = new ScrolledWindow {
-				HeightRequest = 180,
-				CanFocus = true,
-				HscrollbarPolicy = PolicyType.Automatic,
-				VscrollbarPolicy = PolicyType.Automatic
-			};
+				// disable implicit animations
+				scrolled.WantsLayer = true;
+				scrolled.Layer.Actions = new NSDictionary (
+					"actions", NSNull.Null,
+					"contents", NSNull.Null,
+					"hidden", NSNull.Null,
+					"onLayout", NSNull.Null,
+					"onOrderIn", NSNull.Null,
+					"onOrderOut", NSNull.Null,
+					"position", NSNull.Null,
+					"sublayers", NSNull.Null,
+					"transform", NSNull.Null,
+					"bounds", NSNull.Null);
 
-			scrolled.ShadowType = ShadowType.None;
-			scrolled.Add (exceptionValueTreeView);
-			scrolled.Show ();
+				var host = new GtkNSViewHost (scrolled);
+				host.ShowAll ();
+				scrolledWidget = host;
+			} else {
+				exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
+				exceptionValueTreeView.ModifyBase (StateType.Active, Styles.ObjectValueTreeActiveBackgroundColor.ToGdkColor ());
+				exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+				exceptionValueTreeView.RulesHint = false;
+				exceptionValueTreeView.CanFocus = true;
+				exceptionValueTreeView.Show ();
+
+				var scrolled = new ScrolledWindow {
+					HeightRequest = 180,
+					CanFocus = true,
+					HscrollbarPolicy = PolicyType.Automatic,
+					VscrollbarPolicy = PolicyType.Automatic
+				};
+
+				scrolled.ShadowType = ShadowType.None;
+				scrolled.Add (exceptionValueTreeView);
+				scrolled.Show ();
+				scrolledWidget = scrolled;
+			}
 
 			var vbox = new VBox ();
-			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled);
+			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolledWidget);
 			vbox.PackStart (new VBox (), false, false, 5);
 			vbox.PackStart (expanderProperties, true, true, 0);
 			vbox.ShowAll ();
