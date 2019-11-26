@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-11 11:56:08+0100\n"
+"POT-Creation-Date: 2019-11-26 12:38:03+0100\n"
 "PO-Revision-Date: 2016-02-18 18:02+0800\n"
 "Last-Translator: MysticBoy <mysticboy@live.com>\n"
 "Language-Team: Chinese (Simplified) <mysticboy@live.com>\n"
@@ -322,7 +322,7 @@ msgstr "(正在安装)"
 msgid "(keyword)"
 msgstr "(关键字)"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1017
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1038
 msgid "(latest stable)"
 msgstr "(最新稳定版)"
 
@@ -421,9 +421,8 @@ msgid ".NET Core Command Line"
 msgstr ".NET Core 命令行"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.GlobalTools/DotNetCoreGlobalToolManager.cs:101
-#, fuzzy
 msgid ".NET Core Global tool manager"
-msgstr ".NET Core 证书管理器"
+msgstr ".NET Core 全局工具管理器"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetMigrate.cs:180
 msgid ".NET Core Migration"
@@ -456,14 +455,13 @@ msgstr ""
 "{0} SDK 的最新更新"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreRuntime.cs:146
-#, fuzzy
 msgid ""
 ".NET Core {0} runtime is required to run this application, and is not "
 "installed. Install the latest update to the .NET Core {0} runtime by "
 "visiting {1}"
 msgstr ""
-"生成此应用程序需要 .NET Core {0} SDK，但尚未安装。请访问 {1}，安装 .NET Core "
-"{0} SDK 的最新更新"
+"运行此应用程序需要 .NET Core {0} 运行时，但尚未安装。请访问 {1}，安装 .NET "
+"Core {0} 运行时的最新更新"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
 msgid ""
@@ -493,7 +491,6 @@ msgid ".NET Resource Files"
 msgstr ".NET 资源文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:150
-#, fuzzy
 msgid ".NET Runtime"
 msgstr ".NET 运行时"
 
@@ -1303,10 +1300,9 @@ msgid "A project for creating a Razor class library that targets .NET Standard"
 msgstr "用于创建目标为 .NET Standard 的 Razor 类库的项目"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:206
-#, fuzzy
 msgid ""
 "A project for creating a Razor class library that targets .NET Standard."
-msgstr "用于创建目标为 .NET Standard 的 Razor 类库的项目"
+msgstr "用于创建面向 .NET Standard 的 Razor 类库的项目。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbar.cs:147
 #: ../src/addins/MacPlatform/MainToolbar/SelectorView.cs:434
@@ -1341,10 +1337,9 @@ msgid ""
 msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 Angular"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:219
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with Angular."
-msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 Angular"
+msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 Angular。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:401
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:544
@@ -1362,17 +1357,15 @@ msgid ""
 msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 React.js 和 Redux"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:245
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js "
 "and Redux."
-msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 React.js 和 Redux"
+msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 React.js 和 Redux。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:232
-#, fuzzy
 msgid ""
 "A project template for creating an ASP.NET Core application with React.js."
-msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 React.js"
+msgstr "用于创建 ASP.NET Core 应用程序的项目模板，其中包含 React.js。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:115
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:127
@@ -1596,6 +1589,19 @@ msgstr ""
 msgid "API"
 msgstr "API"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/EmptyApiControllerScaffolder.cs:34
+#, fuzzy
+msgid "API Controller - Empty"
+msgstr "Web API 控制器类"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerEntityFrameworkScaffolder.cs:38
+msgid "API Controller with actions using Entity Framework"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerWithActionsScaffolder.cs:33
+msgid "API Controller with read / write actions"
+msgstr ""
+
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:876
 msgid "API Documentation"
 msgstr "API 文档"
@@ -1630,10 +1636,9 @@ msgstr "ASP.NET 控件"
 msgid "ASP.NET Core"
 msgstr "ASP.NET Core"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:177
-#, fuzzy
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:208
 msgid "ASP.NET Core Scaffolder"
-msgstr "ASP.NET Core"
+msgstr "ASP.NET Core 基架"
 
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:253
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:280
@@ -1797,7 +1802,7 @@ msgid "Abort Update"
 msgstr "中止更新"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:637
+#: ../src/addins/MacPlatform/MacPlatform.cs:639
 msgid "About {0}"
 msgstr "关于 {0}"
 
@@ -1986,7 +1991,7 @@ msgstr "活动布局"
 msgid "Active Runtime"
 msgstr "活动运行时"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:465
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:490
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:67
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.KeyBindingsPanel.cs:247
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:206
@@ -2066,6 +2071,11 @@ msgstr "添加项..."
 msgid "Add New Repository"
 msgstr "添加新存储库"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:54
+#, fuzzy
+msgid "Add New Scaffolding"
+msgstr "添加新解决方案(_A)..."
+
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:22
 msgid "Add NuGet _Packages..."
 msgstr "添加 NuGet 包(_P)..."
@@ -2078,11 +2088,12 @@ msgstr "向项目添加 NuGet 包"
 msgid "Add Open"
 msgstr "添加开源"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:890
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:442
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:198
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:927
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:452
+#, fuzzy
 msgid "Add Package"
-msgid_plural "Add Packages"
-msgstr[0] "添加包"
+msgstr "添加包"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:47
 msgid "Add Package Source"
@@ -2133,7 +2144,7 @@ msgstr "从控制器添加视图..."
 msgid "Add View..."
 msgstr "添加视图..."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:972
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:964
 msgid "Add Watch"
 msgstr "添加监视"
 
@@ -2199,9 +2210,8 @@ msgid "Add an ASP.NET MVC view"
 msgstr "添加一个 ASP.NET MVC 视图"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:68
-#, fuzzy
 msgid "Add an environment variable"
-msgstr "环境变量"
+msgstr "添加环境变量"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:214
 msgid "Add an existing item to the selected workspace"
@@ -2237,6 +2247,13 @@ msgstr "向监视板添加表达式"
 msgid "Add files"
 msgstr "添加文件"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:304
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:68
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:128
+#, fuzzy
+msgid "Add item to watch"
+msgstr "将项添加到工具箱"
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:204
 msgid "Add items to toolbox"
 msgstr "将项添加到工具箱"
@@ -2245,8 +2262,7 @@ msgstr "将项添加到工具箱"
 msgid "Add method not found in {0}"
 msgstr "在 {0} 中找不到添加方法"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:67
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:126
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:229
 msgid "Add new expression"
 msgstr "添加新表达式"
 
@@ -2364,14 +2380,12 @@ msgid "Added   {0}"
 msgstr "已添加 {0}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:361
-#, fuzzy
 msgid "Added breakpoint, line {0}, file {1}"
-msgstr "断点。行 {0}"
+msgstr "已添加断点，行 {0}，文件 {1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:611
-#, fuzzy
 msgid "Added line"
-msgstr "已添加"
+msgstr "添加的行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1429
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:812
@@ -2475,7 +2489,7 @@ msgstr "前进到下一行"
 msgid "Advanced"
 msgstr "高级"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:842
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:848
 msgid "Advanced Conditions"
 msgstr "高级条件"
 
@@ -2570,7 +2584,7 @@ msgstr "对选定文件所做的所有更改将永久丢失。"
 msgid "All files"
 msgstr "所有文件"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:116
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:117
 msgid "All members"
 msgstr "全部成员"
 
@@ -2929,7 +2943,7 @@ msgid "Application to record audio/video files"
 msgstr "用于录制音频/视频文件的应用程序"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:801
+#: ../src/addins/MacPlatform/MacPlatform.cs:803
 msgid "ApplicationIcon"
 msgstr "ApplicationIcon"
 
@@ -3319,7 +3333,7 @@ msgstr "找不到框架 {0} 的程序集(在 {1} 中)"
 msgid "Assembly:\t{0}"
 msgstr "程序集:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:395
+#: ../src/addins/MacPlatform/MacPlatform.cs:397
 msgid "Assistive Technology Detected"
 msgstr "检测到辅助技术"
 
@@ -3379,7 +3393,7 @@ msgstr "身份验证领域:"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:190
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:126
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:285
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:295
 msgid "Author"
 msgstr "作者"
 
@@ -3398,7 +3412,7 @@ msgstr "作者姓名:"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.AuthorSectionAccessible.cs:65
 msgid "Author {0} Date {1} Revision {2} Message {3}"
-msgstr ""
+msgstr "作者 {0} 日期 {1} 修订 {2} 消息 {3}"
 
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:134
 msgid "Author:"
@@ -3411,9 +3425,8 @@ msgstr "作者"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.cs:390
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/BlameWidget.AuthorSectionAccessible.cs:61
-#, fuzzy
 msgid "Authors Overview"
-msgstr "作者"
+msgstr "作者概述"
 
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:116
 msgid "Authors:"
@@ -3714,27 +3727,23 @@ msgstr "分支"
 msgid "Breadcrumb Bar"
 msgstr "痕迹导航栏"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:763
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:769
 msgid "Breakpoint Action"
 msgstr "断点操作"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:708
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:711
 msgid "Breakpoint Exception"
 msgstr "断点异常"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:682
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:685
 msgid "Breakpoint Expression"
 msgstr "断点表达式"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:695
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:698
 msgid "Breakpoint Function"
 msgstr "断点函数"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:734
-msgid "Breakpoint Hit Count Type"
-msgstr "断点命中次数类型"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:725
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:728
 msgid "Breakpoint Location"
 msgstr "断点位置"
 
@@ -3993,7 +4002,7 @@ msgstr "C 字符串"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:916
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:111
 #: ../src/addins/CSharpBinding/CSharpBinding.addin.xml:334
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:177
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.addin.xml:131
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1461
 msgid "C#"
@@ -4286,11 +4295,11 @@ msgstr "类别"
 msgid "Category"
 msgstr "类别"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:674
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:675
 msgid "Cause the program to pause when the breakpoint is hit"
 msgstr "使程序在命中断点时暂停"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:678
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:680
 msgid ""
 "Cause the program to print a message and continue when the breakpoint is hit"
 msgstr "使程序打印消息并在命中断点时继续"
@@ -4782,6 +4791,10 @@ msgstr "勾选此项以使用与解决方案相同的版本"
 msgid "Check to wrap the lines at 60 characters"
 msgstr "勾选此项以在达到 60 个字符时换行"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:100
+msgid "Checking if needed NuGet packages are already installed...\n"
+msgstr ""
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitRepository.cs:1615
 msgid "Checking out file '{0}'"
 msgstr "正在签出文件“{0}”"
@@ -4864,9 +4877,8 @@ msgid "Choose files to include in the project"
 msgstr "选择要包含在项目中的文件"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:87
-#, fuzzy
 msgid "Choose the directory to run the project in."
-msgstr "输入项目的根目录"
+msgstr "选择要在其中运行项目的目录。"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkReferenceAssembliesOptionsPanelWidget.UI.cs:53
 msgid "Choose the reference assemblies for your NuGet package."
@@ -5059,7 +5071,6 @@ msgid "Click here to add a new variable"
 msgstr "单击此处以添加新变量"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:410
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:308
 msgid "Click here to add a new watch"
 msgstr "单击此处添加新监视"
 
@@ -5147,7 +5158,7 @@ msgstr "正在克隆…"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:449
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:459
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 msgid "Close"
 msgstr "关闭"
@@ -5558,13 +5569,14 @@ msgstr "计算机科学软件"
 msgid "Condition"
 msgstr "条件"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:749
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:742
+#, fuzzy
+msgid "Condition Hit Count"
+msgstr "条件"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:753
 msgid "Conditional Breakpoint Expression"
 msgstr "条件断点表达式"
-
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:744
-msgid "Conditional Breakpoint Hit Type"
-msgstr "条件断点命中类型"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:412
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:420
@@ -5614,7 +5626,7 @@ msgstr "配置"
 msgid "Configure"
 msgstr "配置"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:55
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:56
 msgid "Configure Sources..."
 msgstr "配置源..."
 
@@ -5678,7 +5690,7 @@ msgstr "冲突 {0}"
 msgid "Conflicting local changes found"
 msgstr "找到存在冲突的本地更改"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:819
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:844
 msgid "Conflicts:"
 msgstr "冲突:"
 
@@ -5728,11 +5740,11 @@ msgstr ""
 msgid "Console input not supported"
 msgstr "控制台输入不受支持"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:123
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:130
 msgid "Consolidate"
 msgstr "合并"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:900
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:937
 msgid "Consolidate Package"
 msgid_plural "Consolidate Packages"
 msgstr[0] "合并包"
@@ -5747,11 +5759,11 @@ msgid "Consolidate the packages in the project:"
 msgid_plural "Consolidate the packages in the projects:"
 msgstr[0] "合并项目中的包:"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:794
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:832
 msgid "Consolidating {0} packages..."
 msgstr "正在合并 {0} 个包..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:786
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:824
 msgid "Consolidating {0}..."
 msgstr "正在合并 {0}..."
 
@@ -5809,6 +5821,11 @@ msgstr "是否继续安装“{0}”，使当前用户无需密码即可运行 \"
 msgid "Control not found!"
 msgstr "找不到控件!"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ApiControllerEntityFrameworkScaffolder.cs:50
+#, fuzzy
+msgid "Controller name:"
+msgstr "控制器..."
+
 #: ../src/addins/AspNet/Properties/MonoDevelop.AspNet.addin.xml:256
 msgid "Controller..."
 msgstr "控制器..."
@@ -5848,7 +5865,7 @@ msgstr "转换到 {0} 行尾"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:690
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:279
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:357
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:978
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:970
 #: ../external/xwt/Xwt/Xwt/Command.cs:69
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:138
 msgid "Copy"
@@ -5930,11 +5947,11 @@ msgstr "无法检查包的兼容性。"
 msgid "Could not close solution '{0}'."
 msgstr "无法关闭解决方案“{0}”。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:796
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:834
 msgid "Could not consolidate packages."
 msgstr "无法合并包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:826
 msgid "Could not consolidate {0}."
 msgstr "无法合并 {0}。"
 
@@ -6050,7 +6067,7 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:751
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
 msgid "Could not remove packages."
 msgstr "无法删除包。"
 
@@ -6101,7 +6118,7 @@ msgstr "无法更新文件 {0}"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:775
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:813
 msgid "Could not update packages."
 msgstr "无法更新包。"
 
@@ -6225,13 +6242,17 @@ msgid "Create a project directory within the solution directory."
 msgstr "在解决方案目录内创建项目目录。"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/templates/PackagingProject.xpt.xml:11
-#, fuzzy
 msgid "Create a project which can generate packages for a solution."
-msgstr "创建一个可以为解决方案生成包的项目"
+msgstr "创建一个可为解决方案生成包的项目。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitService.cs:53
 msgid "Create an initial commit first."
 msgstr "先创建初始提交。"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:34
+#, fuzzy
+msgid "Create as a partial view"
+msgstr "创建一个 MVC Razor 分部视图页面。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/NewConfigurationDialog.cs:116
 msgid "Create configurations for all solution items"
@@ -6300,9 +6321,8 @@ msgstr "创建一个桌面条目文件。"
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Window.xft.xml:10
 #: ../src/addins/MonoDevelop.GtkCore/templates/WindowPartial.xft.xml:10
-#, fuzzy
 msgid "Creates a Gtk Window."
-msgstr "创建一个 GTK 窗口"
+msgstr "创建一个 GTK 窗口。"
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Dialog.xft.xml:10
 #: ../src/addins/MonoDevelop.GtkCore/templates/DialogPartial.xft.xml:10
@@ -6314,19 +6334,16 @@ msgid "Creates a Gtk# 2.0 project."
 msgstr "创建一个 GTK# 2.0 项目。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Import Page."
-msgstr "创建一个 MVC 视图页面。"
+msgstr "创建一个 MVC 视图导入页。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Page."
-msgstr "创建一个 MVC 视图页面。"
+msgstr "创建一个 MVC 视图页。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewStartPage.xft.xml:13
-#, fuzzy
 msgid "Creates a MVC View Start Page."
-msgstr "创建一个 MVC 视图页面。"
+msgstr "创建一个 MVC 视图起始页。"
 
 #: ../src/addins/MonoDevelop.Packaging/Templates/PackagingProject.xpt.xml:13
 msgid "Creates a NuGet Packaging project."
@@ -6337,14 +6354,12 @@ msgid "Creates a NuGet package"
 msgstr "创建 NuGet 包"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPageWithPageModel.xft.xml:13
-#, fuzzy
 msgid "Creates a Razor page with a page model."
-msgstr "含页面模型的 Razor 页面"
+msgstr "创建一个包含页面模型的 Razor 页面。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPage.xft.xml:13
-#, fuzzy
 msgid "Creates a Razor page without a page model."
-msgstr "不含页面模型的 Razor 页面"
+msgstr "创建一个不带页面模型的 Razor 页面。"
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitTestClass.xft.xml:9
 msgid "Creates a Test Fixture."
@@ -6363,14 +6378,12 @@ msgid "Creates a Windows app manifest."
 msgstr "创建一份 Windows 应用清单。"
 
 #: ../src/core/MonoDevelop.Ide/templates/BlankCombine.xpt.xml:13
-#, fuzzy
 msgid "Creates a blank solution."
-msgstr "创建新解决方案"
+msgstr "创建空白解决方案。"
 
 #: ../src/core/MonoDevelop.Ide/templates/Workspace.xpt.xml:11
-#, fuzzy
 msgid "Creates a blank workspace."
-msgstr "创建新工作区"
+msgstr "创建空白工作区。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/StartupClass.xft.xml:13
 msgid "Creates a class to configure your application."
@@ -6385,9 +6398,8 @@ msgid "Creates a class to write your middleware."
 msgstr "创建一个类以编写中间件。"
 
 #: ../src/addins/VBNetBinding/templates/VBConsoleApplicationProject.xpt.xml:13
-#, fuzzy
 msgid "Creates a console VB.Net project."
-msgstr "创建一个控制台 VB.Net 项目"
+msgstr "创建一个控制台 VB.Net 项目。"
 
 #: ../src/addins/MonoDevelop.GtkCore/templates/Widget.xft.xml:10
 #: ../src/addins/MonoDevelop.GtkCore/templates/WidgetPartial.xft.xml:10
@@ -6541,9 +6553,8 @@ msgid "Creates a new xUnit test project."
 msgstr "创建新的 xUnit 测试项目。"
 
 #: ../src/addins/CSharpBinding/templates/SharedAssetsProject.xpt.xml:12
-#, fuzzy
 msgid "Creates a project that allows sharing files between projects."
-msgstr "创建一个允许在项目之间共享文件的项目"
+msgstr "创建一个允许在项目之间共享文件的项目。"
 
 #: ../src/core/MonoDevelop.Ide/templates/GenericProject.xpt.xml:12
 msgid "Creates a project which can contain any kind of file."
@@ -6554,9 +6565,8 @@ msgid "Creates a resx resource file."
 msgstr "创建一个 resx 资源文件。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorComponent.xft.xml:13
-#, fuzzy
 msgid "Creates a reusable UI component implemented with Razor."
-msgstr "使用 Razor 实现的可重用 UI 组件"
+msgstr "创建一个用 Razor 实现的可重用 UI 组件。"
 
 #: ../src/addins/MonoDevelop.Gettext/templates/TranslationProject.xpt.xml:10
 msgid "Creates a translation project."
@@ -6653,9 +6663,8 @@ msgid "Creates an ASP.NET web.config file for a subdirectory."
 msgstr "为子目录创建 ASP.NET web.config 文件。"
 
 #: ../src/addins/ILAsmBinding/ILAsmConsoleProject.xpt.xml:13
-#, fuzzy
 msgid "Creates an IL Console Project."
-msgstr "创建一个新的 C# 控制台项目。"
+msgstr "创建 IL 控制台项目。"
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:13
 msgid ""
@@ -6687,9 +6696,8 @@ msgstr "创建一个 MVC 视图页面。"
 
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitProject.xpt.xml:10
 #: ../src/addins/MonoDevelop.UnitTesting.NUnit/templates/NUnitProjectVBNet.xpt.xml:10
-#, fuzzy
 msgid "Creates an NUnit library."
-msgstr "创建一个 NUnit 库"
+msgstr "创建一个 NUnit 库。"
 
 #: ../src/addins/AspNet/Templates/Projects/EmptyProject.xpt.xml:13
 msgid "Creates an empty ASP.NET Web Project."
@@ -6700,9 +6708,8 @@ msgid "Creates an empty ASP.NET user control."
 msgstr "创建一个空 ASP.NET 用户控件。"
 
 #: ../src/addins/CSharpBinding/templates/Library.xpt.xml:13
-#, fuzzy
 msgid "Creates an empty C# class library."
-msgstr "创建一个空 C# 类库"
+msgstr "创建一个空 C# 类库。"
 
 #: ../src/addins/CSharpBinding/templates/EmptyCSharpFile.xft.xml:9
 msgid "Creates an empty C# file."
@@ -6761,9 +6768,8 @@ msgid "Creates an implementation for:"
 msgstr "为以下项创建实现:"
 
 #: ../src/addins/AspNet/Templates/npmConfigurationFile.xft.xml:12
-#, fuzzy
 msgid "Creates an npm Configuration File for package.json."
-msgstr "package.json 的 NPM 配置文件"
+msgstr "为 package.json 创建 npm 配置文件。"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.Completion/CompletionProvider/DelegateCompletionProvider.cs:321
 msgid "Creates new method"
@@ -6843,7 +6849,7 @@ msgstr "当前配置文件:"
 msgid "Current Project"
 msgstr "当前项目"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:383
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:393
 msgid "Current Version:"
 msgstr "当前版本:"
 
@@ -7043,6 +7049,11 @@ msgstr "日期"
 msgid "Date/Time"
 msgstr "日期/时间"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ScaffolderBase.cs:53
+#, fuzzy
+msgid "DbContext class to use:"
+msgstr "将制表符转换为空格(_C)"
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:296
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:302
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:308
@@ -7157,7 +7168,7 @@ msgstr "声明此母版页实现接口。"
 msgid "Declare that this page implements an interface."
 msgstr "声明此页面实现接口。"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:458
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:463
 msgid "Declaring Type"
 msgstr "声明类型"
 
@@ -7282,13 +7293,13 @@ msgstr "延迟对程序集进行签名"
 msgid "Delegate {0}. {1}"
 msgstr "委托 {0}。{1}"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:462
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:487
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:700
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:208
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:791
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:31
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:528
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:987
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:979
 #: ../external/xwt/Xwt/Xwt/Command.cs:65
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:153
 msgid "Delete"
@@ -7416,7 +7427,7 @@ msgstr "正在删除 {0}"
 msgid "Deleting Files..."
 msgstr "正在删除文件..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:354
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:39
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:66
@@ -7607,9 +7618,8 @@ msgid "Did you know?"
 msgstr "你知道吗?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:75
-#, fuzzy
 msgid "Diff View"
-msgstr "时间视图"
+msgstr "差异视图"
 
 #: ../src/addins/MonoDevelop.GtkCore/libstetic/editor/EditIconDialog.cs:102
 msgid "Direction"
@@ -7967,7 +7977,7 @@ msgid "DocumentPath is illegal."
 msgstr "DocumentPath 非法。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/DefaultWelcomePage.cs:51
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:229
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:231
 msgid "Documentation"
 msgstr "文档"
 
@@ -8015,7 +8025,8 @@ msgstr "下载大小"
 msgid "Downloading {0}"
 msgstr "正在下载 {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:313
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:622
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:323
 msgid "Downloads"
 msgstr "下载"
 
@@ -8049,7 +8060,7 @@ msgstr "复制配置"
 msgid "Duplicate line"
 msgstr "重复行"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:827
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:852
 msgid "Duplicates:"
 msgstr "重复:"
 
@@ -8528,7 +8539,7 @@ msgstr "增强 Sample 输出文件"
 msgid "Enter Full Screen"
 msgstr "进入全屏"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:750
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:754
 msgid ""
 "Enter a C# boolean expression to act as a condition for this breakpoint. The "
 "scope of the expression is local to the breakpoint"
@@ -8703,13 +8714,13 @@ msgstr "输入 NuGet 包的描述"
 msgid "Enter the directory for the command to execute in"
 msgstr "选择要在其中执行命令的目录"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:683
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:686
 msgid ""
 "Enter the expression you wish to have printed to the console. Place simple "
 "C# expressions within {} to interpolate them."
 msgstr "输入希望打印到控制台的表达式。在 {} 中放置简单的 C＃ 表达式进行内插。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:726
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:729
 msgid "Enter the file and line number of the breakpoint location"
 msgstr "输入断点位置的文件和行号"
 
@@ -8729,7 +8740,7 @@ msgstr "输入生成的 XML 文档的文件名"
 msgid "Enter the filepath for the new project"
 msgstr "输入新项目的文件路径"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:740
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:743
 msgid "Enter the hit count required for the condition"
 msgstr "输入此条件需要的命中次数"
 
@@ -8757,7 +8768,7 @@ msgstr "输入新解决方案的名称"
 msgid "Enter the name for this package source"
 msgstr "输入此包源的名称"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:696
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:699
 msgid "Enter the name of the breakpoint function"
 msgstr "输入断点函数的名称"
 
@@ -8790,14 +8801,12 @@ msgid "Enter the password (if required) for this package source"
 msgstr "输入此包源的密码(如需要)"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:65
-#, fuzzy
 msgid "Enter the path"
 msgstr "输入路径"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:61
-#, fuzzy
 msgid "Enter the port"
-msgstr "输入路径"
+msgstr "输入端口"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:96
 msgid "Enter the project URL for the NuGet package"
@@ -8812,23 +8821,20 @@ msgid "Enter the project version"
 msgstr "输入项目版本"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:53
-#, fuzzy
 msgid "Enter the protocol to use"
-msgstr "输入项目名称"
+msgstr "输入要使用的协议"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:124
 msgid "Enter the release notes for this NuGet package"
 msgstr "输入此 NuGet 包的发行说明"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:49
-#, fuzzy
 msgid "Enter the repository url"
-msgstr "输入版本"
+msgstr "输入存储库 URL"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:57
-#, fuzzy
 msgid "Enter the server"
-msgstr "输入版本"
+msgstr "输入服务器"
 
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:92
 msgid "Enter the summary for the NuGet package"
@@ -8843,9 +8849,8 @@ msgid "Enter the tags for this NuGet package"
 msgstr "输入此 NuGet 包的标记"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:92
-#, fuzzy
 msgid "Enter the target directory"
-msgstr "输入输出目录"
+msgstr "输入目标目录"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:115
 msgid "Enter the text to be used for the standard header"
@@ -8864,14 +8869,13 @@ msgstr "输入 NuGet 包的标题"
 msgid "Enter the trademark statement"
 msgstr "输入商标声明"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:709
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:712
 msgid "Enter the type of the breakpoint exception"
 msgstr "输入断点异常的类型"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/UrlBasedRepositoryEditor.cs:69
-#, fuzzy
 msgid "Enter the user"
-msgstr "输入版本"
+msgstr "输入用户"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:104
 msgid "Enter the username (if required) for this package source"
@@ -9069,7 +9073,7 @@ msgstr ""
 msgid "Error while loading theme: {0}"
 msgstr "加载主题时出错: {0}"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:948
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:954
 msgid "Error while opening assembly {0}."
 msgstr "打开程序集 {0} 时出错。"
 
@@ -9163,8 +9167,9 @@ msgstr "正在计算"
 msgid "Evaluating..."
 msgstr "正在计算..."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:849
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:148
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:845
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:152
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:351
 msgid "Evaluating…"
 msgstr "正在计算..."
 
@@ -9253,15 +9258,15 @@ msgstr "在 .NET 运行时中执行:"
 msgid "Execute target name:"
 msgstr "执行目标名称:"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:691
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:694
 msgid "Execute the action when a function is entered"
 msgstr "在输入函数时执行操作"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:704
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:707
 msgid "Execute the action when an exception is thrown"
 msgstr "引发异常时执行操作"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:721
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:724
 msgid "Execute the action when the program reaches a location in a file"
 msgstr "当程序到达文件的某个位置时执行该操作"
 
@@ -9508,7 +9513,7 @@ msgstr "扩展存储库管理"
 msgid "Extension packages"
 msgstr "扩展包"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:558
+#: ../src/addins/MacPlatform/MacPlatform.cs:560
 msgid "Extensions..."
 msgstr "扩展..."
 
@@ -9517,9 +9522,8 @@ msgid "External Encodings"
 msgstr "外部编码"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:109
-#, fuzzy
 msgid "External Program"
-msgstr "启动外部程序: "
+msgstr "外部程序"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:16
 msgid "External Tools"
@@ -10554,6 +10558,11 @@ msgstr "生成生成文件"
 msgid "Generate Makefiles..."
 msgstr "生成生成文件..."
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:33
+#, fuzzy
+msgid "Generate PageModel class"
+msgstr "全部生成"
+
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:130
 msgid "Generate Type"
 msgstr "生成类型"
@@ -11209,7 +11218,7 @@ msgstr "隐藏详细信息"
 msgid "Hide other applications' windows"
 msgstr "隐藏其他应用程序的窗口"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:642
+#: ../src/addins/MacPlatform/MacPlatform.cs:644
 msgid "Hide {0}"
 msgstr "隐藏 {0}"
 
@@ -11243,7 +11252,6 @@ msgid "History software"
 msgstr "历史软件"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPad.cs:155
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:739
 msgid "Hit Count"
 msgstr "命中次数"
 
@@ -11288,7 +11296,7 @@ msgstr "ID:"
 msgid "IDE application"
 msgstr "IDE 应用程序"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:174
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:176
 msgid "IL"
 msgstr "IL"
 
@@ -11334,7 +11342,7 @@ msgstr "图标:"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:108
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:266
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:276
 msgid "Id"
 msgstr "ID"
 
@@ -11916,7 +11924,7 @@ msgstr "插入断点"
 msgid "Insert ChangeLog Entry"
 msgstr "插入 ChangeLog 条目"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:900
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:894
 msgid "Insert Code"
 msgstr "插入代码"
 
@@ -11924,7 +11932,7 @@ msgstr "插入代码"
 msgid "Insert Documentation Comments"
 msgstr "插入文档注释"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:891
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:885
 msgid "Insert Field"
 msgstr "插入字段"
 
@@ -11932,11 +11940,11 @@ msgstr "插入字段"
 msgid "Insert GUID (Globally Unique Identifier)"
 msgstr "插入 GUID (全局唯一标识符)"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:894
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:888
 msgid "Insert Method"
 msgstr "插入方法"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:897
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.TypeSystem/MonoDevelopWorkspace.cs:891
 msgid "Insert Property"
 msgstr "插入属性"
 
@@ -12100,9 +12108,8 @@ msgid "Install Project"
 msgstr "安装项目"
 
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.GlobalTools/DotNetCoreGlobalToolManager.cs:74
-#, fuzzy
 msgid "Install failed. dotnet install returned {0}"
-msgstr "已返回 dotnet publish: {0}"
+msgstr "安装失败。dotnet 安装返回 {0}"
 
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:339
 msgid "Install from file..."
@@ -12125,7 +12132,7 @@ msgstr "已取消安装"
 msgid "Installation failed"
 msgstr "安装失败"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:111
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:114
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:136
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:117
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:259
@@ -12521,7 +12528,7 @@ msgid "Label indentation"
 msgstr "标签缩进"
 
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/CompletionCharactersPanel.cs:55
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:272
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:274
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:137
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:440
 msgid "Language"
@@ -12632,6 +12639,10 @@ msgstr "泄漏跟踪器"
 msgid "Leave block on single line"
 msgstr "将程序块保留在一行上"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:37
+msgid "Leave empty if is set in a Razor _viewstart file"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.OptionPanels/GeneralOptionsPanel.cs:50
 msgid "Leave line endings as is"
 msgstr "保持行尾原样不变"
@@ -12672,7 +12683,7 @@ msgid "Library name must not exceed 100 characters."
 msgstr "库名称不能超过 100 个字符。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:80
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:326
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
 msgid "License"
 msgstr "许可证"
 
@@ -12708,9 +12719,8 @@ msgid "Line is not a number."
 msgstr "行不是数字。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:622
-#, fuzzy
 msgid "Line {0}, Text {1}"
-msgstr "将 {0} 重命名为 {1}"
+msgstr "行 {0}，文本 {1}"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/Gui/MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs:120
 msgid "Link"
@@ -12782,12 +12792,11 @@ msgid "Loading data..."
 msgstr "正在加载数据..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:483
-#, fuzzy
 msgid "Loading data…"
-msgstr "正在加载数据..."
+msgstr "正在加载数据…"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:256
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:183
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:296
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:193
 msgid "Loading package list..."
 msgstr "正在加载包列表..."
 
@@ -12828,7 +12837,7 @@ msgid "Loading..."
 msgstr "正在加载..."
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:913
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:909
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/LoadingObjectValueNode.cs:33
 msgid "Loading…"
 msgstr "正在加载..."
@@ -13036,9 +13045,18 @@ msgstr "MSTest 项目"
 msgid "MVC"
 msgstr "MVC"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/EmptyMvcControllerScaffolder.cs:33
+#, fuzzy
+msgid "MVC Controller - Empty"
+msgstr "MVC 控制器类"
+
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MvcController.xft.xml:8
 msgid "MVC Controller Class"
 msgstr "MVC 控制器类"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/MvcControllerWithActionsScaffolder.cs:33
+msgid "MVC Controller with read / write actions"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/MVCViewImportsPage.xft.xml:8
 msgid "MVC View Imports Page"
@@ -13135,7 +13153,7 @@ msgstr "管理分支和远程源"
 msgid "Manage NuGet Packages – Solution"
 msgstr "管理 NuGet 包 – 解决方案"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:140
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:160
 msgid "Manage NuGet Packages – {0}"
 msgstr "管理 NuGet 包 – {0}"
 
@@ -13381,7 +13399,7 @@ msgstr "每行最大属性数量"
 msgid "Medical software"
 msgstr "医学软件"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:446
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:451
 msgid "Member"
 msgstr "成员"
 
@@ -13389,7 +13407,7 @@ msgstr "成员"
 msgid "Member Overloads"
 msgstr "成员重载"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:158
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:160
 msgid "Members"
 msgstr "成员"
 
@@ -13565,6 +13583,10 @@ msgstr "行声明缺少 \":\"。"
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:272
 msgid "Missing: {0} v{1}"
 msgstr "缺少: {0} v{1}"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/ScaffolderBase.cs:58
+msgid "Model class to use:"
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/VersionControlService.cs:200
 msgid "Modified"
@@ -13896,8 +13918,8 @@ msgstr "名称(_A):"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:117
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/AttachToProcessDialog.cs:59
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:329
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:217
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:98
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:213
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:97
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/AddPackageSourceDialog.UI.cs:60
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:42
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Toolbox/ComponentSelectorDialog.cs:78
@@ -13922,6 +13944,11 @@ msgstr "未配置名称"
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:54
 msgid "Name of enum"
 msgstr "枚举名称"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:38
+#, fuzzy
+msgid "Name of the Razor Page:"
+msgstr "新接口的名称:"
 
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:90
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ImplicitFrameworkAssemblyReferenceDescriptor.cs:43
@@ -13988,7 +14015,7 @@ msgstr ""
 "替代尖括号；例如，\\k'char'。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:505
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:510
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
 msgid "Namespace"
@@ -14160,7 +14187,7 @@ msgstr "新建组"
 msgid "New Group..."
 msgstr "新建组..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:366
+#: ../src/addins/MacPlatform/MacPlatform.cs:368
 msgid "New Instance"
 msgstr "新实例"
 
@@ -14190,8 +14217,8 @@ msgstr "新建项目..."
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:893
 #, fuzzy
-msgid "New Scaffolded Item...."
-msgstr "新区域设置..."
+msgid "New Scaffolding..."
+msgstr "已搭建基架的新项...."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:69
 msgid "New Solution..."
@@ -14206,7 +14233,7 @@ msgstr "新建任务"
 msgid "New Tool"
 msgstr "新建工具"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:409
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:419
 msgid "New Version:"
 msgstr "新版本:"
 
@@ -14333,7 +14360,7 @@ msgstr "下一个文档"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:400
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -14428,7 +14455,7 @@ msgstr "在该项目目录中找不到生成文件。是否要立即生成一个
 msgid "No matches"
 msgstr "无匹配项"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:198
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:208
 msgid "No matching packages found."
 msgstr "找不到匹配的包。"
 
@@ -14546,7 +14573,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:359
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -14751,7 +14778,7 @@ msgstr "联机模板"
 msgid "Only one '{0}' directive is permitted"
 msgstr "仅允许使用一个“{0}”指令"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:115
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:116
 msgid "Only public members"
 msgstr "仅限公共成员"
 
@@ -15128,9 +15155,8 @@ msgid "P_roject version:"
 msgstr "项目版本(_R):"
 
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:1607
-#, fuzzy
 msgid "Pack"
-msgstr "包"
+msgstr "打包"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:305
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:97
@@ -15174,6 +15200,11 @@ msgstr "包 ID。"
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:818
 msgid "Package References"
 msgstr "包引用"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:140
+#, fuzzy
+msgid "Package Search"
+msgstr "添加包源"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.EditPackageDialog.cs:92
 msgid "Package Settings"
@@ -15330,7 +15361,7 @@ msgstr "参数"
 msgid "Parameter:"
 msgstr "参数:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:481
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:486
 msgid "Parent"
 msgstr "父级"
 
@@ -15467,7 +15498,7 @@ msgstr "固定输出板"
 msgid "Pin results pad"
 msgstr "固定结果板"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:56
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:59
 msgid "Pin to the editor"
 msgstr "固定到编辑器"
 
@@ -15652,7 +15683,7 @@ msgstr "要导出的策略:"
 msgid "Policies to set or replace:"
 msgstr "要设置或替换的策略:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:555
+#: ../src/addins/MacPlatform/MacPlatform.cs:557
 msgid "Policies..."
 msgstr "策略..."
 
@@ -15836,7 +15867,7 @@ msgstr "首选 throw 表达式"
 msgid "Preferences"
 msgstr "首选项"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:554
+#: ../src/addins/MacPlatform/MacPlatform.cs:556
 msgid "Preferences..."
 msgstr "首选项..."
 
@@ -16051,7 +16082,7 @@ msgstr "进度"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:307
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:173
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:217
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:257
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:68
 msgid "Project"
@@ -16136,7 +16167,7 @@ msgstr "项目名称:"
 msgid "Project Options"
 msgstr "项目选项"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:340
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
 msgid "Project Page"
 msgstr "项目页面"
 
@@ -16390,7 +16421,7 @@ msgstr "发布到 {0} - {1}"
 msgid "Publish your app to a folder or a file share"
 msgstr "将应用发布到文件夹或文件共享"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:300
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:310
 msgid "Published"
 msgstr "已发布"
 
@@ -16619,6 +16650,7 @@ msgstr "Razor 类库"
 msgid "Razor Component"
 msgstr "Razor 组件"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolder.cs:37
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPage.xft.xml:8
 msgid "Razor Page"
 msgstr "Razor 页面"
@@ -16626,6 +16658,15 @@ msgstr "Razor 页面"
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorPageWithPageModel.xft.xml:8
 msgid "Razor Page (with page model)"
 msgstr "Razor 页面(含页面模型)"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkScaffolder.cs:42
+#, fuzzy
+msgid "Razor Page using Entity Framework"
+msgstr "目标框架"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkCrudScaffolder.cs:41
+msgid "Razor Page using Entity Framework (CRUD)"
+msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Templates/RazorTagHelper.xft.xml:8
 msgid "Razor Tag Helper"
@@ -16849,6 +16890,11 @@ msgstr "引用页面或用户控件。"
 msgid "Reference an assembly."
 msgstr "引用程序集。"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:35
+#, fuzzy
+msgid "Reference script libraries"
+msgstr "引用程序集"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads.ProjectPad/ProjectPadContextMenu.addin.xml:89
 msgid "Reference..."
 msgstr "引用..."
@@ -16888,7 +16934,7 @@ msgstr "刷新"
 msgid "Refresh the tree"
 msgstr "刷新树"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:66
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:69
 msgid "Refresh value"
 msgstr "刷新值"
 
@@ -17105,9 +17151,8 @@ msgid_plural "Remove the packages from the projects:"
 msgstr[0] "删除项目中的包:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:79
-#, fuzzy
 msgid "Remove the selected environment variable"
-msgstr "从列表中删除选定的文件夹"
+msgstr "删除所选的环境变量"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/FolderListSelector.cs:63
 msgid "Remove the selected folder from the list"
@@ -17127,12 +17172,11 @@ msgstr "删除 {0}"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugCommands.cs:360
 msgid "Removed breakpoint, line {0}, file {1}"
-msgstr ""
+msgstr "已删除断点，行 {0}，文件 {1}"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:614
-#, fuzzy
 msgid "Removed line"
-msgstr "删除文件"
+msgstr "删除的行"
 
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext/TranslationProject.cs:374
 msgid "Removing all .mo files."
@@ -17140,7 +17184,7 @@ msgstr "正在删除所有 .mo 文件。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:749
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
 msgid "Removing {0} packages..."
 msgstr "正在删除 {0} 个包..."
 
@@ -17161,7 +17205,7 @@ msgstr "正在删除..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:196
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:262
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:81
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:981
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:973
 msgid "Rename"
 msgstr "重命名"
 
@@ -17480,7 +17524,7 @@ msgstr "重启调试"
 msgid "Restart Without Debugging"
 msgstr "重启而不调试"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:399
 msgid "Restart and enable"
 msgstr "重启和启用"
 
@@ -17556,7 +17600,7 @@ msgstr "结果"
 msgid "Result message:"
 msgstr "结果消息:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:468
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:473
 msgid "Results"
 msgstr "结果"
 
@@ -17652,14 +17696,12 @@ msgid "Revert changes from this revision"
 msgstr "从此修订版还原更改"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:69
-#, fuzzy
 msgid "Revert changes margin"
-msgstr "从此修订版还原更改"
+msgstr "还原更改边距"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
 msgid "Revert left changes button"
-msgstr "还原此更改"
+msgstr "“还原左侧更改”按钮"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
@@ -17667,9 +17709,8 @@ msgid "Revert operation completed."
 msgstr "已完成还原操作。"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
 msgid "Revert right changes button"
-msgstr "还原此更改"
+msgstr "“还原右侧更改”按钮"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:121
 msgid "Revert this change"
@@ -17689,15 +17730,15 @@ msgstr "是否将未保存的更改还原到文档“{0}”?"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:486
 msgid "Revert {0} inserted lines starting at {1}"
-msgstr ""
+msgstr "还原从 {1} 开始插入的 {0} 行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:488
 msgid "Revert {0} removed lines starting at {1}"
-msgstr ""
+msgstr "还原从 {1} 开始删除的 {0} 行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:490
 msgid "Revert {0} replaced lines starting at {1}"
-msgstr ""
+msgstr "还原从 {1} 开始替换的 {0} 行"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1362
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:767
@@ -18423,7 +18464,7 @@ msgstr "设置启动项目(_T)..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/SearchInSolutionSearchCategory.cs:44
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.BuildOutputView/BuildOutputWidget.cs:162
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:164
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:230
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:232
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:168
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:193
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
@@ -18507,7 +18548,7 @@ msgstr "搜索并替换文本"
 msgid "Search for and replace text in all files of a directory"
 msgstr "在一个目录的所有文件中搜索并替换文本"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:253
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:255
 msgid "Search for members"
 msgstr "搜索成员"
 
@@ -18519,11 +18560,11 @@ msgstr "搜索文本"
 msgid "Search for text in all files of a directory"
 msgstr "在一个目录的所有文件中搜索文本"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:250
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:252
 msgid "Search for types"
 msgstr "搜索类型"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:247
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:249
 msgid "Search for types and members"
 msgstr "搜索类型和成员"
 
@@ -18583,19 +18624,19 @@ msgstr "搜索时间: {0} 秒。"
 msgid "Search:"
 msgstr "搜索:"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:590
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:595
 msgid "Searching member..."
 msgstr "正在搜索成员..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:258
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:298
 msgid "Searching packages..."
 msgstr "正在搜索包..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:593
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:598
 msgid "Searching type..."
 msgstr "正在搜索类型..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:596
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:601
 msgid "Searching types and members..."
 msgstr "正在搜索类型和成员..."
 
@@ -18720,6 +18761,11 @@ msgstr "选择项目"
 msgid "Select Repository"
 msgstr "选择存储库"
 
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderTemplateSelectPage.cs:44
+#, fuzzy
+msgid "Select Scaffolder"
+msgstr "选择一个文件夹"
+
 #: ../src/addins/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.addin.xml:84
 msgid "Select Test at Caret"
 msgstr "选择“在脱字号处进行测试”"
@@ -18781,7 +18827,7 @@ msgstr "选择条目的文件夹"
 msgid "Select a font"
 msgstr "选择字体"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:735
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:738
 msgid "Select a hit count condition for this breakpoint"
 msgstr "选择此断点的命中次数条件"
 
@@ -18844,7 +18890,7 @@ msgstr "选择操作类型"
 msgid "Select all text"
 msgstr "选择所有文本"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:745
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:748
 msgid "Select an extra condition for this breakpoint"
 msgstr "选择此断点的其他条件"
 
@@ -18911,7 +18957,7 @@ msgstr "选择要向新打包项目添加的包"
 msgid "Select policy, current: {0}"
 msgstr "选择策略，当前为: {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:412
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:452
 msgid "Select projects and a version for a consolidation."
 msgstr "选择项目和合并版本。"
 
@@ -19109,9 +19155,8 @@ msgid "Select the public members which are added to the interface"
 msgstr "选择要添加到该接口的公共成员"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:88
-#, fuzzy
 msgid "Select the repository type"
-msgstr "选择存储库"
+msgstr "选择存储库类型"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/RuntimeOptionsPanel.cs:119
 msgid "Select the target framework"
@@ -19208,7 +19253,7 @@ msgstr "选择是否应在解决方案文件夹中创建新项目的文件夹"
 msgid "Select whether to add this new file to an existing project"
 msgstr "选择是否将此新文件添加到现有项目"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:717
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:720
 msgid "Select whether to also break on exception subclasses"
 msgstr "选择是否也会在异常子类上中断"
 
@@ -19343,9 +19388,8 @@ msgid "Service Capabilities"
 msgstr "服务功能"
 
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:167
-#, fuzzy
 msgid "Service Icon"
-msgstr "服务"
+msgstr "服务图标"
 
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences/Library.cs:77
 msgid "Service: {0}"
@@ -19370,14 +19414,12 @@ msgid "Set To Default"
 msgstr "设为默认值"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:97
-#, fuzzy
 msgid "Set additional environment variables for the project."
-msgstr "该项目的另一个文件发生了其他一些更改。"
+msgstr "为项目设置其他环境变量。"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/ProcessRunConfigurationEditor.cs:81
-#, fuzzy
 msgid "Set any additional arguments to pass to the project."
-msgstr "该项目的另一个文件发生了其他一些更改。"
+msgstr "设置要传递到项目的任何其他参数。"
 
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Gui.OptionPanels.MonoRuntimePanelWidget.cs:78
 msgid "Set as Default"
@@ -19567,9 +19609,10 @@ msgid "Show MonoDevelop preferences window"
 msgstr "显示 MonoDevelop 首选项窗口"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1214
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:860
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:856
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:76
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:154
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:158
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:355
 msgid "Show More"
 msgstr "显示更多"
 
@@ -19646,14 +19689,16 @@ msgid "Show Test Time"
 msgstr "显示测试时间"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1199
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:847
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:146
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:843
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:150
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:349
 msgid "Show Value"
 msgstr "显示值"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1216
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:862
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:156
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:858
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:160
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:357
 msgid "Show Values"
 msgstr "显示值"
 
@@ -19772,7 +19817,7 @@ msgstr "显示输出"
 msgid "Show page setup"
 msgstr "显示页面设置"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:435
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:445
 msgid "Show pre-release packages"
 msgstr "显示预发行包"
 
@@ -20141,7 +20186,7 @@ msgstr "解决方案"
 msgid "Some additional changes on another file of the project."
 msgstr "该项目的另一个文件发生了其他一些更改。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:224
+#: ../src/addins/MacPlatform/MacPlatform.cs:226
 msgid "Some dependencies need to be updated"
 msgstr "某些依赖关系需要更新"
 
@@ -20922,7 +20967,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/ParameterInformationWindow.cs:254
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeCompletion/TooltipInformationWindow.cs:143
 #: ../src/addins/MonoDevelop.SourceEditor2/VSEditor/Language/Impl/Intellisense/SignatureHelp/DefaultSignatureHelpPresenterSurfaceElement.cs:146
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:173
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:175
 #: ../src/addins/MonoDevelop.UnitTesting/Gui/TestPad.cs:264
 msgid "Summary"
 msgstr "摘要"
@@ -21433,6 +21478,11 @@ msgstr "void Main 方法模板。"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:1045
 msgid "Template for while block"
 msgstr "while 块模板"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageEntityFrameworkScaffolder.cs:59
+#, fuzzy
+msgid "Template:"
+msgstr "模板(_T):"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:96
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.StandardHeader/StandardHeaderPolicyPanel.cs:117
@@ -22124,8 +22174,9 @@ msgid "The minimum GTK# version required to use this component."
 msgstr "使用此组件时所需的最低 GTK# 版本。"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1179
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:830
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:130
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:826
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:132
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:335
 msgid "The name '{0}' does not exist in the current context."
 msgstr "当前上下文中不存在名称“{0}”。"
 
@@ -23029,23 +23080,23 @@ msgstr ""
 msgid "There is a search already in progress. Do you want to stop it?"
 msgstr "有正在进行的搜索。是否要停止它?"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:730
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:733
 msgid "There is a warning for the breakpoint location"
 msgstr "断点位置存在警告"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:754
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:758
 msgid "There is a warning for the condition expression"
 msgstr "条件表达式存在警告"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:713
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:716
 msgid "There is a warning for the exception type"
 msgstr "异常类型存在警告"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:700
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:703
 msgid "There is a warning for the function name"
 msgstr "函数名称存在警告"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:687
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:690
 msgid "There is a warning for the print expression"
 msgstr "打印表达式存在警告"
 
@@ -23152,11 +23203,11 @@ msgstr "此处汇总了项目或解决方案中使用的所有文件类型:"
 msgid "This is only used when xbuild is not being used."
 msgstr "仅在未使用 xbuild 时才使用此选项。"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:618
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:643
 msgid "This key combination is already bound to command '{0}'"
 msgstr "此组合键已绑定到命令“{0}”"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:611
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:636
 msgid ""
 "This key combination is already bound to command '{0}' in the same context"
 msgstr "此组合键已与同一上下文中的命令“{0}”绑定"
@@ -23185,7 +23236,7 @@ msgstr "此项目类型需要安装 {0}。"
 msgid "This service has no dependencies"
 msgstr "此服务没有依赖项"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:815
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.OptionPanels/KeyBindingsPanel.cs:840
 msgid ""
 "This shortcut is assigned to another command that is available\n"
 "in the same context. Please set a different shortcut."
@@ -23542,13 +23593,13 @@ msgstr "两个编辑器列"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:474
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:63
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:492
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:497
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:70
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.SignatureChange/SignatureChangeDialog.cs:183
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:153
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:376
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:272
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:113
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:268
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:112
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectFileDescriptor.cs:89
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:58
 msgid "Type"
@@ -23618,11 +23669,11 @@ msgid "TypeScript file"
 msgstr "TypeScript 文件"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:64
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:145
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:147
 msgid "Types"
 msgstr "类型"
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:132
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:134
 msgid "Types and Members"
 msgstr "类型和成员"
 
@@ -23787,9 +23838,8 @@ msgid "Unavailable"
 msgstr "不可用"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/DiffRendererWidget.cs:617
-#, fuzzy
 msgid "Unchanged line"
-msgstr "单行"
+msgstr "未更改的行"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/Commands.addin.xml:102
 msgid "Uncomment selected lines of code"
@@ -23865,7 +23915,7 @@ msgstr "取消缩进选中的代码行"
 msgid "Uninstall"
 msgstr "卸载"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:896
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:933
 msgid "Uninstall Package"
 msgid_plural "Uninstall Packages"
 msgstr[0] "卸载包"
@@ -24030,8 +24080,8 @@ msgstr "更新所有包(解决方案)"
 msgid "Update Identifiers"
 msgstr "更新标识符"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:892
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:898
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:929
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:935
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:57
 msgid "Update Package"
 msgstr "更新包"
@@ -24094,7 +24144,7 @@ msgstr[0] "已更新 Web 引用"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:117
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:122
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:125
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:373
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
@@ -24155,7 +24205,7 @@ msgstr[0] "正在更新 Web 引用"
 msgid "Updating {0}"
 msgstr "正在更新 {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:773
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:811
 msgid "Updating {0} packages..."
 msgstr "正在更新 {0} 个包..."
 
@@ -24218,6 +24268,10 @@ msgstr "使用输出窗口(_O)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/CustomCommandWidget.cs:120
 msgid "Use a file selector to select a custom command"
 msgstr "使用文件选择器选择自定义命令"
+
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/Scaffolders/RazorPageScaffolderBase.cs:36
+msgid "Use a layout page"
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.CommitMessageStylePanelWidget.cs:149
 msgid "Use bullets"
@@ -24447,8 +24501,8 @@ msgstr "有效性"
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:45
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DotDesktopViewWidget.cs:83
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:346
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:235
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:105
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:231
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:104
 msgid "Value"
 msgstr "值"
 
@@ -24516,7 +24570,7 @@ msgstr "版本控制(_N)"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:226
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:266
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
@@ -24704,7 +24758,7 @@ msgid "View ChangeLog..."
 msgstr "查看 ChangeLog..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:135
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:331
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:341
 msgid "View License"
 msgstr "查看许可证"
 
@@ -24728,11 +24782,11 @@ msgstr "在 {0} 中查看反汇编"
 msgid "View..."
 msgstr "视图..."
 
-#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:262
+#: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:264
 msgid "Visibility"
 msgstr "可见性"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:345
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
 msgid "Visit Page"
 msgstr "访问页面"
 
@@ -25054,7 +25108,7 @@ msgstr ""
 "设置 MONO_XDEBUG 环境变量后，实时编译代码的调试信息将发出到共享库并且可加载"
 "到 gdb 中。这将支持诸如查看 gdb backtraces 上的托管帧名称之类的操作。"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:795
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/BreakpointPropertiesDialog.cs:801
 msgid "When to Take Action"
 msgstr "何时执行操作"
 
@@ -27096,9 +27150,8 @@ msgid "e.g. colorName == \"Red\""
 msgstr "例如，colorName == “红色”"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:477
-#, fuzzy
 msgid "empty"
-msgstr "空"
+msgstr "empty"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:200
 msgid "enum member ({0})"
@@ -27661,7 +27714,7 @@ msgstr[0] "{0} 项更改"
 msgid "{0} condition"
 msgstr "{0} 条件"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:827
 msgid "{0} consolidated with warnings."
 msgstr "{0} 已合并，但有警告。"
 
@@ -27734,7 +27787,7 @@ msgid_plural ""
 msgstr[0] ""
 "总共处理了 {0} 个文件。{1} 个成功生成，{2} 个出现警告，{3} 个出现错误"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:396
+#: ../src/addins/MacPlatform/MacPlatform.cs:398
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -27851,13 +27904,13 @@ msgstr "{0} 排序语句 {1}"
 msgid "{0} packages added with warnings."
 msgstr "已添加 {0} 个包，但出现警告。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:797
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
 msgid "{0} packages consolidated with warnings."
 msgstr "已合并 {0} 个包，但有警告。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:150
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:752
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:790
 msgid "{0} packages removed with warnings."
 msgstr "已删除 {0} 个包，并发出警告。"
 
@@ -27869,13 +27922,13 @@ msgstr "已重定 {0} 个包的目标，但出现警告。"
 msgid "{0} packages successfully added."
 msgstr "已成功添加 {0} 个包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:795
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:833
 msgid "{0} packages successfully consolidated."
 msgstr "已成功删除 {0} 个包。"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:750
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
 msgid "{0} packages successfully removed."
 msgstr "已成功删除 {0} 个包。"
 
@@ -27883,11 +27936,11 @@ msgstr "已成功删除 {0} 个包。"
 msgid "{0} packages successfully retargeted."
 msgstr "已成功重定 {0} 个包的目标。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:774
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:812
 msgid "{0} packages successfully updated."
 msgstr "已成功更新 {0} 个包。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:776
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:814
 msgid "{0} packages updated with warnings."
 msgstr "已更新 {0} 个包，但有警告。"
 
@@ -27947,7 +28000,7 @@ msgstr "{0} 范围变量2 {1} 范围2 {2} 语句1 {3} 语句2 [ {4} 组名称 ]"
 msgid "{0} removed with warnings."
 msgstr "已删除 {0}，但出现警告。"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:225
+#: ../src/addins/MacPlatform/MacPlatform.cs:227
 msgid ""
 "{0} requires a newer version of GTK+, which is included with the Mono "
 "Framework. Please download and install the latest stable Mono Framework "
@@ -27994,7 +28047,7 @@ msgstr "{0} 语句 {1} (表达式);"
 msgid "{0} successfully added."
 msgstr "已成功添加 {0}。"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:825
 msgid "{0} successfully consolidated."
 msgstr "{0} 已成功合并。"
 
@@ -28173,1042 +28226,10 @@ msgstr "|"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/AssemblyRunConfigurationEditor.cs:156
 msgid "…"
-msgstr ""
+msgstr "…"
 
-#~ msgid "';' should be avoided. Use '{}' instead"
-#~ msgstr "应避免使用 \";\"，改用 \"{}\""
+#~ msgid "Breakpoint Hit Count Type"
+#~ msgstr "断点命中次数类型"
 
-#~ msgid "'?:' expression has identical true and false branches"
-#~ msgstr "\"?:\" 表达式具有相同的 true 分支和 false 分支"
-
-#~ msgid "'EndsWith' is culture-aware and missing a StringComparison argument"
-#~ msgstr "\"EndsWith\" 可以识别区域性，但缺少 StringComparison 参数"
-
-#~ msgid "'IndexOf' is culture-aware and missing a StringComparison argument"
-#~ msgstr "\"IndexOf\" 可以识别区域性，但缺少 StringComparison 参数"
-
-#~ msgid ""
-#~ "'LastIndexOf' is culture-aware and missing a StringComparison argument"
-#~ msgstr "\"LastIndexOf\" 可以识别区域性，但缺少 StringComparison 参数"
-
-#~ msgid ""
-#~ "'StartsWith' is culture-aware and missing a StringComparison argument"
-#~ msgstr "\"StartsWith\" 可以识别区域性，但缺少 StringComparison 参数"
-
-#~ msgid "'base.' is redundant and can safely be removed"
-#~ msgstr "\"base.\" 是冗余的，可以安全删除"
-
-#~ msgid "'case' label is redundant"
-#~ msgstr "\"case\" 标签是冗余的"
-
-#~ msgid "'for' loop control variable is never modified"
-#~ msgstr "\"for\" 循环控制变量从未修改"
-
-#~ msgid "'if' statement can be re-written as 'switch' statement"
-#~ msgstr "\"if\" 语句可以重写为 \"switch\" 语句"
-
-#~ msgid "'sealed' modifier is redundant in sealed classes"
-#~ msgstr "\"sealed\" 修饰符在密封类中是冗余的"
-
-#~ msgid "'string.CompareTo' is culture-aware"
-#~ msgstr "\"string.CompareTo\" 可以识别区域性"
-
-#~ msgid "'true' is redundant as for statement condition"
-#~ msgstr "\"true\" 对于语句条件是冗余的"
-
-#~ msgid "'unsafe' modifier is redundant"
-#~ msgstr "\"unsafe\" 修饰符是冗余的"
-
-#~ msgid "'{0}' contains an upper case letter after the first. (Rule '{1}')"
-#~ msgstr "“{0}”在第一个字母后包含一个大写字母。(规则“{1}”)"
-
-#~ msgid "'{0}' contains lower case letters. (Rule '{1}')"
-#~ msgstr "“{0}”包含小写字母。(规则“{1}”)"
-
-#~ msgid "'{0}' contains upper case letters. (Rule '{1}')"
-#~ msgstr "“{0}”包含大写字母。(规则“{1}”)"
-
-#~ msgid "'{0}' should not separate words with an underscore. (Rule '{1}')"
-#~ msgstr "“{0}”不应使用下划线分隔单词。(规则“{1}”)"
-
-#~ msgid "'{0}' should start with a lower case letter. (Rule '{1}')"
-#~ msgstr "“{0}”应以小写字母开头。(规则“{1}”)"
-
-#~ msgid "'{0}' should start with an upper case letter. (Rule '{1}')"
-#~ msgstr "“{0}”应以大写字母开头。(规则“{1}”)"
-
-#~ msgid "A MVC View Import Page"
-#~ msgstr "一个 MVC 视图导入页面"
-
-#~ msgid "A MVC View Page"
-#~ msgstr "一个 MVC 视图页面"
-
-#~ msgid "A MVC View Start Page"
-#~ msgstr "一个 MVC 视图起始页面"
-
-#~ msgid "A blank solution"
-#~ msgstr "一个空解决方案"
-
-#~ msgid "A blank workspace"
-#~ msgstr "一个空工作区"
-
-#~ msgid "A catch clause that catches System.Exception and has an empty body"
-#~ msgstr "一个捕获 System.Exception 的 catch 子句，具有空体"
-
-#~ msgid "Add '\"{0}\"' parameter."
-#~ msgstr "添加“\"{0}\"”参数。"
-
-#~ msgid "Add 'Is Nothing' check for parameter"
-#~ msgstr "为参数添加 \"Is Nothing\" 检查"
-
-#~ msgid "Add all optional parameters"
-#~ msgstr "添加所有可选参数"
-
-#~ msgid "Add another accessor"
-#~ msgstr "添加其他访问器"
-
-#~ msgid "Add argument name '{0}'"
-#~ msgstr "添加参数名称“{0}”"
-
-#~ msgid "Add braces to '{0}'"
-#~ msgstr "向“{0}”添加大括号"
-
-#~ msgid "Add check for Nothing"
-#~ msgstr "添加 Nothing 检查"
-
-#~ msgid "Add exception description"
-#~ msgstr "添加异常说明"
-
-#~ msgid "Add null check"
-#~ msgstr "添加 null 检查"
-
-#~ msgid "Add optional parameter \"{0}\""
-#~ msgstr "添加可选参数“{0}”"
-
-#~ msgid "An empty public constructor without parameters is redundant."
-#~ msgstr "不带参数的空公共构造函数是多余的。"
-
-#~ msgid "Anonymous method can be simplified to method group"
-#~ msgstr "匿名方法可以简化为方法组"
-
-#~ msgid "Argument is not used in format string"
-#~ msgstr "未在格式字符串中使用参数"
-
-#~ msgid "Asynchronous method '{0}' should not return void"
-#~ msgstr "异步方法“{0}”不应返回 void"
-
-#~ msgid "Asynchronous methods should return a Task instead of void"
-#~ msgstr "异步方法应返回 Task，而不应返回 void"
-
-#~ msgid "Base method '{0}' has a 'params' modifier"
-#~ msgstr "基方法“{0}”具有 \"params\" 修饰符"
-
-#~ msgid "Base parameter has 'params' modifier, but missing in overrider"
-#~ msgstr "基参数具有 \"params\" 修饰符，但替代项中没有"
-
-#~ msgid "Bitwise operation on enum not marked with [Flags] attribute"
-#~ msgstr "对没有标记 [Flags] 属性的枚举执行位运算"
-
-#~ msgid "Bitwise operation on enum which has no [Flags] attribute"
-#~ msgstr "对没有 [Flags] 属性的枚举执行位运算"
-
-#~ msgid "Breakpoint added"
-#~ msgstr "已添加断点"
-
-#~ msgid "Breakpoint removed"
-#~ msgstr "已删除断点"
-
-#~ msgid "C# doesn't support optional 'ref' or 'out' parameters"
-#~ msgstr "C# 不支持可选的 \"ref\" 或 \"out\" 参数"
-
-#~ msgid "Call to base member with implicit default parameters"
-#~ msgstr "对具有隐式默认参数的基成员进行调用"
-
-#~ msgid ""
-#~ "Call to base.Equals resolves to Object.Equals, which is reference equality"
-#~ msgstr "对 base.Equals 的调用解析为引用相等的 Object.Equals"
-
-#~ msgid "Call to static member via a derived class"
-#~ msgstr "通过派生类对静态成员进行调用"
-
-#~ msgid "Cannot find reference '{0}'"
-#~ msgstr "找不到引用“{0}”"
-
-#~ msgid "Cannot resolve symbol in text argument"
-#~ msgstr "无法解析文本参数中的符号"
-
-#~ msgid "Change field type"
-#~ msgstr "更改字段类型"
-
-#~ msgid "Change local variable type"
-#~ msgstr "更改局部变量类型"
-
-#~ msgid "Change return type of method"
-#~ msgstr "更改方法的返回类型"
-
-#~ msgid "Check 'If {0}.TryGetValue({1}, val)'"
-#~ msgstr "检查“If {0}.TryGetValue({1}, val)”"
-
-#~ msgid "Check 'if ({0}.Count > {1})'"
-#~ msgstr "检查“if ({0}.Count > {1})”"
-
-#~ msgid "Check 'if ({0}.Length > {1})'"
-#~ msgstr "检查“if ({0}.Length > {1})”"
-
-#~ msgid ""
-#~ "Check for inequality before assignment is redundant if (x != value) x = "
-#~ "value;"
-#~ msgstr "如果 (x != value) x = value;，则在赋值前检查不相等"
-
-#~ msgid "Class is declared partial but has only one part"
-#~ msgstr "类声明为分部，但仅具有一个部分"
-
-#~ msgid "Comparing equal expression for equality is usually useless"
-#~ msgstr "比较相等表达式是否相等通常是无用的"
-
-#~ msgid "Comparison of floating point numbers with equality operator"
-#~ msgstr "使用相等运算符进行的浮点数比较"
-
-#~ msgid "Compute constant value"
-#~ msgstr "计算常量值"
-
-#~ msgid "Condition is always 'true' or always 'false'"
-#~ msgstr "条件始终为 \"true\" 或始终为 \"false\""
-
-#~ msgid "Condition is always '{0}'"
-#~ msgstr "条件始终为“{0}”"
-
-#~ msgid "Conditional expression can be simplified"
-#~ msgstr "可以简化条件表达式"
-
-#~ msgid "Constructor in abstract class should not be public"
-#~ msgstr "抽象类中的构造函数不应是公共的"
-
-#~ msgid "Convert 'Nullable<T>' to the short form 'T?'"
-#~ msgstr "将 \"Nullable<T>\" 转换为简短形式的 \"T?\""
-
-#~ msgid "Convert 'TryCast' to 'DirectCast'"
-#~ msgstr "将 \"TryCast\" 转换为 \"DirectCast\""
-
-#~ msgid "Convert 'as' to cast"
-#~ msgstr "将 \"as\" 变为“强制转换”"
-
-#~ msgid "Convert 'foreach' loop to optimized 'for'"
-#~ msgstr "将 \"foreach\" 循环转换为经过优化的 \"for\""
-
-#~ msgid "Convert 'if' to '&&' expression"
-#~ msgstr "将 \"if\" 转换为 \"&&\" 表达式"
-
-#~ msgid "Convert 'if' to '||' expression"
-#~ msgstr "将 \"if\" 转换为 \"||\" 表达式"
-
-#~ msgid "Convert 'if-do-while' to 'while' statement"
-#~ msgstr "将 \"if-do-while\" 转换为 \"while\" 语句"
-
-#~ msgid "Convert anonymous method to method group"
-#~ msgstr "将匿名方法转换为方法组"
-
-#~ msgid "Convert cast to 'TryCast'"
-#~ msgstr "将强制转换变为 \"TryCast\""
-
-#~ msgid "Convert cast to 'as'"
-#~ msgstr "将强制转换变为 \"as\""
-
-#~ msgid "Convert foreach loop to LINQ expression"
-#~ msgstr "将 foreach 循环转换为 LINQ 表达式"
-
-#~ msgid "Convert static method call to extension method call"
-#~ msgstr "将静态方法调用转换为扩展方法调用"
-
-#~ msgid "Convert to '&&' expression"
-#~ msgstr "转换为 \"&&\" 表达式"
-
-#~ msgid "Convert to 'switch' statement"
-#~ msgstr "转换为 \"switch\" 语句"
-
-#~ msgid "Convert to auto-property"
-#~ msgstr "转换为 auto 属性"
-
-#~ msgid "Convert to custom event"
-#~ msgstr "转换为自定义事件"
-
-#~ msgid "Convert to static method"
-#~ msgstr "转换为静态方法"
-
-#~ msgid "Copy comments from base"
-#~ msgstr "从基项复制注释"
-
-#~ msgid "Copy comments from interface"
-#~ msgstr "从接口复制注释"
-
-#~ msgid "Create changed event"
-#~ msgstr "创建 changed 事件"
-
-#~ msgid "Create custom event implementation"
-#~ msgstr "创建自定义事件实现"
-
-#~ msgid "Create delegate"
-#~ msgstr "创建委托"
-
-#~ msgid "Create event invocator"
-#~ msgstr "创建事件调用器"
-
-#~ msgid "Create overload without parameter"
-#~ msgstr "创建没有参数的重载"
-
-#~ msgid "Default underlying type of enums is already int"
-#~ msgstr "枚举的默认基础类型已经是 int"
-
-#~ msgid "Delegate subtraction has unpredictable result"
-#~ msgstr "委托减法具有不可预测的结果"
-
-#~ msgid "Double negation is redundant"
-#~ msgstr "双重否定是冗余的"
-
-#~ msgid "Empty argument list is redundant"
-#~ msgstr "空参数列表是冗余的"
-
-#~ msgid "Empty constructor is redundant"
-#~ msgstr "空构造函数是冗余的"
-
-#~ msgid "Empty control statement body"
-#~ msgstr "空控制语句体"
-
-#~ msgid "Empty destructor is redundant"
-#~ msgstr "空析构函数是冗余的"
-
-#~ msgid "Empty general catch clause suppresses any error"
-#~ msgstr "空常规 catch 子句可取消任何错误"
-
-#~ msgid "Empty namespace declaration is redundant"
-#~ msgstr "空命名空间声明是冗余的"
-
-#~ msgid "Empty statement is redundant"
-#~ msgstr "空语句是冗余的"
-
-#~ msgid "Event unsubscription via anonymous delegate is useless"
-#~ msgstr "通过匿名委托取消订阅事件是无用的"
-
-#~ msgid "Explicit delegate creation expression is redundant"
-#~ msgstr "显式委托创建表达式是冗余的"
-
-#~ msgid "Expression can be replaced with '{0}'"
-#~ msgstr "表达式可以替换为“{0}”"
-
-#~ msgid "Expression can be simlified to 'FirstOrDefault<T>()'"
-#~ msgstr "表达式可以简化为 \"FirstOrDefault<T>()\""
-
-#~ msgid "Expression can be simlified to 'LastOrDefault<T>()'"
-#~ msgstr "表达式可以简化为 \"LastOrDefault<T>()\""
-
-#~ msgid "Expression is always 'true' or always 'false'"
-#~ msgstr "表达式始终为 \"true\" 或始终为 \"false\""
-
-#~ msgid "Expression is always '{0}'"
-#~ msgstr "表达式始终为“{0}”"
-
-#~ msgid "Extension methods must be declared static"
-#~ msgstr "扩展方法必须声明为静态"
-
-#~ msgid "Extract anonymous method"
-#~ msgstr "提取匿名方法"
-
-#~ msgid "Extract condition to internal 'if' statement"
-#~ msgstr "将条件提取到内部 \"if\" 语句"
-
-#~ msgid ""
-#~ "Finds calls to ToString() which would be generated automatically by the "
-#~ "compiler"
-#~ msgstr "查找对 ToString() 的调用，该调用可能会由编译器自动生成"
-
-#~ msgid "Finds issues with format strings"
-#~ msgstr "查找格式字符串问题"
-
-#~ msgid "Finds potentially erroneous calls to Object.Equals"
-#~ msgstr "查找对 Object.Equals 的潜在错误调用"
-
-#~ msgid "Finds redundant null coalescing expressions such as expr ?? expr"
-#~ msgstr "查找冗余的 null 合并表达式，例如 expr ?? expr"
-
-#~ msgid "Fix constructor"
-#~ msgstr "修复构造函数"
-
-#~ msgid "Flip 'Equals' target and argument"
-#~ msgstr "翻转 \"Equals\" 目标和参数"
-
-#~ msgid "Flip '{0}' operands"
-#~ msgstr "翻转“{0}”操作数"
-
-#~ msgid "Flip '{0}' operator to '{1}'"
-#~ msgstr "将“{0}”运算符翻转为“{1}”"
-
-#~ msgid "Generate getter"
-#~ msgstr "生成 Getter"
-
-#~ msgid "IL Console Project"
-#~ msgstr "IL 控制台项目"
-
-#~ msgid ""
-#~ "If all fields, properties and methods members are static, the class can "
-#~ "be made static."
-#~ msgstr "如果所有字段、属性和方法成员都是静态的，则可以使类变为静态。"
-
-#~ msgid ""
-#~ "If an extension method is called as static method convert it to method "
-#~ "syntax"
-#~ msgstr "如果将扩展方法作为静态方法调用，请将它转换为方法语法"
-
-#~ msgid "Import static class with using"
-#~ msgstr "使用 using 导入静态类"
-
-#~ msgid "Indexer"
-#~ msgstr "索引器"
-
-#~ msgid "Initialize auto-property from parameter"
-#~ msgstr "通过参数初始化 auto 属性"
-
-#~ msgid "Initialize field from parameter"
-#~ msgstr "通过参数初始化字段"
-
-#~ msgid "Initialize readonly auto-property from parameter"
-#~ msgstr "通过参数初始化只读自动属性"
-
-#~ msgid "Initializing field by default value is redundant"
-#~ msgstr "根据默认值初始化字段是冗余的"
-
-#~ msgid "Initializing field with default value is redundant"
-#~ msgstr "使用默认值初始化字段是冗余的"
-
-#~ msgid "Insert format argument"
-#~ msgstr "插入格式参数"
-
-#~ msgid "Insert signature"
-#~ msgstr "插入签名"
-
-#~ msgid "Invert '?:'"
-#~ msgstr "反转 \"?:\""
-
-#~ msgid "Invert '{0}'"
-#~ msgstr "反转“{0}”"
-
-#~ msgid "Join declaration and assignment"
-#~ msgstr "联接声明和赋值"
-
-#~ msgid "Join strings"
-#~ msgstr "联接字符串"
-
-#~ msgid "Lambda expression can be simplified to method group"
-#~ msgstr "Lambda 表达式可以简化为方法组"
-
-#~ msgid "Local variable '{0}' hides {1} '{2}'"
-#~ msgstr "局部变量“{0}”隐藏 {1} “{2}”"
-
-#~ msgid "Local variable has the same name as a member and hides it"
-#~ msgstr "局部变量具有与某个成员相同的名称并隐藏该成员"
-
-#~ msgid "Long literal ends with 'l' instead of 'L'"
-#~ msgstr "长整型文本以 \"l\" 结尾，而不以 \"L\" 结尾"
-
-#~ msgid "Lowercase 'l' is often confused with '1'"
-#~ msgstr "小写的 \"l\" 经常会与 \"1\" 混淆"
-
-#~ msgid "Make the field static"
-#~ msgstr "使字段变为静态"
-
-#~ msgid "Member hides static member from outer class"
-#~ msgstr "成员向外部类隐藏静态成员"
-
-#~ msgid "Method"
-#~ msgstr "方法"
-
-#~ msgid "Method with optional parameter is hidden by overload"
-#~ msgstr "具有可选参数的方法被重载隐藏"
-
-#~ msgid ""
-#~ "Multiple:\n"
-#~ "{0}"
-#~ msgstr ""
-#~ "多个:\n"
-#~ "{0}"
-
-#~ msgid "NUnit test methods should be public"
-#~ msgstr "NUnit 测试方法应该是公共的"
-
-#~ msgid "Name has forbidden prefix '{0}'. (Rule '{1}')"
-#~ msgstr "名称具有禁止的前缀“{0}”。(规则“{1}”)"
-
-#~ msgid "Name has forbidden suffix '{0}'. (Rule '{1}')"
-#~ msgstr "名称具有禁止的后缀“{0}”。(规则“{1}”)"
-
-#~ msgid "Name should have prefix '{0}'. (Rule '{1}')."
-#~ msgstr "名称应具有前缀“{0}”。(规则“{1}”)。"
-
-#~ msgid "Name should have suffix '{0}'. (Rule '{1}')"
-#~ msgstr "名称应具有后缀“{0}”。(规则“{1}”)"
-
-#~ msgid "Negate '{0}'"
-#~ msgstr "对“{0}”求反"
-
-#~ msgid "Non public methods are not found by NUnit"
-#~ msgstr "NUnit 找不到非公共方法"
-
-#~ msgid "Non-readonly field referenced in 'GetHashCode()'"
-#~ msgstr "\"GetHashCode()\" 中引用的非只读字段"
-
-#~ msgid "Not implemented"
-#~ msgstr "未实现"
-
-#~ msgid "Nullable type can be simplified"
-#~ msgstr "可以简化 nullable 类型"
-
-#~ msgid "Operator 'is' can be used"
-#~ msgstr "可以使用运算符 \"is\""
-
-#~ msgid ""
-#~ "Operator Is can be used instead of comparing object GetType() and "
-#~ "instances of System.Type object"
-#~ msgstr ""
-#~ "使用运算符 Is 时可以不比较 object GetType() 对象和 System.Type 对象的实例"
-
-#~ msgid "Parameter '{0}' hides event '{1}'"
-#~ msgstr "参数“{0}”隐藏事件“{1}”"
-
-#~ msgid "Parameter '{0}' hides field '{1}'"
-#~ msgstr "参数“{0}”隐藏字段“{1}”"
-
-#~ msgid "Parameter '{0}' hides member '{1}'"
-#~ msgstr "参数“{0}”隐藏成员“{1}”"
-
-#~ msgid "Parameter '{0}' hides method '{1}'"
-#~ msgstr "参数“{0}”隐藏方法“{1}”"
-
-#~ msgid "Parameter '{0}' hides property '{1}'"
-#~ msgstr "参数“{0}”隐藏属性“{1}”"
-
-#~ msgid "Parameter '{0}' not found"
-#~ msgstr "找不到参数“{0}”"
-
-#~ msgid "Parameter has the same name as a member and hides it"
-#~ msgstr "参数具有与某个成员相同的名称并隐藏该成员"
-
-#~ msgid "Parameter name differs in base declaration"
-#~ msgstr "基声明中的参数名称差异"
-
-#~ msgid "Parameter name differs in partial method definition"
-#~ msgstr "分部方法定义中的参数名称差异"
-
-#~ msgid "Parameter name differs in partial method definition should be '{0}'"
-#~ msgstr "分部方法定义中的参数名称差异应为“{0}”"
-
-#~ msgid "Parentheses are redundant if attribute has no arguments"
-#~ msgstr "如果属性没有参数，则圆括号是冗余的"
-
-#~ msgid "Partial class with single part"
-#~ msgstr "具有单一部分的分部类"
-
-#~ msgid "Possible compare of value type with 'null'"
-#~ msgstr "具有 \"null\" 的值类型的可能比较"
-
-#~ msgid "Possible mistaken call to 'object.GetType()'"
-#~ msgstr "对 \"object.GetType()\" 的可能错误调用"
-
-#~ msgid "Possible unassigned object created by 'new'"
-#~ msgstr "\"new\" 创建的可能的未赋值对象"
-
-#~ msgid "Possible unassigned object created by 'new' expression"
-#~ msgstr "\"new\" 表达式创建的可能的未赋值对象"
-
-#~ msgid "Redundant 'ToString()' call"
-#~ msgstr "冗余的 \"ToString()\" 调用"
-
-#~ msgid "Redundant 'else' keyword"
-#~ msgstr "冗余的 \"else\" 关键字"
-
-#~ msgid "Redundant 'string.ToCharArray()' call"
-#~ msgstr "冗余的 \"string.ToCharArray()\" 调用"
-
-#~ msgid "Redundant Where() call with predicate followed by {0}()"
-#~ msgstr "谓词后跟 {0}() 的冗余 Where() 调用"
-
-#~ msgid "Redundant argument name specification"
-#~ msgstr "冗余的参数名称规范"
-
-#~ msgid "Redundant array creation expression"
-#~ msgstr "冗余的数组创建表达式"
-
-#~ msgid "Redundant base constructor call"
-#~ msgstr "冗余的基构造函数调用"
-
-#~ msgid "Redundant case label"
-#~ msgstr "冗余的 case 标签"
-
-#~ msgid "Redundant comma in array initializer"
-#~ msgstr "数组初始值设定项中的冗余逗号"
-
-#~ msgid "Redundant condition check before assignment"
-#~ msgstr "赋值前的冗余条件检查"
-
-#~ msgid "Redundant conditional expression"
-#~ msgstr "冗余的条件表达式"
-
-#~ msgid "Redundant empty 'default' switch branch"
-#~ msgstr "冗余的空 \"default\" 切换分支"
-
-#~ msgid "Redundant empty finally block"
-#~ msgstr "冗余的空 finally 程序块"
-
-#~ msgid "Redundant explicit argument name specification"
-#~ msgstr "冗余的显式参数名称规范"
-
-#~ msgid "Redundant explicit delegate declaration"
-#~ msgstr "冗余的显式委托声明"
-
-#~ msgid "Redundant explicit nullable type creation"
-#~ msgstr "冗余的显式 nullable 类型创建"
-
-#~ msgid "Redundant explicit property name"
-#~ msgstr "冗余的显式属性名称"
-
-#~ msgid "Redundant explicit size in array creation"
-#~ msgstr "数组创建中的冗余显式大小"
-
-#~ msgid "Remove 'case {0}' label"
-#~ msgstr "删除“case {0}”标签"
-
-#~ msgid "Remove 'case {0}' switch section"
-#~ msgstr "删除“case {0}”switch 节"
-
-#~ msgid "Remove 'partial'"
-#~ msgstr "删除 \"partial\""
-
-#~ msgid "Remove attribute"
-#~ msgstr "删除属性"
-
-#~ msgid "Remove braces from '{0}'"
-#~ msgstr "从“{0}”删除大括号"
-
-#~ msgid "Remove redundant statement"
-#~ msgstr "删除冗余的语句"
-
-#~ msgid "Remove region/endregion directives"
-#~ msgstr "删除 region/endregion 指令"
-
-#~ msgid "Remove returned expression"
-#~ msgstr "删除返回的表达式"
-
-#~ msgid "Remove the redundant size indicator"
-#~ msgstr "删除冗余的大小指示符"
-
-#~ msgid "Remove unused label"
-#~ msgstr "删除未使用的标签"
-
-#~ msgid "Rename to '{0}'"
-#~ msgstr "重命名为“{0}”"
-
-#~ msgid "Replace '??' operator with '?:' expression"
-#~ msgstr "将 \"??\" 运算符替换为 \"?:\" 表达式"
-
-#~ msgid "Replace '{0}++' with '{0} += 1'"
-#~ msgstr "将“{0}++”替换为“{0} += 1”"
-
-#~ msgid "Replace '{0}--' with '{0} -= 1'"
-#~ msgstr "将“{0}--”替换为“{0} -= 1”"
-
-#~ msgid "Replace usages of 'Count()' with call to 'Any()'"
-#~ msgstr "将使用 \"Count()\" 替换为对 \"Any()\" 的调用"
-
-#~ msgid "Replace with '\"{0}\"'."
-#~ msgstr "替换为“\"{0}\"”。"
-
-#~ msgid "Replace with '&='"
-#~ msgstr "替换为 \"&=\""
-
-#~ msgid "Replace with '='"
-#~ msgstr "替换为 \"=\""
-
-#~ msgid "Replace with '??'"
-#~ msgstr "替换为 \"??\""
-
-#~ msgid "Replace with 'OfType<T>()'"
-#~ msgstr "替换为 \"OfType<T>()\""
-
-#~ msgid "Replace with 'OfType<T>().{0}()'"
-#~ msgstr "替换为 \"OfType<T>().{0}()\""
-
-#~ msgid "Replace with 'if' statement"
-#~ msgstr "替换为 \"if\" 语句"
-
-#~ msgid "Replace with '{0}'"
-#~ msgstr "替换为“{0}”"
-
-#~ msgid "Replace with call to FirstOrDefault<T>()"
-#~ msgstr "替换为对 FirstOrDefault<T>() 的调用"
-
-#~ msgid "Replace with call to LastOrDefault<T>()"
-#~ msgstr "替换为对 LastOrDefault<T>() 的调用"
-
-#~ msgid "Replace with call to OfType<T>"
-#~ msgstr "替换为调用 OfType<T>"
-
-#~ msgid "Replace with call to OfType<T>().{0}()"
-#~ msgstr "替换为对 OfType<T>().{0}() 的调用"
-
-#~ msgid "Replace with method group"
-#~ msgstr "替换为方法组"
-
-#~ msgid "Replace with simple assignment"
-#~ msgstr "替换为简单赋值"
-
-#~ msgid "Replace with single call to '{0}()'"
-#~ msgstr "替换为对“{0}()”的单一调用"
-
-#~ msgid "Reverse 'for' loop'"
-#~ msgstr "使 \"for\" 循环反向"
-
-#~ msgid "Revision {0}\"t{1}\"t{2}"
-#~ msgstr "修订版 {0}\"t{1}\"t{2}"
-
-#~ msgid "Shows NotImplementedException throws in the quick task bar"
-#~ msgstr "在快速任务栏中显示 NotImplementedException 引发"
-
-#~ msgid "Simplify conditional expression"
-#~ msgstr "简化条件表达式"
-
-#~ msgid "Split declaration and assignment"
-#~ msgstr "拆分声明和赋值"
-
-#~ msgid "Split declaration list"
-#~ msgstr "拆分声明列表"
-
-#~ msgid "Split into two 'if' statements"
-#~ msgstr "拆分为两个 \"if\" 语句"
-
-#~ msgid "Split string literal"
-#~ msgstr "拆分字符串文本"
-
-#~ msgid "Statement can be simplified to 'while' statement"
-#~ msgstr "语句可以简化为 \"while\" 语句"
-
-#~ msgid "Statement is redundant"
-#~ msgstr "语句是冗余的"
-
-#~ msgid "Static field in generic type"
-#~ msgstr "通用类型中的静态字段"
-
-#~ msgid "Suggest the usage of the NameOf operator"
-#~ msgstr "建议使用 NameOf 运算符"
-
-#~ msgid "Suggest the usage of the nameof operator"
-#~ msgstr "建议使用 nameof 运算符"
-
-#~ msgid "Suggests using the class declaring a static function when calling it"
-#~ msgstr "调用静态函数时建议使用类进行声明"
-
-#~ msgid "Swap parameter"
-#~ msgstr "交换参数"
-
-#~ msgid ""
-#~ "The default underlying type of enums is int, so defining it explicitly is "
-#~ "redundant."
-#~ msgstr "枚举的默认基础类型是 int，因此，对其进行显式定义是冗余的。"
-
-#~ msgid "The index '{0}' is out of bounds of the passed arguments"
-#~ msgstr "索引“{0}”不在传递的参数的边界内"
-
-#~ msgid "The name can be inferred from the initializer expression"
-#~ msgstr "可以从初始值设定项表达式推断名称"
-
-#~ msgid "The parameter '{0}' can't be resolved"
-#~ msgstr "无法解析参数“{0}”"
-
-#~ msgid "The parameter name is on the wrong argument"
-#~ msgstr "参数名称在错误的参数中"
-
-#~ msgid "The {0} does not use the 'value' parameter"
-#~ msgstr "{0} 不使用 \"value\" 参数"
-
-#~ msgid "This class is recommended to be defined as static"
-#~ msgstr "建议将此类定义为静态"
-
-#~ msgid "This is a constructor"
-#~ msgstr "这是构造函数"
-
-#~ msgid "This is a void method"
-#~ msgstr "这是 void 方法"
-
-#~ msgid "This is generated by the compiler and can be safely removed"
-#~ msgstr "这是编译器生成的，可以安全删除"
-
-#~ msgid "ThreadStatic does nothing on instance fields"
-#~ msgstr "ThreadStatic 在实例字段中不起作用"
-
-#~ msgid "To \" + String.Join(\" "
-#~ msgstr "到 \" + String.Join(\" "
-
-#~ msgid "To '!='"
-#~ msgstr "转为 \"!=\""
-
-#~ msgid "To '*'"
-#~ msgstr "转为 \"*\""
-
-#~ msgid "To '/'"
-#~ msgstr "转为 \"/\""
-
-#~ msgid "To '<<'"
-#~ msgstr "转为 \"<<\""
-
-#~ msgid "To '=='"
-#~ msgstr "转为 \"==\""
-
-#~ msgid "To '>>'"
-#~ msgstr "转为 \">>\""
-
-#~ msgid "To 'Enum.HasFlag'"
-#~ msgstr "转为 \"Enum.HasFlag\""
-
-#~ msgid "To 'Equals' call"
-#~ msgstr "转为 \"Equals\" 调用"
-
-#~ msgid "To 'NameOf({0})'"
-#~ msgstr "转为“NameOf({0})”"
-
-#~ msgid "To 'ReferenceEquals' call"
-#~ msgstr "转为 \"ReferenceEquals\" 调用"
-
-#~ msgid "To 'Select Case'"
-#~ msgstr "转为 \"Select Case\""
-
-#~ msgid "To 'catch (Exception)'"
-#~ msgstr "转为 \"catch (Exception)\""
-
-#~ msgid "To 'catch'"
-#~ msgstr "转为 \"catch\""
-
-#~ msgid "To 'do...while'"
-#~ msgstr "转为 \"do...while\""
-
-#~ msgid "To 'for'"
-#~ msgstr "转为 \"for\""
-
-#~ msgid "To 'if'"
-#~ msgstr "转为 \"if\""
-
-#~ msgid "To 'nameof({0})'"
-#~ msgstr "转为“nameof({0})”"
-
-#~ msgid "To 'switch'"
-#~ msgstr "转为 \"switch\""
-
-#~ msgid "To 'while { ... }'"
-#~ msgstr "转为 \"while { ... }\""
-
-#~ msgid "To 'while'"
-#~ msgstr "转为 \"while\""
-
-#~ msgid "To '{0}++'"
-#~ msgstr "转为“{0}++”"
-
-#~ msgid "To '{0}--'"
-#~ msgstr "转为“{0}--”"
-
-#~ msgid "To '{0}='"
-#~ msgstr "转为“{0}=”"
-
-#~ msgid "To abstract"
-#~ msgstr "变为抽象"
-
-#~ msgid "To anonymous method"
-#~ msgstr "转为匿名方法"
-
-#~ msgid "To bitwise flag comparison"
-#~ msgstr "转为位标志比较"
-
-#~ msgid "To dec"
-#~ msgstr "转为十进制"
-
-#~ msgid "To explicit implementation"
-#~ msgstr "转为显式实现"
-
-#~ msgid "To expression body"
-#~ msgstr "转为表达式主体"
-
-#~ msgid "To format string"
-#~ msgstr "转为格式字符串"
-
-#~ msgid "To hex"
-#~ msgstr "转为十六进制"
-
-#~ msgid "To implicit implementation"
-#~ msgstr "转为隐式实现"
-
-#~ msgid "To interpolated string"
-#~ msgstr "转为内插字符串"
-
-#~ msgid "To lambda expression"
-#~ msgstr "转为 lambda 表达式"
-
-#~ msgid "To lambda statement"
-#~ msgstr "转为 lambda 语句"
-
-#~ msgid "To non-abstract"
-#~ msgstr "变为非抽象"
-
-#~ msgid "To non-virtual"
-#~ msgstr "变为非虚拟"
-
-#~ msgid "To statement body"
-#~ msgstr "转为语句体"
-
-#~ msgid "To static invocation"
-#~ msgstr "转为静态调用"
-
-#~ msgid "To virtual"
-#~ msgstr "变为虚拟"
-
-#~ msgid "Type parameter '{0}' is never used"
-#~ msgstr "类型参数“{0}”从未被使用"
-
-#~ msgid "Type parameter '{0}' not found"
-#~ msgstr "找不到类型参数“{0}”"
-
-#~ msgid "Type parameter is never used"
-#~ msgstr "类型参数从未被使用"
-
-#~ msgid "Unallowed usage of Roslyn features in this context."
-#~ msgstr "不允许在此上下文中使用 Roslyn 功能。"
-
-#~ msgid ""
-#~ "Unsafe modifier in redundant in unsafe context or when no unsafe "
-#~ "constructs are used"
-#~ msgstr "Unsafe 修饰符在不安全的上下文中或未使用 unsafe 构造时是冗余的"
-
-#~ msgid "Use 'NameOf({0})' expression instead."
-#~ msgstr "改用“NameOf({0})”表达式。"
-
-#~ msgid "Use 'System.Environment.NewLine'"
-#~ msgstr "使用 \"System.Environment.NewLine\""
-
-#~ msgid "Use 'as' and check for null"
-#~ msgstr "使用 \"as\" 和 null 检查"
-
-#~ msgid "Use 'if ({0}.TryGetValue({1}, out val))'"
-#~ msgstr "使用“if ({0}.TryGetValue({1}, out val))”"
-
-#~ msgid "Use 'nameof({0})' expression instead."
-#~ msgstr "改用“nameof({0})”表达式。"
-
-#~ msgid "Use 'string.Empty'"
-#~ msgstr "使用 \"string.Empty\""
-
-#~ msgid "Use 'string.Format()'"
-#~ msgstr "使用 \"string.Format()\""
-
-#~ msgid "Use '{0}' for increased performance"
-#~ msgstr "使用“{0}”提高性能"
-
-#~ msgid "Use culture-aware comparison"
-#~ msgstr "使用可以识别区域性的比较"
-
-#~ msgid "Use ordinal comparison"
-#~ msgstr "使用序号比较"
-
-#~ msgid "Uses shorter string.IsNullOrEmpty call instead of a longer condition"
-#~ msgstr "使用较短的 string.IsNullOrEmpty 调用替代较长的条件"
-
-#~ msgid "Validate Xml docs"
-#~ msgstr "验证 XML 文档"
-
-#~ msgid "Value types are implicitly convertible to nullables"
-#~ msgstr "值类型可以隐式转换为 nullable"
-
-#~ msgid "Virtual member call in constructor"
-#~ msgstr "构造函数中的虚拟成员调用"
-
-#~ msgid ""
-#~ "Warns about calls to virtual member functions occuring in the constructor"
-#~ msgstr "就构造函数中发生的对虚拟成员函数的调用发出警告"
-
-#~ msgid ""
-#~ "Warns about property or indexer setters and event adders or removers that "
-#~ "do not use the value parameter"
-#~ msgstr "就不使用值参数的属性或索引器 setter 以及事件添加器或删除器发出警告"
-
-#~ msgid "Warns about static fields in generic types"
-#~ msgstr "就通用类型中的静态字段发出警告"
-
-#~ msgid "Warns when a culture-aware 'EndsWith' call is used by default."
-#~ msgstr "在默认使用可以识别区域性的 \"EndsWith\" 调用时发出警告。"
-
-#~ msgid "Warns when a culture-aware 'IndexOf' call is used by default."
-#~ msgstr "在默认使用可以识别区域性的 \"IndexOf\" 调用时发出警告。"
-
-#~ msgid "Warns when a culture-aware 'LastIndexOf' call is used by default."
-#~ msgstr "在默认使用可以识别区域性的 \"LastIndexOf\" 调用时发出警告。"
-
-#~ msgid "Warns when a culture-aware 'StartsWith' call is used by default."
-#~ msgstr "在默认使用可以识别区域性的 \"StartsWith\" 调用时发出警告。"
-
-#~ msgid ""
-#~ "Warns when a culture-aware 'string.CompareTo' call is used by default"
-#~ msgstr "在默认使用可以识别区域性的 \"string.CompareTo\" 调用时发出警告"
-
-#~ msgid ""
-#~ "When initializing explicitly typed local variable or array type, array "
-#~ "creation expression can be replaced with array initializer."
-#~ msgstr ""
-#~ "初始化显式类型局部变量或数组类型时，数组创建表达式可以替换为数组初始值设定"
-#~ "项。"
-
-#~ msgid ""
-#~ "When object creation uses object or collection initializer, empty "
-#~ "argument list is redundant"
-#~ msgstr "对象创建使用对象或集合初始值设定项时，空参数列表是冗余的"
-
-#~ msgid "Xml comment is not placed before a valid language element"
-#~ msgstr "XML 注释未放置在有效的语言元素前"
-
-#~ msgid "[ThreadStatic] doesn't work with instance fields"
-#~ msgstr "[ThreadStatic] 不适用于实例字段"
-
-#~ msgid "add accessor"
-#~ msgstr "add 访问器"
-
-#~ msgid "after '_' a lower letter should follow. (Rule '{0}')"
-#~ msgstr "\"_\" 应后接小写字母。(规则“{0}”)"
-
-#~ msgid "after '_' an upper letter should follow. (Rule '{0}')"
-#~ msgstr "\"_\" 应后接大写字母。(规则“{0}”)"
-
-#~ msgid "event"
-#~ msgstr "事件"
-
-#~ msgid "field"
-#~ msgstr "字段"
-
-#~ msgid "member"
-#~ msgstr "成员"
-
-#~ msgid "method"
-#~ msgstr "方法"
-
-#~ msgid "property"
-#~ msgstr "属性"
-
-#~ msgid "remove accessor"
-#~ msgstr "remove 访问器"
-
-#~ msgid "setter"
-#~ msgstr "setter"
-
-#~ msgid ""
-#~ "true is redundant as for statement condition, thus can be safely ommited"
-#~ msgstr "true 对于语句条件是冗余的，因此可以安全地省略"
-
-#~ msgid "{0}"
-#~ msgstr "{0}"
-
-#~ msgid "{0} '{1}' hides {2} from outer class"
-#~ msgstr "{0}“{1}”向外部类隐藏 {2}"
-
-#~ msgid "{0} with optional parameter is hidden by overload"
-#~ msgstr "具有可选参数的 {0} 被重载隐藏"
+#~ msgid "Conditional Breakpoint Hit Type"
+#~ msgstr "条件断点命中类型"
