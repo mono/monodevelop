@@ -37,6 +37,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	{
 		ListBox listBox;
 		ScaffolderArgs args;
+		int selectedRow;
 
 		public event EventHandler ScaffolderSelected;
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
@@ -69,9 +70,11 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			var scaffolders = GetScaffolders ().Value;
 
+			var png = ImageService.GetIcon ("md-html-file-icon", Gtk.IconSize.Dnd);
+			var selectedPng = png.WithStyles ("sel");
+
 			foreach (var scaffolder in scaffolders) {
 				var row = listStore.AddRow ();
-				var png = ImageService.GetIcon ("md-html-file-icon", Gtk.IconSize.Dnd);
 
 				listStore.SetValue (row, icon, png);
 				listStore.SetValue (row, name, scaffolder.Name);
@@ -84,7 +87,12 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			listBox.DataSource = listStore;
 			listBox.HeightRequest = 300;
 			listBox.WidthRequest = 300;
-			listBox.SelectionChanged += (sender, e) => Args.Scaffolder = scaffolders [listBox.SelectedRow];
+			listBox.SelectionChanged += (sender, e) => {
+				Args.Scaffolder = scaffolders [listBox.SelectedRow];
+				listStore.SetValue (selectedRow, icon, png);
+				listStore.SetValue (listBox.SelectedRow, icon, selectedPng);
+				selectedRow = listBox.SelectedRow;
+			};
 			listBox.RowActivated += (sender, e) => ScaffolderSelected?.Invoke (sender, e);
 			listBox.SelectRow (0);
 			listBox.FocusedRow = 0;
