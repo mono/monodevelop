@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
@@ -41,6 +42,7 @@ namespace MonoDevelop.AspNetCore
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
 		public const string TypeScriptCompile = "TypeScriptCompile";
+		const string BlazorDevServerDllProperty = "_BlazorDevServerDll";
 
 		bool updating;
 		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
@@ -95,9 +97,16 @@ namespace MonoDevelop.AspNetCore
 			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
 		}
 
+		bool IsBlazorWasm (DotNetProject project)
+		{
+			return IsWebProject (project)
+				&& project.TargetFramework.IsNetStandard ()
+				&& !string.IsNullOrEmpty (project.MSBuildProject.EvaluatedProperties.GetValue (BlazorDevServerDllProperty));
+		}
+
 		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
-			return framework.IsNetCoreApp ();
+			return framework.IsNetStandardOrNetCoreApp ();
 		}
 
 		protected override ExecutionCommand OnCreateExecutionCommand (
@@ -106,25 +115,26 @@ namespace MonoDevelop.AspNetCore
 			TargetFrameworkMoniker framework,
 			ProjectRunConfiguration runConfiguration)
 		{
-			var result = CreateAspNetCoreExecutionCommand (configSel, configuration, runConfiguration);
+			if (!(runConfiguration is AspNetCoreRunConfiguration aspnetCoreRunConfiguration))
+				return null;
+
+			var outputFileName = aspnetCoreRunConfiguration.StartAction == AssemblyRunConfiguration.StartActions.Program
+				? aspnetCoreRunConfiguration.StartProgram
+				: GetOutputFileName (configuration);
+
+			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
+
+			var result = IsBlazorWasm (Project)
+				? CreateBlazorWasmExecutionCommand (configSel, configuration, aspnetCoreRunConfiguration, outputFileName, applicationUrl)
+				: CreateAspNetCoreExecutionCommand (configSel, configuration, aspnetCoreRunConfiguration, outputFileName, applicationUrl); 
 			if (result != null)
 				return result;
 
 			return base.OnCreateExecutionCommand (configSel, configuration, framework, runConfiguration);
 		}
 
-		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
+		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
 		{
-			FilePath outputFileName;
-			if (!(runConfiguration is AspNetCoreRunConfiguration aspnetCoreRunConfiguration))
-				return null;
-			if (aspnetCoreRunConfiguration.StartAction == AssemblyRunConfiguration.StartActions.Program)
-				outputFileName = aspnetCoreRunConfiguration.StartProgram;
-			else
-				outputFileName = GetOutputFileName (configuration);
-
-			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
-
 			return new AspNetCoreExecutionCommand (
 				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
@@ -139,6 +149,29 @@ namespace MonoDevelop.AspNetCore
 				ApplicationURLs = applicationUrl,
 				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
 			};
+		}
+
+		private ExecutionCommand CreateBlazorWasmExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
+		{
+			var blazorDevServerDll = Project.MSBuildProject.EvaluatedProperties.GetValue (BlazorDevServerDllProperty).Replace ('\\', '/');
+			if (File.Exists (blazorDevServerDll)) {
+				return new AspNetCoreExecutionCommand (
+					string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
+					blazorDevServerDll,
+					$"serve --applicationpath {outputFileName}"
+				) {
+					EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
+					PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
+					ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
+					LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
+					LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
+					ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
+					ApplicationURLs = applicationUrl,
+					PipeTransport = aspnetCoreRunConfiguration.PipeTransport
+				};
+			}
+
+			return null;
 		}
 
 		protected override Task OnExecute (
