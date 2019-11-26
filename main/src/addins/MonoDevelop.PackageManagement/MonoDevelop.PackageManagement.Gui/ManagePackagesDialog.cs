@@ -91,7 +91,6 @@ namespace MonoDevelop.PackageManagement
 			consolidateLabel.Visible = viewModel.IsManagingSolution;
 			UpdateDialogTitle ();
 			UpdatePackageSearchEntryWithInitialText (initialSearch);
-			UpdatePackageResultsPageLabels ();
 
 			InitializeListView ();
 			UpdateAddPackagesButton ();
@@ -114,6 +113,33 @@ namespace MonoDevelop.PackageManagement
 			updatesLabel.KeyPressed += UpdatesLabelKeyPressed;
 			consolidateLabel.ButtonPressed += ConsolidateLabelButtonPressed;
 			consolidateLabel.KeyPressed += ConsolidateLabelKeyPressed;
+			UpdateTabAccessibility ();
+			UpdatePackageResultsPageLabels ();
+		}
+
+		void UpdateTabAccessibility ()
+		{
+			if (tabGroup.Surface.ToolkitEngine.Type == ToolkitType.Gtk) {
+				if (consolidateLabel.Parent.Surface.NativeWidget is Gtk.Container a11yGroup) {
+					a11yGroup.Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
+					var children = a11yGroup.Children;
+					var tabs = new List<Atk.Object> (children.Length);
+					foreach (var child in children) {
+						if (!child.Visible)
+							continue;
+						if (child is Gtk.EventBox box && box.Child is Gtk.Label) {
+							box.Accessible.SetTitleUIElement (box.Child.Accessible);
+							box.Child.Accessible.SetShouldIgnore (true);
+						}
+						var tab = child.Accessible;
+						tab.SetRole (AtkCocoa.Roles.AXRadioButton);
+						tab.SetSubRole (AtkCocoa.SubRoles.AXTabButton);
+						tab.SetValue (false);
+						tabs.Add (tab);
+					}
+					a11yGroup.Accessible.SetTabs (tabs.ToArray ());
+				}
+			}
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -1131,9 +1157,23 @@ namespace MonoDevelop.PackageManagement
 		{
 			string text = (string)label.Tag;
 			if (page == viewModel.PageSelected) {
+				UpdatePackageResultsLabelA11y (label, true);
 				label.Markup = string.Format ("<b><u>{0}</u></b>", text);
 			} else {
+				UpdatePackageResultsLabelA11y (label, false);
 				label.Markup = text;
+			}
+		}
+
+		static void UpdatePackageResultsLabelA11y (Label label, bool active)
+		{
+			if (label.Surface.ToolkitEngine.Type == ToolkitType.Gtk) {
+				var widget = label.Surface.NativeWidget as Gtk.Widget;
+				if (widget != null) {
+					widget.Accessible.SetValue (active);
+					// FIXME: Accessible.SetValue has no effect, so set the role description instead
+					widget.Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, active ? "selected tab" : "tab");
+				}
 			}
 		}
 
