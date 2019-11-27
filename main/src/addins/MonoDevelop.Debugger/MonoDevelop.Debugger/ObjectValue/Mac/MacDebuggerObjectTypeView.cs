@@ -37,7 +37,7 @@ namespace MonoDevelop.Debugger
 	{
 		public MacDebuggerObjectTypeView (MacObjectValueTreeView treeView) : base (treeView, "type")
 		{
-			TextField = new MacDebuggerTextField (this) {
+			TextField = new NSTextField {
 				TranslatesAutoresizingMaskIntoConstraints = false,
 				BackgroundColor = NSColor.Clear,
 				MaximumNumberOfLines = 1,
