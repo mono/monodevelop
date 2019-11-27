@@ -154,24 +154,20 @@ namespace MonoDevelop.AspNetCore
 		private ExecutionCommand CreateBlazorWasmExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
 		{
 			var blazorDevServerDll = Project.MSBuildProject.EvaluatedProperties.GetValue (BlazorDevServerDllProperty).Replace ('\\', '/');
-			if (File.Exists (blazorDevServerDll)) {
-				return new AspNetCoreExecutionCommand (
-					string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
-					blazorDevServerDll,
-					$"serve --applicationpath \"{outputFileName}\""
-				) {
-					EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
-					PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
-					ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
-					LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
-					LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
-					ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
-					ApplicationURLs = applicationUrl,
-					PipeTransport = aspnetCoreRunConfiguration.PipeTransport
-				};
-			}
-
-			return null;
+			return new AspNetCoreExecutionCommand (
+				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
+				blazorDevServerDll,
+				$"serve --applicationpath \"{outputFileName}\" {aspnetCoreRunConfiguration.StartArguments}"
+			) {
+				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
+				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
+				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
+				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
+				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl ?? applicationUrl.GetFirstApplicationUrl (),
+				ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
+				ApplicationURLs = applicationUrl,
+				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
+			};
 		}
 
 		protected override Task OnExecute (
