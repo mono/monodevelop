@@ -125,15 +125,10 @@ namespace MonoDevelop.AspNetCore
 
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
 		{
-			var currentConfig = Project.GetConfiguration (configSel) as ProjectConfiguration;
-			var runArguments = currentConfig?.Properties?.GetValue (RunArgumentsProperty)?.Replace ('\\', '/');
-
 			return new AspNetCoreExecutionCommand (
-				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
+				Project.GetWorkingDirectory (configSel, aspnetCoreRunConfiguration.StartWorkingDirectory),
 				outputFileName,
-				string.IsNullOrEmpty (runArguments)
-					? $"\"{outputFileName}\" {aspnetCoreRunConfiguration.StartArguments}"
-					: $"{runArguments} {aspnetCoreRunConfiguration.StartArguments}"
+				Project.GetRunArguments (configSel, outputFileName, aspnetCoreRunConfiguration.StartArguments)
 			) {
 				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
 				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,

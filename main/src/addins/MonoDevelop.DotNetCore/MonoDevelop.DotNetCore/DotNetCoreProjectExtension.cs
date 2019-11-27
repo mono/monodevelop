@@ -45,8 +45,6 @@ namespace MonoDevelop.DotNetCore
 		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
 		const string GlobalJsonPathExtendedPropertyName = "DotNetCore.GlobalJsonPath";
 
-		protected const string RunArgumentsProperty = "RunArguments";
-
 		DotNetCoreSdkPaths sdkPaths;
 
 		public DotNetCoreProjectExtension ()
@@ -145,23 +143,15 @@ namespace MonoDevelop.DotNetCore
 
 		DotNetCoreExecutionCommand CreateDotNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			FilePath outputFileName;
 			var dotnetCoreRunConfiguration = runConfiguration as DotNetCoreRunConfiguration;
-			if (dotnetCoreRunConfiguration?.StartAction == AssemblyRunConfiguration.StartActions.Program)
-				outputFileName = dotnetCoreRunConfiguration.StartProgram;
-			else
-				outputFileName = GetOutputFileName (configuration);
-
-			var workingDirectory =  Project.GetOutputFileName (configSel).ParentDirectory;
-			var currentConfig = Project.GetConfiguration (configSel) as ProjectConfiguration;
-			var runArguments = currentConfig?.Properties?.GetValue (RunArgumentsProperty)?.Replace ('\\', '/');
+			var outputFileName = dotnetCoreRunConfiguration.StartAction == AssemblyRunConfiguration.StartActions.Program
+				? dotnetCoreRunConfiguration.StartProgram
+				: GetOutputFileName (configuration);
 
 			return new DotNetCoreExecutionCommand (
-				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? workingDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
+				Project.GetWorkingDirectory (configSel, dotnetCoreRunConfiguration.StartWorkingDirectory),
 				outputFileName,
-				string.IsNullOrEmpty (runArguments)
-					? $"\"{outputFileName}\" {dotnetCoreRunConfiguration.StartArguments}"
-					: $"{runArguments} {dotnetCoreRunConfiguration.StartArguments}"
+				Project.GetRunArguments (configSel, outputFileName, dotnetCoreRunConfiguration.StartArguments)
 			) {
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
