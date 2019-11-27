@@ -58,7 +58,6 @@ namespace MonoDevelop.Debugger
 		Button close, helpLinkButton, innerExceptionHelpLinkButton;
 		TreeView exceptionValueTreeView, stackTraceTreeView;
 		MacObjectValueTreeView macExceptionValueTreeView;
-		Expander expanderProperties, expanderStacktrace;
 		InnerExceptionsTree innerExceptionsTreeView;
 		ObjectValueTreeViewController controller;
 		CheckButton onlyShowMyCodeCheckbox;
@@ -209,7 +208,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			if (useNewTreeView && Platform.IsMac) {
 				var scrolled = new AppKit.NSScrollView {
 					DocumentView = macExceptionValueTreeView,
-					AutohidesScrollers = false,
+					AutohidesScrollers = true,
 					HasVerticalScroller = true,
 					HasHorizontalScroller = true,
 				};
@@ -240,7 +239,6 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				exceptionValueTreeView.Show ();
 
 				var scrolled = new ScrolledWindow {
-					HeightRequest = 180,
 					CanFocus = true,
 					HscrollbarPolicy = PolicyType.Automatic,
 					VscrollbarPolicy = PolicyType.Automatic
@@ -252,57 +250,23 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				scrolledWidget = scrolled;
 			}
 
-			var vbox = new VBox ();
-			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolledWidget);
-			vbox.PackStart (new VBox (), false, false, 5);
-			vbox.PackStart (expanderProperties, true, true, 0);
-			vbox.ShowAll ();
-
-			return vbox;
-		}
-
-		class ExpanderWithMinSize : Expander
-		{
-			public ExpanderWithMinSize (string label) : base (label)
-			{
-			}
+			var label = new Label ();
+			label.Markup = "<b>" + GettextCatalog.GetString ("Properties") + "</b>";
+			label.Xalign = 0;
+			label.Xpad = 10;
 
 			protected override void OnSizeRequested (ref Requisition requisition)
 			{
 				base.OnSizeRequested (ref requisition);
 				requisition.Height = 28;
 			}
-		}
 
-		Expander WrapInExpander (string title, Widget widget)
-		{
-			var expander = new ExpanderWithMinSize ($"<b>{GLib.Markup.EscapeText (title)}</b>");
-			expander.Name = "exception_dialog_expander";
-			Gtk.Rc.ParseString (@"style ""exception-dialog-expander""
-{
-	GtkExpander::expander-spacing = 10
-}
-widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
-");
-			expander.Child = widget;
-			expander.Spacing = 0;
-			expander.Show ();
-			expander.CanFocus = true;
-			expander.UseMarkup = true;
-			expander.Expanded = true;
-			expander.Activated += Expander_Activated;
-			expander.ModifyBg (StateType.Prelight, Ide.Gui.Styles.PrimaryBackgroundColor.ToGdkColor ());
-			return expander;
-		}
+			var vbox = new VBox ();
+			vbox.PackStart (label, false, false, 12);
+			vbox.PackStart (scrolledWidget, true, true, 0);
+			vbox.ShowAll ();
 
-		void Expander_Activated (object sender, EventArgs e)
-		{
-			if (expanderProperties.Expanded && expanderStacktrace.Expanded)
-				paned.PositionSet = false;
-			else if (expanderStacktrace.Expanded)
-				paned.Position = paned.MaxPosition;
-			else
-				paned.Position = paned.MinPosition;
+			return vbox;
 		}
 
 		static void StackFrameLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
@@ -339,7 +303,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			stackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow {
-				HeightRequest = 180,
 				HscrollbarPolicy = PolicyType.Never,
 				VscrollbarPolicy = PolicyType.Automatic
 			};
@@ -351,10 +314,14 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			vbox.PackStart (scrolled, true, true, 0);
 			vbox.Show ();
 
+			var label = new Label ();
+			label.Markup = "<b>" + GettextCatalog.GetString ("Stacktrace") + "</b>";
+			label.Xalign = 0;
+			label.Xpad = 10;
+
 			var vbox2 = new VBox ();
-			expanderStacktrace = WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
-			vbox2.PackStart (new VBox (), false, false, 5);
-			vbox2.PackStart (expanderStacktrace, true, true, 0);
+			vbox2.PackStart (label, false, false, 12);
+			vbox2.PackStart (vbox, true, true, 0);
 			vbox2.ShowAll ();
 			return vbox2;
 		}
@@ -406,6 +373,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			paned.GrabAreaSize = 10;
 			paned.Pack1 (CreateStackTraceTreeView (), true, false);
 			paned.Pack2 (CreateExceptionValueTreeView (), true, false);
+			paned.Position = 160;
 			paned.Show ();
 			var vbox = new VBox (false, 0);
 			var whiteBackground = new EventBox ();
