@@ -31,6 +31,7 @@ using System.Linq;
 using System.Collections.Generic;
 
 using Foundation;
+using GLib;
 using Gtk;
 
 using Mono.Debugging.Client;
@@ -38,6 +39,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -97,6 +99,8 @@ namespace MonoDevelop.Debugger
 			icon.Yalign = 0;
 
 			exceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
+			icon.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.WarningIcon", exceptionTypeLabel, null);
+
 			exceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
 			helpLinkButton = new Button { HasFocus = true, Xalign = 0, Relief = ReliefStyle.None, BorderWidth = 0 };
 			helpLinkButton.Name = "exception_help_link_label";
@@ -255,10 +259,10 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			label.Xalign = 0;
 			label.Xpad = 10;
 
-			protected override void OnSizeRequested (ref Requisition requisition)
-			{
-				base.OnSizeRequested (ref requisition);
-				requisition.Height = 28;
+			if (exceptionValueTreeView != null) {
+				exceptionValueTreeView.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.ExceptionValueTreeView", label, null);
+			} else {
+				macExceptionValueTreeView.AccessibilityTitle = new NSString (label.Text);
 			}
 
 			var vbox = new VBox ();
@@ -318,6 +322,8 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			label.Markup = "<b>" + GettextCatalog.GetString ("Stacktrace") + "</b>";
 			label.Xalign = 0;
 			label.Xpad = 10;
+
+			stackTraceTreeView.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.StackTraceTreeView", label, null);
 
 			var vbox2 = new VBox ();
 			vbox2.PackStart (label, false, false, 12);
@@ -435,6 +441,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			innerExceptionTypeLabel.Xalign = 0;
 			innerExceptionTypeLabel.Selectable = true;
 			innerExceptionTypeLabel.CanFocus = false;
+			icon.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.InnerExceptionWarningIcon", innerExceptionTypeLabel, null);
 			hbox.PackStart (innerExceptionTypeLabel, false, true, 4);
 
 			innerExceptionMessageLabel = new Label ();
@@ -518,6 +525,10 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 					UpdateSelectedException ((ExceptionInfo)innerExceptionsTreeView.Model.GetValue (selectedIter, 0));
 				}
 			};
+			innerExceptionsTreeView.SetCommonAccessibilityAttributes (
+				"ExceptionCaughtDialog.InnerExceptionsTreeView",
+				GettextCatalog.GetString ("Inner Exceptions"),
+				null);
 			var eventBox = new EventBox ();
 			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // top and bottom padders
 			var vbox = new VBox ();
@@ -720,6 +731,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 		class CellRendererInnerException : CellRenderer
 		{
+			[Property ("text")] // Enables Voice Over support.
 			public string Text { get; set; }
 
 			Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
