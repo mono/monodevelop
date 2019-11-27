@@ -50,22 +50,32 @@ namespace MonoDevelop.DotNetCore
 			return framework.IsNetStandard () || framework.IsNetCoreApp ();
 		}
 
-		public static bool IsNetCoreAppOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
+		static bool IsVersionOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
 		{
 			DotNetCoreVersion.TryParse (framework.Version, out var dotNetCoreVersion);
 			if (dotNetCoreVersion == null)
 				return false;
 
-			return framework.IsNetCoreApp () && dotNetCoreVersion >= version;
+			// Only compare $major.$minor, as Version parsing sets some fields to -1
+			// (Build), which gives false positives/negatives when comparing, for instance,
+			// 3.1.100-preview1-014459 with an unsupported 3.1, and we're really only
+			// interested in the target framework version, which only uses $major.$minor.
+			if (dotNetCoreVersion.Major > version.Major)
+				return true;
+			if (dotNetCoreVersion.Major < version.Major)
+				return false;
+
+			return dotNetCoreVersion.Minor >= version.Minor;
+		}
+
+		public static bool IsNetCoreAppOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
+		{
+			return framework.IsNetCoreApp () && framework.IsVersionOrHigher (version);
 		}
 
 		public static bool IsNetStandardOrHigher (this TargetFrameworkMoniker framework, DotNetCoreVersion version)
 		{
-			DotNetCoreVersion.TryParse (framework.Version, out var dotNetCoreVersion);
-			if (dotNetCoreVersion == null)
-				return false;
-
-			return framework.IsNetStandard () && dotNetCoreVersion >= version;
+			return framework.IsNetStandard () && framework.IsVersionOrHigher (version);
 		}
 	}
 }
