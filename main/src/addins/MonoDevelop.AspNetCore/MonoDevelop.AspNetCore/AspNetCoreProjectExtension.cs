@@ -42,7 +42,7 @@ namespace MonoDevelop.AspNetCore
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
 		public const string TypeScriptCompile = "TypeScriptCompile";
-		const string BlazorDevServerDllProperty = "_BlazorDevServerDll";
+		const string RunArgumentsProperty = "RunArguments";
 
 		bool updating;
 		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
@@ -97,13 +97,6 @@ namespace MonoDevelop.AspNetCore
 			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
 		}
 
-		bool IsBlazorWasm (DotNetProject project)
-		{
-			return IsWebProject (project)
-				&& project.TargetFramework.IsNetStandard ()
-				&& !string.IsNullOrEmpty (project.MSBuildProject.EvaluatedProperties.GetValue (BlazorDevServerDllProperty));
-		}
-
 		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
 		{
 			return framework.IsNetStandardOrNetCoreApp ();
@@ -124,9 +117,7 @@ namespace MonoDevelop.AspNetCore
 
 			var applicationUrl = aspnetCoreRunConfiguration.CurrentProfile.TryGetApplicationUrl ();
 
-			var result = IsBlazorWasm (Project)
-				? CreateBlazorWasmExecutionCommand (configSel, configuration, aspnetCoreRunConfiguration, outputFileName, applicationUrl)
-				: CreateAspNetCoreExecutionCommand (configSel, configuration, aspnetCoreRunConfiguration, outputFileName, applicationUrl); 
+			var result = CreateAspNetCoreExecutionCommand (configSel, configuration, aspnetCoreRunConfiguration, outputFileName, applicationUrl); 
 			if (result != null)
 				return result;
 
@@ -135,29 +126,14 @@ namespace MonoDevelop.AspNetCore
 
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
 		{
+			var runArguments = Project.MSBuildProject.EvaluatedProperties.GetValue (RunArgumentsProperty).Replace ('\\', '/');
+
 			return new AspNetCoreExecutionCommand (
 				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				aspnetCoreRunConfiguration.StartArguments
-			) {
-				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
-				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,
-				ExternalConsole = aspnetCoreRunConfiguration.ExternalConsole,
-				LaunchBrowser = aspnetCoreRunConfiguration.CurrentProfile.LaunchBrowser ?? false,
-				LaunchURL = aspnetCoreRunConfiguration.CurrentProfile.LaunchUrl,
-				ApplicationURL = applicationUrl.GetFirstApplicationUrl (),
-				ApplicationURLs = applicationUrl,
-				PipeTransport = aspnetCoreRunConfiguration.PipeTransport
-			};
-		}
-
-		private ExecutionCommand CreateBlazorWasmExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
-		{
-			var blazorDevServerDll = Project.MSBuildProject.EvaluatedProperties.GetValue (BlazorDevServerDllProperty).Replace ('\\', '/');
-			return new AspNetCoreExecutionCommand (
-				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,
-				blazorDevServerDll,
-				$"serve --applicationpath \"{outputFileName}\" {aspnetCoreRunConfiguration.StartArguments}"
+				string.IsNullOrEmpty (runArguments)
+					? $"\"{outputFileName}\" {aspnetCoreRunConfiguration.StartArguments}"
+					: $"{runArguments} {aspnetCoreRunConfiguration.StartArguments}"
 			) {
 				EnvironmentVariables = aspnetCoreRunConfiguration.EnvironmentVariables,
 				PauseConsoleOutput = aspnetCoreRunConfiguration.PauseConsoleOutput,

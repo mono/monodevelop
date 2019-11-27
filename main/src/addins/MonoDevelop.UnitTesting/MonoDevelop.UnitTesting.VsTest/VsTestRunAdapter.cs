@@ -246,12 +246,12 @@ namespace MonoDevelop.UnitTesting.VsTest
 					command = new DotNetCoreExecutionCommand (
 						startInfo.WorkingDirectory,
 						startInfo.FileName,
-						startInfo.Arguments
+						$"\"{startInfo.FileName}\" {startInfo.Arguments}"
 					) {
 						EnvironmentVariables = startInfo.EnvironmentVariables
 					};
 					((DotNetCoreExecutionCommand)command).Command = startInfo.FileName;
-					((DotNetCoreExecutionCommand)command).Arguments = startInfo.Arguments;
+					((DotNetCoreExecutionCommand)command).Arguments = $"\"{startInfo.FileName}\" {startInfo.Arguments}";
 				} else {
 					var portArgument = startInfo.Arguments.IndexOf (" --port", StringComparison.Ordinal);
                     var assembly = startInfo.Arguments.Remove (portArgument - 1).Trim (new char[] { '"' });

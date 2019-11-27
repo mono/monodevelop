@@ -155,7 +155,7 @@ namespace MonoDevelop.DotNetCore
 			return new DotNetCoreExecutionCommand (
 				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? workingDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				dotnetCoreRunConfiguration?.StartArguments
+				$"\"{outputFileName}\" {dotnetCoreRunConfiguration?.StartArguments}"
 			) {
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
