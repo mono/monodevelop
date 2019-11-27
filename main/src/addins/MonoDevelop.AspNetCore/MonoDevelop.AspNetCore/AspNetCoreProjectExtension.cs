@@ -42,7 +42,6 @@ namespace MonoDevelop.AspNetCore
 	class AspNetCoreProjectExtension : DotNetCoreProjectExtension
 	{
 		public const string TypeScriptCompile = "TypeScriptCompile";
-		const string RunArgumentsProperty = "RunArguments";
 
 		bool updating;
 		Dictionary<string, AspNetCoreRunConfiguration> aspNetCoreRunConfs = new Dictionary<string, AspNetCoreRunConfiguration> ();
@@ -126,7 +125,8 @@ namespace MonoDevelop.AspNetCore
 
 		private ExecutionCommand CreateAspNetCoreExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, AspNetCoreRunConfiguration aspnetCoreRunConfiguration, FilePath outputFileName, string applicationUrl)
 		{
-			var runArguments = Project.MSBuildProject.EvaluatedProperties.GetValue (RunArgumentsProperty).Replace ('\\', '/');
+			var currentConfig = Project.GetConfiguration (configSel) as ProjectConfiguration;
+			var runArguments = currentConfig?.Properties?.GetValue (RunArgumentsProperty)?.Replace ('\\', '/');
 
 			return new AspNetCoreExecutionCommand (
 				string.IsNullOrWhiteSpace (aspnetCoreRunConfiguration.StartWorkingDirectory) ? Project.BaseDirectory : aspnetCoreRunConfiguration.StartWorkingDirectory,

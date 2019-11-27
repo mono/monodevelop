@@ -45,6 +45,8 @@ namespace MonoDevelop.DotNetCore
 		const string ShownDotNetCoreSdkInstalledExtendedPropertyName = "DotNetCore.ShownDotNetCoreSdkNotInstalledDialog";
 		const string GlobalJsonPathExtendedPropertyName = "DotNetCore.GlobalJsonPath";
 
+		protected const string RunArgumentsProperty = "RunArguments";
+
 		DotNetCoreSdkPaths sdkPaths;
 
 		public DotNetCoreProjectExtension ()
@@ -151,11 +153,15 @@ namespace MonoDevelop.DotNetCore
 				outputFileName = GetOutputFileName (configuration);
 
 			var workingDirectory =  Project.GetOutputFileName (configSel).ParentDirectory;
+			var currentConfig = Project.GetConfiguration (configSel) as ProjectConfiguration;
+			var runArguments = currentConfig?.Properties?.GetValue (RunArgumentsProperty)?.Replace ('\\', '/');
 
 			return new DotNetCoreExecutionCommand (
 				string.IsNullOrEmpty (dotnetCoreRunConfiguration?.StartWorkingDirectory) ? workingDirectory : dotnetCoreRunConfiguration.StartWorkingDirectory,
 				outputFileName,
-				$"\"{outputFileName}\" {dotnetCoreRunConfiguration?.StartArguments}"
+				string.IsNullOrEmpty (runArguments)
+					? $"\"{outputFileName}\" {dotnetCoreRunConfiguration.StartArguments}"
+					: $"{runArguments} {dotnetCoreRunConfiguration.StartArguments}"
 			) {
 				EnvironmentVariables = dotnetCoreRunConfiguration?.EnvironmentVariables,
 				PauseConsoleOutput = dotnetCoreRunConfiguration?.PauseConsoleOutput ?? false,
