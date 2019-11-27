@@ -211,7 +211,7 @@ namespace MonoDevelop.Debugger
 			}
 
 			// Note: Hitting Return should *always* complete the current selection, but other typed chars require examining context...
-			if (typedChar != '\0' && typedChar != '\n') {
+			if (typedChar != '\0' && typedChar != '\n' && typedChar != '\t') {
 				var text = buffer.CurrentSnapshot.GetText ();
 				var span = DebuggerAsyncCompletionSource.GetWordSpan (text, text.Length);
 
