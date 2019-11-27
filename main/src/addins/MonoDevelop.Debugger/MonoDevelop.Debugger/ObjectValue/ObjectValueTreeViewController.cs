@@ -964,6 +964,48 @@ namespace MonoDevelop.Debugger
 			return "md-" + access + global + source;
 		}
 
+		internal static string GetAccessibilityTitleForIcon (ObjectValueFlags flags, string defaultTitle = null)
+		{
+			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
+				return GettextCatalog.GetString ("Literal");
+
+			string global = (flags & ObjectValueFlags.Global) != 0 ? GettextCatalog.GetString ("Static") : string.Empty;
+			string source;
+
+			switch (flags & ObjectValueFlags.OriginMask) {
+			case ObjectValueFlags.Property: source = GettextCatalog.GetString ("Property"); break;
+			case ObjectValueFlags.Type: source = GettextCatalog.GetString ("Class"); global = string.Empty; break;
+			case ObjectValueFlags.Method: source = GettextCatalog.GetString ("Method"); break;
+			case ObjectValueFlags.Literal: return GettextCatalog.GetString ("Literal");
+			case ObjectValueFlags.Namespace: return GettextCatalog.GetString ("Namespace");
+			case ObjectValueFlags.Group: return GettextCatalog.GetString ("Open Resource Folder");
+			case ObjectValueFlags.Field: source = GettextCatalog.GetString ("Field"); break;
+			case ObjectValueFlags.Variable: return GettextCatalog.GetString ("Variable");
+			default: return defaultTitle;
+			}
+
+			string access;
+			switch (flags & ObjectValueFlags.AccessMask) {
+			case ObjectValueFlags.Private: access = GettextCatalog.GetString ("Private"); break;
+			case ObjectValueFlags.Internal: access = GettextCatalog.GetString ("Internal"); break;
+			case ObjectValueFlags.InternalProtected:
+			case ObjectValueFlags.Protected: access = GettextCatalog.GetString ("Protected"); break;
+			default: access = string.Empty; break;
+			}
+
+			return access + " " + global + " " + source;
+		}
+
+		internal static string GetAccessibilityTitleForIcon (string iconName, string defaultTitle)
+		{
+			switch (iconName) {
+			case "md-warning":
+				return GettextCatalog.GetString ("Warning");
+			default:
+				return defaultTitle;
+			}
+		}
+
 		static int GetKnownImageId (ObjectValueFlags flags)
 		{
 			var name = GetIcon (flags);
