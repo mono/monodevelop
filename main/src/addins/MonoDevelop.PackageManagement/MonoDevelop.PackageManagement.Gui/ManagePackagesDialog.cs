@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -90,7 +91,6 @@ namespace MonoDevelop.PackageManagement
 			consolidateLabel.Visible = viewModel.IsManagingSolution;
 			UpdateDialogTitle ();
 			UpdatePackageSearchEntryWithInitialText (initialSearch);
-			UpdatePackageResultsPageLabels ();
 
 			InitializeListView ();
 			UpdateAddPackagesButton ();
@@ -113,6 +113,33 @@ namespace MonoDevelop.PackageManagement
 			updatesLabel.KeyPressed += UpdatesLabelKeyPressed;
 			consolidateLabel.ButtonPressed += ConsolidateLabelButtonPressed;
 			consolidateLabel.KeyPressed += ConsolidateLabelKeyPressed;
+			UpdateTabAccessibility ();
+			UpdatePackageResultsPageLabels ();
+		}
+
+		void UpdateTabAccessibility ()
+		{
+			if (tabGroup.Surface.ToolkitEngine.Type == ToolkitType.Gtk) {
+				if (consolidateLabel.Parent.Surface.NativeWidget is Gtk.Container a11yGroup) {
+					a11yGroup.Accessible.SetRole (AtkCocoa.Roles.AXTabGroup);
+					var children = a11yGroup.Children;
+					var tabs = new List<Atk.Object> (children.Length);
+					foreach (var child in children) {
+						if (!child.Visible)
+							continue;
+						if (child is Gtk.EventBox box && box.Child is Gtk.Label) {
+							box.Accessible.SetTitleUIElement (box.Child.Accessible);
+							box.Child.Accessible.SetShouldIgnore (true);
+						}
+						var tab = child.Accessible;
+						tab.SetRole (AtkCocoa.Roles.AXRadioButton);
+						tab.SetSubRole (AtkCocoa.SubRoles.AXTabButton);
+						tab.SetValue (false);
+						tabs.Add (tab);
+					}
+					a11yGroup.Accessible.SetTabs (tabs.ToArray ());
+				}
+			}
 		}
 
 		public bool ShowPreferencesForPackageSources { get; private set; }
@@ -240,6 +267,7 @@ namespace MonoDevelop.PackageManagement
 
 			projectsListView = new ListView ();
 			projectsListView.DataSource = projectStore;
+			projectsListView.Accessible.LabelWidget = projectsListViewLabel;
 
 			// Selected project check box column.
 			if (projectCheckBoxCellView != null)
@@ -248,16 +276,15 @@ namespace MonoDevelop.PackageManagement
 			projectCheckBoxCellView.ActiveField = projectCheckedField;
 			projectCheckBoxCellView.Editable = true;
 			projectCheckBoxCellView.Toggled += ProjectCheckBoxCellViewToggled;
-			var column = new ListViewColumn (string.Empty, projectCheckBoxCellView);
-			projectsListView.Columns.Add (column);
-
-			// Project column.
-			var textCellView = new TextCellView ();
-			textCellView.TextField = projectNameField;
-			column = new ListViewColumn (GettextCatalog.GetString ("Project"), textCellView) {
+			var column = new ListViewColumn (GettextCatalog.GetString ("Project"), projectCheckBoxCellView) {
 				CanResize = true,
 				SortDataField = projectNameField
 			};
+
+			// Project name.
+			var textCellView = new TextCellView ();
+			textCellView.TextField = projectNameField;
+			column.Views.Add (textCellView);
 			projectsListView.Columns.Add (column);
 
 			// Package version column
@@ -304,6 +331,8 @@ namespace MonoDevelop.PackageManagement
 			if (!String.IsNullOrWhiteSpace (packageSearchEntry.Text)) {
 				packagesListView.Visible = false;
 				noPackagesFoundFrame.Visible = true;
+
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (noPackagesFoundLabel.Text);
 			}
 		}
 
@@ -553,6 +582,7 @@ namespace MonoDevelop.PackageManagement
 				// Show spinner?
 			} else if (viewModel.IsReadingPackages) {
 				ClearPackages ();
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (loadingSpinnerLabel.Text);
 			} else {
 				HideLoadingMessage ();
 			}
@@ -607,6 +637,11 @@ namespace MonoDevelop.PackageManagement
 
 			if (packagesListViewWasEmpty && (packageStore.RowCount > 0)) {
 				packagesListView.SelectRow (0);
+
+				string message = string.IsNullOrWhiteSpace (packageSearchEntry.Text)
+					? GettextCatalog.GetString ("Packages loaded")
+					: GettextCatalog.GetString ("Search completed");
+				IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (message);
 			}
 
 			if (!viewModel.IsReadingPackages && (packageStore.RowCount == 0)) {
@@ -618,8 +653,18 @@ namespace MonoDevelop.PackageManagement
 		{
 			int row = packageStore.AddRow ();
 			var accessibleDescription = StringBuilderCache.Allocate (packageViewModel.Id);
-			if (packageViewModel.HasDownloadCount)
-				accessibleDescription.Append (", ").Append (packageViewModel.GetDownloadCountDisplayText ()).Append (" ").Append (GettextCatalog.GetString ("Downloads"));
+			if (packageViewModel.HasDownloadCount) {
+				accessibleDescription.Append (", ");
+				if (packageViewModel.ShowVersionInsteadOfDownloadCount) {
+					accessibleDescription.Append (GettextCatalog.GetString ("Version"));
+					accessibleDescription.Append (" ");
+					accessibleDescription.Append (packageViewModel.GetDownloadCountOrVersionDisplayText ());
+				} else {
+					accessibleDescription.Append (packageViewModel.GetDownloadCountOrVersionDisplayText ());
+					accessibleDescription.Append (" ");
+					accessibleDescription.Append (GettextCatalog.GetString ("Downloads"));
+				}
+			}
 			if (!string.IsNullOrEmpty (packageViewModel.Summary))
 				accessibleDescription.Append (", ").Append (packageViewModel.Summary);
 			packageStore.SetValues (row,
@@ -876,6 +921,8 @@ namespace MonoDevelop.PackageManagement
 			viewModel.SearchTerms = this.packageSearchEntry.Text;
 			viewModel.Search ();
 
+			IdeApp.Workbench.RootWindow.Accessible.MakeAccessibilityAnnouncement (loadingSpinnerLabel.Text);
+
 			return false;
 		}
 
@@ -1110,9 +1157,23 @@ namespace MonoDevelop.PackageManagement
 		{
 			string text = (string)label.Tag;
 			if (page == viewModel.PageSelected) {
+				UpdatePackageResultsLabelA11y (label, true);
 				label.Markup = string.Format ("<b><u>{0}</u></b>", text);
 			} else {
+				UpdatePackageResultsLabelA11y (label, false);
 				label.Markup = text;
+			}
+		}
+
+		static void UpdatePackageResultsLabelA11y (Label label, bool active)
+		{
+			if (label.Surface.ToolkitEngine.Type == ToolkitType.Gtk) {
+				var widget = label.Surface.NativeWidget as Gtk.Widget;
+				if (widget != null) {
+					widget.Accessible.SetValue (active);
+					// FIXME: Accessible.SetValue has no effect, so set the role description instead
+					widget.Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, active ? "selected tab" : "tab");
+				}
 			}
 		}
 

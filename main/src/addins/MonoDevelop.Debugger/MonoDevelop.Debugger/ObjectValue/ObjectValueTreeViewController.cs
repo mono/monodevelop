@@ -35,6 +35,9 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Core.Imaging;
+
 namespace MonoDevelop.Debugger
 {
 	public enum PreviewButtonIcon
@@ -413,7 +416,15 @@ namespace MonoDevelop.Debugger
 			}
 
 			LoggingService.LogInfo ("Evaluating expression '{0}'", expression);
-			var node = Frame.EvaluateExpression (expression);
+
+			ObjectValueNode node;
+			if (Frame != null) {
+				node = Frame.EvaluateExpression (expression);
+			} else {
+				var value = ObjectValue.CreateUnknown (expression);
+				node = new DebuggerObjectValueNode (value);
+			}
+
 			AddValue (node);
 
 			ExpressionAdded?.Invoke (this, new ExpressionAddedEventArgs (expression));
@@ -670,21 +681,22 @@ namespace MonoDevelop.Debugger
 
 			node.IsExpanded = true;
 
-			int loadedCount = 0;
+			int index = node.Children.Count;
+			int count = 0;
+
 			if (node.IsEnumerable) {
 				// if we already have some loaded, don't load more - that is a specific user gesture
-				if (node.Children.Count == 0) {
+				if (index == 0) {
 					// page the children in, instead of loading them all at once
-					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
+					count = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 				}
 			} else {
-				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
+				count = await FetchChildrenAsync (node, -1, cancellationTokenSource.Token);
 			}
 
 			await Runtime.RunInMainThread (() => {
 				// tell the view about the children, even if there are, in fact, none
-				view.LoadNodeChildren (node, 0, node.Children.Count);
-
+				view.LoadNodeChildren (node, index, count);
 				view.OnNodeExpanded (node);
 			});
 		}
@@ -950,6 +962,61 @@ namespace MonoDevelop.Debugger
 			}
 
 			return "md-" + access + global + source;
+		}
+
+		static int GetKnownImageId (ObjectValueFlags flags)
+		{
+			var name = GetIcon (flags);
+
+			switch (name) {
+			case "md-empty": return -1;
+			case "md-literal": return KnownImageIds.Literal;
+			case "md-name-space": return KnownImageIds.Namespace;
+			case "md-variable": return KnownImageIds.LocalVariable;
+
+			case "md-property": return KnownImageIds.PropertyPublic;
+			case "md-method": return KnownImageIds.MethodPublic;
+			case "md-class": return KnownImageIds.ClassPublic;
+			case "md-field": return KnownImageIds.FieldPublic;
+
+			case "md-private-property": return KnownImageIds.PropertyPrivate;
+			case "md-private-method": return KnownImageIds.MethodPrivate;
+			case "md-private-class": return KnownImageIds.ClassPrivate;
+			case "md-private-field": return KnownImageIds.FieldPrivate;
+
+			case "md-internal-property": return KnownImageIds.PropertyInternal;
+			case "md-internal-method": return KnownImageIds.MethodInternal;
+			case "md-internal-class": return KnownImageIds.ClassInternal;
+			case "md-internal-field": return KnownImageIds.FieldInternal;
+
+			case "md-protected-property": return KnownImageIds.PropertyProtected;
+			case "md-protected-method": return KnownImageIds.MethodProtected;
+			case "md-protected-class": return KnownImageIds.ClassProtected;
+			case "md-protected-field": return KnownImageIds.FieldProtected;
+
+			case "md-private-static-property": return KnownImageIds.PropertyPrivate;
+			case "md-private-static-method": return KnownImageIds.MethodPrivate;
+			case "md-private-static-field": return KnownImageIds.FieldPrivate;
+
+			case "md-internal-static-property": return KnownImageIds.PropertyInternal;
+			case "md-internal-static-method": return KnownImageIds.MethodInternal;
+			case "md-internal-static-field": return KnownImageIds.FieldInternal;
+
+			case "md-protected-static-property": return KnownImageIds.PropertyProtected;
+			case "md-protected-static-method": return KnownImageIds.MethodProtected;
+			case "md-protected-static-field": return KnownImageIds.FieldProtected;
+
+			default:
+				LoggingService.LogWarning ("Unknown Debugger ImageId: {0}", name);
+				return -1;
+			}
+		}
+
+		public static ImageId GetImageId (ObjectValueFlags flags)
+		{
+			int id = GetKnownImageId (flags);
+
+			return id == -1 ? default : new ImageId (KnownImageIds.ImageCatalogGuid, id);
 		}
 
 		public static string GetPreviewButtonIcon (PreviewButtonIcon icon)

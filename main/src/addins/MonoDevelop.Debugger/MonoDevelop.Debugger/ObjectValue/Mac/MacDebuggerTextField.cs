@@ -26,7 +26,6 @@
 
 using AppKit;
 using Foundation;
-using CoreGraphics;
 
 namespace MonoDevelop.Debugger
 {
@@ -59,6 +58,16 @@ namespace MonoDevelop.Debugger
 			TextColor = NSColor.ControlText;
 
 			return true;
+		}
+
+		public override bool BecomeFirstResponder ()
+		{
+			if (cellView is MacDebuggerObjectNameView nameView) {
+				nameView.Edit ();
+				return true;
+			}
+
+			return base.BecomeFirstResponder ();
 		}
 
 		public override void DidBeginEditing (NSNotification notification)
