@@ -43,6 +43,7 @@
     <Compile Include="MonoDevelop.DotNetCore.Tests\FrameworkReferenceTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\PackProjectTests.cs" />
     <Compile Include="MonoDevelop.DotNetCore.Tests\GlobalToolTests.cs" />
+    <Compile Include="MonoDevelop.DotNetCore.Tests\TargetFrameworkTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\external\guiunit\src\framework\GuiUnit_NET_4_5.csproj">
