@@ -43,7 +43,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		private readonly string filePath;
 		readonly IXPlatAdornmentLayer _exceptionCaughtLayer;
 		FileLineExtension extension;
-		NSWindow exceptionCaughtButtonWindow;
+		NSPanel exceptionCaughtButtonWindow;
 
 		public ExceptionCaughtAdornmentManager (ICocoaViewFactory cocoaViewFactory, ICocoaTextView textView)
 		{
@@ -124,7 +124,8 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			} else {
 				var editorWindow = textView.VisualElement.Window;
 				var pointOnScreen = editorWindow.ConvertPointToScreen (textView.VisualElement.ConvertPointToView (new CGPoint (charBound.Left, charBound.TextTop), null));
-				exceptionCaughtButtonWindow = new NSWindow (CGRect.Empty, NSWindowStyle.Borderless, NSBackingStore.Buffered, false);
+				exceptionCaughtButtonWindow = new NSPanel (CGRect.Empty, NSWindowStyle.Borderless, NSBackingStore.Buffered, false);
+				exceptionCaughtButtonWindow.AccessibilityRole = NSAccessibilityRoles.PopoverRole;
 				editorWindow.AddChildWindow (exceptionCaughtButtonWindow, NSWindowOrderingMode.Above);
 				exceptionCaughtButtonWindow.IsOpaque = false;
 				exceptionCaughtButtonWindow.BackgroundColor = NSColor.Clear;
