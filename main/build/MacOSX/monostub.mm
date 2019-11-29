@@ -17,9 +17,6 @@
 
 #include "monostub-utils.h"
 
-extern int xamarin_marshal_objectivec_exception_mode;
-extern int xamarin_marshal_managed_exception_mode;
-
 typedef int (* mono_main) (int argc, char **argv);
 typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
