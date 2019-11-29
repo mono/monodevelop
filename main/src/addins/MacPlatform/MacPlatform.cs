@@ -287,6 +287,18 @@ namespace MonoDevelop.MacIntegration
 		{
 			oldHandler = NSGetUncaughtExceptionHandler ();
 			NSSetUncaughtExceptionHandler (uncaughtHandler);
+
+			ObjCRuntime.Runtime.MarshalManagedException += (sender, args) => {
+				LoggingService.LogInternalError (args.Exception);
+			};
+
+			ObjCRuntime.Runtime.MarshalObjectiveCException += (sender, args) => {
+				try {
+					throw new MarshalledObjCException (args.Exception);
+				} catch (MarshalledObjCException e) {
+					LoggingService.LogInternalError ("MarshalObjCException", e);
+				}
+			};
 		}
 
 		public override Xwt.Toolkit LoadNativeToolkit ()

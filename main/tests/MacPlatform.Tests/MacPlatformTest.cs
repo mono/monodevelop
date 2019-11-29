@@ -181,7 +181,7 @@ namespace MacPlatform.Tests
 		public void CriticalErrorsExceptionsHaveFullStacktracesInLog ()
 		{
 			var logger = new CapturingLogger {
-				EnabledLevel = EnabledLoggingLevel.Fatal,
+				EnabledLevel = EnabledLoggingLevel.Error,
 			};
 
 			try {
@@ -192,7 +192,7 @@ namespace MacPlatform.Tests
 
 				Assert.Throws<ObjCException> (() => void_objc_msgSend (ex.Handle, selector));
 
-				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Fatal);
+				var (_, message) = logger.LogMessages.Single (x => x.Level == LogLevel.Error);
 				AssertMacPlatformStacktrace (message);
 			} finally {
 				LoggingService.RemoveLogger (logger.Name);
@@ -203,7 +203,7 @@ namespace MacPlatform.Tests
 		{
 			Assert.That (stacktrace, Contains.Substring ("at MonoDevelopProcessHost.Main"));
 			Assert.That (stacktrace, Contains.Substring ("at MacPlatform.Tests.MacPlatformTest.void_objc_msgSend"));
-			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService.HandleUncaughtException"));
+			Assert.That (stacktrace, Contains.Substring ("at MonoDevelop.MacIntegration.MacPlatformService+MarshalledObjCException..ctor"));
 
 		}
 
