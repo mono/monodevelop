@@ -56,7 +56,7 @@ namespace MonoDevelop.Ide.Composition
 			new AttributedPartDiscoveryV1 (StandardResolver),
 			new AttributedPartDiscovery (StandardResolver, true));
 
-		static Action HandleMefQueriedBeforeCompletion = UninitializedLogWarning;
+		static Action HandleMefQueriedBeforeCompletion = UninitializedThrowException;
 
 		static void UninitializedLogWarning ()
 			=> LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
@@ -64,7 +64,7 @@ namespace MonoDevelop.Ide.Composition
 		static void UninitializedThrowException ()
 			=> throw new InvalidOperationException ("MEF queried while it was still being built");
 
-		internal static void ConfigureUninitializedMefHandling (bool throwException)
+		static void ConfigureUninitializedMefHandling (bool throwException)
 			=> HandleMefQueriedBeforeCompletion = throwException ? new Action (UninitializedThrowException) : new Action (UninitializedLogWarning);
 
 		public static CompositionManager Instance {
@@ -125,6 +125,7 @@ namespace MonoDevelop.Ide.Composition
 				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
 				var mefAssemblies = await Runtime.RunInMainThread (() => ReadAssembliesFromAddins (timer));
+				ConfigureUninitializedMefHandling (throwException: false);
 				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
