@@ -87,6 +87,7 @@
     -->
     <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
@@ -131,6 +132,7 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.MSBuild.dll" />
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
     <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
