@@ -135,7 +135,6 @@ namespace MonoDevelop.HexEditor
 			var xwtScrollView = new Xwt.ScrollView (hexEditor);
 			var scrollWidget = (Widget) Xwt.Toolkit.CurrentEngine.GetNativeWidget (xwtScrollView);
 			SetHexEditorOptions ();
-			hexEditor.SetFocus ();
 
 			return scrollWidget;
 		}
