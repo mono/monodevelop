@@ -92,6 +92,7 @@ namespace MonoDevelop.Debugger
 
 			PreviewButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				AccessibilityTitle = GettextCatalog.GetString ("Open Preview Visualizer"),
 				Image = GetImage ("md-empty", Gtk.IconSize.Menu),
 				BezelStyle = NSBezelStyle.Inline,
 				Bordered = false
@@ -264,6 +265,9 @@ namespace MonoDevelop.Debugger
 			TextField.Editable = editable;
 			UpdateFont (TextField);
 			TextField.SizeToFit ();
+			ImageView.AccessibilityTitle = ObjectValueTreeViewController.GetAccessibilityTitleForIcon (
+				Node.Flags,
+				GettextCatalog.GetString ("Object Name"));
 
 			var value = editable && string.IsNullOrEmpty (name) ? placeholder : name;
 			var textWidth = GetWidthForString (TextField.Font, value);
