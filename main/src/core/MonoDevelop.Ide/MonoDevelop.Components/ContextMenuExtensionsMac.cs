@@ -139,12 +139,12 @@ namespace MonoDevelop.Components
 												null, 0, 0, 0);
 
 				// the following lines are here to dianose & fix VSTS 1026106 - we were getting
-				// a SigSegv from here and it is likely caused by NSEven being null, however
+				// a SigSegv from here and it is likely caused by NSEvent being null, however
 				// it's worth leaving Debug checks in just to be on the safe side
 				if (tmp_event == null) {
 					// since this is often called outside of a try/catch loop, we'll just
 					// log an error and not throw the exception
-					LoggingService.LogInternalError (new ArgumentNullException ("tmp_event"));
+					LoggingService.LogInternalError (new ArgumentNullException (nameof(tmp_event)));
 					return;
 				}
 				
