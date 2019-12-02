@@ -31,7 +31,6 @@ using System.Text;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide;
-using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using NUnit.Framework;
 using UnitTests;
@@ -40,7 +39,6 @@ using MonoDevelop.Ide.Fonts;
 namespace Mono.TextEditor.Tests
 {
 	[RequireService (typeof(FontService))]
-	[RequireService (typeof(CompositionManager))]
 	class TextEditorTestBase: TestBase
 	{
 		public static TextEditorData Create (string content, ITextEditorOptions options = null, string mimeType = null)
