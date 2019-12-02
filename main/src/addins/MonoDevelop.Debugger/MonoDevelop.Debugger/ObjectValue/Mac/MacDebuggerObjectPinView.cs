@@ -106,7 +106,11 @@ namespace MonoDevelop.Debugger
 				PinButton.Image = selected ? selectedPinnedImage : pinnedImage;
 				pinned = true;
 			} else {
-				PinButton.Image = none;
+				// When a11y is in use, always show an icon.
+				if (IdeServices.DesktopService.AccessibilityInUse)
+					PinButton.Image = selected ? selectedUnpinnedImage : unpinnedImage;
+				else
+					PinButton.Image = none;
 				pinned = false;
 			}
 
@@ -144,6 +148,7 @@ namespace MonoDevelop.Debugger
 
 			var selected = Superview is NSTableRowView rowView && rowView.Selected;
 
+			// When a11y is in use, always show an icon.
 			if (hover || IdeServices.DesktopService.AccessibilityInUse) {
 				PinButton.Image = selected ? selectedUnpinnedImage : unpinnedImage;
 			} else {
