@@ -196,6 +196,7 @@ namespace MonoDevelop.TextEditor
 		{
 			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			textViewHostControl = textViewHost.HostControl;
+			textViewHostControl.AccessibilityTitle = GettextCatalog.GetString ("Source Editor Group");
 
 			if (!useLegacyGtkNSViewHost.Value) {
 				embeddedControl = new ManagedGtkNSViewHostControl (textViewHost);
