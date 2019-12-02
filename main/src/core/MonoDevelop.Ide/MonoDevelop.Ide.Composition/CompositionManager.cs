@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.Composition
 			get {
 				if (instance == null) {
 					var task = Runtime.GetService<CompositionManager> ();
-					if (!task.IsCompleted) {
+					if (!task.IsCompleted && Runtime.IsMainThread) {
 						LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
 					}
 					instance = task.WaitAndGetResult ();
