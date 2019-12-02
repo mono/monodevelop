@@ -82,6 +82,7 @@ namespace MonoDevelop.Debugger
 
 			int imageSize = treeView.CompactView ? CompactImageSize : ImageSize;
 			viewerButton = new NSButton {
+				AccessibilityTitle = GettextCatalog.GetString ("Open Value Visualizer"),
 				Image = GetImage (Gtk.Stock.Edit, imageSize, imageSize),
 				TranslatesAutoresizingMaskIntoConstraints = false
 			};
@@ -188,7 +189,9 @@ namespace MonoDevelop.Debugger
 			// First item: Status Icon -or- Spinner
 			if (evaluateStatusIcon != null) {
 				statusIcon.Image = GetImage (evaluateStatusIcon, Gtk.IconSize.Menu, selected);
-
+				statusIcon.AccessibilityTitle = ObjectValueTreeViewController.GetAccessibilityTitleForIcon (
+					evaluateStatusIcon,
+					GettextCatalog.GetString ("Object Value"));
 				if (!statusIconVisible) {
 					AddSubview (statusIcon);
 					statusIconVisible = true;

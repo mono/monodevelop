@@ -30,6 +30,8 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
+using Foundation;
+using GLib;
 using Gtk;
 
 using Mono.Debugging.Client;
@@ -37,6 +39,7 @@ using Mono.Debugging.Client;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Editor.Extension;
 
@@ -56,7 +59,7 @@ namespace MonoDevelop.Debugger
 		VBox vboxAroundInnerExceptionMessage, rightVBox, container;
 		Button close, helpLinkButton, innerExceptionHelpLinkButton;
 		TreeView exceptionValueTreeView, stackTraceTreeView;
-		Expander expanderProperties, expanderStacktrace;
+		MacObjectValueTreeView macExceptionValueTreeView;
 		InnerExceptionsTree innerExceptionsTreeView;
 		ObjectValueTreeViewController controller;
 		CheckButton onlyShowMyCodeCheckbox;
@@ -96,6 +99,8 @@ namespace MonoDevelop.Debugger
 			icon.Yalign = 0;
 
 			exceptionTypeLabel = new Label { Xalign = 0.0f, Selectable = true, CanFocus = false };
+			icon.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.WarningIcon", exceptionTypeLabel, null);
+
 			exceptionMessageLabel = new Label { Wrap = true, Xalign = 0.0f, Selectable = true, CanFocus = false };
 			helpLinkButton = new Button { HasFocus = true, Xalign = 0, Relief = ReliefStyle.None, BorderWidth = 0 };
 			helpLinkButton.Name = "exception_help_link_label";
@@ -181,12 +186,17 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 		Widget CreateExceptionValueTreeView ()
 		{
+			Widget scrolledWidget = null;
 			if (useNewTreeView) {
 				controller = new ObjectValueTreeViewController ();
 				controller.SetStackFrame (DebuggingService.CurrentFrame);
 				controller.AllowExpanding = true;
 
-				exceptionValueTreeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ExceptionCaughtFlags);
+				if (Platform.IsMac) {
+					macExceptionValueTreeView = controller.GetMacControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
+				} else {
+					exceptionValueTreeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ExceptionCaughtFlags);
+				}
 			} else {
 				var objValueTreeView = new ObjectValueTreeView ();
 				objValueTreeView.Frame = DebuggingService.CurrentFrame;
@@ -199,75 +209,68 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 				exceptionValueTreeView = objValueTreeView;
 			}
 
-			exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
-			exceptionValueTreeView.ModifyBase (StateType.Active, Styles.ObjectValueTreeActiveBackgroundColor.ToGdkColor ());
-			exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
-			exceptionValueTreeView.RulesHint = false;
-			exceptionValueTreeView.CanFocus = true;
-			exceptionValueTreeView.Show ();
+			if (useNewTreeView && Platform.IsMac) {
+				var scrolled = new AppKit.NSScrollView {
+					DocumentView = macExceptionValueTreeView,
+					AutohidesScrollers = true,
+					HasVerticalScroller = true,
+					HasHorizontalScroller = true,
+				};
 
-			var scrolled = new ScrolledWindow {
-				HeightRequest = 180,
-				CanFocus = true,
-				HscrollbarPolicy = PolicyType.Automatic,
-				VscrollbarPolicy = PolicyType.Automatic
-			};
+				// disable implicit animations
+				scrolled.WantsLayer = true;
+				scrolled.Layer.Actions = new NSDictionary (
+					"actions", NSNull.Null,
+					"contents", NSNull.Null,
+					"hidden", NSNull.Null,
+					"onLayout", NSNull.Null,
+					"onOrderIn", NSNull.Null,
+					"onOrderOut", NSNull.Null,
+					"position", NSNull.Null,
+					"sublayers", NSNull.Null,
+					"transform", NSNull.Null,
+					"bounds", NSNull.Null);
 
-			scrolled.ShadowType = ShadowType.None;
-			scrolled.Add (exceptionValueTreeView);
-			scrolled.Show ();
+				var host = new GtkNSViewHost (scrolled);
+				host.ShowAll ();
+				scrolledWidget = host;
+			} else {
+				exceptionValueTreeView.ModifyBase (StateType.Normal, Styles.ExceptionCaughtDialog.ValueTreeBackgroundColor.ToGdkColor ());
+				exceptionValueTreeView.ModifyBase (StateType.Active, Styles.ObjectValueTreeActiveBackgroundColor.ToGdkColor ());
+				exceptionValueTreeView.ModifyFont (Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11"));
+				exceptionValueTreeView.RulesHint = false;
+				exceptionValueTreeView.CanFocus = true;
+				exceptionValueTreeView.Show ();
+
+				var scrolled = new ScrolledWindow {
+					CanFocus = true,
+					HscrollbarPolicy = PolicyType.Automatic,
+					VscrollbarPolicy = PolicyType.Automatic
+				};
+
+				scrolled.ShadowType = ShadowType.None;
+				scrolled.Add (exceptionValueTreeView);
+				scrolled.Show ();
+				scrolledWidget = scrolled;
+			}
+
+			var label = new Label ();
+			label.Markup = "<b>" + GettextCatalog.GetString ("Properties") + "</b>";
+			label.Xalign = 0;
+			label.Xpad = 10;
+
+			if (exceptionValueTreeView != null) {
+				exceptionValueTreeView.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.ExceptionValueTreeView", label, null);
+			} else {
+				macExceptionValueTreeView.AccessibilityTitle = new NSString (label.Text);
+			}
 
 			var vbox = new VBox ();
-			expanderProperties = WrapInExpander (GettextCatalog.GetString ("Properties"), scrolled);
-			vbox.PackStart (new VBox (), false, false, 5);
-			vbox.PackStart (expanderProperties, true, true, 0);
+			vbox.PackStart (label, false, false, 12);
+			vbox.PackStart (scrolledWidget, true, true, 0);
 			vbox.ShowAll ();
 
 			return vbox;
-		}
-
-		class ExpanderWithMinSize : Expander
-		{
-			public ExpanderWithMinSize (string label) : base (label)
-			{
-			}
-
-			protected override void OnSizeRequested (ref Requisition requisition)
-			{
-				base.OnSizeRequested (ref requisition);
-				requisition.Height = 28;
-			}
-		}
-
-		Expander WrapInExpander (string title, Widget widget)
-		{
-			var expander = new ExpanderWithMinSize ($"<b>{GLib.Markup.EscapeText (title)}</b>");
-			expander.Name = "exception_dialog_expander";
-			Gtk.Rc.ParseString (@"style ""exception-dialog-expander""
-{
-	GtkExpander::expander-spacing = 10
-}
-widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
-");
-			expander.Child = widget;
-			expander.Spacing = 0;
-			expander.Show ();
-			expander.CanFocus = true;
-			expander.UseMarkup = true;
-			expander.Expanded = true;
-			expander.Activated += Expander_Activated;
-			expander.ModifyBg (StateType.Prelight, Ide.Gui.Styles.PrimaryBackgroundColor.ToGdkColor ());
-			return expander;
-		}
-
-		void Expander_Activated (object sender, EventArgs e)
-		{
-			if (expanderProperties.Expanded && expanderStacktrace.Expanded)
-				paned.PositionSet = false;
-			else if (expanderStacktrace.Expanded)
-				paned.Position = paned.MaxPosition;
-			else
-				paned.Position = paned.MinPosition;
 		}
 
 		static void StackFrameLayout (CellLayout layout, CellRenderer cr, TreeModel model, TreeIter iter)
@@ -304,7 +307,6 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			stackTraceTreeView.RowActivated += StackFrameActivated;
 
 			var scrolled = new ScrolledWindow {
-				HeightRequest = 180,
 				HscrollbarPolicy = PolicyType.Never,
 				VscrollbarPolicy = PolicyType.Automatic
 			};
@@ -316,10 +318,16 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			vbox.PackStart (scrolled, true, true, 0);
 			vbox.Show ();
 
+			var label = new Label ();
+			label.Markup = "<b>" + GettextCatalog.GetString ("Stacktrace") + "</b>";
+			label.Xalign = 0;
+			label.Xpad = 10;
+
+			stackTraceTreeView.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.StackTraceTreeView", label, null);
+
 			var vbox2 = new VBox ();
-			expanderStacktrace = WrapInExpander (GettextCatalog.GetString ("Stacktrace"), vbox);
-			vbox2.PackStart (new VBox (), false, false, 5);
-			vbox2.PackStart (expanderStacktrace, true, true, 0);
+			vbox2.PackStart (label, false, false, 12);
+			vbox2.PackStart (vbox, true, true, 0);
 			vbox2.ShowAll ();
 			return vbox2;
 		}
@@ -371,6 +379,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			paned.GrabAreaSize = 10;
 			paned.Pack1 (CreateStackTraceTreeView (), true, false);
 			paned.Pack2 (CreateExceptionValueTreeView (), true, false);
+			paned.Position = 160;
 			paned.Show ();
 			var vbox = new VBox (false, 0);
 			var whiteBackground = new EventBox ();
@@ -432,6 +441,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 			innerExceptionTypeLabel.Xalign = 0;
 			innerExceptionTypeLabel.Selectable = true;
 			innerExceptionTypeLabel.CanFocus = false;
+			icon.SetCommonAccessibilityAttributes ("ExceptionCaughtDialog.InnerExceptionWarningIcon", innerExceptionTypeLabel, null);
 			hbox.PackStart (innerExceptionTypeLabel, false, true, 4);
 
 			innerExceptionMessageLabel = new Label ();
@@ -515,6 +525,10 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 					UpdateSelectedException ((ExceptionInfo)innerExceptionsTreeView.Model.GetValue (selectedIter, 0));
 				}
 			};
+			innerExceptionsTreeView.SetCommonAccessibilityAttributes (
+				"ExceptionCaughtDialog.InnerExceptionsTreeView",
+				GettextCatalog.GetString ("Inner Exceptions"),
+				null);
 			var eventBox = new EventBox ();
 			eventBox.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.TreeBackgroundColor.ToGdkColor ()); // top and bottom padders
 			var vbox = new VBox ();
@@ -717,6 +731,7 @@ widget ""*.exception_dialog_expander"" style ""exception-dialog-expander""
 
 		class CellRendererInnerException : CellRenderer
 		{
+			[Property ("text")] // Enables Voice Over support.
 			public string Text { get; set; }
 
 			Pango.FontDescription font = Pango.FontDescription.FromString (Platform.IsWindows ? "9" : "11");
