@@ -53,13 +53,11 @@ namespace MonoDevelop.VersionControl.Tests
 		protected int CommitNumber = 0;
 
 		[SetUp]
-		public virtual async Task Setup ()
+		public virtual Task Setup ()
 		{
-			// Load this on setup, otherwise we'll get into a deadlock.
-			await Runtime.GetService<Ide.Composition.CompositionManager> ();
-
 			var vcs = Repo.VersionControlSystem;
 			Console.WriteLine ("Running {0} for {1} (v{2})", TestContext.CurrentContext.Test.FullName, vcs.Name, vcs.Version);
+			return Task.CompletedTask;
 		}
 
 		[TearDown]
