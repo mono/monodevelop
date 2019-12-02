@@ -72,19 +72,19 @@ namespace MonoDevelop.Ide.Composition
 
 		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			Runtime.AssertMainThread ();
+			return Runtime.RunInMainThread (() => {
+				var timings = new Dictionary<string, long> ();
+				var metadata = new CompositionLoadMetadata (timings);
 
-			var timings = new Dictionary<string, long> ();
-			var metadata = new CompositionLoadMetadata (timings);
+				var timer = Counters.CompositionLoad.BeginTiming (metadata);
+				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
-			var timer = Counters.CompositionLoad.BeginTiming (metadata);
-			var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
+				var mefAssemblies = ReadAssembliesFromAddins (timer);
 
-			var mefAssemblies = ReadAssembliesFromAddins (timer);
+				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
 
-			timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
-
-			return Task.Run (() => InitializeInstanceAsync (timer, mefAssemblies));
+				return Task.Run (() => InitializeInstanceAsync (timer, mefAssemblies));
+			});
 		}
 
 		/// <summary>
