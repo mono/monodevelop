@@ -164,16 +164,16 @@
  
   <Target Name="CopyTestAdapters" AfterTargets="DownloadNupkg">
     <ItemGroup>
-      <VsTestConsole Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\**\*.*">
+      <VsTestConsole Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Common7\IDE\Extensions\TestPlatform\**\*.*">
         <Visible>false</Visible>
       </VsTestConsole>
-      <VsTestConsole Remove="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\**\*.*" />
+      <VsTestConsole Remove="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Common7\IDE\Extensions\TestPlatform\Extensions\**\*.*" />
     </ItemGroup>
     <ItemGroup>
-      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
+      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.TestPlatform.TestHostRuntimeProvider.dll">
         <Visible>false</Visible>
       </VsTestConsoleExtensions>
-      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
+      <VsTestConsoleExtensions Include="$(DownloadNupkgDirectory)Microsoft.TestPlatform.$(NuGetVersionMicrosoftTestPlatform)\tools\net451\Common7\IDE\Extensions\TestPlatform\Extensions\Microsoft.VisualStudio.TestPlatform.Extensions.Trx.TestLogger.dll">
         <Visible>false</Visible>
       </VsTestConsoleExtensions>
     </ItemGroup>
