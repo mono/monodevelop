@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using MonoDevelop.Core;
@@ -32,7 +33,7 @@ namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildPropertyGroupEvaluated: MSBuildNode, IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
-		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
+		protected ConcurrentDictionary<string, IMSBuildPropertyEvaluated> properties = new ConcurrentDictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
 		MSBuildEngine engine;
 
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
@@ -70,7 +71,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
 		{
-			this.properties = properties;
+			this.properties = new ConcurrentDictionary<string, IMSBuildPropertyEvaluated> (properties, StringComparer.OrdinalIgnoreCase);
 		}
 
 		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
@@ -80,7 +81,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal bool RemoveProperty (string name)
 		{
-			return properties.Remove (name);
+			return properties.TryRemove (name, out _);
 		}
 
 		public string GetValue (string name, string defaultValue = null)
@@ -280,7 +281,7 @@ namespace MonoDevelop.Projects.MSBuild
 				//    that property group property.
 				if (ep.IsNew || !prop.IsNew) {
 					ep.IsNew = false;
-					properties.Remove (ep.Name);
+					properties.TryRemove (ep.Name, out _);
 				}
 			}
 		}
