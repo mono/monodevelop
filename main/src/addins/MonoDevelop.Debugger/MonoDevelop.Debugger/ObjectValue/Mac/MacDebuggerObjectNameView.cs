@@ -380,6 +380,13 @@ namespace MonoDevelop.Debugger
 
 		public void SetPreviewButtonIcon (PreviewButtonIcon icon)
 		{
+			// When a11y is in use, always show an icon.
+			if (IdeServices.DesktopService.AccessibilityInUse && icon == PreviewButtonIcon.Hidden) {
+				var selected = Superview is NSTableRowView rowView && rowView.Selected;
+
+				icon = selected ? PreviewButtonIcon.Selected : PreviewButtonIcon.Hover;
+			}
+
 			if (!previewIconVisible || icon == currentIcon)
 				return;
 
