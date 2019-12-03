@@ -418,6 +418,14 @@ namespace MonoDevelop.MacIntegration
 			}
 		}
 
+		internal override void MakeAccessibilityAnnouncement (string text)
+		{
+			using var message = new NSString (text);
+			using var dictionary = new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, message,
+													 NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (NSApplication.SharedApplication.AccessibilityMainWindow, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
+		}
+
 		protected override string OnGetMimeTypeForUri (string uri)
 		{
 			var ext = Path.GetExtension (uri);
