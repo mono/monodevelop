@@ -30,12 +30,13 @@ using AppKit;
 
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Gui;
 
 namespace MonoDevelop.Debugger
 {
 	class MacDebuggerObjectPinView : MacDebuggerObjectCellViewBase
 	{
-		static readonly NSImage EmptyImage = GetImage ("md-empty", Gtk.IconSize.Menu);
+		static readonly NSImage EmptyImage = GetImage (Stock.Empty, Gtk.IconSize.Menu);
 		static readonly string [] ActiveSelectedStyle = { "active", "sel" };
 		static readonly string [] ActiveStyle = { "active" };
 
@@ -100,12 +101,12 @@ namespace MonoDevelop.Debugger
 			var selected = Superview is NSTableRowView rowView && rowView.Selected;
 
 			if (TreeView.PinnedWatch != null && Node.Parent == TreeView.Controller.Root) {
-				PinButton.Image = GetImage ("md-pin-down", Gtk.IconSize.Menu, selected);
+				PinButton.Image = GetImage (Stock.PinDown, Gtk.IconSize.Menu, selected);
 				pinned = true;
 			} else {
 				// When a11y is in use, always show an icon.
 				if (IdeServices.DesktopService.AccessibilityInUse)
-					PinButton.Image = GetImage ("md-pin-up", Gtk.IconSize.Menu, selected);
+					PinButton.Image = GetImage (Stock.PinUp, Gtk.IconSize.Menu, selected);
 				else
 					PinButton.Image = EmptyImage;
 				pinned = false;
@@ -151,7 +152,7 @@ namespace MonoDevelop.Debugger
 
 			// When a11y is in use, always show an icon.
 			if (hover || IdeServices.DesktopService.AccessibilityInUse) {
-				PinButton.Image = GetImage ("md-pin-up", Gtk.IconSize.Menu, selected);
+				PinButton.Image = GetImage (Stock.PinUp, Gtk.IconSize.Menu, selected);
 			} else {
 				PinButton.Image = EmptyImage;
 			}
