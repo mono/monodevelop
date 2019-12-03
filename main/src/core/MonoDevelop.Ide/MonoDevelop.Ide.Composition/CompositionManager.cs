@@ -56,23 +56,12 @@ namespace MonoDevelop.Ide.Composition
 			new AttributedPartDiscoveryV1 (StandardResolver),
 			new AttributedPartDiscovery (StandardResolver, true));
 
-		static Action HandleMefQueriedBeforeCompletion = UninitializedLogWarning;
-
-		static void UninitializedLogWarning ()
-			=> LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
-
-		static void UninitializedThrowException ()
-			=> throw new InvalidOperationException ("MEF queried while it was still being built");
-
-		internal static void ConfigureUninitializedMefHandling (bool throwException)
-			=> HandleMefQueriedBeforeCompletion = throwException ? new Action (UninitializedThrowException) : new Action (UninitializedLogWarning);
-
 		public static CompositionManager Instance {
 			get {
 				if (instance == null) {
 					var task = Runtime.GetService<CompositionManager> ();
 					if (!task.IsCompleted && Runtime.IsMainThread) {
-						HandleMefQueriedBeforeCompletion ();
+						LoggingService.LogWarning ("UI thread queried MEF while it was still being built:{0}{1}", Environment.NewLine, Environment.StackTrace);
 					}
 					instance = task.WaitAndGetResult ();
 				}
@@ -83,7 +72,19 @@ namespace MonoDevelop.Ide.Composition
 
 		protected override Task OnInitialize (ServiceProvider serviceProvider)
 		{
-			return Task.Run (async () => await InitializeInstanceAsync ());
+			return Runtime.RunInMainThread (() => {
+				var timings = new Dictionary<string, long> ();
+				var metadata = new CompositionLoadMetadata (timings);
+
+				var timer = Counters.CompositionLoad.BeginTiming (metadata);
+				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
+
+				var mefAssemblies = ReadAssembliesFromAddins (timer);
+
+				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
+
+				return Task.Run (() => InitializeInstanceAsync (timer, mefAssemblies));
+			});
 		}
 
 		/// <summary>
@@ -115,29 +116,22 @@ namespace MonoDevelop.Ide.Composition
 		{
 		}
 
-		async Task InitializeInstanceAsync ()
+		async Task InitializeInstanceAsync (ITimeTracker<CompositionLoadMetadata> timer, HashSet<Assembly> mefAssemblies)
 		{
-			var timings = new Dictionary<string, long> ();
-			var metadata = new CompositionLoadMetadata (timings);
+			var metadata = timer.Metadata;
+			var fullTimer = System.Diagnostics.Stopwatch.StartNew ();
+			var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
 
-			using (var timer = Counters.CompositionLoad.BeginTiming (metadata)) {
-				var fullTimer = System.Diagnostics.Stopwatch.StartNew ();
-				var stepTimer = System.Diagnostics.Stopwatch.StartNew ();
+			var caching = new Caching (mefAssemblies, new IdeRuntimeCompositionExceptionHandler ());
 
-				var mefAssemblies = ReadAssembliesFromAddins (timer);
-				timings ["ReadFromAddins"] = stepTimer.ElapsedMilliseconds;
-				stepTimer.Restart ();
-
-				var caching = new Caching (mefAssemblies, new IdeRuntimeCompositionExceptionHandler ());
-
-				// Try to use cached MEF data
-
+			// Try to use cached MEF data
+			using (timer) {
 				var canUse = metadata.ValidCache = caching.CanUse ();
 				if (canUse) {
 					LoggingService.LogInfo ("Creating MEF composition from cache");
 					RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);
 				}
-				timings ["LoadFromCache"] = stepTimer.ElapsedMilliseconds;
+				metadata.Timings ["LoadFromCache"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
 				// Otherwise fallback to runtime discovery.
@@ -149,14 +143,14 @@ namespace MonoDevelop.Ide.Composition
 					CachedComposition cacheManager = new CachedComposition ();
 					caching.Write (RuntimeComposition, catalog, cacheManager).Ignore ();
 				}
-				timings ["LoadRuntimeComposition"] = stepTimer.ElapsedMilliseconds;
+				metadata.Timings ["LoadRuntimeComposition"] = stepTimer.ElapsedMilliseconds;
 				stepTimer.Restart ();
 
 				ExportProviderFactory = RuntimeComposition.CreateExportProviderFactory ();
 				ExportProvider = ExportProviderFactory.CreateExportProvider ();
 				HostServices = Microsoft.VisualStudio.LanguageServices.VisualStudioMefHostServices.Create (ExportProvider);
 
-				timings ["CreateServices"] = stepTimer.ElapsedMilliseconds;
+				metadata.Timings ["CreateServices"] = stepTimer.ElapsedMilliseconds;
 				metadata.Duration = fullTimer.ElapsedMilliseconds;
 			}
 		}
