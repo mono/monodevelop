@@ -35,16 +35,13 @@ namespace MonoDevelop.Debugger
 {
 	class MacDebuggerObjectPinView : MacDebuggerObjectCellViewBase
 	{
-		static readonly NSImage selectedUnpinnedImage = GetImage ("md-pin-up", Gtk.IconSize.Menu, true);
-		static readonly NSImage selectedPinnedImage = GetImage ("md-pin-down", Gtk.IconSize.Menu, true);
-		static readonly NSImage unpinnedImage = GetImage ("md-pin-up", Gtk.IconSize.Menu);
-		static readonly NSImage pinnedImage = GetImage ("md-pin-down", Gtk.IconSize.Menu);
+		static readonly NSImage EmptyImage = GetImage ("md-empty", Gtk.IconSize.Menu);
+		static readonly string [] ActiveSelectedStyle = { "active", "sel" };
+		static readonly string [] ActiveStyle = { "active" };
 
-		static readonly NSImage liveUpdateOnImage = GetImage ("md-live", Gtk.IconSize.Menu);
-		static readonly NSImage liveUpdateOffImage = GetImage ("md-live", Gtk.IconSize.Menu, 0.5);
-		static readonly NSImage none = GetImage ("md-empty", Gtk.IconSize.Menu);
 		public const int MinWidth = MarginSize + 16 + MarginSize;
 		public const int MaxWidth = MarginSize + 16 + RowCellSpacing + 16 + MarginSize;
+
 		bool disposed;
 		bool pinned;
 
@@ -53,7 +50,7 @@ namespace MonoDevelop.Debugger
 			PinButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
 				BezelStyle = NSBezelStyle.Inline,
-				Image = none,
+				Image = EmptyImage,
 				Bordered = false,
 			};
 			PinButton.AccessibilityTitle = GettextCatalog.GetString ("Pin to the editor");
@@ -62,8 +59,8 @@ namespace MonoDevelop.Debugger
 
 			LiveUpdateButton = new NSButton {
 				TranslatesAutoresizingMaskIntoConstraints = false,
+				Image = GetImage ("md-live", Gtk.IconSize.Menu),
 				BezelStyle = NSBezelStyle.Inline,
-				Image = liveUpdateOffImage,
 				Bordered = false
 			};
 			LiveUpdateButton.AccessibilityTitle = GettextCatalog.GetString ("Refresh value");
@@ -103,24 +100,28 @@ namespace MonoDevelop.Debugger
 			var selected = Superview is NSTableRowView rowView && rowView.Selected;
 
 			if (TreeView.PinnedWatch != null && Node.Parent == TreeView.Controller.Root) {
-				PinButton.Image = selected ? selectedPinnedImage : pinnedImage;
+				PinButton.Image = GetImage ("md-pin-down", Gtk.IconSize.Menu, selected);
 				pinned = true;
 			} else {
 				// When a11y is in use, always show an icon.
 				if (IdeServices.DesktopService.AccessibilityInUse)
-					PinButton.Image = selected ? selectedUnpinnedImage : unpinnedImage;
+					PinButton.Image = GetImage ("md-pin-up", Gtk.IconSize.Menu, selected);
 				else
-					PinButton.Image = none;
+					PinButton.Image = EmptyImage;
 				pinned = false;
 			}
 
 			if (pinned) {
+				string[] styles;
+
 				if (TreeView.PinnedWatch.LiveUpdate)
-					LiveUpdateButton.Image = liveUpdateOnImage;
+					styles = selected ? ActiveSelectedStyle : ActiveStyle;
 				else
-					LiveUpdateButton.Image = liveUpdateOffImage;
+					styles = selected ? SelectedStyle : null;
+
+				LiveUpdateButton.Image = GetImage ("md-live", Gtk.IconSize.Menu, styles);
 			} else {
-				LiveUpdateButton.Image = none;
+				LiveUpdateButton.Image = EmptyImage;
 			}
 		}
 
@@ -150,9 +151,9 @@ namespace MonoDevelop.Debugger
 
 			// When a11y is in use, always show an icon.
 			if (hover || IdeServices.DesktopService.AccessibilityInUse) {
-				PinButton.Image = selected ? selectedUnpinnedImage : unpinnedImage;
+				PinButton.Image = GetImage ("md-pin-up", Gtk.IconSize.Menu, selected);
 			} else {
-				PinButton.Image = none;
+				PinButton.Image = EmptyImage;
 			}
 
 			SetNeedsDisplayInRect (PinButton.Frame);
