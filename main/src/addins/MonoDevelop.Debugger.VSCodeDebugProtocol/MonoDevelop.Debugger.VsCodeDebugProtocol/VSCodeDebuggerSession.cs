@@ -316,7 +316,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		bool? EvaluateCondition (int frameId, string exp)
 		{
-			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp) { FrameId = frameId }).Result;
 
 			if (bool.TryParse (response, out var result))
 				return result;
@@ -455,7 +455,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					}
 					break;
 				}
-			});
+			}).Ignore ();
 		}
 
 		List<string> pathsWithBreakpoints = new List<string> ();
@@ -516,7 +516,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 								if (obj.Breakpoints [i].Line != sourceFile.ElementAt (i).OriginalLine)
 									breakpoints [sourceFile.ElementAt (i)].AdjustBreakpointLocation (obj.Breakpoints [i].Line, obj.Breakpoints [i].Column ?? 1);
 							}
-						});
+						}).Ignore ();
 					});
 			}
 

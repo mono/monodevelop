@@ -224,6 +224,33 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return string.CompareOrdinal (value, index, message, 0, message.Length) == 0;
 		}
 
+		//static bool IsCSError (string text, out int code, out string message)
+		//{
+		//	message = null;
+		//	code = -1;
+
+		//	if (!text.StartsWith ("error CS", StringComparison.Ordinal))
+		//		return false;
+
+		//	int startIndex = "error CS".Length;
+
+		//	if (startIndex + 6 >= text.Length)
+		//		return false;
+
+		//	for (int i = startIndex; i < startIndex + 4; i++) {
+		//		if (!char.IsDigit (text[i]))
+		//			return false;
+		//	}
+
+		//	if (text[startIndex + 4] != ':' || text[startIndex + 5] != ' ')
+		//		return false;
+
+		//	code = int.Parse (text.Substring (startIndex, 4), NumberStyles.None, CultureInfo.InvariantCulture);
+		//	message = text.Substring (startIndex + 6);
+
+		//	return true;
+		//}
+
 		public VSCodeObjectSource (VSCodeDebuggerSession vsCodeDebuggerSession, int variablesReference, int parentVariablesReference, string name, string type, string evalName, int frameId, string val)
 		{
 			this.vsCodeDebuggerSession = vsCodeDebuggerSession;
@@ -294,7 +321,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			public RawString (string val)
 			{
-				this.val = val.Remove (val.Length - 1).Remove (0, 1);
+				this.val = val;
 			}
 
 			public int Length {
@@ -315,21 +342,109 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			}
 		}
 
+		static string Quote (string text)
+		{
+			var quoted = new StringBuilder (text.Length + 2);
+
+			quoted.Append ('"');
+			for (int i = 0; i < text.Length; i++) {
+				char c = text [i];
+
+				switch (c) {
+				case '\0': quoted.Append ("\\0"); break;
+				case '\a': quoted.Append ("\\a"); break;
+				case '\b': quoted.Append ("\\b"); break;
+				case '\n': quoted.Append ("\\n"); break;
+				case '\r': quoted.Append ("\\r"); break;
+				case '\t': quoted.Append ("\\t"); break;
+				case '\v': quoted.Append ("\\v"); break;
+				case '"': quoted.Append ("\\\""); break;
+				case '\\': quoted.Append ("\\\\"); break;
+				default:
+					if (c < ' ') {
+						quoted.AppendFormat (CultureInfo.InvariantCulture, "\\x{0:2}", c);
+					} else {
+						quoted.Append (c);
+					}
+					break;
+				}
+			}
+			quoted.Append ('"');
+
+			return quoted.ToString ();
+		}
+
+		static string Unquote (string text)
+		{
+			var unquoted = new char[text.Length - 2];
+			bool escaped = false;
+			int count = 0;
+
+			for (int i = 1; i < text.Length - 1; i++) {
+				char c = text[i];
+
+				switch (c) {
+				case '\\':
+					if (escaped)
+						unquoted[count++] = '\\';
+					escaped = !escaped;
+					break;
+				case '0':
+					unquoted[count++] = escaped ? '\0' : c;
+					escaped = false;
+					break;
+				case 'a':
+					unquoted[count++] = escaped ? '\a' : c;
+					escaped = false;
+					break;
+				case 'b':
+					unquoted[count++] = escaped ? '\b' : c;
+					escaped = false;
+					break;
+				case 'n':
+					unquoted[count++] = escaped ? '\n' : c;
+					escaped = false;
+					break;
+				case 'r':
+					unquoted[count++] = escaped ? '\r' : c;
+					escaped = false;
+					break;
+				case 't':
+					unquoted[count++] = escaped ? '\t' : c;
+					escaped = false;
+					break;
+				case 'v':
+					unquoted[count++] = escaped ? '\v' : c;
+					escaped = false;
+					break;
+				default:
+					unquoted[count++] = c;
+					escaped = false;
+					break;
+				}
+			}
+
+			return new string (unquoted, 0, count);
+		}
+
 		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			string rawValue = null;
+			string rawValue;
 
-			using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-				rawValue = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName) { FrameId = frameId }).Result;
-				timer.Success = true;
+			if (type == "string") {
+				// We already have this cached
+				rawValue = val;
+
+				if (rawValue.Length >= 2 && rawValue[0] == '"' && rawValue[rawValue.Length - 1] == '"')
+					rawValue = Unquote (rawValue);
+
+				return new RawValueString (new RawString (rawValue));
 			}
 
-			if (rawValue.StartsWith ("\"", StringComparison.Ordinal)) {
-				if (options.ChunkRawStrings)
-					return new RawValueString (new RawString (rawValue));
-
-				return rawValue.Substring (1, rawValue.Length - 2);
-			}
+			//using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+			//	rawValue = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (evalName) { FrameId = frameId }).Result;
+			//	timer.Success = true;
+			//}
 
 			throw new NotImplementedException ();
 		}
@@ -346,8 +461,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		public void SetRawValue (ObjectPath path, object value, EvaluationOptions options)
 		{
 			var v = value.ToString ();
+
 			if (type == "string")
-				v = $"\"{v}\"";
+				v = Quote (v);
+
 			vsCodeDebuggerSession.protocolClient.SendRequestSync (new SetVariableRequest (parentVariablesReference, name, v));
 		}
 
