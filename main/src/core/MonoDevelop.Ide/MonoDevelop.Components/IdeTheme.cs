@@ -76,15 +76,12 @@ namespace MonoDevelop.Components
 		{
 			if (Gtk.Settings.Default != null)
 				throw new InvalidOperationException ("Gtk already initialized!");
-			
-			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac/Windows
-			//      otherwise it will not be loaded correctly and theme switching won't work.
-			if (!Platform.IsLinux)
-				UpdateGtkTheme ();
 
+			IdeStartupTracker.StartupTracker.MarkSection ("PreGtkInitialization");
 #if MAC
 			// Early init Cocoa through xwt
 			var loaded = NativeToolkitHelper.LoadCocoa ();
+			IdeStartupTracker.StartupTracker.MarkSection ("XamarinMacInitialization");
 
 			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
 			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {
@@ -103,6 +100,11 @@ namespace MonoDevelop.Components
 				AccessibilityEnabled = false;
 			}
 #endif
+			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac/Windows
+			//      otherwise it will not be loaded correctly and theme switching won't work.
+			if (!Platform.IsLinux)
+				UpdateGtkTheme ();
+
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac

@@ -82,6 +82,8 @@ namespace MonoDevelop.Ide
 			Environment.SetEnvironmentVariable ("MONO_GC_PARAMS", null);
 			Environment.SetEnvironmentVariable ("MONO_SLEEP_ABORT_LIMIT", null);
 			Environment.SetEnvironmentVariable ("MONO_THREADS_SUSPEND", null);
+
+			Environment.SetEnvironmentVariable ("GTKSHARP_SLIM_STARTUP", "yes");
 		}
 
 		int Run (MonoDevelopOptions options)
@@ -126,6 +128,8 @@ namespace MonoDevelop.Ide
 			var args = options.RemainingArgs.ToArray ();
 
 			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
+			IdeStartupTracker.StartupTracker.MarkSection ("GtkInitialization");
+
 
 			startupInfo = new StartupInfo (options, args);
 			if (startupInfo.HasFiles) {
@@ -143,6 +147,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Unauthorized access: " + ua.Message);
 				return 1;
 			}
+			IdeStartupTracker.StartupTracker.MarkSection ("IdeCustomizerInitialization");
 
 			try {
 				GLibLogging.Enabled = true;
@@ -150,7 +155,6 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			IdeStartupTracker.StartupTracker.MarkSection ("GtkInitialization");
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
 			// XWT initialization
