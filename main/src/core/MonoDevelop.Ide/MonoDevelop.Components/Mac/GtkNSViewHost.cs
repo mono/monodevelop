@@ -329,10 +329,7 @@ namespace Gtk
 		{
 			LogEnter ();
 			try {
-				var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (AppKit.NSApplication.SharedApplication.KeyWindow);
-				if (gtkWindow != null && gtkWindow.GdkWindow == MonoDevelop.Ide.IdeApp.Workbench.RootWindow.GdkWindow) {
-					view?.Window.MakeFirstResponder (view?.Window.ContentView);
-				}
+				ReturnFocusToGtk ();
 				return base.OnFocusOutEvent (evnt);
 			} finally {
 				LogExit ();
@@ -385,6 +382,15 @@ namespace Gtk
 		}
 
 		#endregion
+		//HACK: to remove focus from GTKQuartzWindow and back focus to Gtk we need to ensure the GdkWindow is the Ide
+		public static void ReturnFocusToGtk ()
+		{
+			var window = NSApplication.SharedApplication.KeyWindow;
+			var gtkWindow = MonoDevelop.Components.Mac.GtkMacInterop.GetGtkWindow (window);
+			if (gtkWindow != null && gtkWindow.GdkWindow == MonoDevelop.Ide.IdeApp.Workbench.RootWindow.GdkWindow) {
+				window.MakeFirstResponder (window.ContentView);
+			}
+		}
 	}
 }
 #endif
