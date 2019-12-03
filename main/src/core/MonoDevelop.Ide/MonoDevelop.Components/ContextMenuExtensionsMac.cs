@@ -29,6 +29,7 @@ using System;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using MonoDevelop.Core;
 using MonoDevelop.Ide;
 #endif
 
@@ -136,6 +137,20 @@ namespace MonoDevelop.Components
 												0, 0,
 												parent.Window.WindowNumber,
 												null, 0, 0, 0);
+
+				// the following lines are here to dianose & fix VSTS 1026106 - we were getting
+				// a SigSegv from here and it is likely caused by NSEvent being null, however
+				// it's worth leaving Debug checks in just to be on the safe side
+				if (tmp_event == null) {
+					// since this is often called outside of a try/catch loop, we'll just
+					// log an error and not throw the exception
+					LoggingService.LogInternalError (new ArgumentNullException (nameof(tmp_event)));
+					return;
+				}
+				
+				System.Diagnostics.Debug.Assert (parent != null, "Parent was modified (set to null) during execution.");
+				System.Diagnostics.Debug.Assert (menu != null, "Menu was modified (set to null) during execution.");
+
 				NSMenu.PopUpContextMenu (menu, tmp_event, parent);
 			}
 		}
