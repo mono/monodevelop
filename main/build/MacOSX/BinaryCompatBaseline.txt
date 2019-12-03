@@ -5,7 +5,6 @@ In VisualStudio.exe.config: couldn't find assembly 'System.Net.Http.Primitives' 
 Could not load the file 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
 Could not load the file 'Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
 Could not load the file 'Microsoft.Build.Utilities.Core, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
-Could not load the file 'Microsoft.CodeAnalysis.Workspaces.MSBuild, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'.
 Could not load the file 'Microsoft.Developer.IdentityService.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
 Could not load the file 'Microsoft.ServiceHub.Client, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
 Could not load the file 'Microsoft.TestPlatform.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'.
@@ -18,6 +17,8 @@ Could not load the file 'Xamarin.MacDev.Ide, Version=1.0.0.0, Culture=neutral, P
 In assembly 'Google.Apis.Core, Version=1.9.0.26010, Culture=neutral, PublicKeyToken=null': unable to resolve reference to 'System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.CodeAnalysis.Scripting, Version=3.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35': unable to resolve reference to 'System.Runtime.Loader, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.CodeAnalysis.TypeScript.EditorFeatures, Version=16.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': unable to resolve reference to 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+In assembly 'Microsoft.CodeAnalysis.Workspaces.MSBuild, Version=3.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35': unable to resolve reference to 'Microsoft.Build, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
+In assembly 'Microsoft.CodeAnalysis.Workspaces.MSBuild, Version=3.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35': unable to resolve reference to 'Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.VisualStudio.TestPlatform.Common, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': unable to resolve reference to 'Microsoft.TestPlatform.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': Unable to resolve member reference 'System.Boolean System.Windows.FrameworkElement::get_UseLayoutRounding()' from assembly 'PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
 In assembly 'Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': Unable to resolve member reference 'System.Boolean System.Windows.UIElement::get_SnapsToDevicePixels()' from assembly 'PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
@@ -146,7 +147,6 @@ In assembly 'System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b
 In assembly 'System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': Unable to resolve type reference 'System.Net.ComNetOS' in 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
 In assembly 'System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a': Unable to resolve type reference 'System.Net.UnsafeNclNativeMethods/NativePKI' in 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
 In assembly 'System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35': unable to resolve reference to 'System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-In assembly 'VisualStudio.AndroidX.Migration, Version=1.0.7.0, Culture=neutral, PublicKeyToken=041cd80307429968': unable to resolve reference to 'Microsoft.CodeAnalysis.Workspaces.MSBuild, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
 In assembly 'Xamarin.AndroidDesigner.Mac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756': unable to resolve reference to 'MonoTouch.Hosting, Version=0.0.0.0, Culture=neutral, PublicKeyToken=5caa9e03e69a5abd'
 In assembly 'Xamarin.AzureSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3ead7498f347467b': unable to resolve reference to 'Microsoft.Developer.IdentityService.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
 In assembly 'Xamarin.AzureSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3ead7498f347467b': unable to resolve reference to 'Xamarin.Ide.Identity, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'
