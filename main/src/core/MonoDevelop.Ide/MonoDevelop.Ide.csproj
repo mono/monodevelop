@@ -2326,6 +2326,10 @@
     <EmbeddedResource Include="icons\live-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\live-16~sel.png" />
     <EmbeddedResource Include="icons\live-16~sel%402x.png" />
+    <EmbeddedResource Include="icons\live-16~active.png" />
+    <EmbeddedResource Include="icons\live-16~active%402x.png" />
+    <EmbeddedResource Include="icons\live-16~active~dark.png" />
+    <EmbeddedResource Include="icons\live-16~active~dark%402x.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16%402x.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16~dark.png" />

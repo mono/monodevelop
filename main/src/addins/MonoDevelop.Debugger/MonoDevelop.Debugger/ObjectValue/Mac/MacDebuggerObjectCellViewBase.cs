@@ -42,6 +42,7 @@ namespace MonoDevelop.Debugger
 {
 	abstract class MacDebuggerObjectCellViewBase : NSTableCellView
 	{
+		protected static readonly string[] SelectedStyle = { "sel" };
 		protected const int CompactImageSize = 12;
 		protected const int RowCellSpacing = 2;
 		protected const int ImageSize = 16;
@@ -103,12 +104,12 @@ namespace MonoDevelop.Debugger
 			get { return Node is LoadingObjectValueNode; }
 		}
 
-		protected static NSImage GetImage (string name, Gtk.IconSize size, bool selected = false)
+		protected static NSImage GetImage (string name, Gtk.IconSize size, params string[] styles)
 		{
 			var icon = ImageService.GetIcon (name, size);
 
-			if (selected)
-				icon = icon.WithStyles ("sel");
+			if (styles != null && styles.Length > 0)
+				icon = icon.WithStyles (styles);
 
 			try {
 				return icon.ToNSImage ();
@@ -118,19 +119,9 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		protected static NSImage GetImage (string name, Gtk.IconSize size, double alpha, bool selected = false)
+		protected static NSImage GetImage (string name, Gtk.IconSize size, bool selected = false)
 		{
-			var icon = ImageService.GetIcon (name, size).WithAlpha (alpha);
-
-			if (selected)
-				icon = icon.WithStyles ("sel");
-
-			try {
-				return icon.ToNSImage ();
-			} catch (Exception ex) {
-				Core.LoggingService.LogError ($"Failed to load '{name}' as an NSImage", ex);
-				return icon.ToBitmap (NSScreen.MainScreen.BackingScaleFactor).ToNSImage ();
-			}
+			return GetImage (name, size, selected ? SelectedStyle : null);
 		}
 
 		protected static NSImage GetImage (string name, int width, int height, bool selected = false)
