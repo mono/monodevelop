@@ -289,6 +289,8 @@ namespace MonoDevelop.MacIntegration
 			NSSetUncaughtExceptionHandler (uncaughtHandler);
 		}
 
+		internal static List<IDisposable> AllObservers { get; } = new List<IDisposable> ();
+
 		public override Xwt.Toolkit LoadNativeToolkit ()
 		{
 			var loaded = NativeToolkitHelper.LoadCocoa ();
@@ -307,6 +309,10 @@ namespace MonoDevelop.MacIntegration
 			var appDelegate = NSApplication.SharedApplication.Delegate as Xwt.Mac.AppDelegate;
 			if (appDelegate != null) {
 				appDelegate.Terminating += async (object o, TerminationEventArgs e) => {
+					foreach (var observer in AllObservers)
+						observer.Dispose ();
+					AllObservers.Clear ();
+
 					if (MonoDevelop.Ide.IdeApp.IsRunning) {
 						// If GLib the mainloop is still running that means NSApplication.Terminate() was called
 						// before Gtk.Application.Quit(). Cancel Cocoa termination and exit the mainloop.
@@ -319,6 +325,9 @@ namespace MonoDevelop.MacIntegration
 						e.Reply = NSApplicationTerminateReply.Now;
 					}
 				};
+
+				// TODO: only attach this if coverage profiler is on
+				appDelegate.Terminate += () => Environment.Exit (0);
 				appDelegate.ShowDockMenu += AppDelegate_ShowDockMenu;
 			}
 
@@ -326,7 +335,7 @@ namespace MonoDevelop.MacIntegration
 			SwizzleNSApplication ();
 
 			var nc = NSNotificationCenter.DefaultCenter;
-			notificationObservers.Add (nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
+			AllObservers.Add (nc.AddObserver ((NSString)"AtkCocoaAccessibilityEnabled", (NSNotification) => {
 				LoggingService.LogInfo ($"VoiceOver on {IdeTheme.AccessibilityEnabled}");
 				if (!IdeTheme.AccessibilityEnabled) {
 					ShowVoiceOverNotice ();
@@ -582,7 +591,7 @@ namespace MonoDevelop.MacIntegration
 
 			if (MacSystemInformation.OsVersion >= MacSystemInformation.Mojave) {
 				IdeTheme.HighContrastThemeEnabled = GetIsHighContrastActive ();
-				notificationObservers.Add (NSApplication.SharedApplication.AddObserver ("effectiveAppearance", NSKeyValueObservingOptions.New, notif =>
+				AllObservers.Add (NSApplication.SharedApplication.AddObserver ("effectiveAppearance", NSKeyValueObservingOptions.New, notif =>
 					Core.Runtime.RunInMainThread (() => {
 						IdeTheme.HighContrastThemeEnabled = GetIsHighContrastActive ();
 						PatchGtkTheme ();
@@ -590,7 +599,7 @@ namespace MonoDevelop.MacIntegration
 				));
 			} else {
 				IdeTheme.HighContrastThemeEnabled = false;
-				notificationObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
+				AllObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSCell.ControlTintChangedNotification, notif => Core.Runtime.RunInMainThread (
 					delegate {
 						Styles.LoadStyle ();
 						PatchGtkTheme ();

@@ -56,9 +56,9 @@ namespace MonoDevelop.MacIntegration
 		static ScreenMonitor ()
 		{
 			screenToGdk = UpdateScreenLayout ();
-			NSNotificationCenter.DefaultCenter.AddObserver (NSApplication.DidChangeScreenParametersNotification, (obj) => {
+			MacPlatformService.AllObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSApplication.DidChangeScreenParametersNotification, (obj) => {
 				screenToGdk = UpdateScreenLayout ();
-			});
+			}));
 		}
 
 		public static CGPoint GdkPointForNSScreen (NSScreen screen)

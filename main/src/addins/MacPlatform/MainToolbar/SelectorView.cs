@@ -788,8 +788,8 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			{
 				base.ViewDidMoveToWindow ();
 
-				NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
-				                                                notification => Runtime.RunInMainThread ((Action) RealignTexts));
+				MacPlatformService.AllObservers.Add (NSNotificationCenter.DefaultCenter.AddObserver (NSWindow.DidChangeBackingPropertiesNotification,
+				                                                notification => Runtime.RunInMainThread ((Action) RealignTexts)));
 				RealignTexts ();
 			}
 
