@@ -66,16 +66,16 @@ namespace MonoDevelop.UnitTesting.VsTest
 		{
 			string childNamespace = VsTestTest.FixtureTypeNamespace;
 
-			if(currentNamespace.Name != childNamespace) {
+			if (currentNamespace == null || currentNamespace.Name != childNamespace) {
 				currentNamespace = new VsTestNamespaceTestGroup (testRunner, currentNamespace, Project, childNamespace);
 				currentNamespace.AddTest (VsTestTest);
 				Tests.Add (currentNamespace);
 			} else {
-				if (currentClass == null || currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
-					currentClass = new VsTestTestClass (testRunner, Project, VsTestTest);
-					Tests.Add (currentClass);
+				if (currentNamespace.currentClass == null || currentNamespace.currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
+					currentNamespace.currentClass = new VsTestTestClass (testRunner, Project, VsTestTest);
+					currentNamespace.Tests.Add (currentNamespace.currentClass);
 				}
-				currentClass.Tests.Add (VsTestTest);
+				currentNamespace.currentClass.Tests.Add (VsTestTest);
 			}
 		}
 
