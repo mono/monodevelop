@@ -26,6 +26,11 @@
 //
 //
 
+/*
+ * Some places we should be doing some error handling we used to toss
+ * exceptions, now we error out silently, this needs a real solution.
+ */
+
 using System;
 using System.Xml;
 using System.Linq;
@@ -39,8 +44,8 @@ using Mono.Addins;
 
 using Mono.Debugging.Client;
 
-using Microsoft.VisualStudio.Text;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.VisualStudio.Text;
 
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
@@ -48,8 +53,8 @@ using MonoDevelop.Ide.Gui;
 using MonoDevelop.Projects;
 using MonoDevelop.Components;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Debugger.Viewers;
 using MonoDevelop.Core.Instrumentation;
 
