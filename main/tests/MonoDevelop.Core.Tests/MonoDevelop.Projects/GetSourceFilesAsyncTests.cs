@@ -196,7 +196,7 @@ namespace MonoDevelop.Projects
 
 			var before = new MSBuildItem (); // Ensures import added at end of project.
 			project.MSBuildProject.AddNewImport ("consoleproject-import.targets", null, before);
-			Assert.AreEqual ("Files", modifiedHint);
+			Assert.AreEqual ("CoreCompileFiles", modifiedHint);
 
 			sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
 
@@ -204,7 +204,7 @@ namespace MonoDevelop.Projects
 
 			modifiedHint = null;
 			project.MSBuildProject.RemoveImport ("consoleproject-import.targets");
-			Assert.AreEqual ("Files", modifiedHint);
+			Assert.AreEqual ("CoreCompileFiles", modifiedHint);
 
 			sourceFiles = await project.GetSourceFilesAsync (project.Configurations[0].Selector);
 
