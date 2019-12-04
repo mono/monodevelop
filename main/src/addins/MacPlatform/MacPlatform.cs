@@ -372,6 +372,24 @@ namespace MonoDevelop.MacIntegration
 			newInstanceMenuItem.Title = GettextCatalog.GetString ("New Instance");
 			newInstanceMenuItem.Activated += NewInstanceMenuItem_Activated;
 			menu.AddItem (newInstanceMenuItem);
+
+			// Jump List
+			var projects = IdeServices.DesktopService.RecentFiles.GetProjects ().Take (10);
+			if (projects.Any ()) {
+				menu.AddItem (NSMenuItem.SeparatorItem);
+
+				foreach (var item in projects) {
+					var projectItem = item;
+
+					var menuItem = new NSMenuItem (projectItem.DisplayName);
+					menuItem.Activated += (o, e) => {
+						var actionUrl = "project://" + projectItem.FileName;
+						Ide.WelcomePage.WelcomePageSection.DispatchLink (actionUrl);
+					};
+					menu.AddItem (menuItem);
+				}
+			}
+
 			e.DockMenu = menu;
 		}
 
