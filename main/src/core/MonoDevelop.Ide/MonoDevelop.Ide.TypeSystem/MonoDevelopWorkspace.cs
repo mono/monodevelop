@@ -1486,7 +1486,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (freezeProjectModify)
 					return;
 				try {
-					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters" || x.Hint == "Files"))
+					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters" || x.Hint == "CoreCompileFiles"))
 						return;
 					var project = sender as MonoDevelop.Projects.DotNetProject;
 					if (project == null)
