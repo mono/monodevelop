@@ -678,7 +678,7 @@ namespace MonoDevelop.Projects
 			compileEvaluator.MarkDirty ();
 
 			Runtime.RunInMainThread (() => {
-				NotifyModified ("Files");
+				NotifyModified ("CoreCompileFiles");
 			}).Ignore ();
 		}
 
@@ -719,6 +719,12 @@ namespace MonoDevelop.Projects
 			string evaluatedCompileItemsConfiguration;
 			bool reevaluateCoreCompileDependsOn;
 			TaskCompletionSource<CoreCompileEvaluationResult> evaluatedCompileItemsTask;
+			static readonly HashSet<string> coreCompileBuildActions = new HashSet<string> (new [] {
+				"Compile",
+				"Analyzer",
+				"EditorConfigFiles",
+				"AdditionalFiles"
+			});
 
 			public void MarkDirty ()
 			{
@@ -727,6 +733,11 @@ namespace MonoDevelop.Projects
 					if (evaluatedCompileItemsTask != null)
 						reevaluateCoreCompileDependsOn = true;
 				}
+			}
+
+			public static bool IsCoreCompileFile (string buildAction)
+			{
+				return coreCompileBuildActions.Contains (buildAction);
 			}
 
 			/// <summary>
@@ -775,10 +786,9 @@ namespace MonoDevelop.Projects
 					try {
 						// evaluate the Compile targets
 						var ctx = new TargetEvaluationContext ();
-						ctx.ItemsToEvaluate.Add ("Compile");
-						ctx.ItemsToEvaluate.Add ("Analyzer");
-						ctx.ItemsToEvaluate.Add ("EditorConfigFiles");
-						ctx.ItemsToEvaluate.Add ("AdditionalFiles");
+						foreach (string buildAction in coreCompileBuildActions) {
+							ctx.ItemsToEvaluate.Add (buildAction);
+						}
 						ctx.LoadReferencedProjects = false;
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
@@ -2623,6 +2633,8 @@ namespace MonoDevelop.Projects
 		internal void NotifyFilePropertyChangedInProject (ProjectFile file, string property)
 		{
 			NotifyModified ("Files");
+			if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+				NotifyModified ("CoreCompileFiles");
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file, property));
 		}
 
@@ -2634,10 +2646,13 @@ namespace MonoDevelop.Projects
 		{
 			if (!objs.Any ())
 				return;
-			
+
+			bool coreCompileFile = false;
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
+				if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+					coreCompileFile = true;
 				args.Add (new ProjectFileEventInfo (this, file));
 				if (DependencyResolutionEnabled) {
 					unresolvedDeps.Remove (file);
@@ -2650,6 +2665,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 			NotifyModified ("Files");
+			if (coreCompileFile)
+				NotifyModified ("CoreCompileFiles");
 			OnFileRemovedFromProject (args);
 			ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
@@ -2658,15 +2675,20 @@ namespace MonoDevelop.Projects
 		{
 			if (!objs.Any ())
 				return;
-			
+
+			bool coreCompileFile = false;
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
+				if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+					coreCompileFile = true;
 				args.Add (new ProjectFileEventInfo (this, file));
 				ResolveDependencies (file);
 			}
 
 			NotifyModified ("Files");
+			if (coreCompileFile)
+				NotifyModified ("CoreCompileFiles");
 			OnFileAddedToProject (args);
 
 			if (!Loading)
@@ -4785,6 +4807,8 @@ namespace MonoDevelop.Projects
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			NotifyModified ("Files");
+			if (args.Any (file => CachingCoreCompileEvaluator.IsCoreCompileFile (file.ProjectFile.BuildAction)))
+				NotifyModified ("CoreCompileFiles");
 			OnFileRenamedInProject (args);
 		}
 		
