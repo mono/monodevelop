@@ -110,7 +110,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
-			internal async Task<ProjectInfo>  LoadProject (
+			internal async Task<ProjectInfo> LoadProject (
 				MonoDevelop.Projects.Project p,
 				CancellationToken token,
 				MonoDevelop.Projects.Project oldProject,
@@ -193,7 +193,8 @@ namespace MonoDevelop.Ide.TypeSystem
 					additionalDocuments: projectDocuments.AdditionalDocuments,
 					isSubmission: false,
 					hostObjectType: null,
-					hasAllInformation: true
+					hasAllInformation: true,
+					runAnalyzers: true
 				);
 
 				info = workspace.WithDynamicDocuments (p, info);
@@ -599,7 +600,7 @@ namespace MonoDevelop.Ide.TypeSystem
 						continue;
 					var plainName = projection.Document.FileName.FileName;
 					var folders = GetFolders (p.Name, f.ProjectVirtualPath);
-					result.Add(DocumentInfo.Create (
+					result.Add (DocumentInfo.Create (
 						documentMap.GetOrCreate (projection.Document.FileName, oldProjectData?.DocumentData),
 						plainName,
 						folders,

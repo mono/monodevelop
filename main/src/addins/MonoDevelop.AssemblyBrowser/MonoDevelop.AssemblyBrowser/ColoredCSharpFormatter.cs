@@ -136,7 +136,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return new TextLocation (currentLine, 1);
 			}
 		}
-		
+
+		public string IndentationString { get; set; }
+
 		public void Indent ()
 		{
 			indent++;
@@ -159,7 +161,7 @@ namespace MonoDevelop.AssemblyBrowser
 			sb.Append (text);
 		}
 
-		public void WriteReference (OpCodeInfo opCode)
+		public void WriteReference (OpCodeInfo opCode, bool omitSuffix = false)
 		{
 			WriteIndent ();
 			ReferencedSegments.Add (new ReferenceSegment (sb.Length, opCode.Name.Length, opCode));
@@ -218,9 +220,9 @@ namespace MonoDevelop.AssemblyBrowser
 				return;
 			write_indent = false;
 			for (int i = 0; i < indent; i++)
-				sb.Append ("\t");
+				sb.Append (String.IsNullOrEmpty (IndentationString) ? "\t" : IndentationString);
 		}
-		
+
 		public void WriteLine ()
 		{
 			sb.AppendLine ();

@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Refactoring
 				var result = await selection.GetValidSelectionAsync (token).ConfigureAwait (false);
 				if (!result.ContainsValidContext)
 					return;
-				var extractor = new CSharpMethodExtractor ((CSharpSelectionResult)result);
+				var extractor = new CSharpMethodExtractor ((CSharpSelectionResult)result, localFunction: false);
 				var extractionResult = await extractor.ExtractMethodAsync (token).ConfigureAwait (false);
 				var changes = await extractionResult.Document.GetTextChangesAsync (ad, token);
 				using (var undo = doc.Editor.OpenUndoGroup ()) {

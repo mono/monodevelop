@@ -146,8 +146,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
             // Turn on FSA on a new workspace addition
-				.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true)
-				.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, false)
+				.WithChangedOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp, BackgroundAnalysisScope.FullSolution)
+				.WithChangedOption (RuntimeOptions.BackgroundAnalysisSuspendedInfoBarShown, false)
 
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
 			// https://github.com/mono/monodevelop/issues/4149 https://github.com/dotnet/roslyn/issues/25453
@@ -197,18 +197,18 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (!ShouldTurnOffFullSolutionAnalysis ())
 				return;
 
-			Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+			SolutionCrawlerOptions.LowMemoryForcedMinimalBackgroundAnalysis = true;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = false;
 			if (IsUserOptionOn ()) {
 				// let user know full analysis is turned off due to memory concern.
 				// make sure we show info bar only once for the same solution.
-				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown, true);
+				Options = Options.WithChangedOption (RuntimeOptions.BackgroundAnalysisSuspendedInfoBarShown, true);
 
 				const string LowVMMoreInfoLink = "https://go.microsoft.com/fwlink/?linkid=2003417&clcid=0x409";
 				Services.GetService<IErrorReportingService> ().ShowGlobalErrorInfo (
 					GettextCatalog.GetString ("{0} has suspended some advanced features to improve performance", BrandingService.ApplicationName),
 					new InfoBarUI ("Learn more", InfoBarUI.UIKind.HyperLink, () => desktopService.ShowUrl (LowVMMoreInfoLink), closeAfterAction: false),
-					new InfoBarUI ("Restore", InfoBarUI.UIKind.Button, () => Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true))
+					new InfoBarUI ("Restore", InfoBarUI.UIKind.Button, () => SolutionCrawlerOptions.LowMemoryForcedMinimalBackgroundAnalysis = false)
 				);
 			}
 		}
@@ -231,7 +231,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			// conditions
 			// 1. if our full solution analysis option is on (not user full solution analysis option, but our internal one) and
 			// 2. if infobar is never shown to users for this solution
-			return Options.GetOption (RuntimeOptions.FullSolutionAnalysis) && !Options.GetOption (RuntimeOptions.FullSolutionAnalysisInfoBarShown);
+			return SolutionCrawlerOptions.GetBackgroundAnalysisScope (Options, LanguageNames.CSharp) == BackgroundAnalysisScope.FullSolution
+				&& !Options.GetOption (RuntimeOptions.BackgroundAnalysisSuspendedInfoBarShown);
 		}
 
 		bool IsUserOptionOn ()
@@ -264,7 +265,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			// we only want to turn on FSA if the option is explicitly enabled,
 			// we don't want to turn it off here.
 			if (TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled) {
-				Options = Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true);
+				Options = Options.WithChangedOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp, BackgroundAnalysisScope.FullSolution);
 			}
 		}
 

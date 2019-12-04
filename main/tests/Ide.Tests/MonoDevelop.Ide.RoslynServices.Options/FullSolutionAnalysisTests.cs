@@ -25,8 +25,8 @@
 // THE SOFTWARE.
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Shared.Options;
+using Microsoft.CodeAnalysis.SolutionCrawler;
 using Microsoft.CodeAnalysis.Options;
-using MonoDevelop.Ide.TypeSystem;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -51,29 +51,41 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 					mdw.Options = mdw.Options.WithChangedOption (key, null);
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
-					Assert.IsTrue (mdw.Options.GetOption (RuntimeOptions.FullSolutionAnalysis));
+					Assert.AreEqual (
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
+						BackgroundAnalysisScope.FullSolution);
 					Assert.AreEqual (enabledByDefault, perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 
 					// Set closed file diagnostics to false, this should not impact runtime options
 					mdw.Options = mdw.Options.WithChangedOption (key, false);
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
-					Assert.IsTrue (mdw.Options.GetOption (RuntimeOptions.FullSolutionAnalysis));
+					Assert.AreEqual (
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
+						BackgroundAnalysisScope.FullSolution);
 					Assert.IsFalse (perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 
 					// Set closed file diagnostics to true, this should turn on everything
 					// Ensure FSA is off at this point.
-					mdw.Options = mdw.Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, false);
+					mdw.Options = mdw.Options.WithChangedOption (
+						SolutionCrawlerOptions.BackgroundAnalysisScopeOption,
+						LanguageNames.CSharp,
+						BackgroundAnalysisScope.Minimal);
 					pref.FullSolutionAnalysisRuntimeEnabled = false;
 					mdw.Options = mdw.Options.WithChangedOption (key, true);
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
-					Assert.IsTrue (mdw.Options.GetOption (RuntimeOptions.FullSolutionAnalysis));
+					Assert.AreEqual (
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
+						BackgroundAnalysisScope.FullSolution);
 					Assert.IsTrue (perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 				} finally {
 					mdw.Options = mdw.Options.WithChangedOption (key, old);
 					pref.FullSolutionAnalysisRuntimeEnabled = true;
-					mdw.Options = mdw.Options.WithChangedOption (RuntimeOptions.FullSolutionAnalysis, true);
+					mdw.Options = mdw.Options.WithChangedOption (
+						SolutionCrawlerOptions.BackgroundAnalysisScopeOption,
+						LanguageNames.CSharp,
+						BackgroundAnalysisScope.FullSolution);
 				}
 			}
 		}

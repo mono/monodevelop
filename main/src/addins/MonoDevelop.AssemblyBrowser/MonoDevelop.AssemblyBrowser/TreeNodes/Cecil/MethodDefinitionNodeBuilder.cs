@@ -143,7 +143,7 @@ namespace MonoDevelop.AssemblyBrowser
 						if (data.IsDisposed)
 							return new List<ReferenceSegment> ();
 						var output = new ColoredCSharpFormatter (data);
-						TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem) { FoldBraces = settings.FoldBraces };
+						TokenWriter tokenWriter = new TextTokenWriter (output, settings, csharpDecompiler.TypeSystem);
 						var formattingPolicy = settings.CSharpFormattingOptions;
 						syntaxTree.AcceptVisitor (new CSharpOutputVisitor (tokenWriter, formattingPolicy));
 						output.SetDocumentData ();
