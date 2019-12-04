@@ -263,11 +263,15 @@ namespace MonoDevelop.Projects.MSBuild
 		async void Dispose ()
 		{
 			if (!MSBuildProjectService.ShutDown && engine != null) {
-				try {
-					await engine.UnloadProject (this, projectId).ConfigureAwait (false);
-				} catch {
-					// Ignore
-				}
+				var currentEngine = engine;
+				Task.Run (async () => {
+					try {
+						// Run this outside the usageLock to avoid a deadlock with RemoteBuildEngine's remoteProjectBuilders lock.
+						await currentEngine.UnloadProject (this, projectId).ConfigureAwait (false);
+					} catch {
+						// Ignore
+					}
+				}).Ignore ();
 				GC.SuppressFinalize (this);
 				engine = null;
 			}
