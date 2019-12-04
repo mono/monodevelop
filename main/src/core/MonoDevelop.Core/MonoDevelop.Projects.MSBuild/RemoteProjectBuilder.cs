@@ -241,8 +241,9 @@ namespace MonoDevelop.Projects.MSBuild
 			lock (usageLock) {
 				if (--references == 0) {
 					if (shuttingDown)
-						Dispose ();
-					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
+						Dispose (releaseProjectBuilder: true);
+					else
+						RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
 				}
 			}
 		}
@@ -258,7 +259,7 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		async void Dispose ()
+		async void Dispose (bool releaseProjectBuilder = false)
 		{
 			if (!MSBuildProjectService.ShutDown && engine != null) {
 				var currentEngine = engine;
@@ -269,6 +270,9 @@ namespace MonoDevelop.Projects.MSBuild
 					} catch {
 						// Ignore
 					}
+
+					if (releaseProjectBuilder)
+						await RemoteBuildEngineManager.ReleaseProjectBuilder (currentEngine);
 				}).Ignore ();
 				GC.SuppressFinalize (this);
 				engine = null;
