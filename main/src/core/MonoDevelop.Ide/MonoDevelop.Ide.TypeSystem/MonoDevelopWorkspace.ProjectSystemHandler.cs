@@ -52,7 +52,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			readonly Lazy<HostDiagnosticUpdateSource> hostDiagnosticUpdateSource;
 			WorkspaceFilesCache workspaceCache;
 			readonly List<MonoDevelopAnalyzer> analyzersToDispose = new List<MonoDevelopAnalyzer> ();
-			IDisposable persistentStorageLocationServiceRegistration;
 
 			bool added;
 			readonly object addLock = new object ();
@@ -68,10 +67,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				metadataHandler = new Lazy<MetadataReferenceHandler> (() => new MetadataReferenceHandler (workspace.MetadataReferenceManager, projectMap));
 				hostDiagnosticUpdateSource = new Lazy<HostDiagnosticUpdateSource> (() => new HostDiagnosticUpdateSource (workspace, workspace.compositionManager.GetExportedValue<IDiagnosticUpdateSourceRegistrationService> ()));
-
-				var persistentStorageLocationService = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
-				if (workspace.MonoDevelopSolution != null)
-					persistentStorageLocationServiceRegistration = persistentStorageLocationService.RegisterPrimaryWorkspace (workspace.Id);
 			}
 
 			#region Solution mapping
@@ -513,9 +508,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			void OnSolutionOpened (MonoDevelopWorkspace workspace, SolutionInfo solutionInfo)
 			{
 				workspace.OnSolutionAdded (solutionInfo);
-				
-				var service = (MonoDevelopPersistentStorageLocationService)workspace.Services.GetService<IPersistentStorageLocationService> ();
-				service.SetupSolution (workspace);
 
 				Runtime.RunInMainThread (IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments);
 			}
@@ -662,8 +654,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public void Dispose ()
 			{
-				persistentStorageLocationServiceRegistration?.Dispose ();
-
 				solutionIdMap.Clear ();
 
 				foreach (var analyzer in analyzersToDispose)
