@@ -78,7 +78,7 @@ namespace MonoDevelop.CodeIssues
 					if (skip)
 						continue;
 
-					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IWorkspaceDiagnosticAnalyzerProviderService> ()).GetOptionsAsync ();
+					var options = await ((MonoDevelopWorkspaceDiagnosticAnalyzerProviderService)Ide.Composition.CompositionManager.Instance.GetExportedValue<IHostDiagnosticAnalyzerPackageProvider> ()).GetOptionsAsync ();
 					if (options.TryGetDiagnosticDescriptor (data.Id, out var desc) && !data.IsEnabledByDefault)
 						continue;
 

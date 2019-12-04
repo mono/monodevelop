@@ -30,7 +30,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace MonoDevelop.AnalysisCore
 {
-	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
+	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IHostDiagnosticAnalyzerPackageProvider
 	{
 		sealed class AnalyzerAssemblyLoader : IAnalyzerAssemblyLoader
 		{

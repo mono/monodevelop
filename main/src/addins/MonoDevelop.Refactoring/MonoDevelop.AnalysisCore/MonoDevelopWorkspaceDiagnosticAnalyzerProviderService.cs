@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -37,8 +36,8 @@ using MonoDevelop.Core.AddIns;
 
 namespace MonoDevelop.AnalysisCore
 {
-	[Export(typeof(IWorkspaceDiagnosticAnalyzerProviderService))]
-	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IWorkspaceDiagnosticAnalyzerProviderService
+	[Export (typeof (IHostDiagnosticAnalyzerPackageProvider))]
+	partial class MonoDevelopWorkspaceDiagnosticAnalyzerProviderService : IHostDiagnosticAnalyzerPackageProvider
 	{
 		static readonly AnalyzerAssemblyLoader analyzerAssemblyLoader = new AnalyzerAssemblyLoader ();
 		readonly static string diagnosticAnalyzerAssembly = typeof (DiagnosticAnalyzerAttribute).Assembly.GetName ().Name;
@@ -54,7 +53,7 @@ namespace MonoDevelop.AnalysisCore
 			hostDiagnosticAnalyzerInfoTask = Task.Run (() => CreateHostDiagnosticAnalyzerPackages ());
 		}
 
-		void LoadAnalyzerAssemblies()
+		void LoadAnalyzerAssemblies ()
 		{
 			RuntimeEnabledAssemblies = AddinManager.GetExtensionNodes<AssemblyExtensionNode> (extensionPath).Select (b => b.FileName).ToArray ();
 		}
@@ -64,7 +63,7 @@ namespace MonoDevelop.AnalysisCore
 			return analyzerAssemblyLoader;
 		}
 
-		public IEnumerable<HostDiagnosticAnalyzerPackage> GetHostDiagnosticAnalyzerPackages ()
+		public ImmutableArray<HostDiagnosticAnalyzerPackage> GetHostDiagnosticAnalyzerPackages ()
 		{
 			return hostDiagnosticAnalyzerInfoTask.Result;
 		}
