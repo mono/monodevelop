@@ -4,7 +4,6 @@
 		<Import assembly="../../../bin/Microsoft.VisualStudio.InteractiveWindow.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Text.Internal.dll" />
-		<Import assembly="Microsoft.VisualStudio.Text.Extras.dll" />
 	</Runtime>
 	<Extension path="/MonoDevelop/Ide/Composition">
 		<Assembly file="../../../bin/Microsoft.CodeAnalysis.EditorFeatures.Wpf.dll"/>
