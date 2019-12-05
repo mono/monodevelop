@@ -39,6 +39,8 @@ namespace MonoDevelop.Projects
 		Hashtable extendedProperties;
 		ProjectItemMetadata metadata;
 		static Dictionary<Type,HashSet<string>> knownMetadataCache = new Dictionary<Type, HashSet<string>> ();
+		Dictionary<string, (string Value, bool Exists)> originalBuildItemMetadata;
+		IMSBuildPropertySet originalProperties;
 
 		public ProjectItem ()
 		{
@@ -128,6 +130,14 @@ namespace MonoDevelop.Projects
 			metadata = null;
 
 			if (buildItem.SourceItem != null) {
+				if (buildItem.SourceItems.Count () > 1) {
+					originalProperties = buildItem.SourceItem.Metadata;
+					originalBuildItemMetadata = new Dictionary<string, (string Value, bool Exists)> ();
+					foreach (var prop in buildItem.Metadata.GetProperties ()) {
+						bool exists = buildItem.SourceItem.Metadata.HasProperty (prop.Name);
+						originalBuildItemMetadata.Add (prop.Name, (prop.Value, exists));
+					}
+				}
 				HashSet<string> knownProps = GetKnownMetadata ();
 				foreach (var prop in buildItem.Metadata.GetProperties ()) {
 					if (!knownProps.Contains (prop.Name)) {
@@ -150,14 +160,38 @@ namespace MonoDevelop.Projects
 			buildItem.Condition = Condition;
 			buildItem.Metadata.WriteObjectProperties (this, GetType(), true);
 
+			if (originalBuildItemMetadata != null) {
+				foreach (var prop in buildItem.Metadata.GetProperties ()) {
+					if (!ShouldWriteProperty (prop.Name, prop.UnevaluatedValue))
+						buildItem.Metadata.RemoveProperty (prop.Name);
+				}
+			}
+
 			if (metadata != null) {
 				metadata.SetProject (buildItem.ParentProject);
 				foreach (MSBuildProperty prop in metadata.GetProperties ()) {
+					if (!ShouldWriteProperty (prop.Name, prop.UnevaluatedValue))
+						continue;
 					// Use the UnevaluatedValue because if the property has changed, UnevaluatedValue will contain
 					// the new value, and if not, it will contain the old unevaluated value
 					buildItem.Metadata.SetValue (prop.Name, prop.UnevaluatedValue, condition:prop.Condition);
 				}
 			}
+		}
+
+		bool ShouldWriteProperty (string name, string unevaluatedValue)
+		{
+			if (originalBuildItemMetadata == null)
+				return true;
+
+			// Metadata may be from another MSBuild item. Only write it if it has changed.
+			if (!originalBuildItemMetadata.TryGetValue (name, out (string Value, bool Exists) propInfo))
+				return false;
+
+			if (propInfo.Exists)
+				return true;
+
+			return propInfo.Value != unevaluatedValue;
 		}
 
 		/// <summary>

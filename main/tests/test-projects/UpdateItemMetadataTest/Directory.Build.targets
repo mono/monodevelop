@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup>
+     <PackageReference Update="Newtonsoft.Json" Version="10.0.1" />
+     <Reference Update="System">
+       <Aliases>TestSystem</Aliases>
+     </Reference>
+  </ItemGroup>
+</Project>

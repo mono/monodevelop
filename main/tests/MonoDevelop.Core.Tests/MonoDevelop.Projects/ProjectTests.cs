@@ -1391,6 +1391,37 @@ namespace MonoDevelop.Projects
 			p.Dispose ();
 		}
 
+		[Test]
+		public async Task UpdateItemMetadata_NotSetOnItemInProject_NotSavedWithProject ()
+		{
+			string solFile = Util.GetSampleProject ("UpdateItemMetadataTest", "UpdateItemMetadataTest.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+
+				var p = (DotNetProject)sol.GetAllProjects ().OfType<DotNetProject> ().Single ();
+
+				// Change namespace.
+				p.DefaultNamespace = "NewDefaultNamespace";
+				await p.SaveAsync (Util.GetMonitor ());
+
+				// Update item metadata should not be added to project on saving.
+				string expectedProjectXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + "-namespace-changed"));
+				string projectXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (expectedProjectXml, projectXml);
+
+				// Change alias.
+				// Aliases metadata should be added to project.
+				var systemRef = p.References.Single (r => r.Include == "System");
+				systemRef.Aliases = "ChangedTestAlias";
+				await p.SaveAsync (Util.GetMonitor ());
+
+				expectedProjectXml = Util.ToSystemEndings (File.ReadAllText (p.FileName + "-alias-changed"));
+				projectXml = File.ReadAllText (p.FileName);
+
+				Assert.AreEqual (expectedProjectXml, projectXml);
+			}
+		}
+
 		class TestGetReferencesProjectExtension : DotNetProjectExtension
 		{
 			protected internal override Task<List<AssemblyReference>> OnGetReferences (ConfigurationSelector configuration, CancellationToken token)
