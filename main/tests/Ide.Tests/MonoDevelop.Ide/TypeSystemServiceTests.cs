@@ -48,8 +48,8 @@ using System.Text;
 namespace MonoDevelop.Ide
 {
 	[TestFixture]
-	[RequireService(typeof(RootWorkspace))]
-	[RequireService(typeof(TypeSystemService))]
+	[RequireService (typeof (RootWorkspace))]
+	[RequireService (typeof (TypeSystemService))]
 	class TypeSystemServiceTests : IdeTestBase
 	{
 		class TrackTestProject : DotNetProject
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide
 				throw new NotImplementedException ();
 			}
 
-			public TrackTestProject (string language, string type) : base(language)
+			public TrackTestProject (string language, string type) : base (language)
 			{
 				this.type = type;
 				Initialize (this);
@@ -96,9 +96,9 @@ namespace MonoDevelop.Ide
 		}
 
 		[Test]
-		public async Task ProjectReferencingOutputTrackedReference()
+		public async Task ProjectReferencingOutputTrackedReference ()
 		{
-			string solFile = Util.GetSampleProject("csharp-app-fsharp-lib", "csappfslib.sln");
+			string solFile = Util.GetSampleProject ("csharp-app-fsharp-lib", "csappfslib.sln");
 			using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var csharpApp = sol.Items.FirstOrDefault (pr => pr.Name == "csappfslib") as DotNetProject;
 				var fsharpLibrary = sol.Items.FirstOrDefault (pr => pr.Name == "fslib") as DotNetProject;
@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
 				try {
 					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
-					Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id), Is.Not.Null.Or.Empty);
+					Assert.That (storageLocationService.TryGetStorageLocation (ws.CurrentSolution), Is.Not.Null.Or.Empty);
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
@@ -144,7 +144,7 @@ namespace MonoDevelop.Ide
 				try {
 					var storageLocationService = (MonoDevelopPersistentStorageLocationService)ws.Services.GetService<IPersistentStorageLocationService> ();
 					var storageLocation = System.IO.Path.Combine (
-						storageLocationService.TryGetStorageLocation (ws.CurrentSolution.Id),
+						storageLocationService.TryGetStorageLocation (ws.CurrentSolution),
 						"sqlite3",
 						"storage.ide");
 
@@ -406,7 +406,7 @@ namespace MonoDevelop.Ide
 					await Task.Delay (100);
 
 				if (timeout <= 0)
-						Assert.Fail ("Workspace did not load");
+					Assert.Fail ("Workspace did not load");
 
 			} finally {
 				await IdeServices.Workspace.Close (false);
