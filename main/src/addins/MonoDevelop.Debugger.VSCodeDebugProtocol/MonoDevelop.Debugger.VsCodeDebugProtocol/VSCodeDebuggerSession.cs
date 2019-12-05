@@ -46,6 +46,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 	{
 		int currentThreadId;
 
+		protected VSCodeDebuggerSession (BreakpointStore breakpoints) : base (breakpoints)
+		{
+		}
+
 		protected override void OnContinue ()
 		{
 			protocolClient.SendRequestSync (new ContinueRequest (currentThreadId));

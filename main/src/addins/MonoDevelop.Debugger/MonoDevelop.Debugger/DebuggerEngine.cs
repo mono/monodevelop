@@ -109,10 +109,10 @@ namespace MonoDevelop.Debugger
 			return engine != null ? engine.GetAttachableProcesses () : new ProcessInfo [0];
 		}
 		
-		public DebuggerSession CreateSession ()
+		public DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
 			LoadEngine ();
-			return engine.CreateSession ();
+			return engine.CreateSession (breakpoints);
 		}
 	}
 }

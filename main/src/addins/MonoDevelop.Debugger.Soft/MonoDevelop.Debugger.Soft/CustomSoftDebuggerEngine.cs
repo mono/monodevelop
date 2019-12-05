@@ -50,9 +50,9 @@ namespace MonoDevelop.Debugger.Soft
 			return available.Value;
 		}
 
-		public override DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
-			return new CustomSoftDebuggerSession ();
+			return new CustomSoftDebuggerSession (breakpoints);
 		}
 		
 		public override DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand c)
@@ -105,6 +105,10 @@ namespace MonoDevelop.Debugger.Soft
 		{
 			ProcessAsyncOperation process;
 			bool usingExternalConsole;
+
+			public CustomSoftDebuggerSession (BreakpointStore breakpoints) : base (breakpoints)
+			{
+			}
 			
 			protected override void OnRun (DebuggerStartInfo startInfo)
 			{

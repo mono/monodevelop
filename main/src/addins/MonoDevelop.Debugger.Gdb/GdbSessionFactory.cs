@@ -107,7 +107,7 @@ namespace MonoDevelop.Debugger.Gdb
 			return true;
 		}
 
-		public override DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
 			return new GdbSession ();
 		}

@@ -403,7 +403,6 @@ namespace MonoDevelop.Debugger
 			sessions.Add (sessionManager.Session, sessionManager);
 			isBusy = false;
 			var session = sessionManager.Session;
-			session.Breakpoints = breakpoints;
 			session.TargetEvent += OnTargetEvent;
 			session.TargetStarted += OnStarted;
 			session.OutputWriter = sessionManager.OutputWriter;
@@ -421,10 +420,9 @@ namespace MonoDevelop.Debugger
 			};
 
 			Runtime.RunInMainThread (delegate {
-				if (DebugSessionStarted != null)
-					DebugSessionStarted (session, EventArgs.Empty);
+				DebugSessionStarted?.Invoke (session, EventArgs.Empty);
 				NotifyLocationChanged ();
-			});
+			}).Ignore ();
 		}
 
 		static readonly object cleanup_lock = new object ();
@@ -617,7 +615,7 @@ namespace MonoDevelop.Debugger
 
 		public static AsyncOperation AttachToProcess (DebuggerEngine debugger, ProcessInfo proc)
 		{
-			var session = debugger.CreateSession ();
+			var session = debugger.CreateSession (breakpoints);
 			var monitor = IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (proc.Name);
 			var sessionManager = new SessionManager (session, monitor.Console, debugger, null);
 			SetupSession (sessionManager);
@@ -714,7 +712,7 @@ namespace MonoDevelop.Debugger
 			if (startInfo.UseExternalConsole)
 				startInfo.CloseExternalConsoleOnExit = ((ExternalConsole)c).CloseOnDispose;
 
-			var session = factory.CreateSession ();
+			var session = factory.CreateSession (breakpoints);
 
 			SessionManager sessionManager;
 			// When using an external console, create a new internal console which will be used

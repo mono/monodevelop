@@ -98,9 +98,9 @@ namespace MonoDevelop.Debugger.Soft
 			return dsi;
 		}
 		
-		public override DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
-			return new SoftDebuggerSession ();
+			return new SoftDebuggerSession (breakpoints);
 		}
 		
 		public static void SetUserAssemblyNames (SoftDebuggerStartInfo dsi, IList<string> files)

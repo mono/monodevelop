@@ -252,7 +252,7 @@ namespace Mono.Debugging.PerfTests
 				}
 			}
 
-			return engine.CreateSession ();
+			return engine.CreateSession (new BreakpointStore ());
 		}
 
 		protected DebuggerStartInfo CreateStartInfo (string test, string engineId)

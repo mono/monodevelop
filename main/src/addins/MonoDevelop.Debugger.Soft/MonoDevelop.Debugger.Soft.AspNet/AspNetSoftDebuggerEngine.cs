@@ -108,9 +108,9 @@ namespace MonoDevelop.Debugger.Soft.AspNet
 			return startInfo;
 		}
 
-		public override DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
-			return new SoftDebuggerSession ();
+			return new SoftDebuggerSession (breakpoints);
 		}
 	}
 }
