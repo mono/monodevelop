@@ -432,17 +432,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageImpl", "external\vs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageUtil", "external\vs-editor-api\src\Editor\Language\Util\LanguageUtil\LanguageUtil.csproj", "{9B0C6B46-52CA-42F5-83E1-C259F54EE5F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase", "external\vs-editor-api\src\FPF\WindowsBase\WindowsBase.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsBase", "external\vs-editor-api\src\Editor\FPF\WindowsBase\WindowsBase.csproj", "{A8F39368-ECD9-41A5-A562-CC7C82B3CC86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationCore", "external\vs-editor-api\src\FPF\PresentationCore\PresentationCore.csproj", "{6CFF32E7-9621-4F17-8D31-732F93F0C1A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationCore", "external\vs-editor-api\src\Editor\FPF\PresentationCore\PresentationCore.csproj", "{6CFF32E7-9621-4F17-8D31-732F93F0C1A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationFramework", "external\vs-editor-api\src\FPF\PresentationFramework\PresentationFramework.csproj", "{FDE5334A-70B5-41AE-9445-A0C77725A63D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationFramework", "external\vs-editor-api\src\Editor\FPF\PresentationFramework\PresentationFramework.csproj", "{FDE5334A-70B5-41AE-9445-A0C77725A63D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationClient", "external\vs-editor-api\src\FPF\UIAutomationClient\UIAutomationClient.csproj", "{8858E6B0-8398-46A9-9022-358D10E5E394}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationClient", "external\vs-editor-api\src\Editor\FPF\UIAutomationClient\UIAutomationClient.csproj", "{8858E6B0-8398-46A9-9022-358D10E5E394}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationProvider", "external\vs-editor-api\src\FPF\UIAutomationProvider\UIAutomationProvider.csproj", "{8EC74798-FED7-4F3C-A01B-25013317A90B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationProvider", "external\vs-editor-api\src\Editor\FPF\UIAutomationProvider\UIAutomationProvider.csproj", "{8EC74798-FED7-4F3C-A01B-25013317A90B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "external\vs-editor-api\src\FPF\UIAutomationTypes\UIAutomationTypes.csproj", "{52BF10FD-66DF-430F-8A30-E5E63A93AE91}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIAutomationTypes", "external\vs-editor-api\src\Editor\FPF\UIAutomationTypes\UIAutomationTypes.csproj", "{52BF10FD-66DF-430F-8A30-E5E63A93AE91}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatternMatchingImpl", "external\vs-editor-api\src\Editor\Text\Impl\PatternMatching\PatternMatchingImpl.csproj", "{C8BEA9D9-9608-4FC7-BE8D-DFEDCE41C39F}"
 EndProject
@@ -456,8 +456,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.PropertyEditing.Mac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDBuildTasks", "msbuild\MDBuildTasks\MDBuildTasks.csproj", "{37E01D0B-8C44-441F-9F5D-56C36AB0B918}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extras", "external\vs-editor-api\src\Editor\Text\Def\Extras\Extras.csproj", "{FC412405-B907-473F-864A-657D8E98BB53}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StandardClassification", "external\vs-editor-api\src\Editor\Language\Def\StandardClassification\StandardClassification.csproj", "{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextUICocoa", "external\vs-editor-api\src\Editor\Text\Def\TextUICocoa\TextUICocoa.csproj", "{B85A8B6C-FAE2-4604-A0A8-B6F42F696FA9}"
@@ -467,8 +465,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imaging", "Imaging", "{8E19F797-D714-4C07-903F-97C76E247A03}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Def", "Def", "{F16C4445-2277-4A08-9511-5BE611756CDA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Imaging", "external\vs-editor-api\src\Editor\Imaging\Def\Imaging.csproj", "{1AE8E07F-E8B7-4179-8055-11D3AE404E01}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MonoDevelop.DesignerSupport", "MonoDevelop.DesignerSupport", "{56499B8C-4935-4D00-9192-4F2033142975}"
 EndProject
@@ -2621,26 +2617,6 @@ Global
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{37E01D0B-8C44-441F-9F5D-56C36AB0B918}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugGnome|Any CPU.Build.0 = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.DebugWin32|Any CPU.Build.0 = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseGnome|Any CPU.Build.0 = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Debug|x86.Build.0 = Debug|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Release|x86.ActiveCfg = Release|Any CPU
-		{FC412405-B907-473F-864A-657D8E98BB53}.Release|x86.Build.0 = Release|Any CPU
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2685,16 +2661,6 @@ Global
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED}.ReleaseWin32|Any CPU.Build.0 = Release|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugMac|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugMac|Any CPU.Build.0 = Debug|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.DebugWin32|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseGnome|Any CPU.ActiveCfg = Release|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseMac|Any CPU.Build.0 = Release|Any CPU
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01}.ReleaseWin32|Any CPU.ActiveCfg = Release|Any CPU
 		{49D21A49-7F0B-4F1E-A6D4-3B1EBB7B39C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49D21A49-7F0B-4F1E-A6D4-3B1EBB7B39C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49D21A49-7F0B-4F1E-A6D4-3B1EBB7B39C5}.DebugGnome|Any CPU.ActiveCfg = Debug|Any CPU
@@ -2920,12 +2886,10 @@ Global
 		{A0B6FE73-D046-4E1C-BA9D-F20683889C5A} = {48087117-8851-402C-B8EA-38681EEF48ED}
 		{48087117-8851-402C-B8EA-38681EEF48ED} = {F12939F1-D55A-4CE9-9F33-8D959BFC7D6C}
 		{E8F4F0EB-C2B1-4116-8459-E076E0E0E485} = {48087117-8851-402C-B8EA-38681EEF48ED}
-		{FC412405-B907-473F-864A-657D8E98BB53} = {AA56E3AE-8E61-4101-B01A-2646DC1B0D7B}
 		{9730E995-DFFE-49F2-BEDB-4DE7F33C8E8D} = {0E8F5B35-CB3C-4B83-B09C-0D5A66B38A6B}
 		{785F775C-9CA0-4411-86E6-B89D89F3E2ED} = {776872D9-76FA-407B-BA69-08E25A24E5CE}
 		{8E19F797-D714-4C07-903F-97C76E247A03} = {5A92B792-BF17-4748-B29E-34C99B2E8722}
 		{F16C4445-2277-4A08-9511-5BE611756CDA} = {8E19F797-D714-4C07-903F-97C76E247A03}
-		{1AE8E07F-E8B7-4179-8055-11D3AE404E01} = {F16C4445-2277-4A08-9511-5BE611756CDA}
 		{56499B8C-4935-4D00-9192-4F2033142975} = {D417E929-2B3A-46AC-BBE8-027ADB63A790}
 		{49D21A49-7F0B-4F1E-A6D4-3B1EBB7B39C5} = {56499B8C-4935-4D00-9192-4F2033142975}
 	EndGlobalSection
