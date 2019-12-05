@@ -655,7 +655,7 @@ namespace MonoDevelop.Ide.Gui
 		/// Maximizes editor area by hiding all other pads, e.g. Solution pad, Errors pad...
 		/// </summary>
 		/// <param name="normalizeAutomatically">When set to true, Workbench will reverse effect of maximazing whenever suitable, e.g. when solution loads</param>
-		public void Maximize (bool normalizeAutomatically = false)
+		public void Maximize (bool normalizeAutomatically)
 		{
 			this.normalizeAutomatically = normalizeAutomatically;
 			if (workbench.IsInFullViewMode)
@@ -665,6 +665,14 @@ namespace MonoDevelop.Ide.Gui
 				IdeApp.Workspace.SolutionLoaded += Workspace_SolutionLoaded;
 			}
 			workbench.ToggleFullViewMode ();
+		}
+
+		/// <summary>
+		/// Maximizes editor area by hiding all other pads, e.g. Solution pad, Errors pad...
+		/// </summary>
+		public void Maximize ()
+		{
+			Maximize (false);
 		}
 
 		private void Workspace_SolutionLoaded (object sender, SolutionEventArgs e)
