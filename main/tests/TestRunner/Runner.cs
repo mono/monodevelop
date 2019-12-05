@@ -53,7 +53,7 @@ namespace MonoDevelop.Tests.TestRunner
 			string resultsXmlFile = null;
 
 			if (Platform.IsMac) {
-				var path = Path.GetDirectoryName (typeof (Runer).Assembly.Location);
+				var path = Path.GetDirectoryName (typeof (Runtime).Assembly.Location);
 				if (dlopen (Path.Combine (path, "libxammac.dylib"), 0) == IntPtr.Zero)
 					throw new InvalidOperationException ("Unable to load libxammac");
 			}
