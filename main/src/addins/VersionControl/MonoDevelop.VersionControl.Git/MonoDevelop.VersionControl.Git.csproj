@@ -10,12 +10,6 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugGnome|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseGnome|AnyCPU' " />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -110,9 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.VersionControl.Git.addin.xml" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
-    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.VersionControl.Git.Win32.addin.xml" Condition="$(IsWindows)" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GitIgnore.txt">
@@ -133,23 +125,15 @@
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Choose>
-    <When Condition=" '$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac' ">
-      <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)' == 'DebugWin32' OR '$(Configuration)' == 'ReleaseWin32' ">
-      <ItemGroup>
-        <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" />
-      </ItemGroup>
-    </When>
-  </Choose>
+  <ItemGroup>
+    <NativeBinaries Include="..\..\..\..\external\libgit-binary\mac\*.dylib" Configuration="$(IsMac)" />
+    <NativeBinaries Include="..\..\..\..\external\libgit-binary\windows\*.*" Configuration="$(IsWindows)" />
+  </ItemGroup>
   <Target Name="BeforeBuild">
-    <Exec Command="bash build_libgit2.sh" Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' " />
+    <Exec Command="bash build_libgit2.sh" Condition="$(IsLinux)" />
   </Target>
   <Target Name="AfterBuild">
-     <ItemGroup Condition=" '$(Configuration)' == 'DebugGnome' OR '$(Configuration)' == 'ReleaseGnome' ">
+     <ItemGroup Condition="$(IsLinux)">
        <NativeBinaries Include="..\..\..\..\external\libgit2\build\*.so*" />
      </ItemGroup>
      <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />

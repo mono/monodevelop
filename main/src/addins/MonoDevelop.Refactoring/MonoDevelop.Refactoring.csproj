@@ -11,17 +11,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
-  <PropertyGroup Condition=" $(OS) == 'Windows_NT'">
-    <DefineConstants>WIN32</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
+  </ItemGroup>
+  <ItemGroup Condition="$(IsMac)">
+    <Reference Include="Xamarin.Mac">
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>

@@ -10,20 +10,11 @@
     <OutputPath>..\..\..\build\bin</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DefineConstants>LINUX</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DefineConstants>LINUX</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' "/>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "/>
+
   <ItemGroup>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
-    <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
-    <Reference Include="PresentationFramework" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -35,16 +26,10 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
-    <Reference Include="WindowsFormsIntegration" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
-    <Reference Include="Xamarin.Mac" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
-      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
-    </Reference>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
     when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
     Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
@@ -76,12 +61,33 @@
     <IncludeCopyLocal Include="Microsoft.TemplateEngine.Utils.dll" />
     <IncludeCopyLocal Include="Mono.Addins.Gui.dll" />
     <IncludeCopyLocal Include="Mono.Debugging.dll" />
-    <IncludeCopyLocal Include="Xamarin.Mac.dll" />
     <IncludeCopyLocal Include="Xwt.dll" />
     <IncludeCopyLocal Include="Xwt.Gtk.dll" />
-    <IncludeCopyLocal Include="Xwt.XamMac.dll" />
     <IncludeCopyLocal Include="YamlDotNet.dll" />
   </ItemGroup>
+
+  <ItemGroup Condition="$(IsMac)">
+    <Reference Include="Xamarin.Mac">
+      <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
+    </Reference>
+
+    <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj">
+      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
+      <Name>Xwt.XamMac</Name>
+    </ProjectReference>
+
+    <IncludeCopyLocal Include="Xamarin.Mac.dll" />
+    <IncludeCopyLocal Include="Xwt.XamMac.dll" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(IsWindows)">
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Windows" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
       <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
@@ -125,10 +131,6 @@
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
       <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
       <Name>ICSharpCode.NRefactory.Cecil</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
-      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
-      <Name>Xwt.XamMac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -4349,7 +4351,7 @@
     <Compile Include="MonoDevelop.Ide.Gui.Dialogs\NewConfigurationDialog.cs" />
     <Compile Include="MonoDevelop.Components.AutoTest\AutoTestToolbar.cs" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMac' OR '$(Configuration)' == 'ReleaseMac'">
+  <ItemGroup Condition="$(IsMac)">
     <Compile Include="MonoDevelop.Components\Mac\KeyCodes.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NativeViewHelper.cs" />
     <Compile Include="MonoDevelop.Components\Mac\NSStackViewExtensions.cs" />

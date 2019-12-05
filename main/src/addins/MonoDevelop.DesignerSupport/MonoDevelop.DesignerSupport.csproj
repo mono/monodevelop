@@ -9,11 +9,9 @@
     <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.DesignerSupport</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <ItemGroup Condition=" '$(Configuration)' == 'ReleaseMac' OR '$(Configuration)' == 'DebugMac' ">
+  <ItemGroup Condition="$(IsMac)">
       <Reference Include="Xamarin.Mac">
         <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
         <Private>False</Private>
