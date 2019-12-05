@@ -406,7 +406,7 @@
 			_label = "Quick New File"
 			shortcut = "Control|Alt|N"
 			macShortcut = "Meta|Alt|N"
-			_description = "Create a new file without dialog"
+			_description = "Create a new empty Text File"
 			icon = "md-regular-file" />
 	<Command id = "MonoDevelop.Ide.Commands.FileCommands.Save"
 			icon = "gtk-save"
