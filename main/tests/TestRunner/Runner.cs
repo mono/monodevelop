@@ -35,11 +35,15 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MonoDevelop.Tests.TestRunner.TestModel;
+using System.Runtime.InteropServices;
 
 namespace MonoDevelop.Tests.TestRunner
 {
 	public class Runer: IApplication
 	{
+		[DllImport ("/usr/lib/libSystem.dylib")]
+		internal static extern IntPtr dlopen (string path, int mode);
+
 		public Task<int> Run (string[] arguments)
 		{
 			Func<List<string>, int> runTests = args => RunNUnit (args);
@@ -47,6 +51,12 @@ namespace MonoDevelop.Tests.TestRunner
 			var args = new List<string> (arguments);
 			bool isPerformanceRun = false;
 			string resultsXmlFile = null;
+
+			if (Platform.IsMac) {
+				var path = Path.GetDirectoryName (typeof (Runer).Assembly.Location);
+				if (dlopen (Path.Combine (path, "libxammac.dylib"), 0) == IntPtr.Zero)
+					throw new InvalidOperationException ("Unable to load libxammac");
+			}
 
 			foreach (var ar in args) {
 				if (ar == "--performance") {
