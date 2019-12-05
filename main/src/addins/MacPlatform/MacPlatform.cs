@@ -152,11 +152,6 @@ namespace MonoDevelop.MacIntegration
 
 			initTracker = timer.BeginTiming ();
 
-			var dir = Path.GetDirectoryName (typeof(MacPlatformService).Assembly.Location);
-
-			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (dir, "libxammac.dylib"), 0) == IntPtr.Zero)
-				LoggingService.LogFatalError ("Unable to load libxammac");
-
 			CheckGtkVersion (2, 24, 14);
 
 			Xwt.Toolkit.CurrentEngine.RegisterBackend<IExtendedTitleBarWindowBackend,ExtendedTitleBarWindowBackend> ();

@@ -45,7 +45,10 @@ namespace MonoDevelop.Components.Mac
 				return toolkit;
 			}
 
-			var path = Path.GetDirectoryName (typeof (IdeTheme).Assembly.Location);
+			var path = Path.GetDirectoryName (typeof (NativeToolkitHelper).Assembly.Location);
+			if (ObjCRuntime.Dlfcn.dlopen (Path.Combine (path, "libxammac.dylib"), 0) == IntPtr.Zero)
+				LoggingService.LogFatalError ("Unable to load libxammac");
+
 			System.Reflection.Assembly.LoadFrom (Path.Combine (path, "Xwt.XamMac.dll"));
 			toolkit = Xwt.Toolkit.Load (Xwt.ToolkitType.XamMac);
 
