@@ -423,7 +423,12 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 			actionArea.PackStart (new VBox (), false, true, 3); // dummy just to take extra 6px at end to make it 20pixels
 			actionArea.ShowAll ();
 
-			vbox.PackStart (actionArea, false, true, 0);
+			var bottomButtonPanelBackground = new EventBox ();
+			bottomButtonPanelBackground.Show ();
+			bottomButtonPanelBackground.ModifyBg (StateType.Normal, Styles.ExceptionCaughtDialog.BottomPaddingBackgroundColor.ToGdkColor ());
+			bottomButtonPanelBackground.Add (actionArea);
+
+			vbox.PackStart (bottomButtonPanelBackground, false, true, 0);
 		}
 
 		Widget CreateInnerExceptionMessage ()
