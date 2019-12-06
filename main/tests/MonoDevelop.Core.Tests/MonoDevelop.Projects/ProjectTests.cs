@@ -972,6 +972,21 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task SubstringOfPath_HandlesForwardSlashesInPath ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ();
+
+			string solFile = Util.GetSampleProject ("path-substring-eval", "path-substring-eval.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				var expectedBaseIntermediateOutputPath = sol.BaseDirectory.Combine ("obj", "src");
+				var baseIntermediateOutputPath = p.MSBuildProject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", relativeToProject: false);
+				Assert.AreEqual (expectedBaseIntermediateOutputPath, baseIntermediateOutputPath);
+			}
+		}
+
+		[Test]
 		public async Task ItemDefinitionGroup ()
 		{
 			string projFile = Util.GetSampleProject ("project-with-item-def-group", "item-definition-group.csproj");
