@@ -257,18 +257,31 @@ namespace MonoDevelop.Ide
 		{
 			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
 
-			var checkSum1 = await RunTest (usedCache: false);
-			var checkSum2 = await RunTest (usedCache: true);
+			var checkSum1 = await RunTest (useCache: false);
+			var checkSum2 = await RunTest (useCache: true);
 
 			Assert.AreEqual (checkSum1, checkSum2);
 
-			async Task<Microsoft.CodeAnalysis.Checksum> RunTest (bool usedCache)
+			async Task<Microsoft.CodeAnalysis.Checksum> RunTest (bool useCache)
 			{
 				var initial = Logger.GetLogger ();
 
 				using (Solution sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 				using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
 					try {
+						var persistentStorageLocationService = ws.Services.GetService<IPersistentStorageLocationService> ();
+						var storagePath = persistentStorageLocationService.TryGetStorageLocation (ws.CurrentSolution);
+						if (!useCache) {
+							// Delete any previous caches, roslyn puts this in a global directory, not a per-solution one.
+							if (Directory.Exists (storagePath))
+								Directory.Delete (storagePath, true);
+						} else {
+							// TODO: Figure out why the db.lock is still alive at this point
+							foreach (var file in Directory.EnumerateFiles (storagePath, "db.lock", SearchOption.AllDirectories))
+								File.Delete (file);
+						}
+
+
 						var persistentStorageService = ws.Services.GetService<IPersistentStorageService> ();
 						Assert.That (persistentStorageService, Is.TypeOf (typeof (Microsoft.CodeAnalysis.SQLite.SQLitePersistentStorageService)));
 
@@ -297,7 +310,7 @@ namespace MonoDevelop.Ide
 						await incrementalAnalyzer.AnalyzeProjectAsync (roslynProject, default, default, CancellationToken.None);
 
 						Assert.That (storageLogger.QueriedCount, Is.GreaterThan (0));
-						if (usedCache) {
+						if (useCache) {
 							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.UsedCacheCount);
 						} else
 							Assert.AreEqual (storageLogger.QueriedCount, storageLogger.CreatedCount);
