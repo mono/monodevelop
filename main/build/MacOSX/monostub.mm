@@ -292,6 +292,8 @@ main (int argc, char **argv)
 		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
 
 		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
+		
+		setenv ("MONO_DEBUG", "disable_omit_fp", 0);
 
 		void *libmono = dlopen ("libmonosgen-2.0.dylib", RTLD_LAZY);
 
