@@ -19,9 +19,9 @@
 		<DebugType>portable</DebugType>
 		<WarningLevel>4</WarningLevel>
 		<Deterministic>True</Deterministic>
-		<IsMac>$([MSBuild]::IsOsPlatform('OSX'))</IsMac>
-		<IsWindows>$([MSBuild]::IsOsPlatform('Windows'))</IsWindows>
-		<IsLinux>$([MSBuild]::IsOsPlatform('Linux'))</IsLinux>
+		<IsMac>$([MSBuild]::IsOSPlatform('OSX'))</IsMac>
+		<IsWindows>$([MSBuild]::IsOSPlatform('Windows'))</IsWindows>
+		<IsLinux>$([MSBuild]::IsOSPlatform('Linux'))</IsLinux>
 	</PropertyGroup>
 
 	<!-- AddinBuildDir is shorthand for which subdir of build\Addins to build into -->
