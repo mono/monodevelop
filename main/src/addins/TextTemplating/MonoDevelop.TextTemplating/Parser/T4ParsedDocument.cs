@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using Mono.TextTemplating;
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor;
 using System.Linq;
 
