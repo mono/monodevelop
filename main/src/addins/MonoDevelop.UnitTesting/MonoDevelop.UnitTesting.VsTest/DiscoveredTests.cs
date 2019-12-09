@@ -48,7 +48,7 @@ namespace MonoDevelop.UnitTesting.VsTest
 		{
 			tests.Sort (OrderByName);
 
-			var parentNamespace = new VsTestNamespaceTestGroup (projectTestSuite, null, projectTestSuite.Project, string.Empty);
+			var parentNamespace = new VsTestNamespaceTestGroup (projectTestSuite, null, projectTestSuite.Project, String.Empty);
 			parentNamespace.AddTests (tests);
 			return parentNamespace.Tests;
 		}
