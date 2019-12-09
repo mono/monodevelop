@@ -613,6 +613,8 @@ namespace MonoDevelop.Ide.Projects
 
 		public async Task Create ()
 		{
+			Runtime.AssertMainThread ();
+			OnProjectCreating ();
 			projectCreated = new TaskCompletionSource<bool> ();
 
 			if (wizardProvider.HasWizard)
@@ -620,7 +622,7 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!await CreateProject ()) {
 				projectCreated.SetResult (false);
-				ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
+				OnProjectCreationFailed ();
 				return;
 			}
 
@@ -714,10 +716,38 @@ namespace MonoDevelop.Ide.Projects
 				UpdateDefaultSettings ();
 
 				projectCreated.SetResult (true);
-				await Runtime.RunInMainThread (() => ProjectCreated?.Invoke (this, EventArgs.Empty));
+				OnProjectCreated ();
 			} catch (Exception ex) {
 				projectCreated.SetException (ex);
 				throw;
+			}
+		}
+
+		void OnProjectCreating ()
+		{
+			if (IdeServices.DesktopService.AccessibilityInUse) {
+				var announcement = GettextCatalog.GetString ("Creating project {0}", SelectedTemplate.Name);
+				IdeServices.DesktopService.MakeAccessibilityAnnouncement (announcement);
+			}
+		}
+
+		void OnProjectCreationFailed ()
+		{
+			ProjectCreationFailed?.Invoke (this, EventArgs.Empty);
+
+			if (IdeServices.DesktopService.AccessibilityInUse) {
+				var announcement = GettextCatalog.GetString ("{0} failed to create", SelectedTemplate.Name);
+				IdeServices.DesktopService.MakeAccessibilityAnnouncement (announcement);
+			}
+		}
+
+		void OnProjectCreated ()
+		{
+			ProjectCreated?.Invoke (this, EventArgs.Empty);
+
+			if (IdeServices.DesktopService.AccessibilityInUse) {
+				var announcement = GettextCatalog.GetString ("{0} successfully created", SelectedTemplate.Name);
+				IdeServices.DesktopService.MakeAccessibilityAnnouncement (announcement);
 			}
 		}
 
