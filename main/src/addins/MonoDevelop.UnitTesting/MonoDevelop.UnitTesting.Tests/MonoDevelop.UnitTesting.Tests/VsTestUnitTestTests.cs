@@ -97,6 +97,24 @@ namespace MonoDevelop.UnitTesting.Tests
 			Assert.AreEqual ("Namespace.MyTest.Test1", test.TestSourceCodeDocumentId);
 		}
 
+		/// <summary>
+		/// VSTS Bug 901156: [Feedback] Weird nesting in "Unit Tests" explorer/window.
+		/// </summary>
+		[Test]
+		public void TestVSTS901156 ()
+		{
+			var parentNamespace = new VsTestNamespaceTestGroup (null, null, null, string.Empty);
+			var test1 = new MyVsTestUnitTest ("Namespace.childNamespace.TestClass.TestMethod1", "Namespace.childNamespace", "TestClass");
+			var test2 = new MyVsTestUnitTest ("Namespace.childNamespace.TestClass.TestMethod2", "Namespace.childNamespace", "TestClass");
+			parentNamespace.AddTest (test1);
+			parentNamespace.AddTest (test2);
+			var currentNamespace = (VsTestNamespaceTestGroup)parentNamespace.Tests [0];
+			var currentClass = (VsTestTestClass)currentNamespace.Tests [0];
+			Assert.AreEqual (currentNamespace.FixtureTypeNamespace, "Namespace.childNamespace");
+			Assert.AreEqual (currentNamespace.Tests.Count, 1);
+			Assert.AreEqual (currentClass.Tests.Count, 2);
+		}
+
 		class MyVsTestUnitTest : VsTestUnitTest
 		{
 			public MyVsTestUnitTest (string displayName, string fixtureTypeNamespace, string fixtureTypeName) : base(displayName)
