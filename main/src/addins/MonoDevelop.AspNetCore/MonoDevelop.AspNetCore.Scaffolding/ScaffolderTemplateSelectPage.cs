@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using Xwt;
@@ -36,12 +34,14 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 	class ScaffolderTemplateSelectPage : ScaffolderWizardPageBase
 	{
 		ListBox listBox;
-		ScaffolderArgs args;
+		readonly ScaffolderArgs args;
+		ScaffolderBase [] scaffolders;
 
 		public event EventHandler ScaffolderSelected;
+
 		public ScaffolderTemplateSelectPage (ScaffolderArgs args) : base (args)
 		{
-			this.SubSubTitle = GettextCatalog.GetString ("Select Scaffolder");
+			SubSubTitle = GettextCatalog.GetString ("Select Scaffolder");
 			this.args = args;
 		}
 
@@ -67,7 +67,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			var listStore = new ListStore (icon, name);
 
-			var scaffolders = GetScaffolders ().Value;
+			scaffolders = GetScaffolders ().Value;
 
 			foreach (var scaffolder in scaffolders) {
 				var row = listStore.AddRow ();
@@ -84,12 +84,31 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			listBox.DataSource = listStore;
 			listBox.HeightRequest = 300;
 			listBox.WidthRequest = 300;
-			listBox.SelectionChanged += (sender, e) => Args.Scaffolder = scaffolders [listBox.SelectedRow];
-			listBox.RowActivated += (sender, e) => ScaffolderSelected?.Invoke (sender, e);
+			listBox.SelectionChanged += SelectionChanged;
+			listBox.RowActivated += RowActivated;
 			listBox.SelectRow (0);
 			listBox.FocusedRow = 0;
 			listBox.SetFocus ();
 			return listBox;
 		}
-    }
+
+		void SelectionChanged(object sender, EventArgs e)
+		{
+			Args.Scaffolder = scaffolders [listBox.SelectedRow];
+		}
+
+		void RowActivated (object sender, EventArgs e)
+		{
+			ScaffolderSelected?.Invoke (sender, e);
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (listBox != null) {
+				listBox.SelectionChanged -= SelectionChanged;
+				listBox.RowActivated -= RowActivated;
+			}
+			base.Dispose (disposing);
+		}
+	}
 }

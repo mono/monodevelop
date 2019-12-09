@@ -745,6 +745,18 @@ namespace MonoDevelop.Projects.MSBuild
 				}
 
 				// Invoke the method
+				if (instance is string instanceString &&
+					instanceString != null &&
+					instanceString.IndexOf ('\\') >= 0 &&
+					Path.DirectorySeparatorChar != '\\') {
+					// Ensure expressions such as $(SomePath.IndexOf('/')) work by using the native path separator.
+					// The directory must exist.
+					string convertedInstance = instanceString.Replace ('\\', Path.DirectorySeparatorChar);
+					if (Path.IsPathRooted (convertedInstance) && Directory.Exists (convertedInstance)) {
+						val = method.Invoke (convertedInstance, convertedArgs);
+						return true;
+					}
+				}
 				val = method.Invoke (instance, convertedArgs);
 			} catch (Exception ex) {
 				LoggingService.LogError ("MSBuild property evaluation failed: " + str.ToString (), ex);

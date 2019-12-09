@@ -88,11 +88,18 @@ namespace MonoDevelop.Ide.TypeSystem
 		private void OnDynamicDocumentUpdated (DocumentInfo document)
 		{
 			if (projectContexts.TryGetValue (document.Id.ProjectId, out var projectContext)) {
-				if (projectContext.Workspace.IsDocumentOpen (document.Id)) {
+				var workspace = projectContext.Workspace;
+				if (workspace.IsDocumentOpen (document.Id)) {
 					return;
 				}
 
-				projectContext.Workspace.OnDocumentReloaded (document);
+				if (!workspace.CurrentSolution.ContainsDocument (document.Id)) {
+					// By the time we get called back from Razor the project might
+					// have been unloaded
+					return;
+				}
+
+				workspace.OnDocumentReloaded (document);
 			}
 		}
 
@@ -114,7 +121,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				var newFiles = currentDynamicSourceFiles.ToImmutableHashSet ();
 				dynamicSourceFiles = newFiles;
 
-				var addedFiles = newFiles.Except (oldFiles);
 				var removedFiles = oldFiles.Except (newFiles);
 
 				foreach (var document in removedFiles) {
@@ -128,14 +134,16 @@ namespace MonoDevelop.Ide.TypeSystem
 
 				List<DocumentInfo> documents = new List<DocumentInfo> ();
 
-				foreach (var document in addedFiles) {
+				foreach (var document in dynamicSourceFiles) {
 					foreach (var dynamicFileProvider in dynamicFileManager.GetDynamicFileProviders (document)) {
 						var dynamicFileInfo = dynamicFileProvider.GetDynamicDocumentInfo (
 							projectInfo.Id,
 							projectInfo.FilePath,
 							document);
 
-						if (dynamicFileInfo != null) {
+						bool alreadyAdded = projectInfo.Documents.Any (d => string.Equals (d.FilePath, document, StringComparison.OrdinalIgnoreCase));
+
+						if (dynamicFileInfo != null && !alreadyAdded) {
 							documents.Add (dynamicFileInfo);
 						}
 					}

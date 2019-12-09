@@ -97,7 +97,7 @@ namespace MonoDevelop.VersionControl.Git
 			await GitService.SwitchToBranchAsync (Repository, (string)dataItem).ConfigureAwait (false);
 		}
 
-		protected override void Update (CommandArrayInfo info)
+		protected override async Task UpdateAsync (CommandArrayInfo info, CancellationToken cancelToken)
 		{
 			var repo = Repository;
 			if (repo == null)
@@ -109,13 +109,10 @@ namespace MonoDevelop.VersionControl.Git
 			if (((wob is WorkspaceItem) && ((WorkspaceItem)wob).ParentWorkspace == null) ||
 			    (wob.BaseDirectory.CanonicalPath == repo.RootPath.CanonicalPath)) {
 
-				string currentBranch = GitRepository.DefaultNoBranchName;
-				var getBranch = repo.GetCurrentBranchAsync ();
-				if (getBranch.Wait (250))
-					currentBranch = getBranch.Result;
+				var currentBranch = await repo.GetCurrentBranchAsync (cancelToken);
 
-				foreach (var branch in repo.GetLocalBranchNamesAsync ().Result) {
-					CommandInfo ci = info.Add (branch, branch);
+				foreach (var branch in await repo.GetLocalBranchNamesAsync (cancelToken)) {
+					var ci = info.Add (branch, branch);
 					if (branch == currentBranch)
 						ci.Checked = true;
 				}
@@ -187,12 +184,11 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Dispose ();
 			}
 		}
-
-		protected override void Update (CommandInfo info)
+		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
 			var repo = UpdateVisibility (info);
 			if (repo != null)
-				info.Enabled = repo.RunOperation (repo.RootPath, repository => !repository.Info.IsHeadUnborn);
+				info.Enabled = await repo.RunOperationAsync (repo.RootPath, repository => !repository.Info.IsHeadUnborn, cancelToken);
 		}
 	}
 

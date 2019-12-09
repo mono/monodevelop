@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RepoRoot>
+    <SrcRelativeProjectDirectory>$(MSBuildProjectDirectory.Substring($(MSBuildThisFileDirectory.Length)))</SrcRelativeProjectDirectory>
+    <BuildSubPath>$(SrcRelativeProjectDirectory.Substring(0, $(SrcRelativeProjectDirectory.IndexOf('/'))))</BuildSubPath>
+    <BaseIntermediateOutputPath>$(RepoRoot)obj\$(BuildSubPath)</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

@@ -315,8 +315,6 @@ namespace MonoDevelop.Ide
 			Counters.InitializationTracker.Trace ("Running Startup Commands");
 			AddinManager.AddExtensionNodeHandler ("/MonoDevelop/Ide/StartupHandlers", OnExtensionChanged);
 
-			// Let extensions now access CompositionManager.Instance and start asynchronously composing the catalog
-			CompositionManager.ConfigureUninitializedMefHandling (throwException: false);
 			Runtime.GetService<CompositionManager> ().Ignore ();
 		}
 
