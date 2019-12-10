@@ -145,9 +145,11 @@ namespace MonoDevelop.Ide.TypeSystem
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabled = true;
 			Options = Options.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Syntax, true)
 				.WithChangedOption (Microsoft.CodeAnalysis.Diagnostics.InternalRuntimeDiagnosticOptions.Semantic, true)
-            // Turn on FSA on a new workspace addition
-			// TODO: This should map to whether we have RoslynPreferences.ClosedFileDiagnostic set to true.
-				.WithChangedOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp, BackgroundAnalysisScope.OpenFilesAndProjects)
+				// Turn on FSA on a new workspace addition
+				.WithChangedOption (
+					SolutionCrawlerOptions.BackgroundAnalysisScopeOption,
+					LanguageNames.CSharp,
+					IsUserOptionOn () ? BackgroundAnalysisScope.FullSolution : BackgroundAnalysisScope.OpenFilesAndProjects)
 				.WithChangedOption (RuntimeOptions.BackgroundAnalysisSuspendedInfoBarShown, false)
 
 			// Always use persistent storage regardless of solution size, at least until a consensus is reached
