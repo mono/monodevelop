@@ -53,6 +53,7 @@ namespace MonoDevelop.Debugger
 			controller.PinnedWatchLocation = location;
 
 			treeView = controller.GetMacControl (ObjectValueTreeViewFlags.TooltipFlags);
+			treeView.UIElementName = "Tooltip";
 			treeView.NodePinned += OnPinStatusChanged;
 			treeView.StartEditing += OnStartEditing;
 			treeView.EndEditing += OnEndEditing;

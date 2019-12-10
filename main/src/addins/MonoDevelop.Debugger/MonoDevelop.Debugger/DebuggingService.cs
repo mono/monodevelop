@@ -27,31 +27,31 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Xml;
-using Mono.Addins;
-using Mono.Debugging.Client;
-using MonoDevelop.Core;
-using MonoDevelop.Core.Execution;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Ide.Gui.Content;
-using MonoDevelop.Projects;
-using MonoDevelop.Debugger.Viewers;
-
-/*
- * Some places we should be doing some error handling we used to toss
- * exceptions, now we error out silently, this needs a real solution.
- */
-using MonoDevelop.Ide.TextEditing;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Concurrent;
 using System.Threading;
-using MonoDevelop.Core.Instrumentation;
-using MonoDevelop.Components;
+using System.Globalization;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
+
+using Mono.Addins;
+
+using Mono.Debugging.Client;
+
 using Microsoft.VisualStudio.Text;
 using Microsoft.CodeAnalysis.Text;
+
+using MonoDevelop.Ide;
+using MonoDevelop.Core;
+using MonoDevelop.Ide.Gui;
+using MonoDevelop.Projects;
+using MonoDevelop.Components;
+using MonoDevelop.Core.Execution;
+using MonoDevelop.Ide.TextEditing;
+using MonoDevelop.Ide.Gui.Content;
+using MonoDevelop.Debugger.Viewers;
+using MonoDevelop.Core.Instrumentation;
 
 namespace MonoDevelop.Debugger
 {
@@ -135,7 +135,6 @@ namespace MonoDevelop.Debugger
 				args.Cancel = true;
 		}
 
-
 		public static IExecutionHandler GetExecutionHandler ()
 		{
 			return executionHandlerFactory;
@@ -144,7 +143,6 @@ namespace MonoDevelop.Debugger
 		public static DebuggerSession DebuggerSession {
 			get { return currentSession?.Session ?? sessions.Values.FirstOrDefault ()?.Session; }
 		}
-
 
 		public static DebuggerSession [] GetSessions ()
 		{
@@ -815,7 +813,19 @@ namespace MonoDevelop.Debugger
 			public void Dispose ()
 			{
 				UpdateDebugSessionCounter ();
-				UpdateEvaluationStatsCounter ();
+
+				UpdateStatsCounter (Counters.EvaluationStats, Session.EvaluationStats);
+
+				UpdateStatsCounter (Counters.StepInStats, Session.StepInStats);
+				UpdateStatsCounter (Counters.StepOutStats, Session.StepOutStats);
+				UpdateStatsCounter (Counters.StepOverStats, Session.StepOverStats);
+				UpdateStatsCounter (Counters.StepInstructionStats, Session.StepInstructionStats);
+				UpdateStatsCounter (Counters.NextInstructionStats, Session.NextInstructionStats);
+
+				UpdateStatsCounter (Counters.LocalVariableStats, Session.LocalVariableStats);
+				UpdateStatsCounter (Counters.WatchExpressionStats, Session.WatchExpressionStats);
+				UpdateStatsCounter (Counters.StackTraceStats, Session.StackTraceStats);
+				UpdateStatsCounter (Counters.TooltipStats, Session.TooltipStats);
 
 				console?.Dispose ();
 				console = null;
@@ -844,7 +854,7 @@ namespace MonoDevelop.Debugger
 			void UpdateDebugSessionCounter ()
 			{
 				var metadata = new Dictionary<string, object> ();
-				metadata ["Success"] = (!SessionError).ToString ();
+				metadata ["Success"] = (!SessionError).ToString (CultureInfo.InvariantCulture);
 				metadata ["DebuggerType"] = Engine.Id;
 
 				if (firstAssemblyLoadTimer != null) {
@@ -852,29 +862,25 @@ namespace MonoDevelop.Debugger
 						// No first assembly load event.
 						firstAssemblyLoadTimer.Stop ();
 					} else {
-						metadata ["AssemblyFirstLoadDuration"] = firstAssemblyLoadTimer.ElapsedMilliseconds.ToString ();
+						metadata ["AssemblyFirstLoadDuration"] = firstAssemblyLoadTimer.ElapsedMilliseconds.ToString (CultureInfo.InvariantCulture);
 					}
 				}
 
 				Counters.DebugSession.Inc (1, null, metadata);
 			}
 
-			void UpdateEvaluationStatsCounter ()
+			void UpdateStatsCounter (Counter counter, DebuggerStatistics stats)
 			{
-				if (Session.EvaluationStats.TimingsCount == 0 && Session.EvaluationStats.FailureCount == 0) {
+				if (stats.TimingsCount == 0 && stats.FailureCount == 0) {
 					// No timings or failures recorded.
 					return;
 				}
 
 				var metadata = new Dictionary<string, object> ();
-				metadata ["DebuggerType"] = Engine.Id;
-				metadata ["AverageDuration"] = Session.EvaluationStats.AverageTime.ToString ();
-				metadata ["MaximumDuration"] = Session.EvaluationStats.MaxTime.ToString ();
-				metadata ["MinimumDuration"] = Session.EvaluationStats.MinTime.ToString ();
-				metadata ["FailureCount"] = Session.EvaluationStats.FailureCount.ToString ();
-				metadata ["SuccessCount"] = Session.EvaluationStats.TimingsCount.ToString ();
+				metadata["DebuggerType"] = Engine.Id;
+				stats.Serialize (metadata);
 
-				Counters.EvaluationStats.Inc (1, null, metadata);
+				counter.Inc (1, null, metadata);
 			}
 
 			bool ExceptionHandler (Exception ex)

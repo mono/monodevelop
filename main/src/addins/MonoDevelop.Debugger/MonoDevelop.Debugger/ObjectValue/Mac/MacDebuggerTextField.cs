@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 using AppKit;
 using Foundation;
 
@@ -103,8 +105,14 @@ namespace MonoDevelop.Debugger
 					cellView.TreeView.OnExpressionEdited (cellView.Node, newValue);
 				}
 			} else if (cellView is MacDebuggerObjectValueView) {
-				if (newValue != oldValue && cellView.TreeView.GetEditValue (cellView.Node, newValue))
+				if (newValue != oldValue && cellView.TreeView.GetEditValue (cellView.Node, newValue)) {
+					var metadata = new Dictionary<string, object> ();
+					metadata["UIElementName"] = cellView.TreeView.UIElementName;
+					metadata["ObjectValue.Type"] = cellView.Node.TypeName;
+
+					Counters.EditedValue.Inc (1, null, metadata);
 					cellView.Refresh ();
+				}
 			}
 
 			oldValue = newValue = null;

@@ -71,6 +71,7 @@ namespace MonoDevelop.Debugger
 				if (Platform.IsMac) {
 					LoggingService.LogInfo ("Using MacObjectValueTreeView for {0}", allowWatchExpressions ? "Watch Pad" : "Locals Pad");
 					var treeView = controller.GetMacControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
+					treeView.UIElementName = allowWatchExpressions ? "WatchPad" : "LocalsPad";
 					_treeview = treeView;
 
 					fontChanger = new PadFontChanger (treeView, treeView.SetCustomFont, treeView.QueueResize);

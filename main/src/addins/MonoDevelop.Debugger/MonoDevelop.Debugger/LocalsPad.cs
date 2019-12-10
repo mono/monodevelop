@@ -26,6 +26,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 using Mono.Debugging.Client;
 
@@ -67,7 +68,7 @@ namespace MonoDevelop.Debugger
 
 		void AddFakeNodes ()
 		{
-			var xx = new System.Collections.Generic.List<ObjectValueNode> ();
+			var xx = new List<ObjectValueNode> ();
 
 			xx.Add (new FakeObjectValueNode ("f1"));
 			xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
@@ -84,14 +85,35 @@ namespace MonoDevelop.Debugger
 			controller.AddValues (xx);
 		}
 
-		void ReloadValues ()
+		void ReloadValues (bool frameChanged)
 		{
 			var frame = DebuggingService.CurrentFrame;
 
 			if (frame == null)
 				return;
 
-			var locals = frame.GetAllLocals ();
+			ObjectValue[] locals;
+			TimeSpan elapsed;
+
+			using (var timer = frame.DebuggerSession.LocalVariableStats.StartTimer ()) {
+				try {
+					locals = frame.GetAllLocals ();
+					timer.Stop (true);
+				} catch {
+					locals = new ObjectValue[0];
+					timer.Stop (false);
+				}
+
+				elapsed = timer.Elapsed;
+			}
+
+			if (frameChanged) {
+				var metadata = new Dictionary<string, object> ();
+				metadata["LocalsCount"] = locals.Length;
+				metadata["Elapsed"] = elapsed.TotalMilliseconds;
+
+				Counters.LocalsPadFrameChanged.Inc (1, null, metadata);
+			}
 
 			DebuggerLoggingService.LogMessage ("Begin Local Variables:");
 			foreach (var local in locals)
@@ -107,7 +129,6 @@ namespace MonoDevelop.Debugger
 					_treeview.EndUpdates ();
 				}
 
-
 				if (EnableFakeNodes)
 					AddFakeNodes ();
 			} else {
@@ -119,13 +140,13 @@ namespace MonoDevelop.Debugger
 		public override void OnUpdateFrame ()
 		{
 			base.OnUpdateFrame ();
-			ReloadValues ();
+			ReloadValues (true);
 		}
 
 		public override void OnUpdateValues ()
 		{
 			base.OnUpdateValues ();
-			ReloadValues ();
+			ReloadValues (false);
 		}
 	}
 }
