@@ -22,7 +22,7 @@ namespace MonoDevelop.TextEditor
 			if (item is ITextToolboxNode tn) {
 				tn.InsertAtCaret (this.Document);
 #if !WINDOWS
-				((ITextView3)TextView).Focus ();
+				((ICocoaTextView)TextView).Focus ();
 #endif
 			}
 		}

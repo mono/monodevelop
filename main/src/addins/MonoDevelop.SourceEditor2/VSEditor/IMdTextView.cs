@@ -1,11 +1,6 @@
 namespace Microsoft.VisualStudio.Text.Editor
 {
-	internal interface IMdTextView :
-#if WINDOWS
-        ITextView2
-#else
-		ITextView3
-#endif
+	internal interface IMdTextView : ITextView2
     {
         MonoDevelop.SourceEditor.IMDSpaceReservationManager GetSpaceReservationManager(string name);
 
