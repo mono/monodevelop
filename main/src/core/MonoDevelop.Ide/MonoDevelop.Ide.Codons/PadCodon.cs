@@ -135,7 +135,7 @@ namespace MonoDevelop.Ide.Codons
 		
 		protected virtual PadContent CreatePad ()
 		{
-			Counters.PadsLoaded++;
+			Counters.PadsLoaded.Inc (1);
 			return (PadContent) Addin.CreateInstance (ClassName, true);
 		}
 		

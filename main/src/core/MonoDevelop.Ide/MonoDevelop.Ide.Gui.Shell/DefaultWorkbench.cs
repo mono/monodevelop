@@ -470,7 +470,7 @@ namespace MonoDevelop.Ide.Gui
 			PadWindow win = (PadWindow) GetPadWindow (codon);
 			if (win != null) {
 				win.NotifyDestroyed ();
-				Counters.PadsLoaded--;
+				Counters.PadsLoaded.Dec (1);
 				padCodons.Remove (win);
 			}
 			if (item != null) {

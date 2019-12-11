@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Editor
 				if (File.Exists (autosaveFileName))
 					File.Delete (autosaveFileName);
 				content.WriteTextTo (autosaveFileName);
-				Counters.AutoSavedFiles++;
+				Counters.AutoSavedFiles.Inc (1);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in auto save while creating: " + fileName +". Disableing auto save.", e);
 				DisableAutoSave ();

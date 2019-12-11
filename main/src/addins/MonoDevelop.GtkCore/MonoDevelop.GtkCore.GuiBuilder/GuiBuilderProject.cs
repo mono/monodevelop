@@ -71,7 +71,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 		{
 			this.fileName = fileName;
 			this.project = project;
-			Counters.GuiProjectsLoaded++;
+			Counters.GuiProjectsLoaded.Inc (1);
 			GuiBuilderService.NotifyGuiProjectLoaded ();
 		}
 		
@@ -96,7 +96,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 				hasError = true;
 			}
 
-			Counters.SteticProjectsLoaded++;
+			Counters.SteticProjectsLoaded.Inc (1);
 			gproject.ResourceProvider = GtkDesignInfo.FromProject (project).ResourceProvider;
 			gproject.WidgetAdded += OnAddWidget;
 			gproject.WidgetRemoved += OnRemoveWidget;
@@ -125,8 +125,8 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (gproject == null)
 				return;
 
-			Counters.SteticProjectsLoaded--;
-			
+			Counters.SteticProjectsLoaded.Dec (1);
+
 			if (Unloaded != null)
 				Unloaded (this, EventArgs.Empty);
 			if (formInfos != null) {
@@ -252,7 +252,7 @@ namespace MonoDevelop.GtkCore.GuiBuilder
 			if (disposed)
 				return;
 			GuiBuilderService.NotifyGuiProjectUnloaded ();
-			Counters.GuiProjectsLoaded--;
+			Counters.GuiProjectsLoaded.Dec (1);
 			disposed = true;
 			if (watcher != null)
 				watcher.Dispose ();
