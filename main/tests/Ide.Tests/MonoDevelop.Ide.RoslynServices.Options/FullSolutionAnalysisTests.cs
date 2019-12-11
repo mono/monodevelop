@@ -52,8 +52,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
 					Assert.AreEqual (
-						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
-						BackgroundAnalysisScope.FullSolution);
+						BackgroundAnalysisScope.OpenFilesAndProjects,
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp));
 					Assert.AreEqual (enabledByDefault, perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 
 					// Set closed file diagnostics to false, this should not impact runtime options
@@ -61,8 +61,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
 					Assert.AreEqual (
-						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
-						BackgroundAnalysisScope.FullSolution);
+						BackgroundAnalysisScope.FullSolution,
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp));
 					Assert.IsFalse (perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 
 					// Set closed file diagnostics to true, this should turn on everything
@@ -76,8 +76,8 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 
 					Assert.IsTrue (pref.FullSolutionAnalysisRuntimeEnabled);
 					Assert.AreEqual (
-						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp),
-						BackgroundAnalysisScope.FullSolution);
+						BackgroundAnalysisScope.FullSolution,
+						mdw.Options.GetOption (SolutionCrawlerOptions.BackgroundAnalysisScopeOption, LanguageNames.CSharp));
 					Assert.IsTrue (perLanguagePref.SolutionCrawlerClosedFileDiagnostic.Value);
 				} finally {
 					mdw.Options = mdw.Options.WithChangedOption (key, old);
