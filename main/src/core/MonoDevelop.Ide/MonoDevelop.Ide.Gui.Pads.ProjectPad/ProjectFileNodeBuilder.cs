@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			foreach (var node in CurrentNodes) {
 				var pf = (ProjectFile)node.DataItem;
 				if (pf.IsLink)
-					info.Text = "Remove";
+					info.Text = GettextCatalog.GetString ("Remove");
 			}
 		}
 
