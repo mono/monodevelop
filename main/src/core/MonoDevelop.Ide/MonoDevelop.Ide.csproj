@@ -2906,6 +2906,8 @@
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\SolarizedLightStyle.json" />
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\TangoStyle.json" />
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\VisualStudioStyle.json" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\Visual Studio Dark+ Style.json" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\Visual Studio Light+ Style.json" />
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCLightStyle.json" />
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\themes\HCDarkStyle.json" />
     <EmbeddedResource Include="MonoDevelop.Ide.Editor.Highlighting\syntaxes\CSharp\C#.sublime-syntax" />
