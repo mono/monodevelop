@@ -238,7 +238,7 @@
 
 	<Command id= "MonoDevelop.Ide.Commands.ProjectCommands.ExcludeFromProject"
 			defaultHandler = "MonoDevelop.Ide.Commands.ExcludeFromProjectHandler"
-			_label = "Exclude from project"
+			_label = "Exclude From Project"
 			_description = "Exclude an item from the project" />
 	<Command id = "MonoDevelop.Ide.Commands.ProjectCommands.AddReference"
 			_description = "Add and remove project references"
