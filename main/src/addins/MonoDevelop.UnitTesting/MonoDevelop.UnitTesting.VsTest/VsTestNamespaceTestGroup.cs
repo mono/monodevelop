@@ -64,19 +64,18 @@ namespace MonoDevelop.UnitTesting.VsTest
 
 		internal void AddTest (VsTestUnitTest VsTestTest)
 		{
-			string childNamespace = VsTestTest.GetChildNamespace (FixtureTypeNamespace);
-			if (string.IsNullOrEmpty (childNamespace)) {
-				if (currentClass == null || currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
-					currentClass = new VsTestTestClass (testRunner, Project, VsTestTest);
-					Tests.Add (currentClass);
-				}
-				currentClass.Tests.Add (VsTestTest);
-			} else if (currentNamespace != this && currentNamespace.Name == childNamespace) {
-				currentNamespace.AddTest (VsTestTest);
-			} else {
+			string childNamespace = VsTestTest.FixtureTypeNamespace;
+
+			if (currentNamespace == null || currentNamespace.Name != childNamespace) {
 				currentNamespace = new VsTestNamespaceTestGroup (testRunner, currentNamespace, Project, childNamespace);
 				currentNamespace.AddTest (VsTestTest);
 				Tests.Add (currentNamespace);
+			} else {
+				if (currentNamespace.currentClass == null || currentNamespace.currentClass.FixtureTypeName != VsTestTest.FixtureTypeName) {
+					currentNamespace.currentClass = new VsTestTestClass (testRunner, Project, VsTestTest);
+					currentNamespace.Tests.Add (currentNamespace.currentClass);
+				}
+				currentNamespace.currentClass.Tests.Add (VsTestTest);
 			}
 		}
 
