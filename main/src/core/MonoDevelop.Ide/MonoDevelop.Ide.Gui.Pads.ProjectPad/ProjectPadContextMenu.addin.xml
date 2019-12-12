@@ -117,10 +117,10 @@
 		<Condition id="ItemType" value="IFolderItem">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 		</Condition>
-		<Condition id="ItemType" value="Solution|Project|UnknownSolutionItem">
-			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
-		</Condition>
 	</ItemSet>
+	<Condition id="ItemType" value="Solution|UnknownSolutionItem">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
+	</Condition>
 	<Condition id="ItemType" value="IFolderItem">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 	</Condition>
@@ -163,6 +163,9 @@
 	<Condition id="ItemType" value="ProjectReference">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.LocalCopyReference" />
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.SpecificAssemblyVersion" />
+	</Condition>
+	<Condition id="ItemType" value="Project">
+		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" _label = "Edit Project File" />
 	</Condition>
 	<Condition id="ItemType" value="IBuildTarget">
 		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.Options" />
