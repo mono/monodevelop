@@ -74,7 +74,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						};
 						if(comboField.PlaceholderText != null)
 							comboBoxEntry.TextEntry.PlaceholderText = comboField.PlaceholderText;
-						comboBoxEntry.Items.Add ("");
 						comboBox = comboBoxEntry;
 					} else {
 						comboBox = new ComboBox ();
