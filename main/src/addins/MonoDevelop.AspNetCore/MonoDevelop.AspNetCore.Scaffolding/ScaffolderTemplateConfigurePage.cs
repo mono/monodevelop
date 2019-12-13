@@ -91,9 +91,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 								foreach (var option in options) {
 									comboBox.Items.Add (option);
 								}
-								comboField.SelectedValue = options.FirstOrDefault ();
-								if (comboBox.Items.Count > 0)
-									comboBox.SelectedIndex = 0;
 							});
 
 						});
