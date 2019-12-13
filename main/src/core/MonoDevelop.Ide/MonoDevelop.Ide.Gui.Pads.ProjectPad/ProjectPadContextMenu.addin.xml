@@ -117,10 +117,11 @@
 		<Condition id="ItemType" value="IFolderItem">
 			<CommandItem id = "MonoDevelop.Ide.Commands.FileCommands.OpenInTerminal" />
 		</Condition>
+		<Condition id="ItemType" value="Solution|UnknownSolutionItem">
+			<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
+		</Condition>
 	</ItemSet>
-	<Condition id="ItemType" value="Solution|UnknownSolutionItem">
-		<CommandItem id = "MonoDevelop.Ide.Commands.ProjectCommands.EditSolutionItem" />
-	</Condition>
+	
 	<Condition id="ItemType" value="IFolderItem">
 		<CommandItem id = "MonoDevelop.Ide.Commands.SearchCommands.FindInFiles" />
 	</Condition>
