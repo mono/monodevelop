@@ -28,6 +28,10 @@ using System.Collections.Generic;
 using MonoDevelop.Core.Instrumentation;
 using NUnit.Framework;
 using System.Threading;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace MonoDevelop.Core
 {
@@ -218,6 +222,68 @@ namespace MonoDevelop.Core
 			var metadata = new CustomCounterMetadata ();
 
 			Assert.AreEqual (default (int), metadata.SomeMeasure);
+		}
+
+		[Test]
+		public void SerializeCounters ()
+		{
+			InstrumentationService.Enabled = true;
+			var timer = InstrumentationService.CreateCounter<CustomCounterMetadata> ("TestCounter", "IDEGroup", id: "IDE.TestCounter");
+			timer.Inc (1, "First Trace", new CustomCounterMetadata () { SomeMeasure = 1 });
+			timer.Inc (1, "Second Trace", new CustomCounterMetadata () { SomeMeasure = 2 });
+			timer.Inc (1, "Third Trace", new CustomCounterMetadata () { SomeMeasure = 3 });
+
+			InstrumentationService.SaveJson ("serialize_counters.json");
+			using (var textReader = new StreamReader("serialize_counters.json")) {
+				using (var jsonTextReader = new JsonTextReader (textReader)) {
+					var jsonRootObj = JObject.Load (jsonTextReader);
+
+					var startTimeToken = jsonRootObj ["StartTime"];
+					Assert.IsNotNull (startTimeToken);
+					Assert.That (startTimeToken.ToString (), Is.EqualTo (InstrumentationService.StartTime.ToString()));
+					Assert.IsNotNull (jsonRootObj ["EndTime"]);
+
+					var counters = jsonRootObj ["Counters"];
+					Assert.IsNotNull (counters);
+					var testCounter = counters ["TestCounter"];
+					var actualTestCounter = InstrumentationService.GetCounter ("TestCounter");
+					Assert.IsNotNull (actualTestCounter);
+
+					var storeValuesToken = testCounter ["StoreValues"];
+					Assert.That (bool.Parse(storeValuesToken.ToString ()), Is.EqualTo (actualTestCounter.StoreValues));
+
+					var totalCountToken = testCounter ["TotalCount"];
+					Assert.IsNotNull (totalCountToken);
+					Assert.That (int.Parse (totalCountToken.ToString ()), Is.EqualTo (actualTestCounter.TotalCount));
+
+					var nameToken = testCounter ["Name"];
+					Assert.IsNotNull (nameToken);
+					Assert.That (nameToken.ToString(), Is.EqualTo (actualTestCounter.Name));
+
+					var idToken = testCounter ["Id"];
+					Assert.IsNotNull (idToken);
+					Assert.That (idToken.ToString (), Is.EqualTo (actualTestCounter.Id));
+
+					var countToken = testCounter ["Count"];
+					Assert.IsNotNull (countToken);
+					Assert.That (int.Parse (countToken.ToString ()), Is.EqualTo (actualTestCounter.Count));
+
+					var enabledToken = testCounter ["Enabled"];
+					Assert.IsNotNull (enabledToken);
+					Assert.That (bool.Parse (enabledToken.ToString ()), Is.EqualTo (actualTestCounter.Enabled));
+
+					Assert.IsNotNull (testCounter ["Category"]);
+					Assert.IsNotNull (testCounter ["AllValues"]);
+
+					foreach (var val in testCounter ["AllValues"]) {
+						var timeStamp = DateTime.Parse (val ["TimeStamp"].ToString());
+						var message = val ["Message"].ToString ();
+						var metaData = (int)val ["Metadata"] ["SomeMeasure"];
+						Assert.That (actualTestCounter.AllValues
+							.FirstOrDefault (x => x.Message == message && (int)x.Metadata["SomeMeasure"] == metaData && x.TimeStamp == timeStamp), Is.Not.Null);
+					}
+				}
+			}
 		}
 	}
 }

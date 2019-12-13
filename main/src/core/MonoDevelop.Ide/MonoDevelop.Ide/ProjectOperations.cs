@@ -51,6 +51,7 @@ using ExecutionContext = MonoDevelop.Projects.ExecutionContext;
 using MonoDevelop.Ide.Gui.Documents;
 using MonoDevelop.Ide.Projects.OptionPanels;
 using MonoDevelop.Ide.Templates;
+using MonoDevelop.Ide.Projects.FileNesting;
 
 namespace MonoDevelop.Ide
 {
@@ -341,7 +342,39 @@ namespace MonoDevelop.Ide
 				await workspace.SavePreferencesAsync ();
 			}
 		}
-		
+
+		/// <summary>
+		/// Returns all dependent files that have names that start with the old name of the file.
+		/// </summary>
+		internal static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
+			MonoDevelop.Projects.ProjectFile file,
+			string newName)
+		{
+			var children = FileNestingService.GetDependentOrNestedTree (file);
+			if (children == null)
+				return null;
+
+			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
+
+			string oldName = file.FilePath.FileName;
+			foreach (ProjectFile child in children) {
+				string oldChildName = child.FilePath.FileName;
+				string childNewName = null;
+				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = newName + oldChildName.Substring (oldName.Length);
+				} else if (oldChildName.StartsWith (Path.GetFileNameWithoutExtension (oldName), StringComparison.CurrentCultureIgnoreCase)) {
+					childNewName = Path.GetFileNameWithoutExtension (newName) + oldChildName.Substring (Path.GetFileNameWithoutExtension (oldName).Length);
+				}
+
+				if (childNewName != null) {
+					if (files == null)
+						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
+					files.Add ((child, childNewName));
+				}
+			}
+			return files;
+		}
+
 		public void Export (Solution item)
 		{
 			Export (item, null);
@@ -1842,10 +1875,10 @@ namespace MonoDevelop.Ide
 					TaskListEntry jumpTask = null;
 					switch (IdeApp.Preferences.JumpToFirstErrorOrWarning.Value) {
 					case JumpToFirst.Error:
-						jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error && TaskStore.IsProjectTaskFile (t));
+						jumpTask = tasks.FirstOrDefault (t => t.Severity == TaskSeverity.Error && TaskStore.IsProjectTaskFileInternal (t));
 						break;
 					case JumpToFirst.ErrorOrWarning:
-						jumpTask = tasks.FirstOrDefault (t => (t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning) && TaskStore.IsProjectTaskFile (t));
+						jumpTask = tasks.FirstOrDefault (t => (t.Severity == TaskSeverity.Error || t.Severity == TaskSeverity.Warning) && TaskStore.IsProjectTaskFileInternal (t));
 						break;
 					}
 					if (jumpTask != null) {
@@ -2253,10 +2286,14 @@ namespace MonoDevelop.Ide
 			ProjectFile sourceParent = null;
 			if (filesToMove.Count == 1 && sourceProject != null) {
 				var pf = filesToMove[0];
-				if (pf != null && pf.HasChildren) {
-					foreach (ProjectFile child in pf.DependentChildren) {
-						filesToRemove.Add (child);
-						filesToMove.Add (child);
+				if (pf != null) {
+					var children = FileNestingService.GetDependentOrNestedTree (pf);
+					if (children != null) {
+
+						foreach (ProjectFile child in children) {
+							filesToRemove.Add (child);
+							filesToMove.Add (child);
+						}
 					}
 				}
 				sourceParent = pf;

@@ -61,7 +61,7 @@ namespace MonoDevelop.Ide
 				}
 				
 				foreach (var e in TextEncoding.ConversionEncodings) {
-					var enc = Encoding.GetEncoding (e.CodePage);
+					var enc = e.Encoding;
 					storeSelected.AppendValues (enc.EncodingName, enc.WebName, enc.CodePage);
 				}
 			} catch (Exception  ex) {

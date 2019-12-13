@@ -30,6 +30,7 @@ using ObjCRuntime;
 
 namespace AppKit
 {
+	[Obsolete("Will be removed in future versions, as Xamarin.Mac 5.16.1+ has SortSubviews bound", error: true)]
 	public static class NSViewExtensions
 	{
 		delegate nint view_compare_func (IntPtr view1, IntPtr view2, IntPtr context);
@@ -55,6 +56,7 @@ namespace AppKit
 			}
 		}
 
+		[Obsolete ("Will be removed in future versions, use NSView.SortSubviews instead, Xamarin.Mac 5.16.1+", error: true)]
 		public static void SortSubviews (this NSView view, Func<NSView, NSView, NSComparisonResult> comparer)
 		{
 			if (comparer == null)

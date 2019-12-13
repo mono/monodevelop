@@ -131,6 +131,7 @@ namespace MonoDevelop.Ide.Projects.OptionPanels
 			var rc = configs.First (ci => ci.EditedConfig == editedConfig);
 			var section = sections [rc];
 			ParentDialog.ShowPage (section);
+			ParentDialog.Child?.GrabFocus ();
 		}
 
 		public override Control CreatePanelWidget ()

@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.Gui
 			void GetLastWriteTime ()
 			{
 				try {
-					LastSaveTimeUtc = !Document.IsNewDocument ? File.GetLastWriteTimeUtc (Document.FileName) : DateTime.MinValue;
+					LastSaveTimeUtc = (Document.IsFile && !Document.IsNewDocument) ? File.GetLastWriteTimeUtc (Document.FileName) : DateTime.MinValue;
 				} catch (Exception ex) {
 					LoggingService.LogError ("Error while getting last write time.", ex);
 					LastSaveTimeUtc = DateTime.UtcNow;

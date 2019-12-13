@@ -74,8 +74,22 @@ namespace MonoDevelop.Ide
 			return Task.FromResult (Run (options));
 		}
 
+		static void UnsetEnvironmentVariables()
+		{
+			Environment.SetEnvironmentVariable ("MD_DISABLE_STATIC_REGISTRAR", null);
+
+			Environment.SetEnvironmentVariable ("MONO_ENV_OPTIONS", null);
+			Environment.SetEnvironmentVariable ("MONO_GC_PARAMS", null);
+			Environment.SetEnvironmentVariable ("MONO_SLEEP_ABORT_LIMIT", null);
+			Environment.SetEnvironmentVariable ("MONO_THREADS_SUSPEND", null);
+
+			Environment.SetEnvironmentVariable ("GTKSHARP_SLIM_STARTUP", "yes");
+		}
+
 		int Run (MonoDevelopOptions options)
 		{
+			UnsetEnvironmentVariables ();
+
 			LoggingService.LogInfo ("Starting {0} {1}", BrandingService.ApplicationLongName, IdeVersionInfo.MonoDevelopVersion);
 			LoggingService.LogInfo ("Build Information{0}{1}", Environment.NewLine, SystemInformation.GetBuildInformation ());
 			LoggingService.LogInfo ("Running on {0}", RuntimeVersionInfo.GetRuntimeInfo ());
@@ -114,6 +128,8 @@ namespace MonoDevelop.Ide
 			var args = options.RemainingArgs.ToArray ();
 
 			IdeTheme.InitializeGtk (BrandingService.ApplicationName, ref args);
+			IdeStartupTracker.StartupTracker.MarkSection ("GtkInitialization");
+
 
 			startupInfo = new StartupInfo (options, args);
 			if (startupInfo.HasFiles) {
@@ -131,6 +147,7 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Unauthorized access: " + ua.Message);
 				return 1;
 			}
+			IdeStartupTracker.StartupTracker.MarkSection ("IdeCustomizerInitialization");
 
 			try {
 				GLibLogging.Enabled = true;
@@ -138,7 +155,6 @@ namespace MonoDevelop.Ide
 				LoggingService.LogError ("Error initialising GLib logging.", ex);
 			}
 
-			IdeStartupTracker.StartupTracker.MarkSection ("GtkInitialization");
 			LoggingService.LogInfo ("Using GTK+ {0}", IdeVersionInfo.GetGtkVersion ());
 
 			// XWT initialization
@@ -185,9 +201,14 @@ namespace MonoDevelop.Ide
 
 			if (!options.NewWindow && startupInfo.HasFiles) {
 				foreach (var file in startupInfo.RequestedFileList) {
-					if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
-						options.NewWindow = true;
-						break;
+					try {
+						if (MonoDevelop.Projects.Services.ProjectService.IsWorkspaceItemFile (file.FileName)) {
+							options.NewWindow = true;
+							break;
+						}
+					} catch (UnauthorizedAccessException ex) {
+						LoggingService.LogError (string.Format ("Unable to check startup file is a workspace item '{0}'", file.FileName), ex);
+						return 1;
 					}
 				}
 			}
@@ -213,6 +234,8 @@ namespace MonoDevelop.Ide
 			IdeStartupTracker.StartupTracker.MarkSection ("ThemeInitialized");
 
 			IdeApp.IsRunning = true;
+
+			Xwt.Application.TranslationCatalog = new XwtTranslationCatalog ();
 
 			// Load the main menu before running the main loop
 			var commandService = Runtime.GetService<CommandManager> ().Result;
@@ -437,14 +460,11 @@ namespace MonoDevelop.Ide
 
 		static bool OnIdle ()
 		{
-			// Make sure the composition manager started initializing
-			Runtime.GetService<CompositionManager> ();
-
 			// OpenDocuments appears when the app is idle.
 			if (!hideWelcomePage && !WelcomePage.WelcomePageService.HasWindowImplementation) {
+				IdeApp.Workbench.Present ();
 				WelcomePage.WelcomePageService.ShowWelcomePage ();
 				Counters.InitializationTracker.Trace ("Showed welcome page");
-				IdeApp.Workbench.Present ();
 			} else if (hideWelcomePage && !startupInfo.OpenedFiles) {
 				IdeApp.Workbench.Present ();
 			}

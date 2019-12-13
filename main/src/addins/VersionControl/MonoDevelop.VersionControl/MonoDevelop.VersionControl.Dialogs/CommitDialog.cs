@@ -44,6 +44,7 @@ namespace MonoDevelop.VersionControl.Dialogs
 {
 	partial class CommitDialog : Gtk.Dialog
 	{
+		Repository vc;
 		ListStore store;
 		HashSet<FilePath> selected = new HashSet<FilePath> ();
 		List<CommitDialogExtension> extensions = new List<CommitDialogExtension> ();
@@ -51,8 +52,9 @@ namespace MonoDevelop.VersionControl.Dialogs
 		string oldMessage;
 		bool responseSensitive;
 
-		public CommitDialog (ChangeSet changeSet)
+		public CommitDialog (Repository vc, ChangeSet changeSet)
 		{
+			this.vc = vc;
 			Build ();
 
 			store = new ListStore(typeof (Xwt.Drawing.Image), typeof (string), typeof (string), typeof(bool), typeof(object));
@@ -205,12 +207,20 @@ namespace MonoDevelop.VersionControl.Dialogs
 
 		protected override void OnResponse (Gtk.ResponseType type)
 		{
+			base.OnResponse (type);
+
 			if (type != Gtk.ResponseType.Ok) {
 				changeSet.GlobalComment = oldMessage;
-			} else if (!ButtonCommitClicked ())
+				EndCommit (false);
+			} else if (!ButtonCommitClicked ()) {
 				return;
+			}
 
-			base.OnResponse (type);
+			if (type == Gtk.ResponseType.Ok) {
+				VersionControlService.NotifyBeforeCommit (vc, changeSet);
+				new CommitWorker (vc, changeSet, this).StartAsync ();
+				return;
+			}
 		}
 
 		CancellationTokenSource destroyTokenSource = new CancellationTokenSource ();
@@ -341,6 +351,61 @@ namespace MonoDevelop.VersionControl.Dialogs
 				selected.Add (vinfo.LocalPath);
 			else
 				selected.Remove (vinfo.LocalPath);
+		}
+
+		private class CommitWorker : VersionControlTask
+		{
+			Repository vc;
+			ChangeSet changeSet;
+			CommitDialog dlg;
+			bool success;
+
+			public CommitWorker (Repository vc, ChangeSet changeSet, CommitDialog dlg)
+			{
+				this.vc = vc;
+				this.changeSet = changeSet;
+				this.dlg = dlg;
+				OperationType = VersionControlOperationType.Push;
+			}
+
+			protected override string GetDescription ()
+			{
+				return GettextCatalog.GetString ("Committing {0}...", changeSet.BaseLocalPath);
+			}
+
+			protected override async Task RunAsync ()
+			{
+				success = true;
+				try {
+					// store global comment before commit.
+					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, changeSet.GlobalComment, true);
+
+					await vc.CommitAsync (changeSet, Monitor);
+					Monitor.ReportSuccess (GettextCatalog.GetString ("Commit operation completed."));
+
+					// Reset the global comment on successful commit.
+					VersionControlService.SetCommitComment (changeSet.BaseLocalPath, "", true);
+				} catch (Exception ex) {
+					LoggingService.LogError ("Commit operation failed", ex);
+					Monitor.ReportError (ex.Message, null);
+					success = false;
+					throw;
+				}
+			}
+
+			protected override void Finished ()
+			{
+				dlg.EndCommit (success);
+				dlg.Destroy ();
+				FileUpdateEventArgs args = new FileUpdateEventArgs ();
+				foreach (ChangeSetItem it in changeSet.Items)
+					args.Add (new FileUpdateEventInfo (vc, it.LocalPath, it.IsDirectory));
+
+				if (args.Count > 0)
+					VersionControlService.NotifyFileStatusChanged (args);
+
+				VersionControlService.NotifyAfterCommit (vc, changeSet, success);
+			}
 		}
 	}
 }

@@ -652,6 +652,7 @@ namespace MonoDevelop.Ide.Gui
 				view.Dispose (); // This will also dispose the controller
 			}
 
+			window.CloseRequested -= Window_CloseRequested;
 			window = null;
 
 			contentCallbackRegistry = null;

@@ -6,8 +6,6 @@ AM_MAINTAINER_MODE
 #capture aclocal flags for autoreconf
 AC_SUBST(ACLOCAL_FLAGS)
 
-default_macarch=i386
-
 dnl Add MD's mimetypes to mime and desktop databases
 AC_ARG_ENABLE(update-mimedb,
    AC_HELP_STRING([--disable-update-mimedb],
@@ -61,28 +59,10 @@ AC_ARG_ENABLE(macplatform,
 		enable_macplatform=${enableval}, enable_macplatform=$default_macplatform)
 
 if test x$enable_macplatform = xyes; then
-	platform_bindings="${platform_bindings}Mac ${with_macarch}"
+	platform_bindings="${platform_bindings}Mac"
 fi
 
 AM_CONDITIONAL(ENABLE_MACPLATFORM, [test x$enable_macplatform = xyes])
-
-# What architecture for Mac
-AC_ARG_WITH(macarch,
-	AC_HELP_STRING([--with-macarch],
-		[which architecture for mac: i386, x86_64 [default=i386]]),
-	with_macarch=${withval}, with_macarch=$default_macarch)
-
-SGEN_SUFFIX=
-MONOSTUB_ARCH=32
-if test x$with_macarch = xx86_64; then
-	SGEN_SUFFIX=64
-	MONOSTUB_ARCH=64
-fi
-AC_SUBST(SGEN_SUFFIX)
-AC_SUBST(MONOSTUB_ARCH)
-
-MAC_ARCHITECTURE=${with_macarch}
-AC_SUBST(MAC_ARCHITECTURE)
 
 # Windows platform addin
 AC_ARG_ENABLE(windowsplatform,

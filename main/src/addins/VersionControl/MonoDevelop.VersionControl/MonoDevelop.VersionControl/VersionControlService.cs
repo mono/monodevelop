@@ -522,7 +522,7 @@ namespace MonoDevelop.VersionControl
 							monitor = GetStatusMonitor ();
 
 	  					var gotInfo = repo.TryGetVersionInfo (file, out var versionInfo);
-						if (gotInfo == false || versionInfo.CanAdd)
+						if (gotInfo == false || (versionInfo.Status & VersionStatus.Ignored) == 0 && versionInfo.CanAdd)
 							await repo.AddAsync (file, false, monitor);
 					}
 					vargs.AddRange (repoFiles.Select (i => new FileUpdateEventInfo (repo, i.ProjectFile.FilePath, i.ProjectFile.Subtype == Subtype.Directory)));

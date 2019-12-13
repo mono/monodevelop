@@ -35,7 +35,7 @@ namespace MonoDevelop.Ide.Gui
 	
 	public sealed class PadFontChanger : IDisposable
 	{
-		Gtk.Widget styleSource;
+		Control styleSource;
 		Action<FontDescription> updater;
 		Action resizer;
 

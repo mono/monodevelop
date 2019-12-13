@@ -656,7 +656,17 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 					}
 				}
 				if (pi == null) {
-					IOptionsPanel panel = node.CreatePanel ();
+					IOptionsPanel panel;
+					try {
+						panel = node.CreatePanel ();
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Error while creating options panel: " + node.Id, e);
+						continue;
+					}
+					if (panel == null) {
+						LoggingService.LogWarning ("Error panel == null: " + node.Id);
+						continue;
+					}
 					pi = new PanelInstance ();
 					pi.Panel = panel;
 					pi.Node = node;
@@ -681,7 +691,12 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			
 			foreach (PanelInstance pi in page.Panels) {
 				if (pi.Widget == null) {
-					pi.Widget = pi.Panel.CreatePanelWidget ();
+					try {
+						pi.Widget = pi.Panel.CreatePanelWidget ();
+					} catch (Exception e) {
+						LoggingService.LogInternalError ("Error while creating panel widget for: " + pi.Node.Id, e);
+						continue;
+					}
 					if (pi.Widget == null)
 						continue;
 

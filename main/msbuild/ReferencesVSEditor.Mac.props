@@ -10,13 +10,11 @@
 
   <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Editor.Imaging.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
@@ -44,7 +42,6 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Extras.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
@@ -52,7 +49,8 @@
   </ItemGroup>
 
   <Import Project="$(VSEditorApiDirectory)build\Environment.props" />
-  <Import Project="$(VSEditorApiDirectory)ProjectReferences.projitems" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Def.projitems" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Impl.projitems" />
 
   <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
   <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">

@@ -1047,7 +1047,7 @@ namespace MonoDevelop.Core
 					if (!(ev is FileEventData fev) || fev.Kind != FileService.EventDataKind.Changed)
 						continue;
 
-					foreach (var fsFiles in fev.Args.GroupBy (f => FileService.GetFileSystemForPath (f.FileName, false)))
+					foreach (var fsFiles in fev.Args.Where (x => !x.IsDirectory).GroupBy (f => FileService.GetFileSystemForPath (f.FileName, false)))
 						fsFiles.Key.NotifyFilesChanged (fsFiles.Select (x => x.FileName));
 				}
 			}).Ignore ();

@@ -75,14 +75,10 @@ namespace MonoDevelop.TextEditor.Cocoa
         ICommandHandler<UpKeyCommandArgs>,
         ICommandHandler<WordDeleteToEndCommandArgs>,
         ICommandHandler<WordDeleteToStartCommandArgs>,
-        ICommandHandler<FindReferencesCommandArgs>
-#if !WINDOWS
-        ,
-		ICommandHandler<ProvideEditorFeedbackCommandArgs>,
-		ICommandHandler<DisableEditorPreviewCommandArgs>,
-		ICommandHandler<LearnAboutTheEditorCommandArgs>
-#endif
-	{
+        ICommandHandler<FindReferencesCommandArgs>,
+        ICommandHandler<OpenLineAboveCommandArgs>,
+        ICommandHandler<OpenLineBelowCommandArgs>
+    {
         [Import]
         private IEditorOperationsFactoryService OperationsService { get; set; }
 
@@ -476,39 +472,26 @@ namespace MonoDevelop.TextEditor.Cocoa
             return true;
         }
 
-		#region Preview Editor Commands
+        CommandState ICommandHandler<OpenLineAboveCommandArgs>.GetCommandState (OpenLineAboveCommandArgs args)
+        {
+            return AvailableInEditableView (args.TextView);
+        }
 
-#if !WINDOWS
+        bool ICommandHandler<OpenLineAboveCommandArgs>.ExecuteCommand (OpenLineAboveCommandArgs args, CommandExecutionContext executionContext)
+        {
+            GetOperations (args.TextView).OpenLineAbove ();
+            return true;
+        }
 
-		CommandState ICommandHandler<ProvideEditorFeedbackCommandArgs>.GetCommandState (ProvideEditorFeedbackCommandArgs args)
-			=> CommandState.Available;
+        CommandState ICommandHandler<OpenLineBelowCommandArgs>.GetCommandState (OpenLineBelowCommandArgs args)
+        {
+            return AvailableInEditableView (args.TextView);
+        }
 
-		bool ICommandHandler<ProvideEditorFeedbackCommandArgs>.ExecuteCommand (ProvideEditorFeedbackCommandArgs args, CommandExecutionContext executionContext)
-		{
-			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/report-problem");
-			return true;
-		}
-
-		CommandState ICommandHandler<LearnAboutTheEditorCommandArgs>.GetCommandState (LearnAboutTheEditorCommandArgs args)
-			=> CommandState.Available;
-
-		bool ICommandHandler<LearnAboutTheEditorCommandArgs>.ExecuteCommand (LearnAboutTheEditorCommandArgs args, CommandExecutionContext executionContext)
-		{
-			IdeServices.DesktopService.ShowUrl ("https://aka.ms/vs/mac/editor/learn-more");
-			return true;
-		}
-
-		CommandState ICommandHandler<DisableEditorPreviewCommandArgs>.GetCommandState (DisableEditorPreviewCommandArgs args)
-			=> CommandState.Available;
-
-		bool ICommandHandler<DisableEditorPreviewCommandArgs>.ExecuteCommand (DisableEditorPreviewCommandArgs args, CommandExecutionContext executionContext)
-		{
-			DefaultSourceEditorOptions.Instance.EnableNewEditor = false;
-			return true;
-		}
-
-#endif
-
-#endregion
-	}
+        bool ICommandHandler<OpenLineBelowCommandArgs>.ExecuteCommand (OpenLineBelowCommandArgs args, CommandExecutionContext executionContext)
+        {
+            GetOperations (args.TextView).OpenLineBelow ();
+            return true;
+        }
+    }
 }

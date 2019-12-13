@@ -48,8 +48,11 @@ namespace MonoDevelop.Ide.Navigation
 		FilePath fileName;
 		string project;
 		
+		bool isDocument;
+
 		public DocumentNavigationPoint (Document doc)
 		{
+			isDocument = true;
 			SetDocument (doc);
 		}
 
@@ -113,7 +116,14 @@ namespace MonoDevelop.Ide.Navigation
 					break;
 				}
 			}
-			return await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
+
+			//in case the document was reopened we want to set again
+			var document = await IdeApp.Workbench.OpenDocument (new FileOpenInformation (fileName, p, true));
+			if (isDocument) {
+				SetDocument (document);
+			}
+
+			return document;
 		}
 		
 		public override string DisplayName {

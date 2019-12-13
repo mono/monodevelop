@@ -93,6 +93,8 @@
     <EmbeddedResource Include="icons\added-overlay-16~sel%402x.png" />
     <EmbeddedResource Include="icons\added-overlay-16~dark~sel.png" />
     <EmbeddedResource Include="icons\added-overlay-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\added-overlay-16~contrast.png" />
+    <EmbeddedResource Include="icons\added-overlay-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\added-overlay-32.png" />
     <EmbeddedResource Include="icons\added-overlay-32%402x.png" />
     <EmbeddedResource Include="icons\added-overlay-32~dark.png" />
@@ -101,6 +103,8 @@
     <EmbeddedResource Include="icons\added-overlay-32~sel%402x.png" />
     <EmbeddedResource Include="icons\added-overlay-32~dark~sel.png" />
     <EmbeddedResource Include="icons\added-overlay-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\added-overlay-32~contrast.png" />
+    <EmbeddedResource Include="icons\added-overlay-32~contrast%402x.png" />
     <EmbeddedResource Include="icons\modified-overlay-16.png" />
     <EmbeddedResource Include="icons\modified-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\modified-overlay-16~dark.png" />
@@ -210,6 +214,8 @@
     <EmbeddedResource Include="icons\versioned-overlay-16~sel%402x.png" />
     <EmbeddedResource Include="icons\versioned-overlay-16~dark~sel.png" />
     <EmbeddedResource Include="icons\versioned-overlay-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\versioned-overlay-16~contrast.png" />
+    <EmbeddedResource Include="icons\versioned-overlay-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\versioned-overlay-32.png" />
     <EmbeddedResource Include="icons\versioned-overlay-32%402x.png" />
     <EmbeddedResource Include="icons\versioned-overlay-32~dark.png" />
@@ -218,6 +224,8 @@
     <EmbeddedResource Include="icons\versioned-overlay-32~sel%402x.png" />
     <EmbeddedResource Include="icons\versioned-overlay-32~dark~sel.png" />
     <EmbeddedResource Include="icons\versioned-overlay-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\versioned-overlay-32~contrast.png" />
+    <EmbeddedResource Include="icons\versioned-overlay-32~contrast%402x.png" />
     <EmbeddedResource Include="icons\unversioned-overlay-16.png" />
     <EmbeddedResource Include="icons\unversioned-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\unversioned-overlay-16~dark.png" />
@@ -258,6 +266,8 @@
     <EmbeddedResource Include="icons\unlocked-overlay-16~sel%402x.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-16~dark~sel.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-16~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\unlocked-overlay-16~contrast.png" />
+    <EmbeddedResource Include="icons\unlocked-overlay-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-32.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-32%402x.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-32~dark.png" />
@@ -266,6 +276,8 @@
     <EmbeddedResource Include="icons\unlocked-overlay-32~sel%402x.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-32~dark~sel.png" />
     <EmbeddedResource Include="icons\unlocked-overlay-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="icons\unlocked-overlay-32~contrast.png" />
+    <EmbeddedResource Include="icons\unlocked-overlay-32~contrast%402x.png" />
     <EmbeddedResource Include="Policies.xml" />
     <EmbeddedResource Include="icons\version-control-16.png" />
     <EmbeddedResource Include="icons\version-control-16%402x.png" />
@@ -289,6 +301,8 @@
     <EmbeddedResource Include="icons\diff-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\gutter-added-15.png" />
     <EmbeddedResource Include="icons\gutter-added-15%402x.png" />
+    <EmbeddedResource Include="icons\gutter-added-15~contrast.png" />
+    <EmbeddedResource Include="icons\gutter-added-15~contrast%402x.png" />
     <EmbeddedResource Include="icons\gutter-removed-15.png" />
     <EmbeddedResource Include="icons\gutter-removed-15%402x.png" />
     <EmbeddedResource Include="icons\pull-16.png" />
@@ -315,6 +329,8 @@
     <EmbeddedResource Include="icons\refresh-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\refresh-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\refresh-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\refresh-16~contrast.png" />
+    <EmbeddedResource Include="icons\refresh-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\local-status-16.png" />
     <EmbeddedResource Include="icons\local-status-16%402x.png" />
     <EmbeddedResource Include="icons\local-status-16~dark.png" />
@@ -327,6 +343,8 @@
     <EmbeddedResource Include="icons\commit-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\commit-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\commit-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\commit-16~contrast.png" />
+    <EmbeddedResource Include="icons\commit-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\remote-status-16.png" />
     <EmbeddedResource Include="icons\remote-status-16%402x.png" />
     <EmbeddedResource Include="icons\remote-status-16~dark.png" />
@@ -343,6 +361,8 @@
     <EmbeddedResource Include="icons\vcs-added-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\vcs-added-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\vcs-added-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\vcs-added-16~contrast.png" />
+    <EmbeddedResource Include="icons\vcs-added-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\vcs-removed-16.png" />
     <EmbeddedResource Include="icons\vcs-removed-16%402x.png" />
     <EmbeddedResource Include="icons\vcs-removed-16~dark.png" />
@@ -399,6 +419,8 @@
     <EmbeddedResource Include="icons\branch-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\branch-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\branch-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\branch-16~contrast.png" />
+    <EmbeddedResource Include="icons\branch-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\tag-16.png" />
     <EmbeddedResource Include="icons\tag-16%402x.png" />
     <EmbeddedResource Include="icons\tag-16~dark.png" />
@@ -480,7 +502,6 @@
     <Compile Include="MonoDevelop.VersionControl.Views\BlameView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ComparisonWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.cs" />
-    <Compile Include="MonoDevelop.VersionControl.Views\DropDownBox.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\ChangeSetView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeView.cs" />
     <Compile Include="MonoDevelop.VersionControl.Views\MergeWidget.cs" />
@@ -522,6 +543,10 @@
     <Compile Include="Gui\MonoDevelop.VersionControl.Views.LogWidget.cs" />
     <Compile Include="MonoDevelop.VersionControl\VersionControlDocumentController.cs" />
     <Compile Include="MonoDevelop.VersionControl\Instrumentation.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.MiddleArea.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\EditorCompareWidgetBase.DiffScrollbar.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\BlameWidget.AuthorSectionAccessible.cs" />
+    <Compile Include="MonoDevelop.VersionControl.Views\DiffRendererWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Git.Tests" />

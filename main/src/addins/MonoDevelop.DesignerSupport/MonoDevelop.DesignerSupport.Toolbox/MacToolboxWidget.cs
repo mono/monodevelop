@@ -38,7 +38,6 @@ using MonoDevelop.Components.Mac;
 
 namespace MonoDevelop.DesignerSupport.Toolbox
 {
-	[Register ("MacToolboxWidget")]
 	class MacToolboxWidget : NSCollectionView, IToolboxWidget
 	{
 		internal const string ImageViewItemName = "ImageViewItem";
@@ -58,8 +57,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public event EventHandler<CGPoint> MenuOpened;
 		public event EventHandler ActivateSelectedItem;
 
-		IPadWindow container;
-		NSTextField messageTextField;
 		MacToolboxWidgetDataSource dataSource;
 
 		bool listMode;
@@ -69,41 +66,26 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			get { return CategoryVisibilities.Select (s => s.Category); }
 		}
 
-		internal void PerformActivateSelectedItem () => OnActivateSelectedItem (EventArgs.Empty);
+		internal void PerformActivateSelectedItem () => ActivateSelectedItem?.Invoke (this, EventArgs.Empty);
 
-		void OnActivateSelectedItem (EventArgs args) => ActivateSelectedItem?.Invoke (this, args);
-
-		NSIndexPath selectedIndexPath;
 		public NSIndexPath SelectedIndexPath {
-			get {
-				return selectedIndexPath;
-			}
+			get => SelectionIndexPaths.AnyObject as NSIndexPath;
 			set {
-				if (selectedIndexPath != value) {
-					selectedIndexPath = value;
+				if (value == null) {
+					SelectionIndexPaths = new NSSet ();
+				} else {
+					SelectionIndexPaths = new NSSet (value);
 				}
 			}
 		}
 
 		public ToolboxWidgetItem SelectedItem {
 			get {
-				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (selectedIndexPath, CategoryVisibilities)) {
+				if (MacToolboxWidgetDataSource.IsIndexOutOfSync (SelectedIndexPath, CategoryVisibilities)) {
 					return null;
 				}
-				return CategoryVisibilities [(int)selectedIndexPath.Section].Items [(int)selectedIndexPath.Item];
-			}
-		}
-
-		public string CustomMessage {
-			get => messageTextField.StringValue;
-			set {
-				if (string.IsNullOrEmpty (value)) {
-					messageTextField.StringValue = "";
-					messageTextField.Hidden = true;
-				} else {
-					messageTextField.StringValue = value;
-					messageTextField.Hidden = false;
-				}
+				var indexPath = SelectedIndexPath;
+				return CategoryVisibilities [(int)indexPath.Section].Items [(int)indexPath.Item];
 			}
 		}
 
@@ -142,23 +124,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			}
 		}
 
-		public MacToolboxWidget (IPadWindow container) : base ()
-		{
-			this.container = container;
-			container.PadContentShown += OnContainerIsShown;
-
-			Initialize ();
-		}
-
-		// Called when created from unmanaged code
-		public MacToolboxWidget (IntPtr handle) : base (handle)
-		{
-			Initialize ();
-		}
-
-		// Called when created directly from a XIB file
-		[Export ("initWithCoder:")]
-		public MacToolboxWidget (NSCoder coder) : base (coder)
+		public MacToolboxWidget ()
 		{
 			Initialize ();
 		}
@@ -175,9 +141,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		void RedrawSelectedItem ()
 		{
 			if (SelectionIndexPaths.Count > 0) {
-				var collectionViewItem = GetItem ((NSIndexPath)SelectionIndexPaths.ElementAt (0));
-				if (collectionViewItem != null && collectionViewItem.View != null) {
-					collectionViewItem.View.NeedsDisplay = true;
+				var collectionViewItem = GetItem (SelectedIndexPath);
+				if (collectionViewItem != null && collectionViewItem.View is ContentCollectionViewItem contentCollectionView) {
+					contentCollectionView.RefreshLayer ();
 				}
 			}
 		}
@@ -185,7 +151,6 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		// Shared initialization code
 		public void Initialize ()
 		{
-			TranslatesAutoresizingMaskIntoConstraints = false;
 			AccessibilityRole = NSAccessibilityRoles.ToolbarRole;
 			flowLayout = new NSCollectionViewFlowLayout {
 				SectionHeadersPinToVisibleBounds = false,
@@ -204,36 +169,27 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			collectionViewDelegate.DragBegin += CollectionViewDelegate_DragBegin;
 			collectionViewDelegate.SelectionChanged += CollectionViewDelegate_SelectionChanged;
 
-			var fontSmall = NativeViewHelper.GetSystemFont (false, (int)NSFont.SmallSystemFontSize);
-			messageTextField = new NSLabel {
-				StringValue = String.Empty,
-				Alignment = NSTextAlignment.Center,
-				Font = fontSmall,
-				LineBreakMode = NSLineBreakMode.ByWordWrapping
-			};
-			messageTextField.SetContentCompressionResistancePriority (250, NSLayoutConstraintOrientation.Horizontal);
-			AddSubview (messageTextField);
-
 			BackgroundColors = new NSColor [] { Styles.ToolbarBackgroundColor };
+
+			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
+			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
+			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
 		}
+	
+		public event EventHandler<NativeViews.NSEventArgs> KeyDownPressed;
 
 		public override void KeyDown (NSEvent theEvent)
 		{
-			base.KeyDown (theEvent);
-			if ((int)theEvent.ModifierFlags == (int)KeyModifierFlag.None && (theEvent.KeyCode == (int)KeyCodes.Enter)) {
-				PerformActivateSelectedItem ();
-			}
+			var args = new NativeViews.NSEventArgs (theEvent);
+			KeyDownPressed?.Invoke (this, args);
+
+			if (!args.Handled)
+				base.KeyDown (theEvent);
 		}
 
-		void DataSource_RegionCollapsed (object sender, NSIndexPath e)
-		{
-			RegionCollapsed?.Invoke (this, EventArgs.Empty);
-		}
+		void DataSource_RegionCollapsed (object sender, NSIndexPath e) => RegionCollapsed?.Invoke (this, EventArgs.Empty);
 
-		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e)
-		{
-			DragBegin?.Invoke (this, EventArgs.Empty);
-		}
+		void CollectionViewDelegate_DragBegin (object sender, NSIndexSet e) => DragBegin?.Invoke (this, EventArgs.Empty);
 
 		void CollectionViewDelegate_SelectionChanged (object sender, NSSet e)
 		{
@@ -248,25 +204,35 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		public override void SetFrameSize (CGSize newSize)
 		{
 			base.SetFrameSize (newSize);
-			var frame = messageTextField.Frame;
-			messageTextField.Frame = new CGRect (frame.Location, newSize);
-			RedrawItems (true, false);
+		
+			RedrawItems (true, false, false, SelectedItem);
 		}
 
 		public override void MouseDown (NSEvent theEvent)
 		{
 			collectionViewDelegate.IsLastSelectionFromMouseDown = true;
-			base.MouseDown (theEvent);
 			if (SelectedItem != null && theEvent.ClickCount > 1) {
-				OnActivateSelectedItem (EventArgs.Empty);
+				PerformActivateSelectedItem ();
 			}
+			base.MouseDown (theEvent);
 		}
 
-		public void RedrawItems (bool invalidates, bool reloads)
+		NSIndexPath GetIndexPathFromItem (ToolboxWidgetItem item)
+		{
+			for (int i = 0; i < CategoryVisibilities.Count; i++) {
+				int index = CategoryVisibilities [i].Items.IndexOf (item);
+				if (index >= 0) {
+					return NSIndexPath.FromItemSection (index, i);
+				}
+			}
+			return null;
+		}
+
+		public void RedrawItems (bool invalidates, bool reloads,bool isNewData, ToolboxWidgetItem selectedWidgetItem)
 		{
 			NSIndexPath selected = null;
-			if (SelectionIndexPaths.Count > 0) {
-				selected = (NSIndexPath)SelectionIndexPaths.ElementAt (0);
+			if (!isNewData && selectedWidgetItem != null) {
+				selected = GetIndexPathFromItem (selectedWidgetItem);
 			}
 			if (IsListMode) {
 				flowLayout.ItemSize = new CGSize (Math.Max (Frame.Width - IconMargin, 1), LabelCollectionViewItem.ItemHeight);
@@ -290,6 +256,8 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 
 			if (selected != null) {
 				SelectionIndexPaths = new NSSet (selected);
+			} else {
+				SelectionIndexPaths = new NSSet ();
 			}
 		}
 
@@ -313,38 +281,14 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			return base.BecomeFirstResponder ();
 		}
 
-		#region INativeChildView
-
-		public void OnKeyPressed (object o, Gtk.KeyPressEventArgs ev)
-		{
-
-		}
-
-		public void OnKeyReleased (object s, Gtk.KeyReleaseEventArgs ev)
-		{
-
-		}
-
-		#endregion
-
 		internal void ClearImageCache ()
 		{
 			dataSource.Clear ();
 		}
 
-		internal void OnContainerIsShown (object sender, EventArgs e)
-		{
-			RegisterClassForItem (typeof (HeaderCollectionViewItem), HeaderViewItemName);
-			RegisterClassForItem (typeof (LabelCollectionViewItem), LabelViewItemName);
-			RegisterClassForItem (typeof (ImageCollectionViewItem), ImageViewItemName);
-		}
-
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				if (container != null) {
-					container.PadContentShown -= OnContainerIsShown;
-				}
 
 				collectionViewDelegate.DragBegin -= CollectionViewDelegate_DragBegin;
 				collectionViewDelegate.SelectionChanged -= CollectionViewDelegate_SelectionChanged;

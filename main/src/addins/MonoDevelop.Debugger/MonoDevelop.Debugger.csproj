@@ -189,7 +189,27 @@
     <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueStackFrame.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\ObjectValueNodeEventArgs.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\Gtk\GtkObjectValueTreeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacObjectValueTreeView.cs" />
     <Compile Include="MonoDevelop.Debugger\ObjectValue\IObjectValueTreeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\LoadingObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\AddNewExpressionObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\QuickInfo\MacDebuggerTooltipWindow.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\PinnedWatches\PinnedWatchProvider.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\PinnedWatches\PinnedWatchAdornmentManager.cs" />
+    <Compile Include="MonoDevelop.Debugger.VSTextView\PinnedWatches\PinnedWatchView.cs" />
+    <Compile Include="MonoDevelop.Debugger\PinnedWatchLocation.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacObjectValueNode.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacObjectValueTreeViewDataSource.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacObjectValueTreeViewDelegate.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectCellViewBase.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectNameView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectValueView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectTypeView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerObjectPinView.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\ExpressionEventArgs.cs" />
+    <Compile Include="MonoDevelop.Debugger\ObjectValue\Mac\MacDebuggerTextField.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerAsyncCompletionSource.cs" />
+    <Compile Include="MonoDevelop.Debugger\DebuggerCompletionCommandHandler.cs" />
   </ItemGroup>
   <ItemGroup Condition="$(OS) != 'Windows_NT'">
     <Compile Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\ExceptionCaughtProvider.cs" />
@@ -289,6 +309,8 @@
     <EmbeddedResource Include="icons\gutter-stack-15%402x.png" />
     <EmbeddedResource Include="icons\gutter-stack-15~dark.png" />
     <EmbeddedResource Include="icons\gutter-stack-15~dark%402x.png" />
+    <EmbeddedResource Include="icons\gutter-stack-15~contrast.png" />
+    <EmbeddedResource Include="icons\gutter-stack-15~contrast%402x.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15%402x.png" />
     <EmbeddedResource Include="icons\gutter-tracepoint-15~dark.png" />
@@ -315,6 +337,8 @@
     <EmbeddedResource Include="icons\stack-pointer-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled.png" />
     <EmbeddedResource Include="icons\stack-pointer-16~dark~disabled%402x.png" />
+    <EmbeddedResource Include="icons\stack-pointer-16~contrast.png" />
+    <EmbeddedResource Include="icons\stack-pointer-16~contrast%402x.png" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Configuration)' != 'DebugMac' AND '$(Configuration)' != 'ReleaseMac' ">
     <EmbeddedResource Include="icons\pause-16.png" />
@@ -380,6 +404,8 @@
     <Folder Include="MonoDevelop.Debugger.VSTextView\ExceptionCaught\" />
     <Folder Include="MonoDevelop.Debugger\ObjectValue\" />
     <Folder Include="MonoDevelop.Debugger\ObjectValue\Gtk\" />
+    <Folder Include="MonoDevelop.Debugger\ObjectValue\Mac\" />
+    <Folder Include="MonoDevelop.Debugger.VSTextView\PinnedWatches\" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.SourceEditor" />

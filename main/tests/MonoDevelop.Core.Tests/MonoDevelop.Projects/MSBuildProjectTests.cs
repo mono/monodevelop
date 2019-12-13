@@ -572,6 +572,20 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public void InstrinsicProperties_IsOSPlatform_IsCaseInsensitive ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ();
+
+			using (var p = LoadAndEvaluate ("msbuild-tests", "osplatform.csproj")) {
+				Assert.IsTrue (p.EvaluatedProperties.GetValue<bool> ("IsMac"));
+				Assert.IsTrue (p.EvaluatedProperties.GetValue<bool> ("IsMac2"));
+				Assert.IsTrue (p.EvaluatedProperties.GetValue<bool> ("IsMac3"));
+				Assert.AreEqual ("MAC", p.EvaluatedProperties.GetValue ("DefineConstants"));
+			}
+		}
+
+		[Test]
 		public void ItemDefinitionGroup ()
 		{
 			using (var p = LoadAndEvaluate ("project-with-item-def-group", "item-definition-group.csproj")) {

@@ -47,9 +47,43 @@
     <Compile Include="MonoDevelop.AspNetCore\LaunchProfileProvider.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreNestingRulesProvider.cs" />
     <Compile Include="MonoDevelop.AspNetCore\AspNetCoreExecutionTarget.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreTargetFrameworkExecutionTarget.cs" />
+    <Compile Include="MonoDevelop.AspNetCore\AspNetCoreProjectTemplateWizard.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Commands\ScaffoldCommandHandler.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderArgs.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ModelVisitor.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizard.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderDialogController.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateSelectPage.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderTemplateConfigurePage.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\CommandLineArg.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\ScaffolderWizardPageBase.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ApiControllerEntityFrameworkScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ApiControllerWithActionsScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\EmptyApiControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\EmptyMvcControllerScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\ScaffolderBase.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\MvcControllerWithActionsScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkCrudScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageEntityFrameworkScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageScaffolder.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\BoolFieldList.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ComboField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ScaffolderField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\StringField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\FileField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\RazorPageScaffolderBase.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Fields\ArgumentField.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\PackageDescription.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\ScaffoldingConfig.cs" />
+    <Compile Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\SupportPolicyVersion.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNetCore.addin.xml" />
+    <EmbeddedResource Include="Resources\aspnet-wizard-page.png" />
+    <EmbeddedResource Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\ScaffoldingPackageVersions.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\MiddlewareClass.xft.xml">
@@ -130,6 +164,12 @@
     <None Include="Resources\AspNetCore.filenesting.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\RazorComponent.xft.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\RazorComponent.razor">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -157,6 +197,11 @@
       <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
+      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
+      <Name>MonoDevelop.PackageManagement</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <DownloadNupkg Include="Microsoft.DotNet.Web.ProjectTemplates.1.x" Version="$(TemplatesVersion1x)" ExtensionDir="Templates" />
@@ -168,6 +213,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Scaffolders\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Fields\" />
+    <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,6 +12,8 @@
 /main/Directory.Build.props @mono/monodevelop-roslyn @mono/monodevelop-infrastructure
 /main/msbuild/RoslynVersion.props @mono/monodevelop-roslyn
 /main/src/addins/CSharpBinding @mono/monodevelop-roslyn
+/main/src/addins/MonoDevelop.AspNetCore @mrward @nosami @iantoalms @rodrmoya
+/main/src/addins/MonoDevelop.DotNetCore @mrward @nosami @iantoalms @rodrmoya
 /main/src/addins/PerformanceDiagnostics @mono/monodevelop-infrastructure
 /main/src/core/MonoDevelop.Core @mono/monodevelop-core-owners
 /main/src/core/MonoDevelop.Core/MonoDevelop.FSW @Therzok

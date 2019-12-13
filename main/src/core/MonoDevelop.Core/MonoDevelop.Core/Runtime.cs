@@ -42,6 +42,7 @@ using Mono.Addins;
 using Mono.Addins.Setup;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Setup;
 using MonoDevelop.Core.Web;
@@ -144,6 +145,9 @@ namespace MonoDevelop.Core
 				systemAssemblyService = new SystemAssemblyService ();
 				systemAssemblyService.Initialize ();
 				LoadMSBuildLibraries ();
+
+				// Initialize extra services
+				FeatureSwitchService.Initialize ();
 				
 				initialized = true;
 				
@@ -326,15 +330,15 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static Task RunInMainThread (Action action)
 		{
-			var ts = new TaskCompletionSource<int> ();
 			if (IsMainThread) {
 				try {
 					action ();
-					ts.SetResult (0);
+					return Task.CompletedTask;
 				} catch (Exception ex) {
-					ts.SetException (ex);
+					return Task.FromException (ex);
 				}
 			} else {
+				var ts = new TaskCompletionSource<int> ();
 				MainSynchronizationContext.Post (state => {
 					var (act, tcs) = (ValueTuple<Action, TaskCompletionSource<int>>)state;
 					try {
@@ -344,8 +348,8 @@ namespace MonoDevelop.Core
 						tcs.SetException (ex);
 					}
 				}, (action, ts));
+				return ts.Task;
 			}
-			return ts.Task;
 		}
 
 		/// <summary>
@@ -353,14 +357,14 @@ namespace MonoDevelop.Core
 		/// </summary>
 		public static Task<T> RunInMainThread<T> (Func<T> func)
 		{
-			var ts = new TaskCompletionSource<T> ();
 			if (IsMainThread) {
 				try {
-					ts.SetResult (func ());
+					return Task.FromResult (func ());
 				} catch (Exception ex) {
-					ts.SetException (ex);
+					return Task.FromException<T> (ex);
 				}
 			} else {
+				var ts = new TaskCompletionSource<T> ();
 				MainSynchronizationContext.Post (state => {
 					var (fun, tcs) = (ValueTuple<Func<T>, TaskCompletionSource<T>>)state;
 					try {
@@ -369,8 +373,8 @@ namespace MonoDevelop.Core
 						tcs.SetException (ex);
 					}
 				}, (func, ts));
+				return ts.Task;
 			}
-			return ts.Task;
 		}
 
 		/// <summary>

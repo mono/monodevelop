@@ -1,15 +1,16 @@
 {
 	"name": "Visual Studio",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"description": "Reminiscent of Microsoft Visual Studio's default colors",
 	"originator": "Jeffrey Stedfast <fejj@novell.com>",
 
-	"palette": [
+"palette": [
 		{ "name": "text-black", "value": "#222222" },
 		{ "name": "comment-green", "value": "#008000" },
 		{ "name": "keyword-blue", "value": "#0000ff" },
-		{ "name": "semantic-type", "value": "#2B90AF" }
-	],
+		{ "name": "semantic-type", "value": "#508FAE" },
+    { "name": "selection-bg", "value": "#94CAED" }
+    ],
 
 	"colors": [
 		{ "name": "Background(Read Only)", "color": "#FFFFFF" },
@@ -25,13 +26,19 @@
 
 		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" },
 
-		{ "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" }
+    { "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" },
+
+    { "name": "Usages(Rectangle)", "color": "#E2E6E6", "secondcolor": "#E2E6E6", "bordercolor": "#E2E6E6" },
+		{ "name": "Search result background", "color": "#F6B94D" },
+		
+		{ "name": "Link Color", "color": "keyword-blue" },
+		{ "name": "Link Color(Active)", "color": "keyword-blue" }
 	],
 
 	"text": [
 		{ "name": "Plain Text", "fore": "text-black", "back": "#FFFFFF" },
-		{ "name": "Selected Text", "fore": "white", "back": "#3298FF" },
-		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "#BFCDDB" },
+		{ "name": "Selected Text", "back": "selection-bg" },
+		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "selection-bg" },
 
 		{ "name": "Collapsed Text", "fore": "comment-green", "back": "white" },
 
@@ -102,12 +109,12 @@
 
 		{ "name": "Debugger Current Statement", "fore": "#000000", "back": "#FFEE61" },
 
-		{ "name": "Css Comment", "fore": "#006400", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "#FF0000", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "keyword-blue", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "#800000", "weight": "bold" },
-		{ "name": "Css String Value", "fore": "keyword-blue", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "keyword-blue", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "#006400" },
+		{ "name": "Css Property Name", "fore": "#FF0000" },
+		{ "name": "Css Property Value", "fore": "keyword-blue" },
+		{ "name": "Css Selector", "fore": "#800000" },
+		{ "name": "Css String Value", "fore": "keyword-blue" },
+		{ "name": "Css Keyword", "fore": "keyword-blue" },
 
 		{ "name": "Script Comment", "fore": "comment-green" },
 		{ "name": "Script Keyword", "fore": "keyword-blue" },

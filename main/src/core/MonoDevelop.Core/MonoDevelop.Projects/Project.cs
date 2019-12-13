@@ -370,10 +370,10 @@ namespace MonoDevelop.Projects
 			// If the project doesn't have a Default run configuration, create one
 			if (!defaultRunConfigurationCreated) {
 				if (!runConfigurations.Any (c => c.IsDefaultConfiguration)) {
+					defaultRunConfigurationCreated = true;
 					var rc = CreateRunConfigurationInternal ("Default");
 					ImportDefaultRunConfiguration (rc);
 					runConfigurations.Insert (0, rc);
-					defaultRunConfigurationCreated = true;
 				}
 			}
 		}
@@ -488,6 +488,54 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Gets the .editorconfig files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ImmutableArray<FilePath>> GetEditorConfigFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (ImmutableArray<FilePath>.Empty);
+
+			return BindTask<ImmutableArray<FilePath>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await GetEditorConfigFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Gets the .editorconfig files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ImmutableArray<FilePath>> GetEditorConfigFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetEditorConfigFiles (monitor, configuration);
+		}
+
+		/// <summary>
+		/// Gets the AdditionalFiles files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ImmutableArray<FilePath>> GetAdditionalFilesAsync (ConfigurationSelector configuration)
+		{
+			if (sourceProject == null)
+				return Task.FromResult (ImmutableArray<FilePath>.Empty);
+
+			return BindTask<ImmutableArray<FilePath>> (async cancelToken => {
+				using (var cancelSource = CancellationTokenSource.CreateLinkedTokenSource (cancelToken))
+				using (var monitor = new ProgressMonitor (cancelSource)) {
+					return await GetAdditionalFilesAsync (monitor, configuration);
+				}
+			});
+		}
+
+		/// <summary>
+		/// Gets the AdditionalFiles that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		public Task<ImmutableArray<FilePath>> GetAdditionalFilesAsync (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			return ProjectExtension.OnGetAdditionalFiles (monitor, configuration);
+		}
+
+		/// <summary>
 		/// Gets the source files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
 		public Task<ImmutableArray<ProjectFile>> GetSourceFilesAsync (ConfigurationSelector configuration)
@@ -512,12 +560,30 @@ namespace MonoDevelop.Projects
 		}
 
 		/// <summary>
+		/// Gets the additonal files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		protected virtual async Task<ImmutableArray<FilePath>> OnGetAdditionalFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
+			return coreCompileResult.AdditionalFiles;
+		}
+
+		/// <summary>
 		/// Gets the analyzer files that are included in the project, including any that are added by `CoreCompileDependsOn`
 		/// </summary>
 		protected virtual async Task<ImmutableArray<FilePath>> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 		{
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			return coreCompileResult.AnalyzerFiles;
+		}
+
+		/// <summary>
+		/// Gets the .editorconfig files that are included in the project, including any that are added by `CoreCompileDependsOn`
+		/// </summary>
+		protected virtual async Task<ImmutableArray<FilePath>> OnGetEditorConfigFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+		{
+			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
+			return coreCompileResult.EditorConfigFiles;
 		}
 
 		/// <summary>
@@ -532,8 +598,10 @@ namespace MonoDevelop.Projects
 			var coreCompileResult = await compileEvaluator.GetItemsFromCoreCompileDependenciesAsync (this, monitor, configuration);
 			var evaluatedCompileItems = coreCompileResult.SourceFiles;
 
-			var results = new HashSet<ProjectFile> (evaluatedItems, ProjectFileFilePathComparer.Instance);
+			// Add Compile items first to avoid using potential duplicate None items which would break code completion.
+			var results = new HashSet<ProjectFile> (evaluatedItems.Length, ProjectFileFilePathComparer.Instance);
 			results.UnionWith (evaluatedCompileItems);
+			results.UnionWith (evaluatedItems);
 
 			return results.ToImmutableArray ();
 		}
@@ -610,7 +678,7 @@ namespace MonoDevelop.Projects
 			compileEvaluator.MarkDirty ();
 
 			Runtime.RunInMainThread (() => {
-				NotifyModified ("Files");
+				NotifyModified ("CoreCompileFiles");
 			}).Ignore ();
 		}
 
@@ -621,16 +689,28 @@ namespace MonoDevelop.Projects
 
 		readonly struct CoreCompileEvaluationResult
 		{
-			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (ImmutableArray<ProjectFile>.Empty, ImmutableArray<FilePath>.Empty);
+			public static CoreCompileEvaluationResult Empty = new CoreCompileEvaluationResult (
+				ImmutableArray<ProjectFile>.Empty,
+				ImmutableArray<FilePath>.Empty,
+				ImmutableArray<FilePath>.Empty,
+				ImmutableArray<FilePath>.Empty);
 
-			public CoreCompileEvaluationResult (ImmutableArray<ProjectFile> sourceFiles, ImmutableArray<FilePath> analyzerFiles)
+			public CoreCompileEvaluationResult (
+				ImmutableArray<ProjectFile> sourceFiles,
+				ImmutableArray<FilePath> analyzerFiles,
+				ImmutableArray<FilePath> additionalFiles,
+				ImmutableArray<FilePath> editorConfigFiles)
 			{
 				SourceFiles = sourceFiles;
 				AnalyzerFiles = analyzerFiles;
+				AdditionalFiles = additionalFiles;
+				EditorConfigFiles = editorConfigFiles;
 			}
 
 			public readonly ImmutableArray<ProjectFile> SourceFiles;
 			public readonly ImmutableArray<FilePath> AnalyzerFiles;
+			public readonly ImmutableArray<FilePath> AdditionalFiles;
+			public readonly ImmutableArray<FilePath> EditorConfigFiles;
 		}
 
 		class CachingCoreCompileEvaluator
@@ -639,6 +719,12 @@ namespace MonoDevelop.Projects
 			string evaluatedCompileItemsConfiguration;
 			bool reevaluateCoreCompileDependsOn;
 			TaskCompletionSource<CoreCompileEvaluationResult> evaluatedCompileItemsTask;
+			static readonly HashSet<string> coreCompileBuildActions = new HashSet<string> (new [] {
+				"Compile",
+				"Analyzer",
+				"EditorConfigFiles",
+				"AdditionalFiles"
+			});
 
 			public void MarkDirty ()
 			{
@@ -647,6 +733,11 @@ namespace MonoDevelop.Projects
 					if (evaluatedCompileItemsTask != null)
 						reevaluateCoreCompileDependsOn = true;
 				}
+			}
+
+			public static bool IsCoreCompileFile (string buildAction)
+			{
+				return coreCompileBuildActions.Contains (buildAction);
 			}
 
 			/// <summary>
@@ -695,11 +786,13 @@ namespace MonoDevelop.Projects
 					try {
 						// evaluate the Compile targets
 						var ctx = new TargetEvaluationContext ();
-						ctx.ItemsToEvaluate.Add ("Compile");
-						ctx.ItemsToEvaluate.Add ("Analyzer");
+						foreach (string buildAction in coreCompileBuildActions) {
+							ctx.ItemsToEvaluate.Add (buildAction);
+						}
 						ctx.LoadReferencedProjects = false;
 						ctx.BuilderQueue = BuilderQueue.ShortOperations;
 						ctx.LogVerbosity = MSBuildVerbosity.Quiet;
+						ctx.GlobalProperties.SetValue ("DesignTimeBuild", "true");
 
 						var evalResult = await project.RunTargetInternal (monitor, dependsList, config.Selector, ctx);
 						if (evalResult != null && evalResult.Items != null) {
@@ -723,12 +816,15 @@ namespace MonoDevelop.Projects
 
 			CoreCompileEvaluationResult ProcessMSBuildItems (IEnumerable<IMSBuildItemEvaluated> items, Project project)
 			{
+				var additionalFilesList = new List<FilePath> ();
 				var analyzerList = new List<FilePath> ();
+				var editorConfigFilesList = new List<FilePath> ();
 				var sourceFilesList = new List<ProjectFile> ();
 				foreach (var item in items) {
 					var msbuildPath = MSBuildProjectService.FromMSBuildPath (project.sourceProject.BaseDirectory, item.Include);
 
-					if (item.Name == "Compile") {
+					switch (item.Name) {
+					case "Compile":
 						var subtype = Subtype.Code;
 
 						const string subtypeKey = "SubType";
@@ -740,11 +836,24 @@ namespace MonoDevelop.Projects
 
 						var projectFile = new ProjectFile (msbuildPath, item.Name, subtype) { Project = project };
 						sourceFilesList.Add (projectFile);
-					} else if (item.Name == "Analyzer")
+						break;
+					case "Analyzer":
 						analyzerList.Add (msbuildPath);
+						break;
+					case "AdditionalFiles":
+						additionalFilesList.Add (msbuildPath);
+						break;
+					case "EditorConfigFiles":
+						editorConfigFilesList.Add (msbuildPath);
+						break;
+					}
 				}
 
-				return new CoreCompileEvaluationResult (sourceFilesList.ToImmutableArray (), analyzerList.ToImmutableArray ());
+				return new CoreCompileEvaluationResult (
+					sourceFilesList.ToImmutableArray (),
+					analyzerList.ToImmutableArray (),
+					additionalFilesList.ToImmutableArray (),
+					editorConfigFilesList.ToImmutableArray ());
 			}
 		}
 
@@ -1414,7 +1523,7 @@ namespace MonoDevelop.Projects
 				}
 
 				try {
-					result = await builder.Run (configs, monitor.Log, logger, context.LogVerbosity, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
+					result = await builder.Run (configs, monitor.Log, logger, context.LogVerbosity, context.BinLogFilePath, targets, evaluateItems, evaluateProperties, globalProperties, monitor.CancellationToken).ConfigureAwait (false);
 				} finally {
 					builder.Dispose ();
 					t1.End ();
@@ -1513,11 +1622,17 @@ namespace MonoDevelop.Projects
 
 			metadata.FirstBuild = IsFirstBuild;
 
-			bool success = false;
+			bool success = true;
 			bool cancelled = false;
 
 			if (result != null) {
-				success = !result.Errors.Any (error => !error.IsWarning);
+				foreach (var error in result.Errors) {
+					bool isError = !error.IsWarning;
+					if (isError) {
+						success = false;
+						metadata.RegisterError (error.Code);
+					}
+				}
 
 				if (!success) {
 					cancelled = result.Errors [0].Message == "Build cancelled";
@@ -1594,7 +1709,7 @@ namespace MonoDevelop.Projects
 		{
 			var properties = new Dictionary<string, string> ();
 			string framework = activeTargetFramework;
-			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget)
+			if (framework != null && target != ProjectService.BuildTarget && target != ProjectService.CleanTarget && target != ProjectService.PackTarget)
 				properties ["TargetFramework"] = framework;
 
 			return properties;
@@ -2524,6 +2639,8 @@ namespace MonoDevelop.Projects
 		internal void NotifyFilePropertyChangedInProject (ProjectFile file, string property)
 		{
 			NotifyModified ("Files");
+			if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+				NotifyModified ("CoreCompileFiles");
 			OnFilePropertyChangedInProject (new ProjectFileEventArgs (this, file, property));
 		}
 
@@ -2535,10 +2652,13 @@ namespace MonoDevelop.Projects
 		{
 			if (!objs.Any ())
 				return;
-			
+
+			bool coreCompileFile = false;
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
+				if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+					coreCompileFile = true;
 				args.Add (new ProjectFileEventInfo (this, file));
 				if (DependencyResolutionEnabled) {
 					unresolvedDeps.Remove (file);
@@ -2551,6 +2671,8 @@ namespace MonoDevelop.Projects
 				}
 			}
 			NotifyModified ("Files");
+			if (coreCompileFile)
+				NotifyModified ("CoreCompileFiles");
 			OnFileRemovedFromProject (args);
 			ParentSolution?.OnRootDirectoriesChanged (this, isRemove: false, isAdd: false);
 		}
@@ -2559,15 +2681,20 @@ namespace MonoDevelop.Projects
 		{
 			if (!objs.Any ())
 				return;
-			
+
+			bool coreCompileFile = false;
 			var args = new ProjectFileEventArgs ();
 			
 			foreach (ProjectFile file in objs) {
+				if (CachingCoreCompileEvaluator.IsCoreCompileFile (file.BuildAction))
+					coreCompileFile = true;
 				args.Add (new ProjectFileEventInfo (this, file));
 				ResolveDependencies (file);
 			}
 
 			NotifyModified ("Files");
+			if (coreCompileFile)
+				NotifyModified ("CoreCompileFiles");
 			OnFileAddedToProject (args);
 
 			if (!Loading)
@@ -4523,11 +4650,10 @@ namespace MonoDevelop.Projects
 
 			bool exists = File.Exists (sourceFile) || Directory.Exists (sourceFile);
 
-			Runtime.RunInMainThread (() => {
-				OnFileCreatedExternally (targetFile);
-				if (!exists)
-					OnFileDeletedExternally (sourceFile);
-			});
+			OnFileCreatedExternally (targetFile);
+			if (!exists) {
+				Runtime.RunInMainThread (() => OnFileDeletedExternally (sourceFile));
+			}
 		}
 
 		internal virtual void OnFileCreated (FilePath filePath)
@@ -4687,6 +4813,8 @@ namespace MonoDevelop.Projects
 		internal void NotifyFileRenamedInProject (ProjectFileRenamedEventArgs args)
 		{
 			NotifyModified ("Files");
+			if (args.Any (file => CachingCoreCompileEvaluator.IsCoreCompileFile (file.ProjectFile.BuildAction)))
+				NotifyModified ("CoreCompileFiles");
 			OnFileRenamedInProject (args);
 		}
 		
@@ -4976,10 +5104,19 @@ namespace MonoDevelop.Projects
 				return Project.OnFastCheckNeedsBuild (configuration, context);
 			}
 
+			internal protected override Task<ImmutableArray<FilePath>> OnGetAdditionalFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Project.OnGetAdditionalFiles (monitor, configuration);
+			}
 
 			internal protected override Task<ImmutableArray<FilePath>> OnGetAnalyzerFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
 			{
 				return Project.OnGetAnalyzerFiles (monitor, configuration);
+			}
+
+			internal protected override Task<ImmutableArray<FilePath>> OnGetEditorConfigFiles (ProgressMonitor monitor, ConfigurationSelector configuration)
+			{
+				return Project.OnGetEditorConfigFiles (monitor, configuration);
 			}
 
 			internal protected override Task<ImmutableArray<ProjectFile>> OnGetSourceFiles (ProgressMonitor monitor, ConfigurationSelector configuration)

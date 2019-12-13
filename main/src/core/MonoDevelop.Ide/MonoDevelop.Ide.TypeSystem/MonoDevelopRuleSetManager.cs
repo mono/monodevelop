@@ -84,15 +84,6 @@ namespace MonoDevelop.Ide.TypeSystem
 				sw.WriteLine ("<RuleSet Name=\"Global Rules\" ToolsVersion=\"12.0\">");
 				sw.WriteLine ("    <Rules AnalyzerId=\"Roslyn\" RuleNamespace=\"Roslyn\">>");
 				foreach (var kv in reportDiagnostics) {
-					if (kv.Key.StartsWith ("RE", StringComparison.Ordinal))
-						continue;
-					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
-				}
-				sw.WriteLine ("    </Rules>");
-				sw.WriteLine ("    <Rules AnalyzerId=\"RefactoringEssentials\" RuleNamespace=\"RefactoringEssentials\">>");
-				foreach (var kv in reportDiagnostics) {
-					if (!kv.Key.StartsWith ("RE", StringComparison.Ordinal))
-						continue;
 					sw.WriteLine ("        <Rule Id=\"{0}\" Action=\"{1}\"/>", kv.Key, ConvertReportDiagnosticToAction (kv.Value));
 				}
 				sw.WriteLine ("    </Rules>");

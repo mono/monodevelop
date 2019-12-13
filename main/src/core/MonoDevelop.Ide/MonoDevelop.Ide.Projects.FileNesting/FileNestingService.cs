@@ -76,9 +76,12 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			return null;
 		}
 
-		public static event Action<Project> NestingRulesChanged;
+		/// <summary>
+		/// The project file which had modifications, in most cases, the parent of the added/removed projectfile
+		/// </summary>
+		public static event Action<ProjectFile, ProjectFile> NestingRulesChanged;
 
-		internal static void NotifyNestingRulesChanged (Project project) => NestingRulesChanged?.Invoke (project);
+		internal static void NotifyNestingRulesChanged (ProjectFile toUpdate, ProjectFile newParent) => NestingRulesChanged?.Invoke (toUpdate, newParent);
 
 		public static bool IsEnabledForProject (Project project)
 		{
@@ -92,18 +95,60 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		public static ProjectFile GetParentFile (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
 			return GetProjectNestingInfo (inputFile.Project).GetParentForFile (inputFile);
 		}
 
 		public static bool HasChildren (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return false;
+			}
 			var children = GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
 			return (children?.Count ?? 0) > 0;
 		}
 
 		public static ProjectFileCollection GetChildren (ProjectFile inputFile)
 		{
+			if (!AppliesToProject (inputFile.Project)) {
+				return null;
+			}
 			return GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
+		}
+
+		public static IEnumerable<ProjectFile> GetDependentOrNestedChildren (ProjectFile inputFile)
+		{
+			if (inputFile.HasChildren)
+				return inputFile.DependentChildren;
+
+			return GetChildren (inputFile);
+		}
+
+		public static IEnumerable<ProjectFile> GetDependentOrNestedTree (ProjectFile inputFile)
+		{
+			if (inputFile.HasChildren) {
+				foreach (var dep in inputFile.DependentChildren) {
+					yield return dep;
+				}
+			} else {
+				var children = GetChildren (inputFile);
+				if (children != null && children.Count > 0) {
+					var stack = new Stack<ProjectFile> (children);
+					while (stack.Count > 0) {
+						var current = stack.Pop ();
+						yield return current;
+
+						children = GetChildren (current);
+						if (children != null) {
+							foreach (var child in children) {
+								stack.Push (child);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -148,7 +193,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 		}
 
-		void AddFile (ProjectFile projectFile)
+		ProjectFileNestingInfo AddFile (ProjectFile projectFile)
 		{
 			var tmp = projectFiles.GetOrAdd (projectFile, new ProjectFileNestingInfo (projectFile));
 			tmp.Parent = FileNestingService.InternalGetParentFile (projectFile);
@@ -163,9 +208,10 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 
 			projectFiles [projectFile] = tmp;
+			return tmp;
 		}
 
-		void RemoveFile (ProjectFile projectFile, List<ProjectFile> originalFilesToRemove = null)
+		ProjectFileNestingInfo RemoveFile (ProjectFile projectFile, List<ProjectFile> originalFilesToRemove = null)
 		{
 			bool actuallyRemoveFiles = originalFilesToRemove == null;
 
@@ -192,37 +238,42 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (actuallyRemoveFiles && originalFilesToRemove != null) {
 				Project.Files.RemoveRange (originalFilesToRemove);
 			}
+
+			return nestingInfo;
 		}
 
 		void OnFileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
 			foreach (var file in e) {
-				AddFile (file.ProjectFile);
+				var nestingInfo = AddFile (file.ProjectFile);
+				NotifyNestingRulesChanged (nestingInfo);
 			}
-
-			if (fileNestingEnabled)
-				FileNestingService.NotifyNestingRulesChanged (Project);
 		}
 
 		void OnFileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
 			foreach (var file in e) {
-				RemoveFile (file.ProjectFile);
+				var nestingInfo = RemoveFile (file.ProjectFile);
+				NotifyNestingRulesChanged (nestingInfo);
 			}
-
-			if (fileNestingEnabled)
-				FileNestingService.NotifyNestingRulesChanged (Project);
 		}
 
 		void OnFileRenamedInProject (object sender, ProjectFileRenamedEventArgs e)
 		{
 			foreach (var file in e) {
-				RemoveFile (file.ProjectFile);
-				AddFile (file.ProjectFile);
-			}
+				var oldNestingInfo = RemoveFile (file.ProjectFile);
+				NotifyNestingRulesChanged (oldNestingInfo);
 
-			if (fileNestingEnabled)
-				FileNestingService.NotifyNestingRulesChanged (Project);
+				var nestingInfo = AddFile (file.ProjectFile);
+				NotifyNestingRulesChanged (nestingInfo);
+			}
+		}
+
+		void NotifyNestingRulesChanged (ProjectFileNestingInfo nestingInfo)
+		{
+			if (nestingInfo != null && fileNestingEnabled) {
+				FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, nestingInfo.Parent);
+			}
 		}
 
 		void OnUserPropertiesChanged (object sender, Core.PropertyBagChangedEventArgs e)
@@ -230,7 +281,12 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			bool newValue = FileNestingService.IsEnabledForProject (Project);
 			if (fileNestingEnabled != newValue) {
 				fileNestingEnabled = newValue;
-				FileNestingService.NotifyNestingRulesChanged (Project);
+				foreach (var kvp in projectFiles) {
+					var nestingInfo = kvp.Value;
+					if (nestingInfo.Children != null) {
+						FileNestingService.NotifyNestingRulesChanged (nestingInfo.File, null);
+					}
+				}
 			}
 		}
 

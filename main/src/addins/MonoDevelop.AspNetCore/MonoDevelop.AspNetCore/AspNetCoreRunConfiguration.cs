@@ -49,10 +49,12 @@ namespace MonoDevelop.AspNetCore
 
 		public bool IsDirty { get; set; } = true;
 
+		internal LaunchProfileProvider LaunchProfileProvider { get; set; }
+
 		internal event EventHandler SaveRequested;
 
 		internal AspNetCoreRunConfiguration (string name, LaunchProfileData profile)
-			: this (name)
+			: base (name)
 		{
 			CurrentProfile = profile;
 
@@ -60,13 +62,13 @@ namespace MonoDevelop.AspNetCore
 		}
 
 		public AspNetCoreRunConfiguration (string name)
-			: base (name)
+			: this (name, new LaunchProfileData ())
 		{
 		}
 		
 		[Obsolete]
 		public AspNetCoreRunConfiguration (string name, DotNetProject project)
-			: base (name)
+			: this (name, new LaunchProfileData ())
 		{
 		}
 

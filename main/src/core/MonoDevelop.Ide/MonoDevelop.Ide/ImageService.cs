@@ -573,37 +573,32 @@ namespace MonoDevelop.Ide
 			string cid;
 			if (composedIcons.TryGetValue (id, out cid))
 				return cid;
-			System.Collections.ICollection col = size == Gtk.IconSize.Invalid ? Enum.GetValues (typeof(Gtk.IconSize)) : new object [] { size };
-			var frames = new List<Xwt.Drawing.Image> ();
+			var col = size == Gtk.IconSize.Invalid ? Enum.GetValues (typeof(Gtk.IconSize)) : new object [] { size };
+			var frames = new List<Xwt.Drawing.Image> (col.Length);
 			foreach (Gtk.IconSize sz in col) {
 				if (sz == Gtk.IconSize.Invalid)
 					continue;
-				Xwt.Drawing.ImageBuilder ib = null;
-				Xwt.Drawing.Image icon = null;
+
+				var parts = new List <Xwt.Drawing.Image> (ids.Length);
 				for (int n = 0; n < ids.Length; n++) {
 					var px = GetIcon (ids[n], sz);
 					if (px == null) {
 						LoggingService.LogError ("Error creating composed icon {0} at size {1}. Icon {2} is missing.", id, sz, ids[n]);
-						icon = null;
 						break;
 					}
-
-					if (n == 0) {
-						ib = new Xwt.Drawing.ImageBuilder (px.Width, px.Height);
-						ib.Context.DrawImage (px, 0, 0);
-						icon = px;
-						continue;
-					}
-
-					if (icon.Width != px.Width || icon.Height != px.Height)
-						px = px.WithSize (icon.Width, icon.Height);
-
-					ib.Context.DrawImage (px, 0, 0);
+					parts.Add (px);
 				}
-				frames.Add (ib.ToVectorImage ());
+
+				if (parts.Count > 0)
+					frames.Add (parts.Count > 1 ? Xwt.Drawing.Image.CreateComposedImage (parts) : parts[0]);
 			}
 
-			icons [id] = Xwt.Drawing.Image.CreateMultiSizeIcon (frames);
+			if (frames.Count == 1)
+				icons[id] = frames[0];
+			else if (frames.Count > 1)
+				icons[id] = Xwt.Drawing.Image.CreateMultiSizeIcon (frames);
+			else
+				icons[id] = GetMissingIcon ();
 			composedIcons[id] = id;
 			return id;
 		}

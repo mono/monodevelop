@@ -26,6 +26,7 @@
 
 using NuGet.PackageManagement;
 using NuGet.Packaging.Core;
+using NuGet.ProjectManagement;
 using NuGet.Versioning;
 
 namespace MonoDevelop.PackageManagement.Tests.Helpers
@@ -40,6 +41,18 @@ namespace MonoDevelop.PackageManagement.Tests.Helpers
 				CreatePackageIdentity (packageId, packageVersion),
 				actionType,
 				null)
+		{
+		}
+
+		public FakeNuGetProjectAction (
+			NuGetProject project,
+			string packageId,
+			string packageVersion,
+			NuGetProjectActionType actionType)
+			: base (
+				CreatePackageIdentity (packageId, packageVersion),
+				actionType,
+				project)
 		{
 		}
 

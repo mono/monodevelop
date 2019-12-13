@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // DotNetCoreVersion.cs
 //
 // Author:
@@ -59,6 +59,9 @@ namespace MonoDevelop.DotNetCore
 
 		public int Patch => Version.Build;
 
+		// Used by UpdaterService to generate VersionId
+		public int Revision { get; private set; }
+
 		public string OriginalString { get; private set; }
 
 		public bool IsPrerelease { get; private set; }
@@ -97,11 +100,24 @@ namespace MonoDevelop.DotNetCore
 
 			string versionString = input;
 			string releaseLabel = string.Empty;
-
+			int revision = 0;
 			int prereleaseLabelStart = input.IndexOf ('-');
 			if (prereleaseLabelStart >= 0) {
 				versionString = input.Substring (0, prereleaseLabelStart);
 				releaseLabel = input.Substring (prereleaseLabelStart + 1);
+				int revisionLabelStart = input.IndexOf ('-', prereleaseLabelStart + 1) + 1;
+				if (revisionLabelStart > 0) {
+					int revisionLabelEnd = input.IndexOf ('-', revisionLabelStart);
+					string revisionString;
+					if (revisionLabelEnd < 0) {
+						revisionString = input.Substring (revisionLabelStart);
+					} else {
+						revisionString = input.Substring (revisionLabelStart, revisionLabelEnd - revisionLabelStart);
+					}
+					if (!int.TryParse (revisionString , out revision)) {
+						return false;
+					}
+				}
 			}
 
 			if (!Version.TryParse (versionString, out var version))
@@ -110,6 +126,7 @@ namespace MonoDevelop.DotNetCore
 			result = new DotNetCoreVersion (version) {
 				OriginalString = input,
 				IsPrerelease = prereleaseLabelStart >= 0,
+				Revision = revision,
 				ReleaseLabel = releaseLabel
 			};
 

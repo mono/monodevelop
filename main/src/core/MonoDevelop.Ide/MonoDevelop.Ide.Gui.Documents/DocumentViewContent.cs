@@ -61,8 +61,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			shellContentView = window.CreateViewContent ();
 			shellContentView.SetContentLoader (LoadControl);
-			if (pathDoc != null)
+			if (pathDoc != null) {
 				shellContentView.ShowPathBar (pathDoc);
+				pathDoc = null;
+			}
 			shellContentView.ContentInserted += ShellContentView_ContentInserted;
 			return shellContentView;
 		}
@@ -140,8 +142,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			if (shellContentView == null)
 				this.pathDoc = pathDoc;
-			else
+			else {
 				shellContentView.ShowPathBar (pathDoc);
+				this.pathDoc = null;
+			}
 		}
 
 		public void HidePathBar ()

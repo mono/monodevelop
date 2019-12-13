@@ -126,9 +126,9 @@ namespace MonoDevelop.TextEditor
 			("Preprocessor Keyword", "Preprocessor"),
 			("Operator", "Keyword(Operator)"),
 			("Literal", "Number"),
-			("Markup Attribute", ""),
-			("Markup Attribute Value", ""),
-			("Markup Node", ""),
+			("Markup Attribute", "Xml Attribute"),
+			("Markup Attribute Value", "Xml Attribute Value"),
+			("Markup Node", "Xml Name"),
 			("String", "String"),
 			("Type", "User Types"),
 			("Number", "Number"),
@@ -182,6 +182,17 @@ namespace MonoDevelop.TextEditor
 		{
 			var editorFormat = editorFormatMapService.GetEditorFormatMap (appearanceCategory);
 			editorFormat.BeginBatchUpdate ();
+
+			// Reason we do it this way to purge existing values is because there is many possible
+			// value that can be already in ResourceDictionary, Bold, Color, Font... So we would have to explicitly
+			// clear all this values and set them to default before setting new theme, since theme might depend on default
+			// Handling all this is very complicated and error prone, since this whole file should be removed at some point
+			// and replaced with new theming system better adjusted to ITextView
+			// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/980541 for more details
+#if !WINDOWS
+			(editorFormat as IEditorFormatMap2)?.ClearProperties ();
+#endif
+
 			var theme = SyntaxHighlightingService.GetEditorTheme (IdeApp.Preferences.ColorScheme.Value);
 			var settingsMap = new Dictionary<string, ThemeSetting> ();
 			var defaultSettings = theme.Settings[0];
@@ -229,6 +240,27 @@ namespace MonoDevelop.TextEditor
 			CreateResourceDictionary (editorFormat, defaultSettings, "urlformat", EditorThemeColors.Link, EditorFormatDefinition.ForegroundColorId);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes before save", EditorThemeColors.QuickDiffDirty);
 			CreateResourceDictionary (editorFormat, defaultSettings, "Track Changes after save", EditorThemeColors.QuickDiffChanged);
+
+
+			// Old(MonoDevelop) diff when rendering new code/removed code uses 1 color for background and 1 color for text
+			// New(VS) diff uses normal syntax colored text which results in good results when mapping on light themes
+			// but on dark themes things looks just opposite of what they should, hence invert background color...
+			if (theme.FitsIdeTheme (Theme.Light)) {
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.line", EditorThemeColors.PreviewDiffRemovedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemovedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemoved, EditorFormatDefinition.ForegroundColorId);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.line", EditorThemeColors.PreviewDiffAddedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAddedBackground);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAdded, EditorFormatDefinition.ForegroundColorId);
+			} else {
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.line", EditorThemeColors.PreviewDiffRemoved);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemoved);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.remove.word", EditorThemeColors.PreviewDiffRemovedBackground, EditorFormatDefinition.ForegroundColorId);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.line", EditorThemeColors.PreviewDiffAdded);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAdded);
+				CreateResourceDictionary (editorFormat, defaultSettings, "deltadiff.add.word", EditorThemeColors.PreviewDiffAddedBackground, EditorFormatDefinition.ForegroundColorId);
+			}
+
 			CreateInlineEditField (editorFormat, defaultSettings, "RoslynRenameFieldBackgroundAndBorderTag");
 			CreateInlineEditField (editorFormat, defaultSettings, "ExpansionFieldBackgroundAndBorderTag");
 			foreach (var mapping in mappings) {

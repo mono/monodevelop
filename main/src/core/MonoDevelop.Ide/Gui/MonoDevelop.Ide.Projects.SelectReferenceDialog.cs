@@ -40,7 +40,7 @@ namespace MonoDevelop.Ide.Projects
 			this.WidthRequest = 640;
 			this.HeightRequest = 520;
 			this.Name = "MonoDevelop.Ide.Projects.SelectReferenceDialog";
-			this.Title = global::Mono.Unix.Catalog.GetString ("Edit References");
+			this.Title = global::Mono.Unix.Catalog.GetString ("References");
 			this.TypeHint = ((global::Gdk.WindowTypeHint)(1));
 			this.BorderWidth = ((uint)(6));
 			this.DestroyWithParent = true;

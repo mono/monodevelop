@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -38,7 +40,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 {
 	public static class AtkCocoaExtensions
 	{
-		public static void SetCommonAttributes (this Atk.Object o, string name, string label, string help)
+		public static void SetCommonAttributes (this Atk.Object o, string? name, string? label, string? help)
 		{
 			if (!string.IsNullOrEmpty (name)) {
 				o.Name = name;
@@ -51,7 +53,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public static void SetCommonAttributes (this Xwt.Accessibility.Accessible o, string name, string label, string help)
+		public static void SetCommonAttributes (this Xwt.Accessibility.Accessible o, string? name, string? label, string? help)
 		{
 			if (!string.IsNullOrEmpty (name)) {
 				o.Identifier = name;
@@ -66,7 +68,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string name, Xwt.Widget label, string help)
+		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string? name, Xwt.Widget? label, string? help)
 		{
 			w.Accessible.SetCommonAttributes (name, null, help);
 			if (label != null) {
@@ -74,18 +76,18 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 		}
 
-		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string name, string label, string help)
+		public static void SetCommonAccessibilityAttributes (this Xwt.Widget w, string? name, string? label, string? help)
 		{
 			w.Accessible.SetCommonAttributes (name, label, help);
 		}
 
-		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, string label, string help)
+		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string? name, string? label, string? help)
 		{
 			var accessible = w.Accessible;
 			accessible.SetCommonAttributes (name, label, help);
 		}
 
-		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string name, Gtk.Widget label, string help)
+		public static void SetCommonAccessibilityAttributes (this Gtk.Widget w, string? name, Gtk.Widget? label, string? help)
 		{
 			var accessible = w.Accessible;
 			accessible.SetCommonAttributes (name, null, help);
@@ -152,6 +154,7 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public enum SubRoles
 		{
 			AXCloseButton,
+			AXTabButton,
 		};
 
 		public struct Range
@@ -166,19 +169,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		HashSet<AtkCocoa.Actions> actions = new HashSet<AtkCocoa.Actions> ();
 
 		Atk.Object owner;
-		internal Atk.Object Owner {
-			set {
-				owner = value;
 
-				if (owner.GetType () == typeof (Atk.NoOpObject)) {
-					return;
-				}
-
-				HandleSignalAttachment (owner, (signal, handler) => signal.AddDelegate (handler));
-			}
-		}
-
-		void HandleSignalAttachment (Atk.Object owner, Action<GLib.Signal, EventHandler<GLib.SignalArgs>> action)
+		void HandleSignalAttachment (Action<GLib.Signal, EventHandler<GLib.SignalArgs>> action)
 		{
 			var signal = GLib.Signal.Lookup (owner, "request-actions", typeof (GLib.SignalArgs));
 			action (signal, new EventHandler<GLib.SignalArgs> (RequestActionsHandler));
@@ -210,21 +202,28 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		public ActionDelegate (Gtk.Widget widget)
 		{
 			widget.Destroyed += WidgetDestroyed;
-			Owner = widget.Accessible;
+
+			owner = widget.Accessible;
+
+			if (owner.GetType () == typeof (Atk.NoOpObject)) {
+				return;
+			}
+
+			HandleSignalAttachment ((signal, handler) => signal.AddDelegate (handler));
 		}
 
 		void WidgetDestroyed (object sender, EventArgs e)
 		{
 			FreeActions ();
 
-			HandleSignalAttachment (owner, (signal, handler) => signal.RemoveDelegate (handler));
+			HandleSignalAttachment ((signal, handler) => signal.RemoveDelegate (handler));
 			owner = null;
 		}
 
 		// Because the allocated memory is passed to unmanaged code where it cannot be freed
 		// we need to keep track of it until the object is finalized, or the actions need to be calculated again
 		IntPtr allocatedActionPtr;
-		IntPtr [] allocatedActionStrings;
+		IntPtr []? allocatedActionStrings;
 
 		void FreeActions ()
 		{
@@ -535,8 +534,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		void AddAccessibleChild (IAccessibilityElementProxy child);
 		void RemoveAccessibleChild (IAccessibilityElementProxy child);
 
-		void SetRole (string role, string description = null);
-		void SetRole (AtkCocoa.Roles role, string description = null);
+		void SetRole (string role, string? description = null);
+		void SetRole (AtkCocoa.Roles role, string? description = null);
 
 		string Value { get; set; }
 		string Title { get; set; }
@@ -544,7 +543,8 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 		string Identifier { get; set; }
 		string Help { get; set; }
 		bool Hidden { get; set; }
-		int Index { get; set;  }
+		int Index { get; set; }
+		bool Focused { get; set; }
 
 		// For Navigable Static Text
 		Func<string> Contents { set; }

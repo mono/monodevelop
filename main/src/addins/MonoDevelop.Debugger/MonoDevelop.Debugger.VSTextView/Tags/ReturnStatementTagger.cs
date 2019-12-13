@@ -1,11 +1,12 @@
 ﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MonoDevelop.Debugger
 {
 	internal class ReturnStatementTagger : AbstractCurrentStatementTagger<ReturnStatementTag>
 	{
-		public ReturnStatementTagger (ITextBuffer textBuffer)
-			: base (ReturnStatementTag.Instance, textBuffer, isGreen: true)
+		public ReturnStatementTagger (ITextView textView)
+			: base (ReturnStatementTag.Instance, textView, isGreen: true)
 		{
 		}
 	}

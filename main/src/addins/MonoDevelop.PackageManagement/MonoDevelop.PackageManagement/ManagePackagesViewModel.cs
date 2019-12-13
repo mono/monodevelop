@@ -575,28 +575,33 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		public IEnumerable<IPackageAction> CreateUpdatePackageActions (
-			ManagePackagesSearchResultViewModel packageViewModel,
+		List<IPackageAction> CreateUpdatePackageActions (
+			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
 			IEnumerable<IDotNetProject> projects)
 		{
-			bool firstInstall = true;
-			foreach (IDotNetProject project in projects) {
-				if (IsPackageInstalledInProject (project, packageViewModel.Id)) {
-					yield return new InstallNuGetPackageAction (
-						SelectedPackageSource.GetSourceRepositories (),
-						solutionManager,
-						project,
-						projectContext
-					) {
-						IncludePrerelease = IncludePrerelease,
-						PackageId = packageViewModel.Id,
-						Version = packageViewModel.SelectedVersion,
-						LicensesMustBeAccepted = firstInstall
-					};
+			var actions = new List<IPackageAction> ();
+			actions.Add (CreateUpdatePackageAction (packageViewModels, projects));
+			return actions;
+		}
 
-					firstInstall = false;
-				}
+		public IPackageAction CreateUpdatePackageAction (
+			IEnumerable<ManagePackagesSearchResultViewModel> packageViewModels,
+			IEnumerable<IDotNetProject> projects)
+		{
+			var action = new UpdateMultipleNuGetPackagesAction (
+				SelectedPackageSource.GetSourceRepositories (),
+				solutionManager,
+				projectContext);
+
+			foreach (IDotNetProject project in projects) {
+				action.AddProject (project);
 			}
+
+			foreach (ManagePackagesSearchResultViewModel packageViewModel in packageViewModels) {
+				action.AddPackageToUpdate (new PackageIdentity (packageViewModel.Id, packageViewModel.SelectedVersion));
+			}
+
+			return action;
 		}
 
 		public IEnumerable<IPackageAction> CreateConsolidatePackageActions (
@@ -633,7 +638,7 @@ namespace MonoDevelop.PackageManagement
 			} else if (PageSelected == ManagePackagesPage.Installed) {
 				return CreatePackageActions (packageViewModels, selectedProjects, CreateUninstallPackageActions);
 			} else if (PageSelected == ManagePackagesPage.Updates) {
-				return CreatePackageActions (packageViewModels, selectedProjects, CreateUpdatePackageActions);
+				return CreateUpdatePackageActions (packageViewModels, selectedProjects);
 			}
 			return null;
 		}

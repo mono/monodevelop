@@ -9,7 +9,7 @@ namespace MonoDevelop.Debugger
 	[Export (typeof (IGlyphFactoryProvider))]
 	[Name ("CurrentStatementGlyph")]
 	[Order (After = "BreakpointGlyph")]
-	[ContentType ("code")]
+	[ContentType ("any")]
 	[TagType (typeof (CurrentStatementGlyphTag))]
 	internal class CurrentStatementGlyphFactoryProvider : IGlyphFactoryProvider
 	{

@@ -58,6 +58,21 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		}
 
 		[Test]
+		public void UnknownLanguageNameDoesNotCrash ()
+		{
+			var preferences = new RoslynPreferences ();
+
+			Assert.IsNotNull (preferences.CSharp);
+			Assert.AreSame (preferences.CSharp, preferences.For (LanguageNames.CSharp));
+
+			var xaml = preferences.For ("XAML");
+
+			Assert.IsNotNull (xaml);
+			Assert.AreSame (xaml, preferences.For ("XAML"));
+
+		}
+
+		[Test]
 		public void TestRoslynPropertyWithMultipleKeys ()
 		{
 			var (preferences, persister) = Setup ();

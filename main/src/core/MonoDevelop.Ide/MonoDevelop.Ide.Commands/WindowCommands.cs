@@ -249,32 +249,40 @@ namespace MonoDevelop.Ide.Commands
 
 	internal class OpenWindowListHandler : CommandHandler
 	{
+	
 		protected override void Update (CommandArrayInfo info)
 		{
-			var windows = IdeApp.CommandService.TopLevelWindowStack.ToArray (); // enumerate only once
-			if (windows.Length <= 1)
-				return;
-			int i = 0;
-			foreach (Gtk.Window window in windows) {
+			foreach (Components.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+#if !WINDOWS
+				//we don't want include hidden windows
+				if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
+					continue;
+#endif
 
 				//Create CommandInfo object
-				CommandInfo commandInfo = new CommandInfo ();
-				commandInfo.Text = window.Title.Replace ("_", "__").Replace("-","\u2013").Replace(" \u2013 " + BrandingService.ApplicationName, "");
-				if (window.HasToplevelFocus)
+				var commandInfo = new CommandInfo ();
+				commandInfo.Text = window.Title.Replace ("_", "__").Replace ("-", "\u2013").Replace (" \u2013 " + BrandingService.ApplicationName, "");
+
+				if (string.IsNullOrEmpty (commandInfo.Text)) {
+					commandInfo.Text = GettextCatalog.GetString ("No description");
+				}
+
+				if (window.HasTopLevelFocus) 
 					commandInfo.Checked = true;
 				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);
 
 				//Add menu item
-				info.Add (commandInfo, window);
-
-				i++;
+				info.Add (commandInfo, window.Title);
 			}
 		}
 
 		protected override void Run (object dataItem)
 		{
-			Window window = (Window)dataItem;
-			window.Present ();
+			//the window could be disposed/closed for some reason in between this 2 menu statements
+			//it's safe to ask again
+			var window = IdeApp.CommandService.TopLevelWindowStack
+				.FirstOrDefault (s => s.Title == (string)dataItem);
+			window?.Present ();
 		}
 	}
 

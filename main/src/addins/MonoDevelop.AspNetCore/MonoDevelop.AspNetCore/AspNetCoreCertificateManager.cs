@@ -69,7 +69,7 @@ namespace MonoDevelop.AspNetCore
 				UsingHttps (runConfiguration);
 		}
 
-		static bool UsingHttps (SolutionItemRunConfiguration runConfiguration)
+		internal static bool UsingHttps (SolutionItemRunConfiguration runConfiguration)
 		{
 			var aspNetCoreRunConfiguration = runConfiguration as AspNetCoreRunConfiguration;
 			return aspNetCoreRunConfiguration?.UsingHttps () == true;

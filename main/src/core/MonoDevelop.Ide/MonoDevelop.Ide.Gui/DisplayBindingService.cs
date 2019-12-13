@@ -118,15 +118,26 @@ namespace MonoDevelop.Ide.Gui
 			var viewerIds = new HashSet<string> ();
 			var fileDescriptor = new FileDescriptor (filePath, mimeType, ownerProject);
 
+			var documentControllersViewers = new List<FileViewer> ();
+			bool preferExternalBinding = false;
+
 			foreach (var b in await IdeServices.DocumentControllerService.GetSupportedControllers (fileDescriptor)) {
-				result.Add (new FileViewer (b));
+				if (b.PreferExternalBinding)
+					preferExternalBinding = true;
+				documentControllersViewers.Add (new FileViewer (b));
 			}
 
-			foreach (var eb in GetDisplayBindings (filePath, mimeType, ownerProject).OfType< IExternalDisplayBinding> ()) {
+			if (!preferExternalBinding)
+				result.AddRange (documentControllersViewers);
+
+			foreach (var eb in GetDisplayBindings (filePath, mimeType, ownerProject).OfType<IExternalDisplayBinding> ()) {
 				var app = eb.GetApplication (filePath, mimeType, ownerProject);
 				if (viewerIds.Add (app.Id))
 					result.Add (new FileViewer (app));
 			}
+
+			if (preferExternalBinding)
+				result.AddRange (documentControllersViewers);
 
 			foreach (var app in desktopService.GetApplications (filePath))
 				if (viewerIds.Add (app.Id))

@@ -32,6 +32,7 @@ using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Core.Execution;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Ide;
+using MonoDevelop.Ide.Desktop;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore
@@ -63,9 +64,16 @@ namespace MonoDevelop.AspNetCore
 				profile = launchProfileProvider.Profiles [key];
 			}
 
-			var aspnetconf = new AspNetCoreRunConfiguration (name, profile);
+			var aspnetconf = new AspNetCoreRunConfiguration (name, profile) {
+				LaunchProfileProvider = launchProfileProvider
+			};
+			if (aspNetCoreRunConfs.TryGetValue (name, out var existingConf)) {
+				// This can be called a few times with the same config at load time,
+				// so make sure we clean up the previous version
+				existingConf.SaveRequested -= Aspnetconf_Save;
+			}
 			aspnetconf.SaveRequested += Aspnetconf_Save;
-			aspNetCoreRunConfs.Add (name, aspnetconf);
+			aspNetCoreRunConfs [name] = aspnetconf;
 			return aspnetconf;
 		}
 
@@ -78,7 +86,7 @@ namespace MonoDevelop.AspNetCore
 		void InitLaunchSettingsProvider ()
 		{
 			if (launchProfileProvider == null) {
-				launchProfileProvider = new LaunchProfileProvider (this.Project.BaseDirectory, this.Project.DefaultNamespace);
+				launchProfileProvider = new LaunchProfileProvider (this.Project);
 			}
 		}
 
@@ -137,6 +145,28 @@ namespace MonoDevelop.AspNetCore
 			ProgressMonitor monitor,
 			ExecutionContext context,
 			ConfigurationSelector configuration,
+			SolutionItemRunConfiguration runConfiguration)
+		{
+			TargetFrameworkMoniker framework = Project.TargetFramework.Id;
+			if (Project.HasMultipleTargetFrameworks) {
+				var frameworkContext = context?.ExecutionTarget as AspNetCoreTargetFrameworkExecutionTarget;
+				if (frameworkContext != null) {
+					framework = frameworkContext.Framework;
+					if (!(configuration is DotNetProjectFrameworkConfigurationSelector))
+						configuration = new DotNetProjectFrameworkConfigurationSelector (configuration, frameworkContext.FrameworkShortName);
+				}
+			}
+
+			if (IsSupportedFramework (framework))
+				return OnExecute (monitor, context, configuration, framework, runConfiguration);
+
+			return base.OnExecute (monitor, context, configuration, runConfiguration);
+		}
+
+		protected override Task OnExecute (
+			ProgressMonitor monitor,
+			ExecutionContext context,
+			ConfigurationSelector configuration,
 			TargetFrameworkMoniker framework,
 			SolutionItemRunConfiguration runConfiguration)
 		{
@@ -146,18 +176,38 @@ namespace MonoDevelop.AspNetCore
 			return base.OnExecute (monitor, context, configuration, framework, runConfiguration);
 		}
 
-		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (ConfigurationSelector configuration)
+		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfig)
 		{
-			var result = new List<ExecutionTarget> ();
-			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost")) {
+			var result = new ExecutionTargetGroup (GettextCatalog.GetString ("Browser"), "MonoDevelop.AspNetCore.BrowserExecutionTargets");
+			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost", Ide.Desktop.DesktopApplicationRole.Viewer)) {
 				if (browser.IsDefault) {
-					result.Insert (0, new AspNetCoreExecutionTarget (browser));
+					if (Project.HasMultipleTargetFrameworks) {
+						result.InsertRange (0, GetMultipleTargetFrameworkExecutionTargets (browser));
+					} else {
+						result.Insert (0, new AspNetCoreExecutionTarget (browser));
+					}
 				} else {
-					result.Add (new AspNetCoreExecutionTarget (browser));
+					if (Project.HasMultipleTargetFrameworks) {
+						result.AddRange (GetMultipleTargetFrameworkExecutionTargets (browser));
+					} else {
+						result.Add (new AspNetCoreExecutionTarget (browser));
+					}
 				}
 			}
 
-			return result.Count > 0 ? result : base.OnGetExecutionTargets (configuration);
+			return result.Count > 0
+				? new ExecutionTarget [] { result }
+				: base.OnGetExecutionTargets (ctx, configuration, runConfig);
+		}
+
+		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (DesktopApplication browser)
+		{
+			var targets = new List<ExecutionTarget> (Project.TargetFrameworkMonikers.Length);
+			foreach (TargetFrameworkMoniker framework in Project.TargetFrameworkMonikers) {
+				var target = new AspNetCoreTargetFrameworkExecutionTarget (browser, framework);
+				targets.Add (target);
+			}
+			return targets;
 		}
 
 		async Task CheckCertificateThenExecute (
@@ -191,7 +241,7 @@ namespace MonoDevelop.AspNetCore
 			updating = true;
 
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations (Project);
+			launchProfileProvider.SyncRunConfigurations();
 
 			updating = false;
 		}
@@ -217,7 +267,7 @@ namespace MonoDevelop.AspNetCore
 			updating = true;
 
 			launchProfileProvider.LoadLaunchSettings ();
-			launchProfileProvider.SyncRunConfigurations (Project);
+			launchProfileProvider.SyncRunConfigurations();
 
 			await IdeApp.ProjectOperations.SaveAsync (Project);
 

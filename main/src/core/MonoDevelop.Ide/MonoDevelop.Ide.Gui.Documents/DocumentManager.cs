@@ -178,8 +178,31 @@ namespace MonoDevelop.Ide.Gui.Documents
 			return NewDocument (defaultName, mimeType, ms);
 		}
 
+		internal string GetUniqueFileName (FilePath fileName)
+		{
+			string baseName = fileName.FileNameWithoutExtension;
+			int number = 1;
+			bool found = true;
+			var uniqueFileName = baseName + fileName.Extension;
+			while (found) {
+				found = false;
+				foreach (var document in Documents) {
+					string existingFileName = document.Name;
+					if (existingFileName == uniqueFileName) {
+						uniqueFileName = baseName + number + fileName.Extension;
+						found = true;
+						++number;
+						break;
+					}
+				}
+			}
+			return uniqueFileName;
+		}
+
 		public async Task<Document> NewDocument (string defaultName, string mimeType, Stream content)
 		{
+			defaultName = GetUniqueFileName (defaultName);
+
 			var fileDescriptor = new FileDescriptor (defaultName, mimeType, content, null);
 
 			var documentControllerService = await ServiceProvider.GetService<DocumentControllerService> ();
@@ -435,16 +458,19 @@ namespace MonoDevelop.Ide.Gui.Documents
 					externalBinding = externalViewers.FirstOrDefault (d => d.CanUseAsDefault) ?? externalViewers.FirstOrDefault ();
 				} else {
 					internalBinding = internalViewers.FirstOrDefault (d => d.CanUseAsDefault);
-					if (internalBinding == null) {
+					if (internalBinding == null || internalBinding.PreferExternalBinding) {
 						externalBinding = externalViewers.FirstOrDefault (d => d.CanUseAsDefault);
 						if (externalBinding == null) {
 							internalBinding = internalViewers.FirstOrDefault ();
-							if (internalBinding == null)
+							if (internalBinding == null || internalBinding.PreferExternalBinding)
 								externalBinding = externalViewers.FirstOrDefault ();
 						}
 					}
 				}
 			}
+
+			if (externalBinding != null && internalBinding != null && internalBinding.PreferExternalBinding)
+				internalBinding = null;
 
 			Document newContent = null;
 			try {

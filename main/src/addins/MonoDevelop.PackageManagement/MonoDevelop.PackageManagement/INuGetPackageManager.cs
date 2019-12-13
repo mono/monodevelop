@@ -63,6 +63,15 @@ namespace MonoDevelop.PackageManagement
 			IEnumerable<SourceRepository> secondarySources,
 			CancellationToken token);
 
+		Task<IEnumerable<NuGetProjectAction>> PreviewUpdatePackagesAsync (
+			List<PackageIdentity> packageIdentities,
+			IEnumerable<NuGetProject> nuGetProjects,
+			ResolutionContext resolutionContext,
+			INuGetProjectContext nuGetProjectContext,
+			IEnumerable<SourceRepository> primarySources,
+			IEnumerable<SourceRepository> secondarySources,
+			CancellationToken token);
+
 		Task<IEnumerable<NuGetProjectAction>> PreviewUninstallPackageAsync(
 			NuGetProject nuGetProject,
 			string packageId,
@@ -91,6 +100,13 @@ namespace MonoDevelop.PackageManagement
 			SourceCacheContext sourceCacheContext,
 			CancellationToken token);
 
+		Task ExecuteNuGetProjectActionsAsync (
+			IEnumerable<NuGetProject> nuGetProjects,
+			IEnumerable<NuGetProjectAction> nuGetProjectActions,
+			INuGetProjectContext nuGetProjectContext,
+			SourceCacheContext sourceCacheContext,
+			CancellationToken token);
+
 		void SetDirectInstall (PackageIdentity directInstall, INuGetProjectContext nuGetProjectContext);
 		void ClearDirectInstall (INuGetProjectContext nuGetProjectContext);
 
@@ -99,6 +115,17 @@ namespace MonoDevelop.PackageManagement
 		Task OpenReadmeFiles (
 			NuGetProject project,
 			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
+
+		Task OpenReadmeFiles (
+			IEnumerable<NuGetProject> projects,
+			IEnumerable<PackageIdentity> packages,
+			INuGetProjectContext nuGetProjectContext,
+			CancellationToken token);
+
+		Task RunPostProcessAsync (
+			List<NuGetProject> nuGetProjects,
 			INuGetProjectContext nuGetProjectContext,
 			CancellationToken token);
 	}

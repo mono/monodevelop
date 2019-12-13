@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+#nullable enable
+
 using System;
 using System.Diagnostics.Contracts;
 using System.Text;
@@ -32,7 +34,7 @@ namespace MonoDevelop.Core
 	public static class ErrorHelper
 	{
 		[Pure]
-		public static string GetErrorMessage (string message, Exception ex)
+		public static string? GetErrorMessage (string? message, Exception? ex)
 		{
 			var exMsg = ex != null ? GetErrorMessage (ex) : "";
 			if (string.IsNullOrEmpty (message)) {

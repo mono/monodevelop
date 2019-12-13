@@ -871,6 +871,41 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task AddRemoveFileEvents ()
+		{
+			string solFile = Util.GetSampleProject ("console-project", "ConsoleProject.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				int modifiedRefs = 0;
+				int modifiedFiles = 0;
+
+				SolutionItemModifiedEventHandler modifiedHandler = delegate (object sender, SolutionItemModifiedEventArgs e) {
+					foreach (var ev in e) {
+						if (ev.Hint == "References")
+							modifiedRefs++;
+						if (ev.Hint == "Files")
+							modifiedFiles++;
+					}
+				};
+				p.Modified += modifiedHandler;
+
+				var file = new ProjectFile (p.BaseDirectory.Combine ("Test.txt"));
+				p.Items.Add (file);
+
+				Assert.AreEqual (0, modifiedRefs);
+				Assert.AreEqual (1, modifiedFiles);
+
+				modifiedRefs = 0;
+				modifiedFiles = 0;
+
+				p.Items.Remove (file);
+
+				Assert.AreEqual (0, modifiedRefs);
+				Assert.AreEqual (1, modifiedFiles);
+			}
+		}
+
+		[Test]
 		public void GetDefaultNamespaceWhenProjectRootNamespaceContainsHyphen ()
 		{
 			var project = Services.ProjectService.CreateDotNetProject ("C#");
@@ -933,6 +968,21 @@ namespace MonoDevelop.Projects
 				bool isXBuild = p.MSBuildProject.EvaluatedProperties.GetValue<bool> ("IsXBuild");
 				string msbuildRuntimeVersion = p.MSBuildProject.EvaluatedProperties.GetValue ("MSBuildRuntimeVersion");
 				Assert.IsFalse (isXBuild);
+			}
+		}
+
+		[Test]
+		public async Task SubstringOfPath_HandlesForwardSlashesInPath ()
+		{
+			if (!Platform.IsMac)
+				Assert.Ignore ();
+
+			string solFile = Util.GetSampleProject ("path-substring-eval", "path-substring-eval.sln");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = (DotNetProject)sol.Items [0];
+				var expectedBaseIntermediateOutputPath = sol.BaseDirectory.Combine ("obj", "src");
+				var baseIntermediateOutputPath = p.MSBuildProject.EvaluatedProperties.GetPathValue ("BaseIntermediateOutputPath", relativeToProject: false);
+				Assert.AreEqual (expectedBaseIntermediateOutputPath, baseIntermediateOutputPath);
 			}
 		}
 
@@ -1011,6 +1061,36 @@ namespace MonoDevelop.Projects
 		}
 
 		[Test]
+		public async Task ResolveAssemblyReferences_CustomTargetDefinesExtraReferencePathItems_ReferencePathItemsIncludedInResolvedAssemblyReferences ()
+		{
+			FilePath location = typeof (System.ComponentModel.Composition.CreationPolicy).Assembly.Location;
+			var directory = location.ParentDirectory;
+
+			FilePath solFile = Util.GetSampleProject ("ReferencePathTest", "ReferencePathTest.sln");
+
+			string contents =
+				"<Project>\r\n" +
+				"  <PropertyGroup>\r\n" +
+				"  <MonoPath>" + MSBuildProjectService.ToMSBuildPath (null, directory) + "</MonoPath>\r\n" +
+				"  </PropertyGroup>\r\n" +
+				"</Project>";
+
+			var directoryBuildPropsFile = solFile.ParentDirectory.Combine ("Directory.Build.props");
+			File.WriteAllText (directoryBuildPropsFile, contents);
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var p = sol.GetAllProjects ().Single () as DotNetProject;
+
+				var refs = await p.GetReferencedAssemblies (ConfigurationSelector.Default);
+				var componentModelRef = refs.FirstOrDefault (r => r.FilePath.FileName == "System.ComponentModel.Composition.dll");
+				var refList = refs.Select (r => r.FilePath.FileName.ToString ()).ToList ();
+
+				Assert.That (refList, Contains.Item ("System.ComponentModel.Composition.dll"));
+				Assert.AreEqual ("test-value", componentModelRef.Metadata.GetValue ("Test"));
+			}
+		}
+
+		[Test]
 		public async Task XamarinIOSProjectReferencesCollectionsImmutableNetStandardAssembly_GetReferencedAssembliesShouldIncludeNetStandard ()
 		{
 			if (!Platform.IsMac) {
@@ -1021,9 +1101,7 @@ namespace MonoDevelop.Projects
 			FilePath solFile = Util.GetSampleProject ("iOSImmutableCollections", "iOSImmutableCollections.sln");
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 
-			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
-			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
-			Assert.AreEqual (0, process.ExitCode);
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
 
 			using (var sol = (Solution) await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
 				var p = (DotNetProject) sol.Items [0];
@@ -1077,6 +1155,34 @@ namespace MonoDevelop.Projects
 				systemComponentModelAnnotationsFromFacadesRef = expandFalseRefs.FirstOrDefault (r => r.FilePath.FileName == "System.ComponentModel.Annotations.dll");
 				Assert.IsNull (systemComponentModelAnnotationsFromFacadesRef);
 				Assert.IsFalse (expandFalseRefs.Any (r => r.FilePath.ParentDirectory.FileName.Equals ("Facades", StringComparison.OrdinalIgnoreCase)));
+			}
+		}
+
+		[Test]
+		public async Task UnknownNuGetPackageReferenceId_DesignTimeBuilds ()
+		{
+			FilePath solFile = Util.GetSampleProject ("UnknownPackageReference", "UnknownPackageReference.sln");
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+
+			// Run restore but do not check result since this will fail.
+			using var process = Process.Start (new ProcessStartInfo {
+				FileName = "nuget",
+				Arguments = $"restore -DisableParallelProcessing \"{solFile}\"",
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				UseShellExecute = false
+			});
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var project = sol.GetAllProjects ().Single () as DotNetProject;
+				var references = (await project.GetReferencedAssemblies (ConfigurationSelector.Default)).ToArray ();
+				var packageDependencies = (await project.GetPackageDependencies (ConfigurationSelector.Default, CancellationToken.None)).ToArray ();
+
+				Assert.IsTrue (references.Any ());
+				Assert.IsTrue (references.Any (r => r.FilePath.FileName == "Newtonsoft.Json.dll"));
+				Assert.IsTrue (packageDependencies.Any ());
+				Assert.IsTrue (packageDependencies.Any (p => p.Name == "Newtonsoft.Json"));
 			}
 		}
 

@@ -188,9 +188,6 @@ update_environment (NSString *binDir)
 	if (push_env_to_end ("PATH", "~/.dotnet/tools"))
 		updated = YES;
 
-	if (replace_env ("MONODEVELOP_64BIT_SAFE", "yes"))
-		updated = YES;
-
 	if (replace_env ("LC_NUMERIC", "C"))
 		updated = YES;
 

@@ -221,7 +221,8 @@ namespace MonoDevelop.Components.AutoTest.Results
 				}
 				return true;
 			}
-			return false;
+
+			return ResultObject is NSView obj && obj.Window != null && obj.Window.MakeFirstResponder (obj);
 		}
 
 		public override AppResult Selected ()
@@ -274,17 +275,14 @@ namespace MonoDevelop.Components.AutoTest.Results
 
 		public override bool EnterText (string text)
 		{
-			NSControl control = ResultObject as NSControl;
-			if (control == null) {
-				return false;
+			if (ResultObject is NSView view && view.Window != null && view.Window.MakeFirstResponder(view)) {
+				foreach (var c in text) {
+					RealTypeKey (c);
+				}
+				return true;
 			}
 
-			control.Window.MakeFirstResponder (control);
-			foreach (var c in text) {
-				RealTypeKey (c);
-			}
-
-			return true;
+			return false;
 		}
 
 		public override bool TypeKey (char key, string state = "")
@@ -319,7 +317,66 @@ namespace MonoDevelop.Components.AutoTest.Results
 			SetProperty (ResultObject, propertyName, value);
 		}
 
-#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		#region MacPlatform.MacIntegration.MainToolbar.SelectorView
+		PropertyInfo GetPropertyInfo (string propertyName)
+		{
+			var type = ResultObject.GetType ();
+			return type.GetProperty (propertyName);
+		}
+
+		object GetModelObject (PropertyInfo propertyInfo)
+		{
+			return propertyInfo.GetValue (ResultObject, null);
+		}
+
+		public IConfigurationModel[] GetConfigurationModels ()
+		{
+			var pinfo = GetPropertyInfo ("ConfigurationModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var models = (IEnumerable<IConfigurationModel>)GetModelObject (pinfo);
+
+			return models?.ToArray ();
+		}
+
+		public IRuntimeMutableModel[] GetRuntimeModels ()
+		{
+			var pinfo = GetPropertyInfo ("RuntimeModel");
+			if (pinfo == null) {
+				return null;
+			}
+			var topModels = (IEnumerable<IRuntimeModel>)GetModelObject (pinfo);
+			return AllRuntimes (topModels).Where (x => !x.IsSeparator && x.IsIndented).Select (x => x.GetMutableModel ()).ToArray ();
+		}
+
+		public IConfigurationModel GetActiveConfiguration ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveConfiguration");
+			return (IConfigurationModel)pinfo.GetValue (ResultObject);
+		}
+
+		public string GetActiveStartupProject ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveRunConfiguration");
+			var activeRuntime = (IRunConfigurationModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.DisplayString;
+		}
+
+		public IRuntimeMutableModel GetActiveRuntime ()
+		{
+			var pinfo = GetPropertyInfo ("ActiveRuntime");
+			var activeRuntime = (IRuntimeModel)pinfo.GetValue (ResultObject);
+			return activeRuntime.GetMutableModel ();
+		}
+
+		public string[] GetStartupProjectNames ()
+		{
+			var pinfo = GetPropertyInfo ("RunConfigurationModel");
+			var runConfigs = (IEnumerable<IRunConfigurationModel>)pinfo.GetValue (ResultObject);
+			return runConfigs.Select (x => x.DisplayString).ToArray ();
+		}
+
 		public override bool SetActiveConfiguration (string configurationName)
 		{
 			LoggingService.LogDebug ($"Set Active configuration with name as '{configurationName}'");
@@ -374,10 +431,15 @@ namespace MonoDevelop.Components.AutoTest.Results
 			var runtime = model.FirstOrDefault (r => {
 				var mutableModel = r.GetMutableModel ();
 				LoggingService.LogDebug ($"[IRuntimeModel.IRuntimeMutableModel] FullDisplayString: '{mutableModel.FullDisplayString}' | DisplayString: '{mutableModel.DisplayString}'");
-				if (mutableModel.FullDisplayString.Contains (runtimeName))
+
+				if (string.IsNullOrEmpty (runtimeName))
+					return false;
+
+				if (!string.IsNullOrWhiteSpace(mutableModel.FullDisplayString) && mutableModel.FullDisplayString.Contains (runtimeName))
 					return true;
-				if (mutableModel.DisplayString.Contains (runtimeName))
+				if (!string.IsNullOrWhiteSpace(mutableModel.DisplayString) && mutableModel.DisplayString.Contains (runtimeName))
 					return true;
+
 				var execTargetPInfo = r.GetType().GetProperty ("ExecutionTarget");
 				if(execTargetPInfo != null) {
 					if (execTargetPInfo.GetValue (r) is Core.Execution.ExecutionTarget execTarget) {

@@ -8,7 +8,7 @@
 		<Icon>md-package-project</Icon>
 		<Image id="md-package-project" />
 		<FileExtension>.mdproj</FileExtension>
-		<_Description>Create a project which can generate packages for a solution</_Description>
+		<_Description>Create a project which can generate packages for a solution.</_Description>
 	</TemplateConfiguration>
 	
 	<!-- Template Content -->

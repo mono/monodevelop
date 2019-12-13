@@ -42,10 +42,8 @@ namespace MonoDevelop.Components
 {
 	class Tabstrip : DrawingArea
 	{
-
 		readonly List<Tab> tabs = new List<Tab> ();
 		readonly List<Cairo.PointD> tabSizes = new List<Cairo.PointD> ();
-
 
 		double mx, my;
 		Tab hoverTab;
@@ -109,8 +107,8 @@ namespace MonoDevelop.Components
 			else if (activeTab >= index)
 				activeTab++;
 
-			if (focusedTab >= index) {
-				focusedTab++;
+			if (FocusedTab >= index) {
+				FocusedTab++;
 			}
 
 			QueueResize ();
@@ -132,19 +130,19 @@ namespace MonoDevelop.Components
 					ActiveTab = index - 1;
 			}
 
-			if (focusedTab == index) {
+			if (FocusedTab == index) {
 				if (index == tabs.Count - 1)
-					focusedTab--;
-			} else if (focusedTab > index)
-				focusedTab--;
+					FocusedTab--;
+			} else if (FocusedTab > index)
+				FocusedTab--;
 
 			var tab = tabs [index];
 			tabs.RemoveAt (index);
 			tabSizes.RemoveAt (index);
 			if (activeTab > index)
 				activeTab--;
-			if (focusedTab >= index)
-				focusedTab = index;
+			if (FocusedTab >= index)
+				FocusedTab = index;
 
 			QueueResize ();
 
@@ -193,10 +191,10 @@ namespace MonoDevelop.Components
 			tabs [newIndex] = tabs [currentIndex];
 			tabs [currentIndex] = replaced;
 
-			if (focusedTab == currentIndex)
-				focusedTab = newIndex;
-			else if (focusedTab == newIndex)
-				focusedTab = currentIndex;
+			if (FocusedTab == currentIndex)
+				FocusedTab = newIndex;
+			else if (FocusedTab == newIndex)
+				FocusedTab = currentIndex;
 
 			// Active status of the tabs won't change, but the activeTab field may need to be updated
 			if (activeTab == currentIndex)
@@ -345,54 +343,65 @@ namespace MonoDevelop.Components
 		}
 
 		int focusedTab = -1;
+
+		public int FocusedTab {
+			get => focusedTab;
+			set {
+				if (focusedTab == value)
+					return;
+				int oldFocus = FocusedTab;
+				if (oldFocus >= 0 && oldFocus < tabs.Count) {
+					tabs [oldFocus].Focused = false;
+				}
+				focusedTab = value;
+				if (focusedTab >= 0 && focusedTab < tabs.Count) {
+					tabs [focusedTab].Focused = true;
+				}
+				QueueDraw ();
+			}
+		}
+
 		protected override bool OnFocused (DirectionType direction)
 		{
 			bool ret = true;
-			int oldFocus = focusedTab;
+			var newFocusedTab = FocusedTab;
 
 			switch (direction) {
 			case DirectionType.TabForward:
 			case DirectionType.Right:
 				do {
-					focusedTab++;
-				} while (focusedTab < tabs.Count && !tabs [focusedTab].Visible);
+					newFocusedTab++;
+				} while (newFocusedTab < tabs.Count && !tabs [newFocusedTab].Visible);
 
-				if (focusedTab >= tabs.Count) {
-					focusedTab = -1;
+				if (newFocusedTab >= tabs.Count) {
+					newFocusedTab = -1;
 					ret = false;
 				}
 				break;
 
 			case DirectionType.TabBackward:
 			case DirectionType.Left:
-				if (focusedTab <= -1) {
-					focusedTab = tabs.Count;
+				if (newFocusedTab <= -1) {
+					newFocusedTab = tabs.Count;
 				}
 
 				do {
-					focusedTab--;
-				} while (focusedTab >= 0 && !tabs [focusedTab].Visible);
+					newFocusedTab--;
+				} while (newFocusedTab >= 0 && !tabs [newFocusedTab].Visible);
 
-				if (focusedTab < 0) {
-					focusedTab = -1;
+				if (newFocusedTab < 0) {
+					newFocusedTab = -1;
 					ret = false;
 				}
 				break;
 			}
 
 			if (ret) {
+				FocusedTab = newFocusedTab;
 				GrabFocus ();
-				if (oldFocus >= 0 && oldFocus < tabs.Count) {
-					tabs [oldFocus].Focused = false;
-				}
-
-				if (focusedTab >= 0) {
-					tabs [focusedTab].Focused = true;
-				}
 			} else {
-				focusedTab = 0;
+				FocusedTab = 0;
 			}
-			QueueDraw ();
 
 			return ret;
 		}
@@ -405,18 +414,14 @@ namespace MonoDevelop.Components
 
 		protected override bool OnFocusOutEvent (Gdk.EventFocus evnt)
 		{
-			if (focusedTab > -1 && focusedTab <= tabs.Count) {
-				tabs [focusedTab].Focused = false;
-			}
-			focusedTab = -1;
-			QueueDraw ();
+			FocusedTab = -1;
 			return base.OnFocusOutEvent (evnt);
 		}
 
 		protected override void OnActivate ()
 		{
-			if (focusedTab >= 0 && focusedTab < tabs.Count) {
-				ActiveTab = focusedTab;
+			if (FocusedTab >= 0 && FocusedTab < tabs.Count) {
+				ActiveTab = FocusedTab;
 			}
 			base.OnActivate ();
 		}
@@ -475,11 +480,18 @@ namespace MonoDevelop.Components
 			get { return active; }
 			set {
 				active = value;
-				if (active)
+				if (active) {
 					OnActivated (EventArgs.Empty);
+				}
+				UpdateAccessibility ();
 			}
 		}
-		
+
+		void UpdateAccessibility ()
+		{
+			Accessible?.SetRole (AtkCocoa.Roles.AXRadioButton, active ? "active tab" : "tab");
+		}
+
 		public bool IsSeparator {
 			get { return Label == "|"; }
 		}
@@ -530,6 +542,14 @@ namespace MonoDevelop.Components
 
 			if (layout != null)
 				layout.Dispose();
+
+			OnDispose ();
+
+			Tag = null;
+		}
+
+		protected virtual void OnDispose ()
+		{
 		}
 
 		public AtkCocoaHelper.AccessibilityElementProxy Accessible { get; private set; }
@@ -543,11 +563,11 @@ namespace MonoDevelop.Components
 
 			if (AccessibilityElementProxy.Enabled) {
 				Accessible = AccessibilityElementProxy.ButtonElementProxy ();
-				Accessible.SetRole (AtkCocoa.Roles.AXRadioButton, "tab");
 				Accessible.Title = label ?? "";
 				Accessible.GtkParent = parent;
 				Accessible.Identifier = "Tabstrip.Tab";
 				Accessible.PerformPress += OnTabPressed;
+				UpdateAccessibility ();
 			}
 		}
 

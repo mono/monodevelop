@@ -131,18 +131,12 @@ namespace PerformanceDiagnosticsAddIn
 	{
 		protected override void Run ()
 		{
-			if (!Options.HasMemoryLeakFeature)
-				return;
-
 			var type = typeof (GLib.Object).Assembly.GetType ("GLib.PointerWrapper");
 			if (type == null) {
 				return;
 			}
 
-			LoggingService.LogInfo ("Gtk/Mac leak tracking enabled");
-
-			if (Options.HasMemoryLeakFeaturePad)
-				LoggingService.LogInfo ("Gtk/Mac leak tracking pad enabled. May cause performance issues.");
+			LoggingService.LogInfo ("Gtk/Mac leak tracking enabled. May cause performance issues.");
 
 			var field = type.GetField ("ObjectCreated", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 			field.SetValue (null, new Action<IntPtr> (arg => {
@@ -161,11 +155,6 @@ namespace PerformanceDiagnosticsAddIn
 	class DumpLiveWidgetsHandler : CommandHandler
 	{
 		static readonly System.IO.TextWriter log = LoggingService.CreateLogFile ("leak-dump");
-		protected override void Update (CommandInfo info)
-		{
-			info.Visible = Options.HasMemoryLeakFeature;
-			base.Update (info);
-		}
 
 		protected override async void Run ()
 		{
@@ -175,13 +164,19 @@ namespace PerformanceDiagnosticsAddIn
 	}
 
 #if DEBUG
+	class InduceUIThreadCrashHandler : CommandHandler
+	{
+		protected override void Run ()
+		{
+			new NSObject ().BeginInvokeOnMainThread (() => throw new Exception ("Diagnostics: UI thread crash"));
+		}
+	}
+
 	class InduceManagedCrashHandler : CommandHandler
 	{
 		protected override void Run ()
 		{
-			Task.Run (() => {
-				new NSObject ().BeginInvokeOnMainThread (() => throw new Exception ("Diagnostics: Managed crash"));
-			});
+			new Thread (() => { throw new Exception ("Diagnostics: Managed crash"); }).Start ();
 		}
 	}
 
@@ -192,12 +187,10 @@ namespace PerformanceDiagnosticsAddIn
 
 		protected override void Run ()
 		{
-			Task.Run (() => {
-				using var x = new NSException ("Native crash", "Diagnostics", null);
-				var selector = ObjCRuntime.Selector.GetHandle ("raise");
+			using var x = new NSException ("Native crash", "Diagnostics", null);
+			var selector = ObjCRuntime.Selector.GetHandle ("raise");
 
-				void_objc_msgSend (x.Handle, selector);
-			});
+			void_objc_msgSend (x.Handle, selector);
 		}
 	}
 
@@ -206,6 +199,17 @@ namespace PerformanceDiagnosticsAddIn
 		protected override void Run ()
 		{
 			Thread.Sleep (TimeSpan.FromMinutes(2));
+		}
+	}
+
+	class InduceNativePInvokeCrashHandler : CommandHandler
+	{
+		[DllImport ("libdebugcrash.dylib")]
+		static extern void debug_trigger_sigsegv ();
+
+		protected override void Run ()
+		{
+			debug_trigger_sigsegv ();
 		}
 	}
 #endif

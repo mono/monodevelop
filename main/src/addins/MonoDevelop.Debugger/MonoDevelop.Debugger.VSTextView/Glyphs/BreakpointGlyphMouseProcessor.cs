@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -70,7 +69,7 @@ namespace MonoDevelop.Debugger
 			};
 		}
 
-		public override void PreprocessMouseLeftButtonDown (MouseEvent e)
+		public override void PreprocessMouseLeftButtonDown (MouseEventArgs e)
 		{
 			// Record click location.
 			clickLocation = GetMouseLocationInTextView (e);
@@ -87,7 +86,7 @@ namespace MonoDevelop.Debugger
 			HandleDragStart (clickLocation);
 		}
 
-		public override void PreprocessMouseLeftButtonUp (MouseEvent e)
+		public override void PreprocessMouseLeftButtonUp (MouseEventArgs e)
 		{
 			// Did we successfully drag a glyph?
 			var mouseUpLocation = GetMouseLocationInTextView (e);
@@ -111,7 +110,7 @@ namespace MonoDevelop.Debugger
 			e.Handled = HandleMarkerClick (e);
 		}
 
-		public override void PostprocessMouseRightButtonUp (MouseEvent e)
+		public override void PostprocessMouseRightButtonUp (MouseEventArgs e)
 		{
 			var mouseUpLocation = GetMouseLocationInTextView (e);
 			var textViewLine = GetTextViewLine (mouseUpLocation.Y);
@@ -125,17 +124,17 @@ namespace MonoDevelop.Debugger
 			IdeApp.CommandService.ShowContextMenu (textViewHost.TextView.VisualElement, (int)pt.X, (int)pt.Y, cset, controller);
 		}
 
-		public override void PostprocessMouseEnter (MouseEvent e)
+		public override void PostprocessMouseEnter (MouseEventArgs e)
 		{
 			EnableToolTips ();
 		}
 
-		public override void PostprocessMouseLeave (MouseEvent e)
+		public override void PostprocessMouseLeave (MouseEventArgs e)
 		{
 			DisableToolTips ();
 		}
 
-		public override void PreprocessMouseMove (MouseEvent e)
+		public override void PreprocessMouseMove (MouseEventArgs e)
 		{
 			// If we're dragging a glyph, show proper cursor, scroll the view, etc.
 			var pt = GetMouseLocationInTextView (e);
@@ -168,7 +167,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		#region Private Drag/Drop Helpers
+#region Private Drag/Drop Helpers
 
 		// Internal for unit testing.
 		internal void HandleDragStart (CGPoint viewPoint)
@@ -328,7 +327,7 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		bool HandleMarkerClick (MouseEvent e)
+		bool HandleMarkerClick (MouseEventArgs e)
 		{
 			// Raise MarkerCommandValues.mcvGlyphSingleClickCommand
 			if (ExecuteMarkerCommand (glyphMargin.VisualElement.ConvertPointFromView (e.Event.LocationInWindow, null),
@@ -348,7 +347,7 @@ namespace MonoDevelop.Debugger
 
 		bool ToggleBreakpoint (int line, int column)
 		{
-			var buffer = textViewHost.TextView.TextBuffer;
+			var buffer = textViewHost.TextView.TextDataModel.DocumentBuffer;
 			var path = buffer.GetFilePathOrNull ();
 			if (path == null)
 				return false;
@@ -356,11 +355,11 @@ namespace MonoDevelop.Debugger
 			return true;
 		}
 
-		#endregion
+#endregion
 
-		#region Private Helpers
+#region Private Helpers
 
-		CGPoint GetMouseLocationInTextView (MouseEvent e)
+		CGPoint GetMouseLocationInTextView (MouseEventArgs e)
 		{
 			ICocoaTextView textView = textViewHost.TextView;
 			var pt = textView.VisualElement.ConvertPointFromView (e.Event.LocationInWindow, null);
@@ -585,7 +584,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		#endregion
+#endregion
 	}
 }
 #endif

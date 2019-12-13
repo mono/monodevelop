@@ -26,8 +26,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Projects;
@@ -40,33 +43,72 @@ namespace MonoDevelop.AspNetCore
 	{
 		readonly string baseDirectory;
 		readonly string defaultNamespace;
+		readonly DotNetProject project;
 		readonly object fileLocker = new object ();
 		public IDictionary<string, JToken> GlobalSettings { get; private set; }
 		internal JObject ProfilesObject { get; private set; }
-		public ConcurrentDictionary<string, LaunchProfileData> Profiles { get; set; }
+		public ConcurrentDictionary<string, LaunchProfileData> Profiles { get; private set; }
 		internal string LaunchSettingsJsonPath => Path.Combine (baseDirectory, "Properties", "launchSettings.json");
 		const string DefaultGlobalSettings = @"{
     						""windowsAuthentication"": false,
     						""anonymousAuthentication"": true
   							}";
 
+		const string defaultHttpUrl = "http://localhost:5000";
+		const string defaultHttpsUrl = "https://localhost:5001";
+
 		public LaunchProfileData DefaultProfile {
 			get {
-				if (!Profiles.ContainsKey (defaultNamespace)) {
-					var defaultProfile = CreateDefaultProfile ();
+				if (!Profiles.TryGetValue (defaultNamespace, out var defaultProfile)) {
+					defaultProfile = CreateDefaultProfile ();
 					Profiles [defaultNamespace] = defaultProfile;
-					return defaultProfile;
 				}
-				return Profiles [defaultNamespace];
+				return defaultProfile;
 			}
 		}
 
-		public LaunchProfileProvider (string baseDirectory, string defaultNamespace)
+		public LaunchProfileProvider (DotNetProject project)
 		{
-			this.baseDirectory = baseDirectory;
-			this.defaultNamespace = defaultNamespace;
+			this.project = project;
+			this.baseDirectory = project.BaseDirectory;
+			this.defaultNamespace = project.DefaultNamespace;
 			GlobalSettings = new Dictionary<string, JToken> ();
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
+		}
+
+		static bool ApplicationUrlIsDefault (string applicationUrl)
+		{
+			return applicationUrl != null && applicationUrl.Contains (defaultHttpUrl) || applicationUrl.Contains (defaultHttpsUrl);
+		}
+
+		static bool TryAllocatePort (int testPort)
+		{
+			Socket testSocket = null;
+
+			try {
+				if (Socket.OSSupportsIPv4) {
+					testSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+				} else if (Socket.OSSupportsIPv6) {
+					testSocket = new Socket (AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+				}
+			} catch {
+				testSocket?.Dispose ();
+				return false;
+			}
+
+			if (testSocket != null) {
+				var endPoint = new IPEndPoint (testSocket.AddressFamily == AddressFamily.InterNetworkV6 ? IPAddress.IPv6Any : IPAddress.Any, testPort);
+
+				try {
+					testSocket.Bind (endPoint);
+					return true;
+				} catch {
+					testSocket?.Dispose ();
+					return false;
+				}
+			}
+
+			return false;
 		}
 
 		public void LoadLaunchSettings ()
@@ -77,8 +119,8 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			var launchSettingsJson = TryParse ();
-
 			GlobalSettings.Clear ();
+
 			foreach (var token in launchSettingsJson) {
 				if (token.Key == "profiles") {
 					ProfilesObject = token.Value as JObject;
@@ -88,6 +130,64 @@ namespace MonoDevelop.AspNetCore
 			}
 
 			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (LaunchProfileData.DeserializeProfiles (ProfilesObject));
+		}
+
+		/// <summary>
+		/// Gets the next free port taking into account which ports are in use by other projects
+		/// </summary>
+		/// <returns>The next free port.</returns>
+		int GetNextFreePort ()
+		{
+			var projects = Enumerable.Empty<Project> ();
+
+			if (project.ParentSolution != null)
+				projects = project.ParentSolution.GetAllProjects ();
+
+			var runConfigurations = projects.SelectMany (p => p.RunConfigurations).OfType<AspNetCoreRunConfiguration> ();
+			var applicationUrls =
+				runConfigurations.Select (r => r.CurrentProfile.TryGetApplicationUrl ())
+				.Where (a => a != null)
+				.SelectMany (u => u.Split (';'));
+
+			var portsInUse = applicationUrls.Select (url => new Uri (url).Port);
+			var validPortRange = Enumerable.Range (5000, 100);
+			int port = validPortRange.Except (portsInUse).First (TryAllocatePort);
+			return port;
+		}
+
+		bool ShouldGenerateNewPort (string applicationUrl)
+		{
+			if (project.ParentSolution != null && ApplicationUrlIsDefault (applicationUrl)) {
+				var allProjects = project.ParentSolution.GetAllProjects ().ToArray();
+				if (allProjects.Length == 1) {
+					return false;
+				}
+				if (allProjects.Length > 1 && allProjects [0] == project) {
+					// If we have more than one project and we are currently on the first
+					// then we don't do anything.
+	 				// If we are on the 2nd (or higher) project and that has default ports, 
+	 				// then we need to change them if necessary. 
+	 				// If the 2nd project uses default ports but no other does, then GetNextFreePort will start
+					// numbering from 5000 so it will result in no changes being made.
+					return false;
+				}
+				return true;
+			}
+			return false;
+		}
+
+		internal void FixPortNumbers ()
+		{
+			if (Profiles.ContainsKey (defaultNamespace)) {
+				var applicationUrl = DefaultProfile.OtherSettings ["applicationUrl"] as string;
+
+				if (ShouldGenerateNewPort(applicationUrl)) {
+					applicationUrl = applicationUrl.Replace (defaultHttpUrl, "http://localhost:" + GetNextFreePort ());
+					applicationUrl = applicationUrl.Replace (defaultHttpsUrl, "https://localhost:" + GetNextFreePort ());
+					DefaultProfile.OtherSettings ["applicationUrl"] = applicationUrl;
+					SaveLaunchSettings ();
+				}
+			}
 		}
 
 		JObject TryParse ()
@@ -142,9 +242,7 @@ namespace MonoDevelop.AspNetCore
 			if (Profiles == null)
 				Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
 
-			var newProfile = CreateProfile (name);
-			Profiles [name] = newProfile;
-			return newProfile;
+			return Profiles [name] = CreateProfile (name);
 		}
 
 		public LaunchProfileData CreateDefaultProfile () => CreateProfile (defaultNamespace);
@@ -160,7 +258,24 @@ namespace MonoDevelop.AspNetCore
 			};
 
 			defaultProfile.EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
-			defaultProfile.OtherSettings.Add ("applicationUrl", "https://localhost:5001;http://localhost:5000");
+			var anyConfigurationUsesHttps = false;
+			foreach (var runConfiguration in project.RunConfigurations) {
+				if (AspNetCoreCertificateManager.UsingHttps (runConfiguration)) {
+					anyConfigurationUsesHttps = true;
+					break;
+				}
+			}
+
+			string applicationUrl;
+
+			var httpPort = GetNextFreePort ();
+			var httpsPort = GetNextFreePort ();
+			if (anyConfigurationUsesHttps)
+				applicationUrl = $"https://localhost:{httpsPort};http://localhost:{httpPort}";
+			else
+				applicationUrl = $"http://localhost:{httpPort}";
+
+			defaultProfile.OtherSettings.Add ("applicationUrl", applicationUrl);
 
 			return defaultProfile;
 		}
@@ -168,18 +283,15 @@ namespace MonoDevelop.AspNetCore
 		void CreateAndAddDefaultLaunchSettings ()
 		{
 			GlobalSettings.Add ("iisSettings", JToken.Parse (DefaultGlobalSettings));
-			var profiles = new Dictionary<string, LaunchProfileData> {
-				{ defaultNamespace, CreateDefaultProfile () }
-			};
-			Profiles = new ConcurrentDictionary<string, LaunchProfileData> (profiles);
+			Profiles = new ConcurrentDictionary<string, LaunchProfileData> ();
+			Profiles.TryAdd (defaultNamespace, CreateDefaultProfile ());
 			SaveLaunchSettings ();
 		}
 
 		/// <summary>
 		/// Updates Project.RunConfigurations
 		/// </summary>
-		/// <param name="project"></param>
-		internal void SyncRunConfigurations (DotNetProject project)
+		internal void SyncRunConfigurations ()
 		{
 			foreach (var profile in this.Profiles) {
 
@@ -204,7 +316,11 @@ namespace MonoDevelop.AspNetCore
 				} else if (runConfig is AspNetCoreRunConfiguration aspNetCoreRunConfiguration) {
 					var index = project.RunConfigurations.IndexOf (runConfig);
 					aspNetCoreRunConfiguration.UpdateProfile (profile.Value);
-					project.RunConfigurations [index] = runConfig;
+					if (index >= 0) {
+						project.RunConfigurations [index] = runConfig;
+					}
+
+					Debug.Assert (index >= 0, "Didn't find expected run configuration");
 				}
 			}
 
@@ -217,7 +333,7 @@ namespace MonoDevelop.AspNetCore
 					key = project.DefaultNamespace;
 				}
 
-				if (Profiles.TryGetValue (key, out var _))
+				if (Profiles.TryGetValue (key, out _))
 					continue;
 
 				itemsRemoved.Add (config);

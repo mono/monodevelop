@@ -231,11 +231,11 @@
 		{ "name": "Preview Diff Removed Line", "fore": "#5c2c2c", "back": "#dcb4b4" },
 		{ "name": "Preview Diff Added Line", "fore": "#235423", "back": "#a4d9a4" },
 
-		{ "name": "Css Comment", "fore": "monokai-comment", "weight": "bold" },
-		{ "name": "Css Property Name", "fore": "monokai-white", "weight": "bold" },
-		{ "name": "Css Property Value", "fore": "monokai-string", "weight": "bold" },
-		{ "name": "Css Selector", "fore": "monokai-comment", "weight": "bold" },
-		{ "name": "Css Keyword", "fore": "monokai-keyword", "weight": "bold" },
+		{ "name": "Css Comment", "fore": "monokai-comment" },
+		{ "name": "Css Property Name", "fore": "monokai-white" },
+		{ "name": "Css Property Value", "fore": "monokai-string" },
+		{ "name": "Css Selector", "fore": "monokai-comment" },
+		{ "name": "Css Keyword", "fore": "monokai-keyword" },
 
 		{ "name": "Script Comment", "fore": "monokai-comment" },
 		{ "name": "Script Keyword", "fore": "monokai-keyword" },

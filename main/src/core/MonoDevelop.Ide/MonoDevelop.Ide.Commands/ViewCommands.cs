@@ -36,6 +36,8 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.Components.DockNotebook;
 using System.Collections.Generic;
 using MonoDevelop.Ide.Gui.Shell;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text;
 
 namespace MonoDevelop.Ide.Commands
 {
@@ -437,29 +439,33 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null;
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null;
 		}
 
 		protected override void Run ()
 		{
 			IdeApp.Workbench.ActiveDocument.Select ();
-			IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
+			IdeApp.Workbench.ActiveDocument.Editor?.StartCaretPulseAnimation ();
 		}
-
 	}
 
 	public class CenterAndFocusCurrentDocumentHandler : CommandHandler
 	{
 		protected override void Update (CommandInfo info)
 		{
-			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.Editor != null;
+			info.Enabled = IdeApp.Workbench.ActiveDocument != null && IdeApp.Workbench.ActiveDocument.GetContent<ITextView> () != null;
 		}
 
 		protected override void Run ()
 		{
 			IdeApp.Workbench.ActiveDocument.Select ();
-			IdeApp.Workbench.ActiveDocument.Editor.CenterToCaret ();
-			IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
+			if (IdeApp.Workbench.ActiveDocument.Editor != null) {
+				IdeApp.Workbench.ActiveDocument.Editor.CenterToCaret ();
+				IdeApp.Workbench.ActiveDocument.Editor.StartCaretPulseAnimation ();
+			} else {
+				var textView = IdeApp.Workbench.ActiveDocument.GetContent<ITextView> ();
+				textView.ViewScroller.EnsureSpanVisible (new SnapshotSpan (textView.Caret.Position.BufferPosition, 0), EnsureSpanVisibleOptions.AlwaysCenter);
+			}
 		}
 	}
 }

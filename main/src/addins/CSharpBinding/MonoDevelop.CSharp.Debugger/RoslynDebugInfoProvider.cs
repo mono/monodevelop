@@ -1,4 +1,5 @@
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 using MonoDevelop.Debugger;
 using MonoDevelop.Debugger.VSTextView.QuickInfo;
 using MonoDevelop.Ide.TypeSystem;
@@ -22,8 +24,19 @@ namespace MonoDevelop.CSharp.Debugger
 		public async Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint, CancellationToken cancellationToken)
 		{
 			var analysisDocument = snapshotPoint.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+
+            IProjectionSnapshot projectionSnapshot = null;
+            if (analysisDocument == null) {
+				projectionSnapshot = snapshotPoint.Snapshot as IProjectionSnapshot;
+				if (projectionSnapshot != null) {
+					snapshotPoint = projectionSnapshot.MapToSourceSnapshot (snapshotPoint.Position);
+					analysisDocument = snapshotPoint.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+				}
+			}
+
 			if (analysisDocument == null)
 				return default (DataTipInfo);
+
 			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
 			if (debugInfoService == null)
 				return default (DataTipInfo);
@@ -37,23 +50,67 @@ namespace MonoDevelop.CSharp.Debugger
 			var root = await semanticModel.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
 			var syntaxNode = root.FindNode (tipInfo.Span);
 			DebugDataTipInfo debugDataTipInfo;
+
 			if (syntaxNode == null)
 				debugDataTipInfo = new DebugDataTipInfo (tipInfo.Span, text);
 			else
 				debugDataTipInfo = GetInfo (root, semanticModel, syntaxNode, text, cancellationToken);
-			return new DataTipInfo (snapshotPoint.Snapshot.CreateTrackingSpan (debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length, SpanTrackingMode.EdgeInclusive), debugDataTipInfo.Text);
+
+			ITrackingSpan trackingSpan;
+
+			if (projectionSnapshot != null) {
+				var originalSpan = projectionSnapshot.MapFromSourceSnapshot (new SnapshotSpan (snapshotPoint.Snapshot, debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length)).FirstOrDefault ();
+				if (originalSpan == default)
+					return default;
+
+				trackingSpan = projectionSnapshot.CreateTrackingSpan (originalSpan, SpanTrackingMode.EdgeInclusive);
+			} else {
+				var originalSpan = new Span (debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length);
+				trackingSpan = snapshotPoint.Snapshot.CreateTrackingSpan (originalSpan, SpanTrackingMode.EdgeInclusive);
+			}
+
+			return new DataTipInfo (trackingSpan, debugDataTipInfo.Text);
+		}
+
+		public async Task<DataTipInfo> GetDebugInfoAsync (SnapshotSpan snapshotSpan, CancellationToken cancellationToken)
+		{
+			var analysisDocument = snapshotSpan.Snapshot.AsText ().GetOpenDocumentInCurrentContextWithChanges ();
+			if (analysisDocument == null)
+				return default (DataTipInfo);
+
+			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			if (debugInfoService == null)
+				return default (DataTipInfo);
+
+			var span = new TextSpan (snapshotSpan.Start, snapshotSpan.Length);
+			var text = snapshotSpan.GetText ();
+
+			var semanticModel = await analysisDocument.GetSemanticModelAsync (cancellationToken).ConfigureAwait (false);
+			var root = await semanticModel.SyntaxTree.GetRootAsync (cancellationToken).ConfigureAwait (false);
+			var syntaxNode = root.FindNode (span);
+			DebugDataTipInfo debugDataTipInfo;
+
+			if (syntaxNode == null)
+				debugDataTipInfo = new DebugDataTipInfo (span, text);
+			else
+				debugDataTipInfo = GetInfo (root, semanticModel, syntaxNode, text, cancellationToken);
+
+			var trackingSpan = snapshotSpan.Snapshot.CreateTrackingSpan (debugDataTipInfo.Span.Start, debugDataTipInfo.Span.Length, SpanTrackingMode.EdgeInclusive);
+
+			return new DataTipInfo (trackingSpan, debugDataTipInfo.Text);
 		}
 
 		static DebugDataTipInfo GetInfo (SyntaxNode root, SemanticModel semanticModel, SyntaxNode node, string textOpt, CancellationToken cancellationToken)
 		{
 			var expression = node as ExpressionSyntax;
+
 			if (expression == null) {
-				if (node is MethodDeclarationSyntax) {
+				if (node is MethodDeclarationSyntax)
 					return default (DebugDataTipInfo);
-				}
+
 				if (semanticModel != null) {
 					if (node is PropertyDeclarationSyntax) {
-						var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax)node);
+						var propertySymbol = semanticModel.GetDeclaredSymbol ((PropertyDeclarationSyntax) node);
 						if (propertySymbol.IsStatic) {
 							textOpt = propertySymbol.ContainingType.GetFullName () + "." + propertySymbol.Name;
 						}
@@ -74,13 +131,22 @@ namespace MonoDevelop.CSharp.Debugger
 				// Partial semantics should always be sufficient because the (unconverted) type
 				// of a literal can always easily be determined.
 				var type = semanticModel?.GetTypeInfo (expression, cancellationToken).Type;
-				return type == null
-					? default (DebugDataTipInfo)
-						: new DebugDataTipInfo (expression.Span, type.GetFullName ());
+
+				return type == null ? default : new DebugDataTipInfo (expression.Span, type.GetFullName ());
+			}
+
+			if (expression is PrefixUnaryExpressionSyntax prefix) {
+				textOpt = prefix.Operand.ToString ();
+				expression = prefix.Operand;
+			}
+
+			if (expression is PostfixUnaryExpressionSyntax postfix) {
+				textOpt = postfix.Operand.ToString ();
+				expression = postfix.Operand;
 			}
 
 			// Check if we are invoking method and if we do return null so we don't invoke it
-			if (expression.Parent is InvocationExpressionSyntax || semanticModel.GetSymbolInfo (expression).Symbol is IMethodSymbol) 
+			if (expression.Parent is InvocationExpressionSyntax || semanticModel.GetSymbolInfo (expression).Symbol is IMethodSymbol)
 				return default (DebugDataTipInfo);
 
 			if (expression.IsRightSideOfDotOrArrow ()) {
@@ -126,9 +192,9 @@ namespace MonoDevelop.CSharp.Debugger
 							textOpt = variable.Identifier.Text + "." + ((IdentifierNameSyntax)expression).Identifier.Text;
 						}
 					}
-
 				}
 			}
+
 			return new DebugDataTipInfo (expression.Span, textOpt);
 		}
 	}

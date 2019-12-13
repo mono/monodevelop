@@ -46,6 +46,7 @@ using Microsoft.CodeAnalysis.Shared.Options;
 using Microsoft.CodeAnalysis.Shared.Utilities;
 using Microsoft.CodeAnalysis.SolutionCrawler;
 using MonoDevelop.Ide.Composition;
+using MonoDevelop.Ide.Projects.FileNesting;
 using MonoDevelop.Ide.RoslynServices;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Gui.Documents;
@@ -65,6 +66,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		DocumentManager documentManager;
 		RootWorkspace workspace;
 		CompositionManager compositionManager;
+		DynamicFileManager dynamicFileManager;
 
 		// Background compiler is used to trigger compilations in the background for the solution and hold onto them
 		// so in case nothing references the solution in current stacks, they're not collected.
@@ -171,6 +173,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			if (MonoDevelopSolution != null) {
 				Runtime.RunInMainThread (() => desktopService.MemoryMonitor.StatusChanged += OnMemoryStatusChanged).Ignore ();
 			}
+
+			this.dynamicFileManager = compositionManager.GetExportedValue<DynamicFileManager> ();
 		}
 
 		bool lowMemoryLogged;
@@ -276,6 +280,8 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 			}
 
+			dynamicFileManager?.UnloadWorkspace (this);
+
 			base.ClearSolutionData ();
 		}
 
@@ -317,18 +323,13 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// <summary>
 		/// Razor (.cshtml) needs to be able to add C# documents to a project that are not backed by a file on disk.
 		/// As these don't come from the project system, we need to keep track of these documents to readd them
-		/// manually every time the project is reloaded from disk.
+		/// manually every time the project is loaded from disk.
 		/// </summary>
-		internal ProjectInfo AddVirtualDocuments(ProjectInfo projectInfo)
+		internal IEnumerable<DocumentInfo> GetVirtualDocuments (ProjectId projectId)
 		{
 			lock (virtualDocuments) {
-				var virtualDocumentsToAdd = virtualDocuments.Where (d => d.Id.ProjectId == projectInfo.Id);
-				if (virtualDocumentsToAdd.Any ()) {
-					projectInfo = projectInfo.WithDocuments (projectInfo.Documents.Concat (virtualDocumentsToAdd));
-				}
+				return virtualDocuments.Where (d => d.Id.ProjectId == projectId).ToList ();
 			}
-
-			return projectInfo;
 		}
 
 		// This is called by OnProjectRemoved.
@@ -336,6 +337,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var actualProject = ProjectMap.RemoveProject (projectId);
 			UnloadMonoProject (actualProject);
+			dynamicFileManager?.UnloadProject (projectId);
 
 			base.ClearProjectData (projectId);
 		}
@@ -359,9 +361,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			ProjectHandler.Dispose ();
 			MetadataReferenceManager.ClearCache ();
 
+			dynamicFileManager?.UnloadWorkspace (this);
+
 			TypeSystemService.EnableSourceAnalysis.Changed -= OnEnableSourceAnalysisChanged;
 			TypeSystemService.Preferences.FullSolutionAnalysisRuntimeEnabledChanged -= OnEnableFullSourceAnalysisChanged;
-			desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
+			if (desktopService != null)
+				desktopService.MemoryMonitor.StatusChanged -= OnMemoryStatusChanged;
 
 			if (workspace != null) {
 				workspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
@@ -503,7 +508,6 @@ namespace MonoDevelop.Ide.TypeSystem
 							OnProjectAdded (projectInfo);
 						} else {
 							lock (projectModifyLock) {
-								projectInfo = AddVirtualDocuments (projectInfo);
 								OnProjectReloaded (projectInfo);
 							}
 						}
@@ -616,15 +620,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			var project = this.CurrentSolution.GetProject (documentId.ProjectId);
 			if (project == null)
 				return null;
-			TextDocument document = project.GetDocument (documentId) ?? project.GetAdditionalDocument (documentId);
+			TextDocument document = project.GetDocument (documentId) ??
+				project.GetAdditionalDocument (documentId) ??
+				project.GetAnalyzerConfigDocument (documentId);
 			if (document == null || OpenDocuments.Contains (documentId)) {
 				return document;
 			}
 			OpenDocuments.Add (documentId, sourceTextContainer);
 			if (document is Document) {
 				OnDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
-			} else {
+			} else if (document is AdditionalDocument) {
 				OnAdditionalDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
+			} else if (document is AnalyzerConfigDocument) {
+				OnAnalyzerConfigDocumentOpened (documentId, sourceTextContainer, isCurrentContext);
 			}
 			return document;
 		}
@@ -653,8 +661,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					//it's job of whatever opened to also call CloseAndemoveDocumentInternal
 					return;
 				}
-				if (!CurrentSolution.ContainsDocument (analysisDocument))
-					return;
 
 				// Using a source text container
 				var loader = new SourceTextLoader (container, null);
@@ -664,8 +670,15 @@ namespace MonoDevelop.Ide.TypeSystem
 					var ad = this.GetAdditionalDocument (analysisDocument);
 					if (ad != null)
 						OnAdditionalDocumentClosed (analysisDocument, loader);
+					var analyzerDoc = this.GetAnalyzerConfigDocument (analysisDocument);
+					if (analyzerDoc != null)
+						OnAnalyzerConfigDocumentClosed (analysisDocument, loader);
 					return;
 				}
+
+				if (!CurrentSolution.ContainsDocument (analysisDocument))
+					return;
+
 				OnDocumentClosed (analysisDocument, loader);
 				foreach (var linkedDoc in document.GetLinkedDocumentIds ()) {
 					OnDocumentClosed (linkedDoc, loader);
@@ -1344,7 +1357,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 					FileService.RenameFile (document.FilePath, newName);
 					
-					var childrenToRename = GetDependentFilesToRename (mdFile, newName);
+					var childrenToRename = ProjectOperations.GetDependentFilesToRename (mdFile, newName);
 					if (childrenToRename != null) {
 						// we also need to rename children!
 						foreach (var child in childrenToRename) {
@@ -1355,29 +1368,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			});
 
 			tryApplyState_changedProjects.Add (mdProject);
-		}
-
-		static List<(MonoDevelop.Projects.ProjectFile File, string NewName)> GetDependentFilesToRename (
-			MonoDevelop.Projects.ProjectFile file,
-			string newName)
-		{
-			if (!file.HasChildren)
-				return null;
-
-			List<(MonoDevelop.Projects.ProjectFile File, string NewName)> files = null;
-
-			string oldName = file.FilePath.FileName;
-			foreach (MonoDevelop.Projects.ProjectFile child in file.DependentChildren) {
-				string oldChildName = child.FilePath.FileName;
-				if (oldChildName.StartsWith (oldName, StringComparison.CurrentCultureIgnoreCase)) {
-					string childNewName = newName + oldChildName.Substring (oldName.Length);
-
-					if (files == null)
-						files = new List<(MonoDevelop.Projects.ProjectFile projectFile, string name)> ();
-					files.Add ((child, childNewName));
-				}
-			}
-			return files;
 		}
 
 		static void FailIfDocumentInfoChangesNotSupported (Document document, DocumentInfo updatedInfo)
@@ -1427,6 +1417,14 @@ namespace MonoDevelop.Ide.TypeSystem
 			return project.GetAdditionalDocument (documentId);
 		}
 
+		internal TextDocument GetAnalyzerConfigDocument (DocumentId documentId, CancellationToken cancellationToken = default (CancellationToken))
+		{
+			var project = CurrentSolution.GetProject (documentId.ProjectId);
+			if (project == null)
+				return null;
+			return project.GetAnalyzerConfigDocument (documentId);
+		}
+
 		internal async Task UpdateFileContent (string fileName, string text)
 		{
 			SourceText newText = SourceText.From (text);
@@ -1441,6 +1439,8 @@ namespace MonoDevelop.Ide.TypeSystem
 								base.OnDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							} else if (this.GetAdditionalDocument (docId) != null) {
 								base.OnAdditionalDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
+							} else if (this.GetAnalyzerConfigDocument (docId) != null) {
+								base.OnAnalyzerConfigDocumentTextChanged (docId, newText, PreservationMode.PreserveIdentity);
 							}
 						} catch (Exception e) {
 							LoggingService.LogWarning ("Roslyn error on text change", e);
@@ -1470,6 +1470,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			foreach (var id in GetProjectIds (project)) {
 				OnProjectRemoved (id);
+				dynamicFileManager?.UnloadProject (id);
 			}
 		}
 
@@ -1485,7 +1486,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				if (freezeProjectModify)
 					return;
 				try {
-					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters" || x.Hint == "Files"))
+					if (!args.Any (x => x.Hint == "TargetFramework" || x.Hint == "References" || x.Hint == "CompilerParameters" || x.Hint == "CoreCompileFiles"))
 						return;
 					var project = sender as MonoDevelop.Projects.DotNetProject;
 					if (project == null)
@@ -1507,8 +1508,12 @@ namespace MonoDevelop.Ide.TypeSystem
 								try {
 									lock (projectModifyLock) {
 										ProjectInfo newProjectContents = t.Result;
-										newProjectContents = AddVirtualDocuments (newProjectContents);
 										OnProjectReloaded (newProjectContents);
+										foreach (var docId in GetOpenDocumentIds (newProjectContents.Id).ToArray ()) {
+											if (CurrentSolution.GetDocument (docId) == null) {
+												ClearOpenDocument (docId);
+											}
+										}
 										Runtime.RunInMainThread (() => IdeServices.TypeSystemService.UpdateRegisteredOpenDocuments ()).Ignore();
 									}
 								} catch (Exception e) {
@@ -1522,6 +1527,30 @@ namespace MonoDevelop.Ide.TypeSystem
 				} catch (Exception ex) {
 					LoggingService.LogInternalError (ex);
 				}
+			}
+		}
+
+		internal ProjectInfo WithDynamicDocuments (MonoDevelop.Projects.Project project, ProjectInfo projectInfo)
+		{
+			var projectDirectory = Path.GetDirectoryName (project.FileName);
+
+			var contentItems = project.MSBuildProject.EvaluatedItems
+				.Where (item => item.Name == "Content" && item.Include.EndsWith (".razor", StringComparison.OrdinalIgnoreCase))
+				.Select (item => GetAbsolutePath(item.Include))
+				.ToList ();
+
+			return dynamicFileManager?.UpdateDynamicFiles (projectInfo, contentItems, this);
+
+			string GetAbsolutePath (string relativePath)
+			{
+				if (!Path.IsPathRooted (relativePath)) {
+					relativePath = Path.Combine (projectDirectory, relativePath);
+				}
+
+				// normalize the path separator characters in case they're mixed
+				relativePath = relativePath.Replace ('\\', Path.DirectorySeparatorChar);
+
+				return relativePath;
 			}
 		}
 

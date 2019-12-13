@@ -93,7 +93,10 @@ namespace MonoDevelop.TextEditor
 				if (textViewHost == null)
 					throw new ArgumentNullException (nameof (textViewHost));
 
-				GtkView = new Gtk.GtkNSViewHost (textViewHost.HostControl);
+				GtkView = new Gtk.GtkNSViewHost (
+					textViewHost.HostControl,
+					disposeViewOnGtkDestroy: true);
+
 				GtkView.Show ();
 			}
 
@@ -193,6 +196,7 @@ namespace MonoDevelop.TextEditor
 		{
 			textViewHost = Imports.TextEditorFactoryService.CreateTextViewHost (TextView, setFocus: true);
 			textViewHostControl = textViewHost.HostControl;
+			textViewHostControl.AccessibilityTitle = GettextCatalog.GetString ("Source Editor Group");
 
 			if (!useLegacyGtkNSViewHost.Value) {
 				embeddedControl = new ManagedGtkNSViewHostControl (textViewHost);

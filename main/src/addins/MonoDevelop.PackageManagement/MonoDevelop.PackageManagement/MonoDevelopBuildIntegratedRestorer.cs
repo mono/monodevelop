@@ -250,6 +250,10 @@ namespace MonoDevelop.PackageManagement
 			if (dotNetCoreNuGetProject?.ProjectRequiresReloadAfterRestore () == true)
 				return dotNetCoreNuGetProject.DotNetProject;
 
+			var packageReferenceNuGetProject = project as PackageReferenceNuGetProject;
+			if (packageReferenceNuGetProject?.ProjectRequiresReloadAfterRestore () == true)
+				return packageReferenceNuGetProject.DotNetProject;
+
 			return null;
 		}
 

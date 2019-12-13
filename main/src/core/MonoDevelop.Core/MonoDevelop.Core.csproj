@@ -87,6 +87,7 @@
     -->
     <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
@@ -97,15 +98,15 @@
     <PackageReference Include="Mono.Cecil" Version="$(NuGetVersionCecil)" PrivateAssets="runtime" />
     <PackageReference Include="MonoDevelopDev.Analyzers" Version="$(NuGetVersionMonoDevelopAnalyzers)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NuGetVersionNewtonsoftJson)" PrivateAssets="runtime" />
-    <PackageReference Include="SharpZipLib" Version="1.1.0" PrivateAssets="runtime" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0" PrivateAssets="runtime" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.12" PrivateAssets="runtime,build" />
     <PackageReference Include="StreamJsonRpc" Version="1.5.43" PrivateAssets="runtime" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" PrivateAssets="runtime" />
     <!-- remove this as it conflicts with the one in mscorlib. mono bug? -->
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" ExcludeAssets="all" />
     <!-- update this to a version that doesn't crash -->
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.0.96-beta" ExcludeAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview4.19216.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.3.52" ExcludeAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview9.19423.4" PrivateAssets="runtime" />
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="Humanizer.dll" />
@@ -131,6 +132,7 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
+    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.MSBuild.dll" />
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
     <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
@@ -719,7 +721,6 @@
     <Compile Include="MonoDevelop.Core.Web\IHttpCredentialsHandler.cs" />
     <Compile Include="MonoDevelop.Core.Web\DefaultHttpClientHandler.cs" />
     <Compile Include="MonoDevelop.Projects.MSBuild\MSBuildProcessService.cs" />
-    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
     <Compile Include="MonoDevelop.Core\Service.cs" />
     <Compile Include="MonoDevelop.Core\ServiceProvider.cs" />
     <Compile Include="MonoDevelop.Core\IService.cs" />
@@ -734,6 +735,7 @@
     <Compile Include="MonoDevelop.Projects\SdkProjectShortTargetFramework.cs" />
     <Compile Include="MonoDevelop.Utilities\SampleProfiler.cs" />
     <Compile Include="MonoDevelop.Core\PooledListPolicy.cs" />
+    <Compile Include="MonoDevelop.Core\ObjectPoolUtil.cs" />
     <Compile Include="CoreExtensions.IEnumerable.cs" />
     <Compile Include="CoreExtensions.Memoize.cs" />
     <Compile Include="CoreExtensions.EventHandlers.cs" />
@@ -742,6 +744,11 @@
     <Compile Include="MonoDevelop.Projects\DotNetProjectFrameworkConfigurationSelector.cs" />
     <Compile Include="MonoDevelop.Core.Execution\TargetFrameworkExecutionTarget.cs" />
     <Compile Include="MonoDevelop.Projects\FrameworkReference.cs" />
+    <Compile Include="MonoDevelop.Core\DedicatedThreadScheduler.cs" />
+    <Compile Include="MonoDevelop.Projects.MSBuild\IntrinsicFunctions.Extensions.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\FeatureSwitch.cs" />
+    <Compile Include="MonoDevelop.Core.AddIns\FeatureSwitchExtensionNode.cs" />
+    <Compile Include="MonoDevelop.Core.FeatureConfiguration\IFeatureSwitchController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BuildVariables.cs.in" />

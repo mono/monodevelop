@@ -30,6 +30,7 @@ using MonoDevelop.Projects;
 using System.Collections.Generic;
 using MonoDevelop.Ide;
 using MonoDevelop.Core;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
@@ -64,8 +65,18 @@ namespace MonoDevelop.VersionControl.Git
 				WorkspaceObject rob;
 				if (repos.TryGetValue (rep.RootPath, out rob)) {
 					if (ob == rob) {
-						string branch = rep.GetCurrentBranch ();
-						if (branch == "(no branch)") {
+						string branch = rep.CachedCurrentBranch;
+						//FIXME: we need to find a better way to get this sync
+						using (var cts = new CancellationTokenSource ()) {
+							var getBranch = rep.GetCurrentBranchAsync (cts.Token);
+							if (!getBranch.Wait (250)) {
+								cts.Cancel ();
+								LoggingService.LogError ("Getting current Git branch timed out");
+							} else if (!getBranch.IsFaulted)
+								branch = getBranch.Result;
+						}
+
+						if (branch == GitRepository.DefaultNoBranchName) {
 							using (var RootRepository = new LibGit2Sharp.Repository (rep.RootPath))
 								branch = RootRepository.ObjectDatabase.ShortenObjectId (RootRepository.Head.Tip);
 						}

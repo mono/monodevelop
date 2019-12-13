@@ -10,9 +10,6 @@
     <DefineConstants Condition="$(OS) == 'Windows_NT'">$(DefineConstants);WINDOWS;WIN32</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="$(VSEditorApiDirectory)src\Editor\Text\Def\Extras\Extras.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Cocoa" />
     <InternalsVisibleTo Include="MonoDevelop.TextEditor.Wpf" />
     <Reference Include="PresentationFramework" />

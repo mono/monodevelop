@@ -263,34 +263,58 @@ namespace MonoDevelop.Ide
 			return messageService.GenericAlert (null, message) == message.ConfirmButton;
 		}
 		#endregion
-		
+
 		#region AskQuestion
-		public static AlertButton AskQuestion (string primaryText, params AlertButton[] buttons)
+		public static AlertButton AskQuestion (string primaryText, params AlertButton [] buttons)
 		{
 			return AskQuestion (primaryText, null, buttons);
 		}
-		
-		public static AlertButton AskQuestion (string primaryText, string secondaryText, params AlertButton[] buttons)
+
+		public static AlertButton AskQuestion (string primaryText, string secondaryText, params AlertButton [] buttons)
 		{
 			return GenericAlert (MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, buttons);
 		}
-		public static AlertButton AskQuestion (string primaryText, int defaultButton, params AlertButton[] buttons)
+		public static AlertButton AskQuestion (string primaryText, int defaultButton, params AlertButton [] buttons)
 		{
 			return AskQuestion (primaryText, null, defaultButton, buttons);
 		}
-		
-		public static AlertButton AskQuestion (string primaryText, string secondaryText, int defaultButton, params AlertButton[] buttons)
+
+		public static AlertButton AskQuestion (string primaryText, string secondaryText, int defaultButton, params AlertButton [] buttons)
 		{
 			return GenericAlert (MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, defaultButton, buttons);
 		}
-		
+
 		public static AlertButton AskQuestion (QuestionMessage message)
 		{
 			return messageService.GenericAlert (null, message);
 		}
-		
+
+		public static AlertButton AskQuestion (Window parent, string primaryText, params AlertButton [] buttons)
+		{
+			return AskQuestion (parent, primaryText, null, buttons);
+		}
+
+		public static AlertButton AskQuestion (Window parent, string primaryText, string secondaryText, params AlertButton [] buttons)
+		{
+			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, buttons);
+		}
+		public static AlertButton AskQuestion (Window parent, string primaryText, int defaultButton, params AlertButton [] buttons)
+		{
+			return AskQuestion (parent, primaryText, null, defaultButton, buttons);
+		}
+
+		public static AlertButton AskQuestion (Window parent, string primaryText, string secondaryText, int defaultButton, params AlertButton [] buttons)
+		{
+			return GenericAlert (parent, MonoDevelop.Ide.Gui.Stock.Question, primaryText, secondaryText, defaultButton, buttons);
+		}
+
+		public static AlertButton AskQuestion (Window parent, QuestionMessage message)
+		{
+			return messageService.GenericAlert (parent, message);
+		}
+
 		#endregion
-		
+
 		/// <summary>
 		/// Places, runs and destroys a transient dialog.
 		/// </summary>
@@ -370,6 +394,7 @@ namespace MonoDevelop.Ide
 			try {
 				Xwt.MessageDialog.RootWindow = Xwt.Toolkit.CurrentEngine.WrapWindow (dialog);
 				IdeApp.DisableIdleActions ();
+				IdeApp.CommandService.RegisterTopWindow (dialog);
 				int result = GtkWorkarounds.RunDialogWithNotification (dialog);
 				// Focus parent window once the dialog is ran, as focus gets lost
 				if (parent != null) {

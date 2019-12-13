@@ -62,6 +62,11 @@ namespace MonoDevelop.Debugger
 			ReplaceChildAt (index, value);
 		}
 
+		public void Clear ()
+		{
+			ClearChildren ();
+		}
+
 		void ISupportChildObjectValueNodeReplacement.ReplaceChildNode (ObjectValueNode node, ObjectValueNode[] newNodes)
 		{
 			var index = Children.IndexOf (node);

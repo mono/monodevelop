@@ -56,6 +56,8 @@ namespace MonoDevelop.Projects
 			get { return loggers; }
 		}
 
+		public string BinLogFilePath { get; set; }
+
 		/// <summary>
 		/// Gets or sets the builder queue to be used to execute the target
 		/// </summary>

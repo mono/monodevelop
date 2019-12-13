@@ -214,12 +214,22 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 
 		public static void SetValue (this Atk.Object o, string stringValue)
 		{
+			SetValue (o, (NSObject) new NSString (stringValue));
+		}
+
+		public static void SetValue (this Atk.Object o, object value)
+		{
+			SetValue (o, NSObject.FromObject (value));
+		}
+
+		static void SetValue (this Atk.Object o, NSObject value)
+		{
 			var nsa = GetNSAccessibilityElement (o);
 			if (nsa == null) {
 				return;
 			}
 
-			nsa.AccessibilityValue = new NSString (stringValue);
+			nsa.AccessibilityValue = value;
 		}
 
 		public static void SetUrl (this Atk.Object o, string url)
@@ -259,6 +269,11 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 			}
 
 			nsa.AccessibilitySubrole = subrole;
+		}
+
+		public static void SetSubRole (this Atk.Object o, AtkCocoa.SubRoles subrole)
+		{
+			o.SetSubRole (subrole.ToString ());
 		}
 
 		public static void SetTitleUIElement (this Atk.Object o, Atk.Object title)
@@ -994,6 +1009,26 @@ namespace MonoDevelop.Components.AtkCocoaHelper
 				}
 
 				p.AccessibilityIndex = value;
+			}
+		}
+
+		public bool Focused {
+			get {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				return p.AccessibilityFocused;
+			}
+
+			set {
+				var p = realProxyElement;
+				if (p == null) {
+					throw new Exception ("Not a proxy element");
+				}
+
+				p.AccessibilityFocused = value;
 			}
 		}
 	}

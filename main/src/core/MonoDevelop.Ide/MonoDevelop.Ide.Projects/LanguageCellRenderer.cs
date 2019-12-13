@@ -45,7 +45,16 @@ namespace MonoDevelop.Ide.Projects
 
 		int minLanguageRectWidth;
 
-		public SolutionTemplate Template { get; set; }
+		SolutionTemplate template;
+
+		public SolutionTemplate Template {
+			get { return template; }
+			set {
+				template = value;
+				Text = GetAccessibleLanguageName ();
+			}
+		}
+
 		string selectedLanguage;
 		public string SelectedLanguage { 
 			get {
@@ -53,8 +62,15 @@ namespace MonoDevelop.Ide.Projects
 			}
 			set {
 				selectedLanguage = value;
-				Text = GetAccessibleLanguageName (value);
+				Text = GetAccessibleLanguageName (selectedLanguage);
 			}
+		}
+
+		string GetAccessibleLanguageName ()
+		{
+			if (template == null)
+				return string.Empty;
+			return GetAccessibleLanguageName (GetSelectedLanguage ());
 		}
 
 		internal static string GetAccessibleLanguageName (string language)

@@ -29,6 +29,7 @@
 #if MAC
 using System;
 using AppKit;
+using Foundation;
 
 namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 {
@@ -38,7 +39,7 @@ namespace MonoDevelop.DesignerSupport.Toolbox.NativeViews
 
 		public SearchTextField ()
 		{
-			TranslatesAutoresizingMaskIntoConstraints = false;
+		
 		}
 
 		public override bool BecomeFirstResponder ()

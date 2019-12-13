@@ -38,7 +38,7 @@ namespace MonoDevelop.DotNetCore.Templating
 	[Extension]
 	class DotNetCoreProjectTemplateStringTagProvider : IStringTagProvider
 	{
-		readonly string [] SupportedSDK = { "2.1", "2.2", "3.0" };
+		readonly string [] SupportedSDK = { "2.1", "2.2", "3.0", "3.1" };
 
 		public IEnumerable<StringTagDescription> GetTags (Type type)
 		{

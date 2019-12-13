@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#nullable enable
+
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -54,7 +56,7 @@ namespace MonoDevelop.Core.Instrumentation
 		static bool enabled = true;
 		static DateTime startTime = DateTime.Now;
 		static int publicPort = -1;
-		static Thread autoSaveThread;
+		static Thread? autoSaveThread;
 		static bool stopping;
 		static int autoSaveInterval;
 		static bool handlersLoaded;
@@ -181,6 +183,7 @@ namespace MonoDevelop.Core.Instrumentation
 					ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
 					DefaultValueHandling = DefaultValueHandling.Ignore,
 					NullValueHandling = NullValueHandling.Ignore,
+					Formatting = Formatting.Indented
 				});
 				serializer.Serialize (writer, data);
 			});
@@ -206,11 +209,9 @@ namespace MonoDevelop.Core.Instrumentation
 
 		public static IInstrumentationService GetServiceData ()
 		{
-			return new InstrumentationServiceData {
+			return new InstrumentationServiceData (counters, categories) {
 				EndTime = DateTime.Now,
 				StartTime = StartTime,
-				Counters = counters,
-				Categories = categories
 			};
 		}
 		
@@ -244,32 +245,32 @@ namespace MonoDevelop.Core.Instrumentation
 			return CreateCounter (name, null);
 		}
 		
-		public static Counter CreateCounter (string name, string category)
+		public static Counter CreateCounter (string name, string? category)
 		{
 			return CreateCounter (name, category, false);
 		}
 		
-		public static Counter CreateCounter (string name, string category, bool logMessages)
+		public static Counter CreateCounter (string name, string? category, bool logMessages)
 		{
 			return CreateCounter (name, category, logMessages, null, false);
 		}
 		
-		public static Counter CreateCounter (string name, string category = null, bool logMessages = false, string id = null)
+		public static Counter CreateCounter (string name, string? category = null, bool logMessages = false, string? id = null)
 		{
 			return CreateCounter (name, category, logMessages, id, false);
 		}
 
-		public static Counter<T> CreateCounter<T> (string name, string category = null, bool logMessages = false, string id = null) where T : CounterMetadata, new()
+		public static Counter<T> CreateCounter<T> (string name, string? category = null, bool logMessages = false, string? id = null) where T : CounterMetadata, new()
 		{
 			return (Counter<T>) CreateCounter<T> (name, category, logMessages, id, false);
 		}
 
-		static Counter CreateCounter (string name, string category, bool logMessages, string id, bool isTimer)
+		static Counter CreateCounter (string name, string? category, bool logMessages, string? id, bool isTimer)
 		{
 			return CreateCounter<CounterMetadata> (name, category, logMessages, id, isTimer);
 		}
 
-		static Counter CreateCounter<T> (string name, string category, bool logMessages, string id, bool isTimer) where T:CounterMetadata, new()
+		static Counter CreateCounter<T> (string name, string? category, bool logMessages, string? id, bool isTimer) where T:CounterMetadata, new()
 		{
 			if (name == null)
 				throw new ArgumentNullException ("name", "Counters must have a Name");
@@ -280,14 +281,14 @@ namespace MonoDevelop.Core.Instrumentation
 				category = "Global";
 				
 			lock (counters) {
-				CounterCategory cat = GetCategory (category);
+				CounterCategory? cat = GetCategory (category);
 				if (cat == null) {
 					cat = new CounterCategory (category);
 					categories.Add (cat);
 				}
 				
 				var c = isTimer ? new TimerCounter<T> (name, cat) : (Counter) new Counter<T> (name, cat);
-				c.Id = id;
+				c.Id = id!;
 				c.LogMessages = logMessages;
 				cat.AddCounter (c);
 				
@@ -296,7 +297,7 @@ namespace MonoDevelop.Core.Instrumentation
 					old.Disposed = true;
 				counters [name] = c;
 				if (!string.IsNullOrEmpty (id)) {
-					countersByID [id] = c;
+					countersByID [id!] = c;
 				}
 
 				foreach (var h in handlers) {
@@ -309,12 +310,12 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 		
-		public static MemoryProbe CreateMemoryProbe (string name)
+		public static MemoryProbe? CreateMemoryProbe (string name)
 		{
 			return CreateMemoryProbe (name, null);
 		}
 		
-		public static MemoryProbe CreateMemoryProbe (string name, string category)
+		public static MemoryProbe? CreateMemoryProbe (string name, string? category)
 		{
 			if (!enabled)
 				return null;
@@ -332,17 +333,13 @@ namespace MonoDevelop.Core.Instrumentation
 			return CreateTimerCounter (name, null);
 		}
 		
-		public static TimerCounter CreateTimerCounter (string name, string category)
+		public static TimerCounter CreateTimerCounter (string name, string? category)
 		{
 			return CreateTimerCounter (name, category, 0, false);
 		}
 		
-		public static TimerCounter CreateTimerCounter (string name, string category, double minSeconds, bool logMessages)
-		{
-			return CreateTimerCounter (name, category, minSeconds, logMessages, null);
-		}
 
-		public static TimerCounter CreateTimerCounter (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null)
+		public static TimerCounter CreateTimerCounter (string name, string? category = null, double minSeconds = 0, bool logMessages = false, string? id = null)
 		{
 			TimerCounter c = (TimerCounter) CreateCounter (name, category, logMessages, id, true);
 			c.LogMessages = logMessages;
@@ -350,7 +347,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return c;
 		}
 		
-		public static TimerCounter<T> CreateTimerCounter<T> (string name, string category = null, double minSeconds = 0, bool logMessages = false, string id = null) where T:CounterMetadata, new()
+		public static TimerCounter<T> CreateTimerCounter<T> (string name, string? category = null, double minSeconds = 0, bool logMessages = false, string? id = null) where T:CounterMetadata, new()
 		{
 			var c = (TimerCounter<T>) CreateCounter<T> (name, category, logMessages, id, true);
 			c.LogMessages = logMessages;
@@ -381,7 +378,7 @@ namespace MonoDevelop.Core.Instrumentation
 			}
 		}
 
-		public static CounterCategory GetCategory (string name)
+		public static CounterCategory? GetCategory (string name)
 		{
 			lock (counters) {
 				foreach (CounterCategory cat in categories)
@@ -437,7 +434,7 @@ namespace MonoDevelop.Core.Instrumentation
 	class IntrumentationMonitor: ProgressMonitor
 	{
 		TimerCounter counter;
-		Stack<ITimeTracker> timers = new Stack<ITimeTracker> ();
+		Stack<ITimeTracker?> timers = new Stack<ITimeTracker?> ();
 
 		public IntrumentationMonitor (TimerCounter counter)
 		{
@@ -447,7 +444,7 @@ namespace MonoDevelop.Core.Instrumentation
 		protected override void OnWriteLog (string message)
 		{
 			if (timers.Count > 0)
-				timers.Peek ().Trace (message);
+				timers.Peek ()?.Trace (message);
 		}
 
 		protected override void OnBeginTask (string name, int totalWork, int stepWork)
@@ -464,7 +461,7 @@ namespace MonoDevelop.Core.Instrumentation
 		protected override void OnEndTask (string name, int totalWork, int stepWork)
 		{
 			if (timers.Count > 0) {
-				ITimeTracker c = timers.Pop ();
+				ITimeTracker? c = timers.Pop ();
 				if (c != null)
 					c.End ();
 			}
@@ -477,7 +474,7 @@ namespace MonoDevelop.Core.Instrumentation
 		DateTime EndTime { get; }
 		IEnumerable<Counter> GetCounters ();
 		Counter GetCounter (string name);
-		CounterCategory GetCategory (string name);
+		CounterCategory? GetCategory (string name);
 		IEnumerable<CounterCategory> GetCategories ();
 	}
 	
@@ -505,7 +502,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return InstrumentationService.GetCounter (name);
 		}
 		
-		public CounterCategory GetCategory (string name)
+		public CounterCategory? GetCategory (string name)
 		{
 			return InstrumentationService.GetCategory (name);
 		}
@@ -515,7 +512,7 @@ namespace MonoDevelop.Core.Instrumentation
 			return InstrumentationService.GetCategories ();
 		}
 		
-		public override object InitializeLifetimeService ()
+		public override object? InitializeLifetimeService ()
 		{
 			return null;
 		}
@@ -526,8 +523,14 @@ namespace MonoDevelop.Core.Instrumentation
 	{
 		public DateTime StartTime { get; set; }
 		public DateTime EndTime { get; set; }
-		public Dictionary <string, Counter> Counters { get; set; }
-		public List<CounterCategory> Categories { get; set; }
+		public Dictionary <string, Counter> Counters { get; }
+		public List<CounterCategory> Categories { get; }
+
+		public InstrumentationServiceData (Dictionary<string, Counter> counters, List<CounterCategory> categories)
+		{
+			Counters = counters;
+			Categories = categories;
+		}
 		
 		public IEnumerable<Counter> GetCounters ()
 		{

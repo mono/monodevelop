@@ -30,122 +30,148 @@
 
 #if MAC
 
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Components.Commands;
 using System;
 using MonoDevelop.Components;
 using Xamarin.PropertyEditing;
 using Xamarin.PropertyEditing.Mac;
-using MonoDevelop.Components.Mac;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Commands;
-using MonoDevelop.Components.Theming;
 using AppKit;
 using CoreGraphics;
-using Foundation;
+using System.Linq;
 
 namespace MonoDevelop.DesignerSupport
 {
-	class MacPropertyGrid : NSStackView, IPropertyGrid
+	class MacPropertyGrid : NSView
 	{
-		MacPropertyEditorPanel propertyEditorPanel;
+		readonly MacPropertyEditorPanel propertyEditorPanel;
+		readonly MonoDevelopHostResourceProvider hostResourceProvider;
 
-		PropertyPadEditorProvider editorProvider;
-
-		NSScrollView scrollView;
+		ComponentModelEditorProvider editorProvider;
+		ComponentModelTarget currentSelectedObject;
 
 		public event EventHandler Focused;
 
 		public bool IsEditing => false;
 
+		//Small hack to cover the missing Proppy feature to enable/disable the control
+		public bool Sensitive { get; set; } = true;
+		public override NSView HitTest (CGPoint aPoint)
+		{
+			if (!Sensitive) return null;
+			return base.HitTest (aPoint);
+		}
+
 		public event EventHandler PropertyGridChanged;
 
 		public MacPropertyGrid () 
 		{
-			Orientation = NSUserInterfaceLayoutOrientation.Vertical;
-			Alignment = NSLayoutAttribute.Leading;
-			Spacing = 10;
-			Distribution = NSStackViewDistribution.Fill;
+			hostResourceProvider = new MonoDevelopHostResourceProvider ();
 
-			propertyEditorPanel = new MacPropertyEditorPanel (new MonoDevelopHostResourceProvider ());
-
-			scrollView = new NSScrollView () {
-				HasVerticalScroller = true,
-				HasHorizontalScroller = false,
+			propertyEditorPanel = new MacPropertyEditorPanel (hostResourceProvider) {
+				ShowHeader = false
 			};
-			scrollView.WantsLayer = true;
-			scrollView.BackgroundColor = Styles.HeaderBackgroundColor;
-			scrollView.DocumentView = propertyEditorPanel;
+			AddSubview (propertyEditorPanel);
 
-			AddArrangedSubview (scrollView);
-		
-			propertyEditorPanel.Focused += PropertyEditorPanel_Focused;
+			#region Header Proppy Hack
 
-			//propertyEditorPanel.PropertiesChanged += PropertyEditorPanel_PropertiesChanged;
+			var subviews = propertyEditorPanel.Subviews;
+			header = subviews [0];
+			propertyList = subviews [1];
+			internalTableView = propertyList.Subviews.OfType<NSScrollView> ()
+				.FirstOrDefault ().DocumentView as NSTableView;
+
+			//we need the second item constrained with the property list
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			border = topConstraint.SecondItem as NSView;
+
+			#endregion
+
+			editorProvider = new ComponentModelEditorProvider ();
+			editorProvider.PropertyChanged += EditorProvider_PropertyChanged;
+
+			propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
+				AutoExpandAll = true
+			};
+			propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
 		}
 
-		void Widget_Focused (object o, Gtk.FocusedArgs args)
-		{
-			propertyEditorPanel.Window.MakeFirstResponder (propertyEditorPanel);
-		}
-
-		void PropertyEditorPanel_Focused (object sender, EventArgs e) => Focused?.Invoke (this, EventArgs.Empty);
+		private void EditorProvider_PropertyChanged (object sender, EventArgs e) =>
+			PropertyGridChanged?.Invoke (this, EventArgs.Empty);
 
 		public override void SetFrameSize (CGSize newSize)
 		{
-			scrollView.SetFrameSize (newSize);
 			base.SetFrameSize (newSize);
+			propertyEditorPanel.SetFrameSize (newSize);
 		}
-
-		void PropertyEditorPanel_PropertiesChanged (object sender, EventArgs e) => PropertyGridChanged?.Invoke (this, e);
 
 		public void BlankPad ()
 		{
 			propertyEditorPanel.SelectedItems.Clear ();
 			currentSelectedObject = null;
+			editorProvider.Clear ();
 		}
 
-		public void OnPadContentShown ()
+		public object CurrentObject {
+			get => currentSelectedObject.Target;
+		}
+
+		#region Header Proppy Hack
+
+		NSView header;
+		NSView propertyList;
+		NSTableView internalTableView;
+		NSView border;
+
+		void ShowHeader (bool enabled)
 		{
-			if (editorProvider == null) {
-				editorProvider = new PropertyPadEditorProvider ();
-				propertyEditorPanel.TargetPlatform = new TargetPlatform (editorProvider) {
-					AutoExpandGroups = new string [] { "Build", "Misc", "NuGet", "Reference" }
-				};
-				propertyEditorPanel.ArrangeMode = PropertyArrangeMode.Category;
+			var topConstraint = propertyEditorPanel.Constraints.FirstOrDefault (s => s.FirstItem == propertyList && s.FirstAttribute == NSLayoutAttribute.Top);
+			propertyEditorPanel.RemoveConstraint (topConstraint);
+
+			if (enabled) {
+				internalTableView.BackgroundColor = hostResourceProvider.GetNamedColor (NamedResources.PadBackgroundColor);
+				header.Hidden = false;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, border, NSLayoutAttribute.Bottom, 1, 0));
+			} else {
+				internalTableView.BackgroundColor = NSColor.Clear;
+				header.Hidden = true;
+				propertyEditorPanel.AddConstraint (NSLayoutConstraint.Create (this.propertyList, NSLayoutAttribute.Top, NSLayoutRelation.Equal, propertyEditorPanel, NSLayoutAttribute.Top, 1, 0));
 			}
 		}
 
-		PropertyPadItem currentSelectedObject;
+		//HACK: this 
+		public bool ToolbarVisible {
+			get => !header.Hidden;
+			set {
+				//we ensure remove current constraints from proppy
+				ShowHeader (value);
+			}
+		}
+
+		#endregion
 
 		public void SetCurrentObject (object lastComponent, object [] propertyProviders)
 		{
 			if (lastComponent != null) {
-				var selection = new PropertyPadItem (lastComponent, propertyProviders);
+				var selection = new ComponentModelTarget (lastComponent, propertyProviders);
 				if (currentSelectedObject != selection) {
 					propertyEditorPanel.SelectedItems.Clear ();
 					propertyEditorPanel.SelectedItems.Add (selection);
 					currentSelectedObject = selection;
 				}
+			} else {
+				BlankPad ();
 			}
 		}
 
 		protected override void Dispose (bool disposing)
 		{
-			if (propertyEditorPanel != null) {
-				propertyEditorPanel.Focused -= PropertyEditorPanel_Focused;
+			if (disposing) {
+				if (editorProvider != null) {
+					editorProvider.PropertyChanged -= EditorProvider_PropertyChanged;
+					editorProvider.Dispose ();
+					editorProvider = null;
+				}
 			}
 			base.Dispose (disposing);
-		}
-
-		public void Populate (bool saveEditSession)
-		{
-			//not implemented
-		}
-
-		public void SetToolbarProvider (Components.PropertyGrid.PropertyGrid.IToolbarProvider toolbarProvider)
-		{
-			//not implemented
 		}
 	}
 

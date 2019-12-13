@@ -57,6 +57,7 @@
 		<Import file = "Templates/EmptyLessFile.xft.xml"/>
 		<Import file = "Templates/EmptyScssFile.xft.xml"/>
 		<Import file = "Templates/EmptyJsonFile.xft.xml"/>
+		<Import file = "Templates/EmptyJavaScriptFile.xft.xml"/>
 		<Import file = "Templates/EmptyTypeScriptFile.xft.xml"/>
 		<Import file = "Templates/GlobalAsax.xft.xml"/>
 		<Import file = "Templates/JsonFileTemplate.json"/>
@@ -172,6 +173,8 @@
 		              file = "Templates/EmptyScssFile.xft.xml"/>
 		<FileTemplate id   = "EmptyJSONFile"
 		              file = "Templates/EmptyJsonFile.xft.xml"/>
+		<FileTemplate id   = "EmptyJavaScriptFile"
+		              file = "Templates/EmptyJavaScriptFile.xft.xml"/>
 		<FileTemplate id   = "EmptyTypeScriptFile"
 		              file = "Templates/EmptyTypeScriptFile.xft.xml"/>
 		

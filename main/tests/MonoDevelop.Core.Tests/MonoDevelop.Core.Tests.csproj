@@ -20,6 +20,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="mscorlib" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
     when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
@@ -124,6 +125,8 @@
     <Compile Include="MonoDevelop.Projects\MultiTargetProjectTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherServiceTests.cs" />
     <Compile Include="MonoDevelop.Projects\FileWatcherTestBase.cs" />
+    <Compile Include="MonoDevelop.Core\DedicatedThreadSchedulerTests.cs" />
+    <Compile Include="MonoDevelop.Projects\IntrinsicFunctionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">

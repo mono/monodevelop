@@ -59,7 +59,13 @@ namespace MonoDevelop.Components.AutoTest
 				}
 			}
 		}
-				
+
+		public AutoTestToolbar AutoTestToolbar {
+			get {
+				return new AutoTestToolbar (session);
+			}
+		}
+
 		public int StartApplication (string file = null, string args = null, IDictionary<string, string> environment = null)
 		{
 			if (file == null) {

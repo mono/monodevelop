@@ -379,11 +379,22 @@ namespace MonoDevelop.Ide.Gui.Documents
 			attachmentsContainer = window.CreateViewContainer ();
 			attachmentsContainer.SetSupportedModes (DocumentViewContainerMode.Tabs);
 			attachmentsContainer.CurrentMode = DocumentViewContainerMode.Tabs;
+
+			bool mainViewVisible = shellView == mainShellView;
+			shellView = attachmentsContainer;
+
+			if (mainViewVisible) {
+				// If the shell view is already set it is likely it has already been added to a container
+				// In that case we need the attachemnts container to replace it, so that the view can
+				// be added to the attachments container
+				ReplaceViewInParent ();
+			}
+
 			attachmentsContainer.InsertView (0, mainShellView);
+
 			int pos = 1;
 			foreach (var attachedView in AttachedViews)
 				attachmentsContainer.InsertView (pos++, attachedView.CreateShellView (window));
-			shellView = attachmentsContainer;
 		}
 
 		private void InitializeAttachmentsContainer ()
@@ -491,6 +502,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 
 			IsRoot = false;
 			window = null;
+			shellView = null;
 		}
 
 		protected virtual void OnDispose ()
@@ -500,14 +512,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 				Parent = null;
 			} else if (IsRoot)
 				throw new InvalidOperationException ("Can't dispose the root view of a document");
+
 			if (shellView != null) {
 				shellView.Dispose ();
 				shellView = null;
 			}
 
-			foreach (var c in AttachedViews.ToList ())
-				c.Dispose ();
-			AttachedViews.Clear ();
+			foreach (var view in AttachedViews.ToList ()) {
+				view.Dispose ();
+			}
 
 			// If this view was created by a controller, dispose the controller here too.
 			SourceController?.Dispose ();

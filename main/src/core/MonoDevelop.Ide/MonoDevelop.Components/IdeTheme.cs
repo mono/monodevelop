@@ -47,6 +47,19 @@ namespace MonoDevelop.Components
 
 		public static Theme UserInterfaceTheme { get; private set; }
 
+		static bool? highContrastThemeEnabled;
+		internal static bool HighContrastThemeEnabled {
+			get {
+				return highContrastThemeEnabled ?? false;
+			}
+			set {
+				if (highContrastThemeEnabled != value) {
+					highContrastThemeEnabled = value;
+					UpdateStyles ();
+				}
+			}
+		}
+
 		static IdeTheme ()
 		{
 			DefaultGtkDataFolder = Environment.GetEnvironmentVariable ("GTK_DATA_PREFIX");
@@ -63,15 +76,12 @@ namespace MonoDevelop.Components
 		{
 			if (Gtk.Settings.Default != null)
 				throw new InvalidOperationException ("Gtk already initialized!");
-			
-			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac/Windows
-			//      otherwise it will not be loaded correctly and theme switching won't work.
-			if (!Platform.IsLinux)
-				UpdateGtkTheme ();
 
+			IdeStartupTracker.StartupTracker.MarkSection ("PreGtkInitialization");
 #if MAC
 			// Early init Cocoa through xwt
 			var loaded = NativeToolkitHelper.LoadCocoa ();
+			IdeStartupTracker.StartupTracker.MarkSection ("XamarinMacInitialization");
 
 			var disableA11y = Environment.GetEnvironmentVariable ("DISABLE_ATKCOCOA");
 			if (Platform.IsMac && (NSUserDefaults.StandardUserDefaults.BoolForKey ("com.monodevelop.AccessibilityEnabled") && string.IsNullOrEmpty (disableA11y))) {
@@ -90,6 +100,11 @@ namespace MonoDevelop.Components
 				AccessibilityEnabled = false;
 			}
 #endif
+			//HACK: we must initilize some Gtk rc before Gtk.Application is initialized on Mac/Windows
+			//      otherwise it will not be loaded correctly and theme switching won't work.
+			if (!Platform.IsLinux)
+				UpdateGtkTheme ();
+
 			Gtk.Application.Init (BrandingService.ApplicationName, ref args);
 
 			// Reset our environment after initialization on Mac
@@ -101,7 +116,7 @@ namespace MonoDevelop.Components
 
 		internal static void SetupXwtTheme ()
 		{
-			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error");
+			Xwt.Drawing.Context.RegisterStyles ("dark", "disabled", "error", "contrast");
 
 			if (Core.Platform.IsMac) {
 				Xwt.Drawing.Context.RegisterStyles ("mac", "sel");
@@ -251,6 +266,11 @@ namespace MonoDevelop.Components
 				Xwt.Drawing.Context.SetGlobalStyle ("dark");
 			else
 				Xwt.Drawing.Context.ClearGlobalStyle ("dark");
+
+			if (HighContrastThemeEnabled)
+				Xwt.Drawing.Context.SetGlobalStyle ("contrast");
+			else
+				Xwt.Drawing.Context.ClearGlobalStyle ("contrast");
 
 			Styles.LoadStyle ();
 			UpdateXwtDefaults ();

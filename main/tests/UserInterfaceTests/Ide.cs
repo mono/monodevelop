@@ -52,8 +52,20 @@ namespace UserInterfaceTests
 
 		public static void CloseAll (bool exit = true)
 		{
-			Session.ExecuteCommand (FileCommands.SaveAll);
-			Session.ExecuteCommand (FileCommands.CloseWorkspace);
+			var isDirty = (bool)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workbench.DocumentsDirty");
+			if (isDirty) {
+				Session.RunAndWaitForTimer (() => {
+					Session.ExecuteCommand (FileCommands.SaveAll);
+				}, "Ide.Shell.SaveAll");
+			}
+
+			var workspaceOpen = (bool)Session.GetGlobalValue ("MonoDevelop.Ide.IdeApp.Workspace.IsOpen");
+			if (workspaceOpen) {
+				Session.RunAndWaitForTimer (() => {
+					Session.ExecuteCommand (FileCommands.CloseWorkspace);
+				}, "Ide.Shell.CloseWorkspace");
+			}
+
 			if (exit)
 				Session.ExitApp ();
 		}

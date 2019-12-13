@@ -146,7 +146,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ImageCache.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProgressMonitorExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageListViewTextFormatter.cs" />
-    <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewCheckBox.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementProgressMonitor.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ISolution.cs" />
     <Compile Include="MonoDevelop.PackageManagement\IProject.cs" />
@@ -349,6 +348,7 @@
     </Compile>
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement.Gui\ManagePackagesCellViewEventArgs.cs" />
+    <Compile Include="MonoDevelop.PackageManagement.Gui\AccessibleSpacerCellView.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagedPackagesSearchResultViewModelComparer.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesPage.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManagePackagesProjectInfo.cs" />
@@ -366,6 +366,8 @@
     <Compile Include="MonoDevelop.PackageManagement\RecentManagedNuGetPackagesRepository.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ManageProjectViewModel.cs" />
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementCanReferenceProjectExtension.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\UpdateMultipleNuGetPackagesAction.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainerCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

@@ -42,15 +42,16 @@ namespace MonoDevelop.Debugger
 			new Gtk.TargetEntry ("text/plain;charset=utf-8", Gtk.TargetFlags.App, 0)
 		};
 		readonly List<string> expressions = new List<string> ();
-		
-		public WatchPad ()
+
+		public WatchPad () : base (true)
 		{
 			if (UseNewTreeView) {
-				controller.AllowWatchExpressions = true;
+				controller.ExpressionAdded += OnExpressionAdded;
+				controller.ExpressionChanged += OnExpressionChanged;
+				controller.ExpressionRemoved += OnExpressionRemoved;
 			} else {
 				tree.EnableModelDragDest (DropTargets, Gdk.DragAction.Copy);
 				tree.DragDataReceived += HandleDragDataReceived;
-				tree.AllowAdding = true;
 			}
 		}
 
@@ -74,6 +75,8 @@ namespace MonoDevelop.Debugger
 
 		public void AddWatch (string expression)
 		{
+			//LoggingService.LogInfo ("Adding expression '{0}'", expression);
+
 			if (UseNewTreeView) {
 				controller.AddExpression (expression);
 			} else {
@@ -81,17 +84,24 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		void ReloadValues ()
+		void RestoreExpressions ()
 		{
-			// clone the list of expressions
-//			expressions.Clear ();
-//			expressions.AddRange (controller.GetExpressions());
+			controller.ExpressionAdded -= OnExpressionAdded;
 
-			// remove the expressions because we're going to rebuild them
-			controller.ClearAll ();
+			try {
+				_treeview.BeginUpdates ();
+				try {
+					// remove the expressions because we're going to rebuild them
+					controller.ClearAll ();
 
-			// re-add the expressions which will reevaluate the expressions and repopulate the treeview
-			controller.AddExpressions (expressions);
+					// re-add the expressions which will reevaluate the expressions and repopulate the treeview
+					controller.AddExpressions (expressions);
+				} finally {
+					_treeview.EndUpdates ();
+				}
+			} finally {
+				controller.ExpressionAdded += OnExpressionAdded;
+			}
 		}
 
 		public override void OnUpdateFrame ()
@@ -99,7 +109,7 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateFrame ();
 
 			if (UseNewTreeView)
-				ReloadValues ();
+				RestoreExpressions ();
 		}
 
 		public override void OnUpdateValues ()
@@ -107,22 +117,51 @@ namespace MonoDevelop.Debugger
 			base.OnUpdateValues ();
 
 			if (UseNewTreeView) {
-				ReloadValues ();
+				controller.ReEvaluateExpressions ();
 			} else {
 				tree.Update ();
 			}
 		}
 
-		protected override void OnDebuggerResumed (object s, EventArgs a)
+		void OnExpressionAdded (object sender, ExpressionAddedEventArgs e)
 		{
-			// base will clear the controller, which removes all values and expressions
+			//LoggingService.LogInfo ("Expression added: '{0}'", e.Expression);
+			expressions.Add (e.Expression);
+		}
 
+		void OnExpressionChanged (object sender, ExpressionChangedEventArgs e)
+		{
+			//LoggingService.LogInfo ("Expression changed @ index {0}: '{1}' -> '{2}'", e.Index, e.OldExpression, e.NewExpression);
+
+			if (e.Index != -1) {
+				expressions[e.Index] = e.NewExpression;
+			} else {
+				//LoggingService.LogWarning ("Failed to find old expression: '{0}'", e.OldExpression);
+				expressions.Add (e.NewExpression);
+			}
+		}
+
+		void OnExpressionRemoved (object sender, ExpressionRemovedEventArgs e)
+		{
+			//LoggingService.LogInfo ("Expression removed @ index {0}: '{1}'", e.Index, e.Expression);
+			if (e.Index < 0 || e.Index >= expressions.Count) {
+				//LoggingService.LogWarning ("Failed to remove expression: '{0}'", e.Expression);
+				return;
+			}
+			expressions.RemoveAt (e.Index);
+		}
+
+		public override void Dispose ()
+		{
 			if (UseNewTreeView) {
-				expressions.Clear ();
-				expressions.AddRange (controller.GetExpressions ());
+				controller.ExpressionAdded -= OnExpressionAdded;
+				controller.ExpressionChanged -= OnExpressionChanged;
+				controller.ExpressionRemoved -= OnExpressionRemoved;
+			} else {
+				tree.DragDataReceived -= HandleDragDataReceived;
 			}
 
-			base.OnDebuggerResumed (s, a);
+			base.Dispose ();
 		}
 
 		#region IMementoCapable implementation 
@@ -133,10 +172,8 @@ namespace MonoDevelop.Debugger
 			}
 			set {
 				if (UseNewTreeView) {
-					if (controller != null) {
-						controller.ClearAll ();
-						controller.AddExpressions (expressions);
-					}
+					if (controller != null)
+						RestoreExpressions ();
 				} else {
 					if (tree != null) {
 						tree.ClearExpressions ();
@@ -151,7 +188,7 @@ namespace MonoDevelop.Debugger
 			if (UseNewTreeView) {
 				if (controller != null) {
 					writer.WriteStartElement ("Values");
-					foreach (var expression in controller.GetExpressions())
+					foreach (var expression in expressions)
 						writer.WriteElementString ("Value", expression);
 					writer.WriteEndElement ();
 				}

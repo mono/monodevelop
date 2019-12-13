@@ -100,7 +100,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			Reset ();
 
-			FileWatcherService.WatchDirectories (this, null);
+			FileWatcherService.WatchDirectories (this, null).Ignore ();
 			FileService.FileChanged -= OnUpdatedOnDisk;
 		}
 
@@ -155,7 +155,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public Assembly LoadFromPath (string fullPath)
 			{
-				FileWatcherService.WatchDirectories (_analyzer, new [] { _analyzer.FullPath.ParentDirectory });
+				FileWatcherService.WatchDirectories (_analyzer, new [] { _analyzer.FullPath.ParentDirectory }).Ignore ();
 				return _analyzer._loader.LoadFromPath (fullPath);
 			}
 		}
@@ -184,7 +184,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 			public override ImmutableArray<DiagnosticAnalyzer> GetAnalyzers (string language)
 			{
-				FileWatcherService.WatchDirectories (_visualStudioAnalyzer, new [] { _visualStudioAnalyzer.FullPath.ParentDirectory });
+				FileWatcherService.WatchDirectories (_visualStudioAnalyzer, new [] { _visualStudioAnalyzer.FullPath.ParentDirectory }).Ignore ();
 				return _underlying.GetAnalyzers (language);
 			}
 

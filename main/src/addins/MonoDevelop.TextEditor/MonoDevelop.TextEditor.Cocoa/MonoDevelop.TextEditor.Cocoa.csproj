@@ -49,8 +49,7 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(VSEditorCoreDirectory)src\Roslyn\EditorFeatures\Cocoa\Microsoft.CodeAnalysis.EditorFeatures.Cocoa.csproj" Private="True" />
-    <ProjectReference Include="$(VSEditorCoreDirectory)src\CocoaControls\CocoaControls.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Roslyn\EditorFeatures\Cocoa\Microsoft.CodeAnalysis.EditorFeatures.Cocoa.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\CocoaView\CocoaViewImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\Find\Find.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Language\Impl\StandardClassification\StandardClassificationImpl.csproj" Private="True" />
@@ -67,7 +66,10 @@
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\UrlTagger\UrlTagger.csproj" Private="true" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DragDrop\DragDropImpl.csproj" Private="True" />
     <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\ChangeTagger\ChangeTagger.csproj" Private="True" />
-    <ProjectReference Include="$(VSEditorCoreDirectory)src\TextMate\Core\Core.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\TextMate\Core\Core.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceViewer\DifferenceViewerImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\DifferenceBuffer\DifferenceBufferImpl.csproj" Private="True" />
+    <ProjectReference Include="$(VSEditorCoreDirectory)src\Editor\Text\Impl\XPlat\IndentationManagerImpl\IndentationManagerImpl.csproj" Private="True" />
     <Reference Include="MonoDevelop.DesignerSupport">
       <HintPath>..\..\..\..\build\AddIns\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.dll</HintPath>
       <Private>False</Private>
@@ -77,7 +79,7 @@
     <None Include="$(VSEditorCoreDirectory)bin\TextMate\Onig\libonig.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="$(VSEditorCoreDirectory)src\TextMate\VSWindows\Setup\**\*">
+    <None Include="$(VSEditorCoreDirectory)src\Editor\TextMate\VSWindows\Setup\**\*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -86,8 +88,8 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.EditorFeatures.Cocoa.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Controls.macOS.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.IndentationManager.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
@@ -102,6 +104,8 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.UrlTagger.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.DragDrop.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.ChangeTagger.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.DifferenceBuffer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.DifferenceViewer.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextMate.Core.dll" />
   </ItemGroup>
   <ItemGroup>
@@ -123,8 +127,12 @@
     <None Remove="icons\vs-find-replace-search-16%402x.png" />
     <None Remove="icons\go-up-16.png" />
     <None Remove="icons\go-up-16%402x.png" />
+    <None Remove="icons\go-up-16~contrast.png" />
+    <None Remove="icons\go-up-16~contrast%402x.png" />
     <None Remove="icons\go-down-16.png" />
     <None Remove="icons\go-down-16%402x.png" />
+    <None Remove="icons\go-down-16~contrast.png" />
+    <None Remove="icons\go-down-16~contrast%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
@@ -145,13 +153,17 @@
     <EmbeddedResource Include="icons\vs-find-replace-search-16%402x.png" />
     <EmbeddedResource Include="icons\go-up-16.png" />
     <EmbeddedResource Include="icons\go-up-16%402x.png" />
+    <EmbeddedResource Include="icons\go-up-16~contrast.png" />
+    <EmbeddedResource Include="icons\go-up-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\go-down-16.png" />
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
+    <EmbeddedResource Include="icons\go-down-16~contrast.png" />
+    <EmbeddedResource Include="icons\go-down-16~contrast%402x.png" />
   </ItemGroup>
   <Target Name="BuildTextMate" BeforeTargets="Compile">
-    <MSBuild Projects="$(VSEditorCoreDirectory)src\TextMate\TMRegEx\TMRegEx.proj" Targets="Build" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(VSEditorCoreDirectory)src\Editor\TextMate\TMRegEx\TMRegEx.proj" Targets="Build" Properties="Configuration=$(Configuration)" />
   </Target>
   <Target Name="CleanTextMate" BeforeTargets="Clean">
-    <MSBuild Projects="$(VSEditorCoreDirectory)src\TextMate\TMRegEx\TMRegEx.proj" Targets="Clean" Properties="Configuration=$(Configuration)" />
+    <MSBuild Projects="$(VSEditorCoreDirectory)src\Editor\TextMate\TMRegEx\TMRegEx.proj" Targets="Clean" Properties="Configuration=$(Configuration)" />
   </Target>
 </Project>

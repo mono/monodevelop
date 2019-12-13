@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Gtk;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -40,6 +41,7 @@ using MonoDevelop.Projects;
 
 namespace MonoDevelop.Components.MainToolbar
 {
+	[Serializable]
 	class MainToolbarController : ICommandBar
 	{
 		const string ToolbarExtensionPath = "/MonoDevelop/Ide/CommandBar";
@@ -705,7 +707,7 @@ namespace MonoDevelop.Components.MainToolbar
 				};
 				popup.SelectedItemChanged += delegate {
 					var si = popup?.Content?.SelectedItem;
-					if (si == null || si.Item < 0 || si.Item >= si.DataSource.Count)
+					if (si == null || !si.IsValid)
 						return;
 					var text = si.DataSource [si.Item].AccessibilityMessage;
 					if (string.IsNullOrEmpty (text))
@@ -716,7 +718,8 @@ namespace MonoDevelop.Components.MainToolbar
 				PositionPopup ();
 				popup.Show ();
 			}
-			popup.Update (pattern);
+			// popup.Update () is thread safe, so run it on a bg thread for faster results
+			Task.Run (() => popup.Update (pattern)).Ignore ();
 		}
 
 		void HandleSearchEntryActivated (object sender, EventArgs e)
@@ -981,6 +984,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public event EventHandler TitleChanged;
 		}
 
+		[Serializable]
 		class RuntimeModel : IRuntimeModel
 		{
 			MainToolbarController Controller { get; set; }
@@ -1080,6 +1084,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		[Serializable]
 		class RuntimeMutableModel : IRuntimeMutableModel
 		{
 			public RuntimeMutableModel(string text)
@@ -1152,6 +1157,7 @@ namespace MonoDevelop.Components.MainToolbar
 			}
 		}
 
+		[Serializable]
 		class ConfigurationModel : IConfigurationModel
 		{
 			public ConfigurationModel (string originalId)
@@ -1164,6 +1170,7 @@ namespace MonoDevelop.Components.MainToolbar
 			public string DisplayString { get; private set; }
 		}
 
+		[Serializable]
 		class RunConfigurationModel : IRunConfigurationModel
 		{
 			public RunConfigurationModel (SolutionRunConfiguration config)

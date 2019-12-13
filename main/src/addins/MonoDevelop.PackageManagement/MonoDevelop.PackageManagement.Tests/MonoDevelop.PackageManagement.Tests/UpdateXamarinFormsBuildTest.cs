@@ -30,6 +30,7 @@ using System.Threading.Tasks;
 using MonoDevelop.Core;
 using MonoDevelop.PackageManagement.Tests.Helpers;
 using MonoDevelop.Projects;
+using NuGet.Packaging.Core;
 using NuGet.Versioning;
 using NUnit.Framework;
 using UnitTests;
@@ -120,6 +121,35 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.IsFalse (result.HasErrors, "Build failed: {0}", buildError);
 		}
 
+		[Test]
+		public async Task UpdateXamarinFormsNuGetPackageReference_MultipleProjects_ThenBuild ()
+		{
+			string solutionFileName = Util.GetSampleProject ("FormsUpdatePackageRef", "FormsUpdatePackageRef.sln");
+			solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			CreateNuGetConfigFile (solution.BaseDirectory);
+			var netStandardProject = (DotNetProject)solution.FindProjectByName ("NetStandardProject");
+			var libraryProject = (DotNetProject)solution.FindProjectByName ("LibraryProject");
+
+			var process = Process.Start ("msbuild", $"/t:Restore /p:RestoreDisableParallel=true \"{solutionFileName}\"");
+			Assert.IsTrue (process.WaitForExit (120000), "Timeout restoring NuGet packages.");
+			Assert.AreEqual (0, process.ExitCode);
+
+			// Build should fail due to mismatched Xamarin.Forms versions being used.
+			var result = await solution.Build (Util.GetMonitor (), ConfigurationSelector.Default);
+			Assert.IsTrue (result.HasErrors);
+			var buildError = result.Errors [0];
+			Assert.AreEqual ("XF002", buildError.ErrorNumber);
+
+			// Update NuGet package in PCL project.
+			var projects = new [] { netStandardProject, libraryProject };
+			await UpdateNuGetPackage (projects, "Xamarin.Forms", "3.0.0.482510");
+
+			// Build should not fail.
+			result = await solution.Build (Util.GetMonitor (), ConfigurationSelector.Default);
+			buildError = result.Errors.FirstOrDefault ();
+			Assert.IsFalse (result.HasErrors, "Build failed: {0}", buildError);
+		}
+
 		Task UpdateNuGetPackage (DotNetProject project, string packageId, string packageVersion)
 		{
 			var solutionManager = new MonoDevelopSolutionManager (project.ParentSolution);
@@ -131,6 +161,27 @@ namespace MonoDevelop.PackageManagement.Tests
 			action.OpenReadmeFile = false;
 			action.PackageId = packageId;
 			action.Version = NuGetVersion.Parse (packageVersion);
+
+			return Task.Run (() => {
+				action.Execute ();
+			});
+		}
+
+		Task UpdateNuGetPackage (DotNetProject[] projects, string packageId, string packageVersion)
+		{
+			var solutionManager = new MonoDevelopSolutionManager (projects[0].ParentSolution);
+			var context = CreateNuGetProjectContext (solutionManager.Settings);
+			var sources = solutionManager.CreateSourceRepositoryProvider ().GetRepositories ();
+
+			var action = new UpdateMultipleNuGetPackagesAction (sources, solutionManager, context);
+			action.LicensesMustBeAccepted = false;
+
+			foreach (DotNetProject project in projects) {
+				action.AddProject (new DotNetProjectProxy (project));
+			}
+
+			var packageIdentity = new PackageIdentity (packageId, NuGetVersion.Parse (packageVersion));
+			action.AddPackageToUpdate (packageIdentity);
 
 			return Task.Run (() => {
 				action.Execute ();

@@ -1,5 +1,5 @@
-﻿<ExtensionModel>
-	
+<ExtensionModel>
+
 	<Runtime>
 		<Import file = "Templates/MiddlewareClass.xft.xml" />
 		<Import file = "Templates/MiddlewareClassTemplate.cs" />
@@ -27,7 +27,7 @@
 		<Import file = "Templates/RazorPageWithPageModel.cshtml.cs" />
 		<Import file = "Templates/AppSettingsFile.xft.xml" />
 		<Import file = "Templates/AppSettingsFile.json" />
-		
+
 		<Import file = "Resources/AspNetCore.filenesting.json" />
 	</Runtime>
 
@@ -43,6 +43,8 @@
 		              file = "Templates/StartupClass.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreWebApiController"
 		              file = "Templates/WebApiController.xft.xml"/>
+		<FileTemplate id   = "AspNetCoreRazorComponent"
+					  file = "Templates/RazorComponent.xft.xml"/>
 
 		<FileTemplate id   = "AspNetCoreMVCViewImportsPage"
 		              file = "Templates/MVCViewImportsPage.xft.xml"/>
@@ -56,12 +58,12 @@
 		              file = "Templates/RazorPage.xft.xml"/>
 		<FileTemplate id   = "AspNetCoreRazorPageWithPageModel"
 		              file = "Templates/RazorPageWithPageModel.xft.xml"/>
-		
+
 		<FileTemplate id   = "AspNetCoreAppSettingsFile"
 		              file = "Templates/AppSettingsFile.xft.xml"/>
-		
+
 	</Extension>
-	
+
 	<Extension path="/MonoDevelop/Ide/ProjectTemplateCategories/netcore/app">
 		<Category id="aspnet" _name="ASP.NET Core" />
 	</Extension>
@@ -69,11 +71,11 @@
 	<Extension path="/MonoDevelop/Core/ExecutionHandlers">
 		<ExecutionHandler id="AspNetCore" class="MonoDevelop.AspNetCore.AspNetCoreExecutionHandler" />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/RunConfigurationEditors">
 		<Class class="MonoDevelop.AspNetCore.AspNetCoreRunConfigurationEditor" runConfigurationType="MonoDevelop.AspNetCore.AspNetCoreRunConfiguration" />
 	</Extension>
-	
+
 	<ConditionType id="AspNetCoreSdkInstalled" type="MonoDevelop.AspNetCore.AspNetCoreSdkInstalledCondition" />
 
 	<Extension path="/MonoDevelop/Ide/Templates">
@@ -81,6 +83,175 @@
 		For example, .NET Core 1.1 SDK does not have a Razor template so having the 1.1 templates first
 		would cause the Razor template to be last in the New Project dialog if both 1.1 and 2.x templates
 		are available. -->
+		<Condition id="AspNetCoreSdkInstalled" sdkVersion="3.1">
+			<Template
+				id="Microsoft.Web.Empty.CSharp"
+				templateId="Microsoft.Web.Empty.CSharp.3.1"
+				_overrideName="Empty"
+				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Empty.FSharp"
+				templateId="Microsoft.Web.Empty.FSharp.3.1"
+				_overrideName="Empty"
+				_overrideDescription="An empty project template for creating an ASP.NET Core application. This template does not have any content in it."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.CSharp"
+				templateId="Microsoft.Web.WebApi.CSharp.3.1"
+				_overrideName="API"
+				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.WebApi.FSharp"
+				templateId="Microsoft.Web.WebApi.FSharp.3.1"
+				_overrideName="API"
+				_overrideDescription="A project template for creating an ASP.NET Core application with an example Controller for a RESTful HTTP service. This template can also be used for ASP.NET Core MVC Views and Controllers."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="FSharpWebApi"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Worker.Empty.CSharp"
+				templateId="Microsoft.Worker.Empty.CSharp.3.1"
+				_overrideName="Worker"
+				_overrideDescription="An empty project template for creating a worker service."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreWorker"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.RazorPages.CSharp"
+				templateId="Microsoft.Web.RazorPages.CSharp.3.1"
+				_overrideName="Web Application"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Razor Pages content."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="RazorPages"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.CSharp"
+				templateId="Microsoft.Web.Mvc.CSharp.3.1"
+				_overrideName="Web Application (Model-View-Controller)"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Mvc.FSharp"
+				templateId="Microsoft.Web.Mvc.FSharp.3.1"
+				_overrideName="Web Application (Model-View-Controller)"
+				_overrideDescription="A project template for creating an ASP.NET Core application with example ASP.NET Core MVC Views and Controllers. This template can also be used for RESTful HTTP services."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Blazor.Server.CSharp"
+				templateId="Microsoft.Web.Blazor.Server.CSharp.3.1"
+				_overrideName="Blazor Server App"
+				_overrideDescription="A project template for creating a Blazor server app that runs server-side inside an ASP.NET Core app and handles user interactions over a SignalR connection. This template can be used for web apps with rich dynamic user interfaces (UIs)."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreBlazor"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Razor.Library.CSharp"
+				templateId="Microsoft.Web.Razor.Library.CSharp.3.1"
+				_overrideName="Razor Class Library"
+				_overrideDescription="A project for creating a Razor class library that targets .NET Standard."
+				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.Angular.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.Angular.CSharp.3.1"
+				_overrideName="Angular"
+				_overrideDescription="A project template for creating an ASP.NET Core application with Angular."
+				path="${DotNetCoreSdk.3.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.React.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.React.CSharp.3.1"
+				_overrideName="React.js"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js."
+				path="${DotNetCoreSdk.3.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Spa.ReactRedux.CSharp"
+				templateId="Microsoft.DotNet.Web.Spa.ProjectTemplates.ReactRedux.CSharp.3.1"
+				_overrideName="React.js and Redux"
+				_overrideDescription="A project template for creating an ASP.NET Core application with React.js and Redux."
+				path="${DotNetCoreSdk.3.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				condition="UseNetCore31=true"
+				category="netcore/app/aspnet"
+				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+		</Condition>
 		<Condition id="AspNetCoreSdkInstalled" sdkVersion="3.0">
 			<Template
 				id="Microsoft.Web.Empty.CSharp"
@@ -90,7 +261,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -102,7 +273,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -114,7 +285,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -126,7 +297,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="FSharpWebApi"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
@@ -139,7 +310,8 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreWorker"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -151,7 +323,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="RazorPages"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
@@ -165,7 +337,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -178,10 +350,23 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
+				defaultParameters="IncludeLaunchSettings=true" />
+			<Template
+				id="Microsoft.Web.Blazor.Server.CSharp"
+				templateId="Microsoft.Web.Blazor.Server.CSharp.3.0"
+				_overrideName="Blazor Server App"
+				_overrideDescription="A project template for creating a Blazor server app that runs server-side inside an ASP.NET Core app and handles user interactions over a SignalR connection. This template can be used for web apps with rich dynamic user interfaces (UIs)."
+				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
+				icon="md-netcore-empty-project"
+				imageId="md-netcore-empty-project"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
+				supportedParameters="AspNetCoreBlazor"
+				condition="UseNetCore30=true"
+				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.Razor.Library.CSharp"
@@ -191,7 +376,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -204,7 +389,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -217,7 +402,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -230,7 +415,7 @@
 				path="${DotNetCoreSdk.3.0.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore30=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -245,7 +430,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -257,7 +442,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -269,7 +454,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -281,7 +466,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="FSharpWebApi"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
@@ -294,7 +479,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="RazorPages"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
@@ -308,7 +493,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -321,7 +506,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -334,7 +519,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -347,7 +532,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -360,7 +545,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -373,7 +558,7 @@
 				path="${DotNetCoreSdk.2.2.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore22=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -388,7 +573,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -400,7 +585,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -412,7 +597,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -424,7 +609,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="FSharpWebApi"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
@@ -437,7 +622,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="RazorPages"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
@@ -451,7 +636,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -464,7 +649,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -477,7 +662,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -490,7 +675,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -503,7 +688,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -516,7 +701,7 @@
 				path="${DotNetCoreSdk.2.1.Templates.Web.Spa.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore21=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -531,7 +716,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -543,7 +728,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -555,7 +740,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -567,7 +752,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="FSharpWebApi"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
@@ -580,7 +765,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="RazorPages"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
@@ -594,7 +779,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -607,7 +792,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.2.0.1.0.0-beta2-20170727-301.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore20=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -621,7 +806,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -632,7 +817,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -643,7 +828,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
 				defaultParameters="IncludeLaunchSettings=true" />
@@ -654,7 +839,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -666,7 +851,7 @@
 				path="Templates/Microsoft.DotNet.Web.ProjectTemplates.1.x.1.0.0-beta2-20170430-208.nupkg"
 				icon="md-netcore-empty-project"
 				imageId="md-netcore-empty-project"
-				wizard="MonoDevelop.DotNetCore.ProjectTemplateWizard"
+				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				condition="UseNetCore1x=true"
 				category="netcore/app/aspnet"
 				formatExclude="*.min.css|*.min.js|*.map"
@@ -678,18 +863,36 @@
 		<FileTemplateConditionType name = "AspNetCore" class = "MonoDevelop.AspNetCore.Templating.AspNetCoreFileTemplateCondition" />
 	</Extension>
 	
+	<Extension path="/MonoDevelop/Ide/Pads/ProjectPad">
+		<NodeBuilder id = "AspNetCoreScaffolder" class = "MonoDevelop.AspNetCore.Commands.ScaffoldNodeExtension"/>
+	</Extension>
+	<Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
+		
+		<ItemSet id = "Add" _label = "_Add" autohide="True">
+
+			<!--		<Condition id="ItemType" value="Project">-->
+			<SeparatorItem/>
+			<CommandItem id = "MonoDevelop.AspNetCore.Commands.AspNetCoreCommands.Scaffold"
+				insertafter="MonoDevelop.Ide.Commands.ProjectCommands.AddFiles"
+				/>
+			<!--		</Condition>-->
+		</ItemSet>
+	</Extension>
 	<!-- Publish commands -->
-	
+
 	<Extension path = "/MonoDevelop/Ide/Commands/Project">
-		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" 
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolder"
 				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderCommandHandler"
 				_label = "Publish to Folder..." />
-		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" 
+		<Command id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles"
 				defaultHandler = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfilesCommandHandler"
 				type="array"
 				_label = "Publish" />
+		<Command id = "MonoDevelop.AspNetCore.Commands.AspNetCoreCommands.Scaffold"
+				
+				_label = "New Scaffolding..." />
 	</Extension>
-	
+
 	<Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad/Publish">
 		<Condition id="ItemType" value="Project">
 			<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
@@ -699,9 +902,12 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Ide/MainMenu/Build">
-		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" />
+		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolder" insertbefore="MonoDevelop.DotNetCore.Commands.PackSeparator" />
 		<SeparatorItem id = "ProfilesSeparator" />
 		<CommandItem id = "MonoDevelop.AspNetCore.Commands.PublishToFolderProfiles" />
 	</Extension>
 
+	<Extension path="/MonoDevelop/Ide/ProjectTemplateWizards">
+		<Class id="MonoDevelop.AspNetCore.ProjectTemplateWizard" class="MonoDevelop.AspNetCore.ProjectTemplateWizard" />
+	</Extension>
 </ExtensionModel>

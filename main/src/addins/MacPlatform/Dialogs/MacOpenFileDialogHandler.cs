@@ -1,4 +1,4 @@
-﻿// 
+// 
 // MacSelectFileDialogHandler.cs
 //  
 // Author:
@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
 using AppKit;
 using Foundation;
 using MonoDevelop.Components;
@@ -37,37 +37,10 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Extensions;
 using MonoDevelop.Ide.Gui;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Projects.Text;
 
 namespace MonoDevelop.MacIntegration
 {
-	interface ICentrablePanel
-	{
-		bool CenterToParent { get; set; }
-	}
-
-	sealed class OpenPanel : NSOpenPanel, ICentrablePanel
-	{
-	    public bool CenterToParent { get; set; }
-
-		public OpenPanel ()
-		{
-		}
-
-		internal OpenPanel (IntPtr handle) : base (handle)
-		{
-		}
-
-		public override void Center ()
-		{
-			if (ParentWindow != null && CenterToParent) {
-				MessageService.CenterWindow (this, ParentWindow);
-			} else {
-				//default behaviour
-				base.Center ();
-			}
-		}
-	}
-
 	class MacOpenFileDialogHandler : MacCommonFileDialogHandler<OpenFileDialogData, MacOpenFileDialogHandler.SaveState>, IOpenFileDialogHandler
 	{
 		internal class SaveState
@@ -89,22 +62,27 @@ namespace MonoDevelop.MacIntegration
 		protected override NSSavePanel OnCreatePanel (OpenFileDialogData data)
 		{
 			if (data.Action == FileChooserAction.Save) {
-				return new NSSavePanel ();
+				return NSSavePanel.SavePanel;
 			}
 
-			return new OpenPanel {
-				CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0,
-				CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0,
-			};
+			var openPanel = NSOpenPanel.OpenPanel;
+			openPanel.CanChooseDirectories = (data.Action & FileChooserAction.FolderFlags) != 0;
+			openPanel.CanChooseFiles = (data.Action & FileChooserAction.FileFlags) != 0;
+			return openPanel;
 		}
 
 		public bool Run (OpenFileDialogData data)
 		{
+			using var panelClosedSource = new CancellationTokenSource ();
 			try {
 				using (var panel = CreatePanel (data, out var state)) {
 					bool pathAlreadySet = false;
+					var panelClosedToken = panelClosedSource.Token;
 					panel.DidChangeToDirectory += (sender, e) => {
-						var directoryPath = e.NewDirectoryUrl?.AbsoluteString;
+						// HACK: On Catalina e.NewDirectoryUrl might be NSNull instead of null
+						if (e.NewDirectoryUrl == null || ((NSObject)e.NewDirectoryUrl) is NSNull)
+							return;
+						var directoryPath = e.NewDirectoryUrl.AbsoluteString;
 						if (string.IsNullOrEmpty (directoryPath))
 							return;
 						var selectedPath = data.OnDirectoryChanged (this, directoryPath);
@@ -117,7 +95,10 @@ namespace MonoDevelop.MacIntegration
 						// this is needed because it's possible that DidChangeToDirectory event is executed while dialog is opening
 						// in that case calling .Cancel() leaves dialog in weird state...
 						// Fun fact: DidChangeToDirectory event is called from Open on 10.12 but not on 10.13
-						System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate { panel.Cancel (panel); }, Runtime.MainTaskScheduler);
+						System.Threading.Tasks.Task.Delay (1).ContinueWith (delegate {
+							if (!panelClosedToken.IsCancellationRequested)
+								panel.Cancel (panel);
+						}, panelClosedToken, System.Threading.Tasks.TaskContinuationOptions.None, Runtime.MainTaskScheduler);
 					};
 
 					panel.SelectionDidChange += delegate {
@@ -135,20 +116,19 @@ namespace MonoDevelop.MacIntegration
 					};
 
 					var parent = data.TransientFor ?? MessageService.RootWindow;
-					
-					if (panel is ICentrablePanel centrablePanel) {
-						centrablePanel.CenterToParent = data.CenterToParent;
-					}
 
+					// TODO: support for data.CenterToParent, we could use sheeting.
 					if (panel.RunModal () == 0 && !pathAlreadySet) {
+						panelClosedSource.Cancel ();
 						IdeServices.DesktopService.FocusWindow (parent);
 						return false;
 					}
+					panelClosedSource.Cancel ();
 					if (!pathAlreadySet)
 						data.SelectedFiles = MacSelectFileDialogHandler.GetSelectedFiles (panel);
 
 					if (state.EncodingSelector != null)
-						data.Encoding = state.EncodingSelector.SelectedEncodingId > 0 ? Encoding.GetEncoding (state.EncodingSelector.SelectedEncodingId) : null;
+						data.Encoding = state.EncodingSelector.SelectedEncoding?.Encoding;
 
 					if (state.ViewerSelector != null) {
 						if (state.CloseSolutionButton != null)
@@ -174,9 +154,8 @@ namespace MonoDevelop.MacIntegration
 			List<FileViewer> currentViewers = null;
 
 			if (data.ShowEncodingSelector) {
-				encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save) {
-					SelectedEncodingId = data.Encoding != null ? data.Encoding.CodePage : 0
-				};
+				encodingSelector = new SelectEncodingPopUpButton (data.Action != FileChooserAction.Save);
+				encodingSelector.SelectedEncoding = TextEncoding.GetEncoding (data.Encoding);
 
 				controls.Add ((encodingSelector, GettextCatalog.GetString ("Encoding:")));
 			}

@@ -12,7 +12,7 @@ EXTERNAL=../../external
 MONOSTUB_STATIC_LINK=$(EXTERNAL)/Xamarin.Mac.registrar.full.a
 
 if !RELEASE_BUILDS
-HYBRID_SUSPEND_ABORT_DEBUG=-DHYBRID_SUSPEND_ABORT_DEBUG
+HYBRID_SUSPEND_ABORT=-DHYBRID_SUSPEND_ABORT
 endif
 
 #SDK_PATH=$(shell xcrun --sdk macosx10.8 --show-sdk-path)
@@ -25,7 +25,7 @@ CLEANFILES = render.exe monostub monostub-test
 EXTRA_DIST = dmg-bg.png DS_Store Info.plist.in make-dmg-bundle.sh render.cs
 
 MONOSTUB_EXTRA_SOURCEFILES = monostub-utils.h
-export MACOSX_DEPLOYMENT_TARGET=10.12
+export MACOSX_DEPLOYMENT_TARGET=10.13
 
 # With the hardened runtime, we need to specify the location of all libraries
 # that we dlopen
@@ -40,7 +40,7 @@ MONOSTUB_RPATH=-Wl,-rpath,/Library/Frameworks/Mono.framework/Libraries/ \
 -Wl,-rpath,/usr/lib/ \
 -Wl,-rpath,/usr/local/lib/
 
-all: monostub monostub-nogui monostub-test
+all: monostub monostub-nogui monostub-test debugcrash
 
 render.exe: render.cs
 	mcs -r:System.Drawing render.cs
@@ -48,24 +48,36 @@ render.exe: render.cs
 dmg: render.exe app
 	./make-dmg-bundle.sh
 
+if !RELEASE_BUILDS
+debugcrash: libdebugcrash.dylib
+	cp $^ ../bin
+else
+debugcrash:
+endif
+
+if !RELEASE_BUILDS
+libdebugcrash.dylib: debugcrash.c
+	clang -g -shared -fpic -o $@ $^
+endif
+
 monostub.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(HYBRID_SUSPEND_ABORT) -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) $(ENABLE_DEBUG_CRASHER) -c -Wall -m64 -o $@ monostub.mm
 
 monostub-nogui.o: monostub.mm $(MONOSTUB_EXTRA_SOURCEFILES)
-	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m$(MONOSTUB_ARCH) -o $@ monostub.mm
+	g++ -g $(HYBRID_SUSPEND_ABORT) -DNOGUI -c -Wall -m64 -o $@ monostub.mm
 
 monostub: monostub.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
+	clang++ -g -Wall -m64 -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/MonoDevelop
 
 monostub-nogui: monostub-nogui.o $(MONOSTUB_STATIC_LINK)
-	clang++ -g -Wall -m$(MONOSTUB_ARCH) -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
+	clang++ -g -Wall -m64 -o $@ -Wl,-all_load $^ -framework AppKit -framework Quartz -undefined dynamic_lookup $(MONOSTUB_RPATH)
 	mkdir -p ../bin
 	cp $@ ../bin/mdtool
 
 monostub-test: monostub-test.m $(MONOSTUB_EXTRA_SOURCEFILES)
-	gcc -g -Wall -m$(MONOSTUB_ARCH) -o $@ monostub-test.m -framework AppKit
+	gcc -g -Wall -m64 -o $@ monostub-test.m -framework AppKit
 	./monostub-test
 
 clean-local:
@@ -160,4 +172,4 @@ app: monostub monostub-test
 	@echo ""
 	@rm -f missing-stuff
 
-.PHONY: app dmg
+.PHONY: app dmg debugcrash

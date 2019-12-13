@@ -7,13 +7,13 @@ using Microsoft.VisualStudio.Utilities;
 namespace MonoDevelop.Debugger
 {
 	[Export (typeof (IViewTaggerProvider))]
-	[ContentType ("text")]
+	[ContentType ("any")]
 	[TagType (typeof (CurrentStatementTag))]
 	internal class CurrentStatementTaggerProvider : IViewTaggerProvider
 	{
 		public ITagger<T> CreateTagger<T> (ITextView textView, ITextBuffer buffer) where T : ITag
 		{
-			return new CurrentStatementTagger (buffer) as ITagger<T>;
+			return new CurrentStatementTagger (textView) as ITagger<T>;
 		}
 	}
 }

@@ -91,6 +91,7 @@ namespace MonoDevelop.Projects.MSBuild
 			TextWriter logWriter,
 			MSBuildLogger logger,
 			MSBuildVerbosity verbosity,
+			string binLogFilePath,
 			string[] runTargets,
 			string[] evaluateItems,
 			string[] evaluateProperties,
@@ -105,7 +106,7 @@ namespace MonoDevelop.Projects.MSBuild
 
 			try {
 				BeginOperation ();
-				var res = await SendRun (configurations, loggerId, logger.EnabledEvents, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
+				var res = await SendRun (configurations, loggerId, logger.EnabledEvents, verbosity, binLogFilePath, runTargets, evaluateItems, evaluateProperties, globalProperties, taskId).ConfigureAwait (false);
 				if (res == null && cancellationToken.IsCancellationRequested) {
 					MSBuildTargetResult err = new MSBuildTargetResult (file, false, "", "", file, 1, 1, 1, 1, "Build cancelled", "");
 					return new MSBuildResult (new [] { err });
@@ -170,7 +171,7 @@ namespace MonoDevelop.Projects.MSBuild
 			return connection.SendMessage (new RefreshWithContentRequest { ProjectId = projectId, Content = projectContent });
 		}
 
-		async Task<MSBuildResult> SendRun (ProjectConfigurationInfo [] configurations, int loggerId, MSBuildEvent enabledLogEvents, MSBuildVerbosity verbosity, string [] runTargets, string [] evaluateItems, string [] evaluateProperties, Dictionary<string, string> globalProperties, int taskId)
+		async Task<MSBuildResult> SendRun (ProjectConfigurationInfo [] configurations, int loggerId, MSBuildEvent enabledLogEvents, MSBuildVerbosity verbosity, string binLogFilePath, string [] runTargets, string [] evaluateItems, string [] evaluateProperties, Dictionary<string, string> globalProperties, int taskId)
 		{
 			var msg = new RunProjectRequest {
 				ProjectId = projectId,
@@ -182,7 +183,8 @@ namespace MonoDevelop.Projects.MSBuild
 				EvaluateItems = evaluateItems,
 				EvaluateProperties = evaluateProperties,
 				GlobalProperties = globalProperties,
-				TaskId = taskId
+				TaskId = taskId,
+				BinLogFilePath = binLogFilePath
 			};
 
 			var res = await connection.SendMessage (msg);
@@ -241,8 +243,9 @@ namespace MonoDevelop.Projects.MSBuild
 			lock (usageLock) {
 				if (--references == 0) {
 					if (shuttingDown)
-						Dispose ();
-					RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Wait ();
+						Dispose (releaseProjectBuilder: true);
+					else
+						RemoteBuildEngineManager.ReleaseProjectBuilder (engine).Ignore ();
 				}
 			}
 		}
@@ -258,14 +261,21 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		async void Dispose ()
+		async void Dispose (bool releaseProjectBuilder = false)
 		{
 			if (!MSBuildProjectService.ShutDown && engine != null) {
-				try {
-					await engine.UnloadProject (this, projectId).ConfigureAwait (false);
-				} catch {
-					// Ignore
-				}
+				var currentEngine = engine;
+				Task.Run (async () => {
+					try {
+						// Run this outside the usageLock to avoid a deadlock with RemoteBuildEngine's remoteProjectBuilders lock.
+						await currentEngine.UnloadProject (this, projectId).ConfigureAwait (false);
+					} catch {
+						// Ignore
+					}
+
+					if (releaseProjectBuilder)
+						await RemoteBuildEngineManager.ReleaseProjectBuilder (currentEngine);
+				}).Ignore ();
 				GC.SuppressFinalize (this);
 				engine = null;
 			}
@@ -293,13 +303,14 @@ namespace MonoDevelop.Projects.MSBuild
 			TextWriter logWriter,
 			MSBuildLogger logger,
 			MSBuildVerbosity verbosity,
+			string binLogFilePath,
 			string [] runTargets,
 			string [] evaluateItems,
 			string [] evaluateProperties,
 			Dictionary<string, string> globalProperties,
 			CancellationToken cancellationToken
 		) {
-			return builder.Run (configurations, logWriter, logger, verbosity, runTargets, evaluateItems, evaluateProperties, globalProperties, cancellationToken);
+			return builder.Run (configurations, logWriter, logger, verbosity, binLogFilePath, runTargets, evaluateItems, evaluateProperties, globalProperties, cancellationToken);
 		}
 
 		public void Dispose ()
@@ -317,6 +328,7 @@ namespace MonoDevelop.Projects.MSBuild
 			TextWriter logWriter,
 			MSBuildLogger logger,
 			MSBuildVerbosity verbosity,
+			string binLogFilePath,
 			string [] runTargets,
 			string [] evaluateItems,
 			string [] evaluateProperties,

@@ -41,6 +41,7 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Ide.Execution;
 using CustomCommand = MonoDevelop.Projects.CustomCommand;
 using System.Linq;
+using MonoDevelop.Ide;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Projects.Policies;
 using MonoDevelop.Core.FeatureConfiguration;
@@ -92,7 +93,8 @@ namespace MonoDevelop.Ide.Commands
 		Unload,
 		SetStartupProjects,
 		AddEmptyClass,
-		ToggleFileNesting
+		ToggleFileNesting,
+		ExcludeFromProject
 	}
 
 	internal class SolutionOptionsHandler : CommandHandler
@@ -508,7 +510,7 @@ namespace MonoDevelop.Ide.Commands
 	{
 		protected override void Update (CommandArrayInfo info)
 		{
-			var enabled = FeatureSwitchService.IsFeatureEnabled ("RUNTIME_SELECTOR");
+			var enabled = FeatureSwitchService.IsFeatureEnabled (FeatureSwitches.RuntimeSelectorFeatureSwitchName);
 
 			if (enabled.GetValueOrDefault () && IdeApp.Workspace.IsOpen && Runtime.SystemAssemblyService.GetTargetRuntimes ().Count () > 1) {
 				foreach (var tr in Runtime.SystemAssemblyService.GetTargetRuntimes ()) {

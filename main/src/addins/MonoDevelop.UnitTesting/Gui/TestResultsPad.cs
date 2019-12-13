@@ -747,7 +747,7 @@ namespace MonoDevelop.UnitTesting
 					sb.Append ("<span font='");
 					sb.Append (IdeServices.FontService.MonospaceFontName);
 					sb.Append ("'>");
-					using (var sr = new StringReader (result.Message)) {
+					using (var sr = new StringReader (Escape(result.Message))) {
 						while (null != (curLineText = sr.ReadLine ())) {
 							if (curLineText == null) continue;
 							if (curLine < maxLineNumber) {

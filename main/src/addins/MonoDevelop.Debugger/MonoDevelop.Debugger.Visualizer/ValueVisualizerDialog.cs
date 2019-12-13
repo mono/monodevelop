@@ -54,7 +54,7 @@ namespace MonoDevelop.Debugger.Viewers
 			visualizers.Sort ((v1, v2) => string.Compare (v1.Name, v2.Name, StringComparison.CurrentCultureIgnoreCase));
 			buttons = new List<ToggleButton> ();
 
-			Gtk.Button defaultVis = null;
+			ToggleButton defaultVis = null;
 
 			for (int i = 0; i < visualizers.Count; i++) {
 				var button = new ToggleButton ();
@@ -64,14 +64,15 @@ namespace MonoDevelop.Debugger.Viewers
 					defaultVis = button;
 				hbox1.PackStart (button, false, false, 0);
 				buttons.Add (button);
-				button.CanFocus = false;
 				button.Show ();
 			}
 
-			if (defaultVis != null)
-				defaultVis.Click ();
-			else if (buttons.Count > 0)
-				buttons [0].Click ();
+			if (defaultVis == null)
+				defaultVis = buttons [0];
+
+			defaultVis.GrabFocus ();
+			SetToggleState (defaultVis, true);
+			UpdateVisualizer (defaultVis);
 
 			if (val.IsReadOnly || !visualizers.Any (v => v.CanEdit (val))) {
 				buttonCancel.Label = Gtk.Stock.Close;
@@ -89,29 +90,40 @@ namespace MonoDevelop.Debugger.Viewers
 			return base.OnKeyPressEvent (evnt);
 		}
 
-		protected virtual void OnComboVisualizersChanged (object sender, EventArgs e)
+		void SetToggleState (ToggleButton button, bool value)
 		{
-			var button = (ToggleButton)sender;
-			if (!button.Active) {//Prevent un-toggling
-				button.Toggled -= OnComboVisualizersChanged;
-				button.Active = true;
-				button.Toggled += OnComboVisualizersChanged;
-				return;
-			}
+			button.Toggled -= OnComboVisualizersChanged;
+			button.Active = value;
+			button.Toggled += OnComboVisualizersChanged;
+		}
+
+		void UpdateVisualizer (ToggleButton button)
+		{
 			if (currentWidget != null)
 				mainBox.Remove (currentWidget);
+
 			foreach (var b in buttons) {
-				if (b != button && b.Active) {
-					b.Toggled -= OnComboVisualizersChanged;
-					b.Active = false;
-					b.Toggled += OnComboVisualizersChanged;
-				}
+				if (b != button && b.Active)
+					SetToggleState (b, false);
 			}
+
 			currentVisualizer = visualizers [buttons.IndexOf (button)];
 			currentWidget = currentVisualizer.GetVisualizerWidget (value);
 			buttonSave.Sensitive = currentVisualizer.CanEdit (value);
 			mainBox.PackStart (currentWidget, true, true, 0);
 			currentWidget.Show ();
+		}
+
+		protected virtual void OnComboVisualizersChanged (object sender, EventArgs e)
+		{
+			var button = (ToggleButton) sender;
+
+			if (!button.Active) {//Prevent un-toggling
+				SetToggleState (button, true);
+				return;
+			}
+
+			UpdateVisualizer (button);
 		}
 
 		protected virtual void OnSaveClicked (object sender, EventArgs e)

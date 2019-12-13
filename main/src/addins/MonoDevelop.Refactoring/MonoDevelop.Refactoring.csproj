@@ -25,7 +25,6 @@
       <HintPath>..\..\..\external\Xamarin.Mac.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <IncludeCopyLocal Include="RefactoringEssentials.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -106,6 +105,7 @@
     <Compile Include="MonoDevelop.AnalysisCore\Gui\ResultTooltipProvider.RectangleMarker.cs" />
     <Compile Include="MonoDevelop.Refactoring\StreamingFindUsagesPresenter.cs" />
     <Compile Include="MonoDevelop.Refactoring\CommandArgsFactories.cs" />
+    <Compile Include="MonoDevelop.Refactoring\RoslynInformationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.Refactoring.addin.xml" />
@@ -174,11 +174,6 @@
       <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
       <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\RefactoringEssentials\RefactoringEssentials\RefactoringEssentials.csproj">
-      <Project>{C465A5DC-AD28-49A2-89C0-F81838814A7E}</Project>
-      <Name>RefactoringEssentials</Name>
-      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.TextEditor\MonoDevelop.TextEditor\MonoDevelop.TextEditor.csproj">
       <Project>{3f5b5bda-69d5-441a-8142-aa25c998a997}</Project>

@@ -1,13 +1,14 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
-using System.Threading;
 
 namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 {
 	public interface IDebugInfoProvider
 	{
 		Task<DataTipInfo> GetDebugInfoAsync (SnapshotPoint snapshotPoint, CancellationToken cancellationToken);
+		Task<DataTipInfo> GetDebugInfoAsync (SnapshotSpan snapshotSpan, CancellationToken cancellationToken);
 	}
 
 	public struct DataTipInfo

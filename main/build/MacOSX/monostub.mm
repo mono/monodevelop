@@ -22,6 +22,7 @@ typedef char * (* mono_get_runtime_build_info) (void);
 typedef char * (* mono_parse_options_from) (const char *, int *, char **[]);
 typedef void (* monoeg_g_free) (void *ptr);
 typedef void (* gobject_tracker_init) (void *libmono);
+typedef void (* xamarin_initialize_cocoa_threads) (void *);
 
 static NSString *appName;
 
@@ -213,7 +214,7 @@ should_load_xammac_registrar()
 #endif
 }
 
-static void
+static void *
 load_xammac()
 {
 	void *libxammac = dlopen("libxammac.dylib", RTLD_LAZY);
@@ -225,6 +226,8 @@ load_xammac()
 	if (should_load_xammac_registrar()) {
 		XAMARIN_CREATE_CLASSES ();
 	}
+
+	return libxammac;
 }
 
 int
@@ -281,12 +284,16 @@ main (int argc, char **argv)
 		// prevents the code from running correctly, so unset it here.
 		// See https://devdiv.visualstudio.com/DevDiv/_workitems/edit/896438
 		unsetenv ("MONO_REGISTRY_PATH");
-
-#if HYBRID_SUSPEND_ABORT_DEBUG
+#if HYBRID_SUSPEND_ABORT
 		setenv ("MONO_SLEEP_ABORT_LIMIT", "5000", 0);
 #endif
 
+		// To be removed: https://github.com/mono/monodevelop/issues/6326
+		setenv ("MONO_THREADS_SUSPEND", "preemptive", 0);
+
 		setenv ("MONO_GC_PARAMS", "major=marksweep-conc,nursery-size=8m", 0);
+		
+		setenv ("MONO_DEBUG", "disable_omit_fp", 0);
 
 		void *libmono = dlopen ("libmonosgen-2.0.dylib", RTLD_LAZY);
 
@@ -296,7 +303,7 @@ main (int argc, char **argv)
 			exit_with_message (msg);
 		}
 
-		load_xammac();
+		void *libxammac = load_xammac();
 
 		try_load_gobject_tracker (libmono);
 
@@ -342,6 +349,11 @@ main (int argc, char **argv)
 
 		//clock_t end = clock();
 		//printf("%f seconds to start\n", (float)(end - start) / CLOCKS_PER_SEC);
+
+		// Xamarin.Mac's launcher.m seems to set these up
+
+		xamarin_initialize_cocoa_threads _xamarin_initialize_cocoa_threads = (xamarin_initialize_cocoa_threads)load_symbol("xamarin_initialize_cocoa_threads", libxammac, "Xamarin.Mac");
+		_xamarin_initialize_cocoa_threads (NULL);
 	}
 
 	return _mono_main (new_argc, new_argv);

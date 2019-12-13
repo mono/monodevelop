@@ -73,7 +73,7 @@ namespace MonoDevelop.StressTest
 			scenario = provider.GetTestScenario ();
 
 			if (!StartWithProfiler (profilePath, logFile))
-				TestService.StartSession (MonoDevelopBinPath, profilePath, logFile);
+				TestService.StartSession (MonoDevelopBinPath, profilePath, logFile, useNewEditor: Properties.UseNewEditor);
 
 			TestService.Session.DebugObject = new UITestDebug ();
 
@@ -147,7 +147,7 @@ namespace MonoDevelop.StressTest
 										 .Select (p => Path.Combine (p, "mono"))
 										 .FirstOrDefault (s => File.Exists (s));
 
-			TestService.StartSession (monoPath, profilePath, logFile, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"");
+			TestService.StartSession (monoPath, profilePath, logFile, $"{profilerProcessor.GetMonoArguments ()} \"{MonoDevelopBinPath}\"", useNewEditor: Properties.UseNewEditor);
 			Console.WriteLine ($"Profler is logging into {ProfilerOptions.MlpdOutputPath}");
 			return true;
 		}

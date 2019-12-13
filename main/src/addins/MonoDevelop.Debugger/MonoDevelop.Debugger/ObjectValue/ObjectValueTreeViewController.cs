@@ -35,13 +35,44 @@ using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Components;
 
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Core.Imaging;
+
 namespace MonoDevelop.Debugger
 {
+	public enum PreviewButtonIcon
+	{
+		None,
+		Hidden,
+		RowHover,
+		Hover,
+		Active,
+		Selected,
+	}
+
 	public interface IObjectValueDebuggerService
 	{
 		bool CanQueryDebugger { get; }
 		IStackFrame Frame { get; }
 		Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token);
+	}
+
+	[Flags]
+	public enum ObjectValueTreeViewFlags
+	{
+		None                 = 0,
+		AllowPinning         = 1 << 0,
+		AllowPopupMenu       = 1 << 1,
+		AllowSelection       = 1 << 2,
+		CompactView          = 1 << 3,
+		HeadersVisible       = 1 << 4,
+		RootPinVisible       = 1 << 5,
+
+		// Macros
+		ObjectValuePadFlags  = AllowPopupMenu | AllowSelection | HeadersVisible,
+		TooltipFlags         = AllowPinning | AllowPopupMenu | AllowSelection | CompactView | RootPinVisible,
+		PinnedWatchFlags     = AllowPinning | AllowPopupMenu | CompactView,
+		ExceptionCaughtFlags = AllowSelection | HeadersVisible
 	}
 
 	public class ObjectValueTreeViewController : IObjectValueDebuggerService
@@ -71,8 +102,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		readonly Dictionary<string, CheckpointState> oldValues = new Dictionary<string, CheckpointState> ();
 
-		public ObjectValueTreeViewController ()
+		public ObjectValueTreeViewController (bool allowWatchExpressions = false)
 		{
+			AllowWatchExpressions = allowWatchExpressions;
+			Root = new RootObjectValueNode ();
 		}
 
 		public IDebuggerService Debugger {
@@ -119,13 +152,7 @@ namespace MonoDevelop.Debugger
 		/// Gets a value indicating whether the user should be able to add watch expressions to the tree
 		/// </summary>
 		public bool AllowWatchExpressions {
-			get => allowWatchExpressions;
-			set {
-				allowWatchExpressions = value;
-				if (view != null) {
-					view.AllowWatchExpressions = value;
-				}
-			}
+			get; private set;
 		}
 
 		public PinnedWatch PinnedWatch {
@@ -137,11 +164,7 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public string PinnedWatchFile {
-			get; set;
-		}
-
-		public int PinnedWatchLine {
+		public PinnedWatchLocation PinnedWatchLocation {
 			get; set;
 		}
 
@@ -151,16 +174,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
-		public object GetControl (bool headersVisible = true, bool compactView = false, bool allowPinning = false, bool allowPopupMenu = true, bool rootPinVisible = false)
+		protected void ConfigureView (IObjectValueTreeView control)
 		{
-			if (view != null)
-				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+			view = control;
 
-			view = new GtkObjectValueTreeView (this, this, AllowEditing, headersVisible, AllowWatchExpressions, compactView, allowPinning, allowPopupMenu, rootPinVisible) {
-				AllowExpanding = this.AllowExpanding,
-				PinnedWatch = this.PinnedWatch,
-			};
-
+			view.AllowExpanding = AllowExpanding;
+			view.PinnedWatch = PinnedWatch;
 
 			view.NodeExpand += OnViewNodeExpand;
 			view.NodeCollapse += OnViewNodeCollapse;
@@ -174,8 +193,38 @@ namespace MonoDevelop.Debugger
 			view.NodePinned += OnViewNodePinned;
 			view.NodeUnpinned += OnViewNodeUnpinned;
 			view.NodeShowVisualiser += OnViewNodeShowVisualiser;
+		}
 
-			return view;
+		public GtkObjectValueTreeView GetGtkControl (ObjectValueTreeViewFlags flags)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new GtkObjectValueTreeView (this, this, AllowEditing, flags);
+
+			ConfigureView (control);
+
+			return control;
+		}
+
+		public MacObjectValueTreeView GetMacControl (ObjectValueTreeViewFlags flags)
+		{
+			if (view != null)
+				throw new InvalidOperationException ("You can only get the control once for each controller instance");
+
+			var control = new MacObjectValueTreeView (this, this, AllowEditing, flags);
+
+			ConfigureView (control);
+
+			return control;
+		}
+
+		public Control GetControl (ObjectValueTreeViewFlags flags)
+		{
+			if (Platform.IsMac)
+				return GetMacControl (flags);
+
+			return GetGtkControl (flags);
 		}
 
 		public void CancelAsyncTasks ()
@@ -188,10 +237,10 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void ClearValues ()
 		{
-			Root = OnCreateRoot ();
+			((RootObjectValueNode) Root).Clear ();
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Cleared ();
 			}).Ignore ();
 		}
 
@@ -209,15 +258,12 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValue (ObjectValueNode value)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			((RootObjectValueNode) Root).AddValue (value);
 			RegisterNode (value);
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				LoggingService.LogInfo ("Appending value '{0}' to tree view", value.Name);
+				view.Appended (value);
 			}).Ignore ();
 		}
 
@@ -226,23 +272,19 @@ namespace MonoDevelop.Debugger
 		/// </summary>
 		public void AddValues (IEnumerable<ObjectValueNode> values)
 		{
-			if (Root == null) {
-				Root = OnCreateRoot ();
-			}
-
 			var nodes = values.ToList ();
+
 			((RootObjectValueNode) Root).AddValues (nodes);
 
-			foreach (var node in nodes) {
+			foreach (var node in nodes)
 				RegisterNode (node);
-			}
 
 			Runtime.RunInMainThread (() => {
-				view.Reload (Root);
+				view.Appended (nodes);
 			}).Ignore ();
 		}
 
-		public async Task<Mono.Debugging.Client.CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
+		public async Task<CompletionData> GetCompletionDataAsync (string expression, CancellationToken token)
 		{
 			if (CanQueryDebugger && Frame != null) {
 				// TODO: improve how we get at the underlying real stack frame
@@ -257,13 +299,11 @@ namespace MonoDevelop.Debugger
 			var watch = new PinnedWatch ();
 
 			if (PinnedWatch != null) {
-				watch.File = PinnedWatch.File;
-				watch.Line = PinnedWatch.Line;
+				watch.Location = PinnedWatch.Location;
 				watch.OffsetX = PinnedWatch.OffsetX;
 				watch.OffsetY = PinnedWatch.OffsetY + height + 5;
 			} else {
-				watch.File = PinnedWatchFile;
-				watch.Line = PinnedWatchLine;
+				watch.Location = PinnedWatchLocation;
 				watch.OffsetX = -1; // means that the watch should be placed at the line coordinates defined by watch.Line
 				watch.OffsetY = -1;
 			}
@@ -279,8 +319,20 @@ namespace MonoDevelop.Debugger
 
 		void RemoveValue (ObjectValueNode node)
 		{
+			var toplevel = node.Parent is RootObjectValueNode;
+			int index;
+
+			if (node.Parent != null) {
+				index = node.Parent.Children.IndexOf (node);
+			} else {
+				index = -1;
+			}
+
 			UnregisterNode (node);
 			OnEvaluationCompleted (node, new ObjectValueNode[0]);
+
+			if (AllowWatchExpressions && toplevel && index != -1)
+				ExpressionRemoved?.Invoke (this, new ExpressionRemovedEventArgs (index, node.Name));
 		}
 
 		// TODO: can we improve this
@@ -352,13 +404,30 @@ namespace MonoDevelop.Debugger
 
 		#region Expressions
 
+		public event EventHandler<ExpressionAddedEventArgs> ExpressionAdded;
+		public event EventHandler<ExpressionChangedEventArgs> ExpressionChanged;
+		public event EventHandler<ExpressionRemovedEventArgs> ExpressionRemoved;
+
 		public void AddExpression (string expression)
 		{
-			if (!AllowWatchExpressions)
+			if (!AllowWatchExpressions) {
+				LoggingService.LogInfo ("Watch expressions not allowed.");
 				return;
+			}
 
-			var node = Frame.EvaluateExpression (expression);
+			LoggingService.LogInfo ("Evaluating expression '{0}'", expression);
+
+			ObjectValueNode node;
+			if (Frame != null) {
+				node = Frame.EvaluateExpression (expression);
+			} else {
+				var value = ObjectValue.CreateUnknown (expression);
+				node = new DebuggerObjectValueNode (value);
+			}
+
 			AddValue (node);
+
+			ExpressionAdded?.Invoke (this, new ExpressionAddedEventArgs (expression));
 		}
 
 		public void AddExpressions (IList<string> expressions)
@@ -369,26 +438,47 @@ namespace MonoDevelop.Debugger
 			if (Frame != null) {
 				var nodes = Frame.EvaluateExpressions (expressions);
 				AddValues (nodes);
+
+				var expressionAdded = ExpressionAdded;
+				if (expressionAdded != null) {
+					foreach (var expression in expressions)
+						expressionAdded (this, new ExpressionAddedEventArgs (expression));
+				}
 			}
 		}
 
 		bool EditExpression (ObjectValueNode node, string newExpression)
 		{
-			if (node.Name == newExpression)
+			var oldExpression = node.Name;
+
+			if (oldExpression == newExpression)
 				return false;
+
+			int index = node.Parent.Children.IndexOf (node);
 
 			UnregisterNode (node);
 			if (string.IsNullOrEmpty (newExpression)) {
 				// we want the expression removed from the tree
 				OnEvaluationCompleted (node, new ObjectValueNode[0]);
+				ExpressionRemoved?.Invoke (this, new ExpressionRemovedEventArgs (index, oldExpression));
 				return true;
 			}
 
 			var expressionNode = Frame.EvaluateExpression (newExpression);
 			RegisterNode (expressionNode);
 			OnEvaluationCompleted (node, new ObjectValueNode[] { expressionNode });
+			ExpressionChanged?.Invoke (this, new ExpressionChangedEventArgs (index, oldExpression, newExpression));
 
 			return true;
+		}
+
+		public void ReEvaluateExpressions ()
+		{
+			if (!AllowWatchExpressions)
+				return;
+
+			foreach (var node in Root.Children)
+				node.Refresh ();
 		}
 		#endregion
 
@@ -533,6 +623,7 @@ namespace MonoDevelop.Debugger
 
 		void OnViewExpressionAdded (object sender, ObjectValueExpressionEventArgs e)
 		{
+			LoggingService.LogInfo ("ObjectValueTreeViewController.OnViewExpressionAdded");
 			AddExpression (e.Expression);
 		}
 
@@ -590,22 +681,22 @@ namespace MonoDevelop.Debugger
 
 			node.IsExpanded = true;
 
-			int loadedCount = 0;
+			int index = node.Children.Count;
+			int count = 0;
+
 			if (node.IsEnumerable) {
 				// if we already have some loaded, don't load more - that is a specific user gesture
-				if (node.Children.Count == 0) {
+				if (index == 0) {
 					// page the children in, instead of loading them all at once
-					loadedCount = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
+					count = await FetchChildrenAsync (node, MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 				}
 			} else {
-				loadedCount = await FetchChildrenAsync (node, 0, cancellationTokenSource.Token);
+				count = await FetchChildrenAsync (node, -1, cancellationTokenSource.Token);
 			}
 
 			await Runtime.RunInMainThread (() => {
-				if (loadedCount > 0) {
-					view.LoadNodeChildren (node, 0, node.Children.Count);
-				}
-
+				// tell the view about the children, even if there are, in fact, none
+				view.LoadNodeChildren (node, index, count);
 				view.OnNodeExpanded (node);
 			});
 		}
@@ -620,25 +711,25 @@ namespace MonoDevelop.Debugger
 				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
 					// there is already a task to fetch the children
 					return await task;
-				} else {
-					try {
-						var oldCount = node.Children.Count;
-						var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
+				}
 
-						// if any of them are still evaluating register for
-						// a completion event so that we can tell the UI
-						for (int i = oldCount; i < oldCount + result; i++) {
-							var c = node.Children[i];
-							RegisterNode (c);
-						}
+				try {
+					var oldCount = node.Children.Count;
+					var result = await node.LoadChildrenAsync (MaxEnumerableChildrenToFetch, cancellationTokenSource.Token);
 
-						// always send the event so that the UI can determine if the node has finished loading.
-						OnChildrenLoaded (node, oldCount, result);
-
-						return result;
-					} finally {
-						childFetchTasks.Remove (node);
+					// if any of them are still evaluating register for
+					// a completion event so that we can tell the UI
+					for (int i = oldCount; i < oldCount + result; i++) {
+						var c = node.Children[i];
+						RegisterNode (c);
 					}
+
+					// always send the event so that the UI can determine if the node has finished loading.
+					OnChildrenLoaded (node, oldCount, result);
+
+					return result;
+				} finally {
+					childFetchTasks.Remove (node);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -661,33 +752,33 @@ namespace MonoDevelop.Debugger
 				if (childFetchTasks.TryGetValue (node, out Task<int> task)) {
 					// there is already a task to fetch the children
 					return await task;
-				} else {
-					try {
-						int result = 0;
-						if (count > 0) {
-							var oldCount = node.Children.Count;
-							result = await node.LoadChildrenAsync (count, cancellationToken);
+				}
 
-							// if any of them are still evaluating register for
-							// a completion event so that we can tell the UI
-							for (int i = oldCount; i < oldCount + result; i++) {
-								var c = node.Children[i];
-								RegisterNode (c);
-							}
-						} else {
-							result = await node.LoadChildrenAsync (cancellationToken);
+				try {
+					int result = 0;
+					if (count > 0) {
+						var oldCount = node.Children.Count;
+						result = await node.LoadChildrenAsync (count, cancellationToken);
 
-							// if any of them are still evaluating register for
-							// a completion event so that we can tell the UI
-							foreach (var c in node.Children) {
-								RegisterNode (c);
-							}
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						for (int i = oldCount; i < oldCount + result; i++) {
+							var c = node.Children[i];
+							RegisterNode (c);
 						}
+					} else {
+						result = await node.LoadChildrenAsync (cancellationToken);
 
-						return result;
-					} finally {
-						childFetchTasks.Remove (node);
+						// if any of them are still evaluating register for
+						// a completion event so that we can tell the UI
+						foreach (var c in node.Children) {
+							RegisterNode (c);
+						}
 					}
+
+					return result;
+				} finally {
+					childFetchTasks.Remove (node);
 				}
 			} catch (Exception ex) {
 				LoggingService.LogInternalError (ex);
@@ -736,15 +827,6 @@ namespace MonoDevelop.Debugger
 		}
 
 		#endregion
-
-
-		/// <summary>
-		/// Called when clearing, by default sets the root to a new ObjectValueNode
-		/// </summary>
-		protected virtual ObjectValueNode OnCreateRoot ()
-		{
-			return new RootObjectValueNode ();
-		}
 
 		protected virtual IDebuggerService OnGetDebuggerService ()
 		{
@@ -880,6 +962,115 @@ namespace MonoDevelop.Debugger
 			}
 
 			return "md-" + access + global + source;
+		}
+
+		internal static string GetAccessibilityTitleForIcon (ObjectValueFlags flags, string defaultTitle = null)
+		{
+			if ((flags & ObjectValueFlags.Field) != 0 && (flags & ObjectValueFlags.ReadOnly) != 0)
+				return GettextCatalog.GetString ("Literal");
+
+			string global = (flags & ObjectValueFlags.Global) != 0 ? GettextCatalog.GetString ("Static") : string.Empty;
+			string source;
+
+			switch (flags & ObjectValueFlags.OriginMask) {
+			case ObjectValueFlags.Property: source = GettextCatalog.GetString ("Property"); break;
+			case ObjectValueFlags.Type: source = GettextCatalog.GetString ("Class"); global = string.Empty; break;
+			case ObjectValueFlags.Method: source = GettextCatalog.GetString ("Method"); break;
+			case ObjectValueFlags.Literal: return GettextCatalog.GetString ("Literal");
+			case ObjectValueFlags.Namespace: return GettextCatalog.GetString ("Namespace");
+			case ObjectValueFlags.Group: return GettextCatalog.GetString ("Open Resource Folder");
+			case ObjectValueFlags.Field: source = GettextCatalog.GetString ("Field"); break;
+			case ObjectValueFlags.Variable: return GettextCatalog.GetString ("Variable");
+			default: return defaultTitle;
+			}
+
+			string access;
+			switch (flags & ObjectValueFlags.AccessMask) {
+			case ObjectValueFlags.Private: access = GettextCatalog.GetString ("Private"); break;
+			case ObjectValueFlags.Internal: access = GettextCatalog.GetString ("Internal"); break;
+			case ObjectValueFlags.InternalProtected:
+			case ObjectValueFlags.Protected: access = GettextCatalog.GetString ("Protected"); break;
+			default: access = string.Empty; break;
+			}
+
+			return access + " " + global + " " + source;
+		}
+
+		internal static string GetAccessibilityTitleForIcon (string iconName, string defaultTitle)
+		{
+			switch (iconName) {
+			case "md-warning":
+				return GettextCatalog.GetString ("Warning");
+			default:
+				return defaultTitle;
+			}
+		}
+
+		static int GetKnownImageId (ObjectValueFlags flags)
+		{
+			var name = GetIcon (flags);
+
+			switch (name) {
+			case "md-empty": return -1;
+			case "md-literal": return KnownImageIds.Literal;
+			case "md-name-space": return KnownImageIds.Namespace;
+			case "md-variable": return KnownImageIds.LocalVariable;
+
+			case "md-property": return KnownImageIds.PropertyPublic;
+			case "md-method": return KnownImageIds.MethodPublic;
+			case "md-class": return KnownImageIds.ClassPublic;
+			case "md-field": return KnownImageIds.FieldPublic;
+
+			case "md-private-property": return KnownImageIds.PropertyPrivate;
+			case "md-private-method": return KnownImageIds.MethodPrivate;
+			case "md-private-class": return KnownImageIds.ClassPrivate;
+			case "md-private-field": return KnownImageIds.FieldPrivate;
+
+			case "md-internal-property": return KnownImageIds.PropertyInternal;
+			case "md-internal-method": return KnownImageIds.MethodInternal;
+			case "md-internal-class": return KnownImageIds.ClassInternal;
+			case "md-internal-field": return KnownImageIds.FieldInternal;
+
+			case "md-protected-property": return KnownImageIds.PropertyProtected;
+			case "md-protected-method": return KnownImageIds.MethodProtected;
+			case "md-protected-class": return KnownImageIds.ClassProtected;
+			case "md-protected-field": return KnownImageIds.FieldProtected;
+
+			case "md-private-static-property": return KnownImageIds.PropertyPrivate;
+			case "md-private-static-method": return KnownImageIds.MethodPrivate;
+			case "md-private-static-field": return KnownImageIds.FieldPrivate;
+
+			case "md-internal-static-property": return KnownImageIds.PropertyInternal;
+			case "md-internal-static-method": return KnownImageIds.MethodInternal;
+			case "md-internal-static-field": return KnownImageIds.FieldInternal;
+
+			case "md-protected-static-property": return KnownImageIds.PropertyProtected;
+			case "md-protected-static-method": return KnownImageIds.MethodProtected;
+			case "md-protected-static-field": return KnownImageIds.FieldProtected;
+
+			default:
+				LoggingService.LogWarning ("Unknown Debugger ImageId: {0}", name);
+				return -1;
+			}
+		}
+
+		public static ImageId GetImageId (ObjectValueFlags flags)
+		{
+			int id = GetKnownImageId (flags);
+
+			return id == -1 ? default : new ImageId (KnownImageIds.ImageCatalogGuid, id);
+		}
+
+		public static string GetPreviewButtonIcon (PreviewButtonIcon icon)
+		{
+			switch (icon) {
+			case PreviewButtonIcon.Hidden: return "md-empty";
+			case PreviewButtonIcon.RowHover: return "md-preview-normal";
+			case PreviewButtonIcon.Hover: return "md-preview-hover";
+			case PreviewButtonIcon.Active: return "md-preview-active";
+			case PreviewButtonIcon.Selected: return "md-preview-selected";
+			default: return null;
+			}
 		}
 	}
 

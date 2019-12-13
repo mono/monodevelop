@@ -163,7 +163,19 @@ namespace MonoDevelop.AspNetCore.Commands
 
 		protected static bool ProjectSupportsFolderPublishing (DotNetProject project)
 		{
-			return project != null && project.GetProjectCapabilities ().Any (i => i == "Web" || i == "AzureFunctions" || (project.TargetFramework.Id.IsNetStandardOrNetCoreApp () && i == "FolderPublish"));
+			// All .Net Core and .Net Standard library projects support folder publishing at this time. We
+			// previously determined this support by checking for the project capabilities as follows:
+			//
+			//  - 'Web' Project Capability : Specified only for Asp .Net Core web templates - not Asp.Net
+			//  - 'AzureFunctions' Project Capability : Specified only for C# Azure Function templates
+			//  - 'FolderPublish' Project Capability : Specified in SDK previously for all .Net Core Project
+			//    templates, but it was removed and added to design time targets which we do not use in
+			//    VS4Mac project system
+			//
+			// The previous approach fully intersected with all .Net Core and Standard projects and hence
+			// we can simplify our filter logic, but we should ensure we have a better deterministic plan
+			// to determine this support going forward
+			return project != null && project.TargetFramework.Id.IsNetStandardOrNetCoreApp ();
 		}
 	}
 }

@@ -213,7 +213,14 @@ namespace MonoDevelop.UnitTesting
 			if (loc != null)
 				await IdeApp.Workbench.OpenDocument (loc.FileName, null, loc.Line, loc.Column);
 		}
-		
+
+		[CommandUpdateHandler (TestCommands.ShowTestCode)]
+		protected void OnUpdateShowTest (CommandInfo info)
+		{
+			UnitTest test = CurrentNode.DataItem as UnitTest;
+			info.Enabled = test?.SourceCodeLocation != null;
+		}
+
 		[CommandHandler (TestCommands.GoToFailure)]
 		protected async void OnShowFailure ()
 		{

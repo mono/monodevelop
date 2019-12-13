@@ -46,8 +46,17 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		public bool FullSolutionAnalysisRuntimeEnabled { get; internal set; } = true;
 		public event EventHandler FullSolutionAnalysisRuntimeEnabledChanged;
 
-		internal PerLanguagePreferences CSharp => languageConfigs [LanguageNames.CSharp];
-		public PerLanguagePreferences For (string languageName) => languageConfigs [languageName];
+		internal PerLanguagePreferences CSharp { get; }
+
+		public PerLanguagePreferences For (string languageName)
+		{
+			lock (languageConfigs) {
+				if (!languageConfigs.TryGetValue (languageName, out var value)) {
+					languageConfigs [languageName] = value = new PerLanguagePreferences(languageName, this);
+				}
+				return value;
+			}
+		}
 
 		// Preferences migrated from the IDE to roslyn keys are held here.
 		internal const string globalKey = "MonoDevelop.RoslynPreferences";
@@ -58,6 +67,7 @@ namespace MonoDevelop.Ide.RoslynServices.Options
 		{
 			foreach (var language in RoslynService.AllLanguages)
 				languageConfigs.Add (language, new PerLanguagePreferences (language, this));
+			CSharp = languageConfigs [LanguageNames.CSharp];
 		}
 
 		public class PerLanguagePreferences

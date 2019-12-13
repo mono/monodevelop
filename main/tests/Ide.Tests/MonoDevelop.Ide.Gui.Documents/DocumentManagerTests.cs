@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using IdeUnitTests;
 using MonoDevelop.Components;
 using MonoDevelop.Core;
+using MonoDevelop.Ide.Fonts;
 using MonoDevelop.Ide.Gui.Shell;
 using MonoDevelop.Ide.TypeSystem;
 using MonoDevelop.Projects;
@@ -39,7 +40,8 @@ using UnitTests;
 
 namespace MonoDevelop.Ide.Gui.Documents
 {
-	[RequireService(typeof(TypeSystemService))]
+	[RequireService (typeof (TypeSystemService))]
+	[RequireService (typeof (FontService))]
 	public class DocumentManagerTests : TestBase
 	{
 //		BasicServiceProvider serviceProvider;
@@ -226,6 +228,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 		{
 			await Task.Delay (100);
 			e.Cancel = true;
+		}
+
+		[Test]
+		public async Task NewDocumentFileNameMayNotChange ()
+		{
+			const string newName = "SomeFileName.txt";
+			var doc = await documentManager.NewDocument (newName, "text/plain", "");
+			//Since this is just "unsaved/new" file, its expected that Name and FileName are matching
+			Assert.AreEqual (doc.Name, doc.FileName.ToString ());
 		}
 
 		[Test]
@@ -827,6 +838,15 @@ namespace MonoDevelop.Ide.Gui.Documents
 			Assert.IsNotNull (c);
 			Assert.AreEqual (1, contentAddedEvents);
 			Assert.IsNotNull (doc.GetContent<SomeContent> ());
+		}
+
+		[Test]
+		public async Task NewDocumentUniqueFileName()
+		{
+			const string newName = "Untitled";
+			var doc = await documentManager.NewDocument (newName, "text/plain", "");
+			var doc2 = await documentManager.NewDocument (newName, "text/plain", "");
+			Assert.AreNotEqual (doc.FileName, doc2.FileName);
 		}
 	}
 

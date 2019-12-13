@@ -34,6 +34,7 @@ namespace MonoDevelop.DotNetCore.Templating
 {
 	class DotNetCoreProjectTemplateWizard : TemplateWizard
 	{
+		const string defaultParameterNetCore30 = "UseNetCore30";
 		const string defaultParameterNetCore20 = "UseNetCore20";
 		const string defaultParameterNetCore1x = "UseNetCore1x";
 
@@ -84,8 +85,11 @@ namespace MonoDevelop.DotNetCore.Templating
 					RemoveUnsupportedNetStandardTargetFrameworksForFSharp (targetFrameworks);
 				}
 			} else {
-				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().ToList ();
+				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
 
+				if (!SupportsNetCore2x ()) {
+					RemoveUnsupportedNetCoreApp2xTargetFrameworks (targetFrameworks);
+				}
 				if (!SupportsNetCore1x ()) {
 					RemoveUnsupportedNetCoreApp1xTargetFrameworks (targetFrameworks);
 				}
@@ -111,6 +115,15 @@ namespace MonoDevelop.DotNetCore.Templating
 		}
 
 		/// <summary>
+		/// Some templates (Blazor, Worker) are only available on 3.0.
+		/// </summary>
+		/// <param name="targetFrameworks"></param>
+		static void RemoveUnsupportedNetCoreApp2xTargetFrameworks (List<TargetFramework> targetFrameworks)
+		{
+			targetFrameworks.RemoveAll (framework => !framework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("3.0")));
+		}
+
+		/// <summary>
 		/// Set default parameter values if no wizard will be displayed.
 		/// </summary>
 		void ConfigureDefaultParameters ()
@@ -123,7 +136,7 @@ namespace MonoDevelop.DotNetCore.Templating
 					Parameters [parameter] = "true";
 			} else {
 				if (!SupportsNetCore1x ()) {
-					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 					if (highestFramework != null && highestFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("2.0"))) {
 						var parameter = highestFramework.GetParameterName ();
 						if (!string.IsNullOrEmpty (parameter))
@@ -131,8 +144,17 @@ namespace MonoDevelop.DotNetCore.Templating
 					} else {
 						Parameters [defaultParameterNetCore20] = "true";
 					}
+				} else if (!SupportsNetCore2x ()) {
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
+					if (highestFramework != null && highestFramework.IsNetCoreAppOrHigher (DotNetCoreVersion.Parse ("3.0"))) {
+						var parameter = highestFramework.GetParameterName ();
+						if (!string.IsNullOrEmpty (parameter))
+							Parameters [parameter] = "true";
+					} else {
+						Parameters [defaultParameterNetCore30] = "true";
+					}
 				} else {
-					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+					var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 					if (highestFramework != null) {
 						var parameter = highestFramework.GetParameterName ();
 						if (!string.IsNullOrEmpty (parameter))
@@ -154,7 +176,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			if (!IsSupportedParameter ("NetCoreLibrary"))
 				return;
 
-			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworks ().FirstOrDefault ();
+			var highestFramework = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().FirstOrDefault ();
 			if (highestFramework != null) {
 				Parameters ["framework"] = highestFramework.Id.ShortName;
 			} else {
@@ -162,11 +184,21 @@ namespace MonoDevelop.DotNetCore.Templating
 			}
 		}
 
+		bool SupportsNetCore2x ()
+		{
+			bool supportsNetCore30Only = IsSupportedParameter ("AspNetCoreBlazor") ||
+				IsSupportedParameter ("AspNetCoreWorker");
+
+			return !supportsNetCore30Only;
+		}
+
 		bool SupportsNetCore1x ()
 		{
 			bool supportsNetCore20Only = IsSupportedParameter ("FSharpNetCoreLibrary") ||
 				IsSupportedParameter ("RazorPages") ||
-				IsSupportedParameter ("FSharpWebApi");
+				IsSupportedParameter ("FSharpWebApi") ||
+				IsSupportedParameter ("AspNetCoreBlazor") ||
+				IsSupportedParameter ("AspNetCoreWorker");
 
 			return !supportsNetCore20Only;
 		}

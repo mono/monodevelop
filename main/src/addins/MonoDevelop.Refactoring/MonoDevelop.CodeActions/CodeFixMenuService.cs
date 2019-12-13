@@ -48,7 +48,6 @@ using MonoDevelop.Ide;
 using MonoDevelop.Ide.Composition;
 using MonoDevelop.Ide.Editor;
 using MonoDevelop.Refactoring;
-using RefactoringEssentials;
 using MonoDevelop.AnalysisCore;
 
 namespace MonoDevelop.CodeActions
@@ -115,8 +114,8 @@ namespace MonoDevelop.CodeActions
 					first = false;
 				}
 
-				foreach (var action in refactoring.Actions) {
-					AddFixMenuItem (editor, menu, null, ref mnemonic, action, null, cancellationToken);
+				foreach (var codeAction in refactoring.CodeActions) {
+					AddFixMenuItem (editor, menu, null, ref mnemonic, codeAction.action, null, cancellationToken);
 				}
 			}
 
@@ -281,36 +280,6 @@ namespace MonoDevelop.CodeActions
 			public async Task Run ()
 			{
 				var token = default (CancellationToken);
-				if (act is InsertionAction insertionAction) {
-					var insertion = await insertionAction.CreateInsertion (token).ConfigureAwait (false);
-
-					var document = await IdeApp.Workbench.OpenDocument (insertion.Location.SourceTree.FilePath, documentContext.Project);
-					var parsedDocument = await document.DocumentContext.UpdateParseDocument ();
-					var model = await document.DocumentContext.AnalysisDocument.GetSemanticModelAsync (token);
-					if (parsedDocument != null) {
-						var insertionPoints = InsertionPointService.GetInsertionPoints (
-							document.Editor,
-							model,
-							insertion.Type,
-							insertion.Location.SourceSpan.Start
-						);
-
-						var options = new InsertionModeOptions (
-							insertionAction.Title,
-							insertionPoints,
-							point => {
-								if (!point.Success)
-									return;
-								var node = Formatter.Format (insertion.Node, document.DocumentContext.RoslynWorkspace, document.DocumentContext.GetOptionSet (), token);
-								point.InsertionPoint.Insert (document.Editor, document.DocumentContext, node.ToString ());
-								// document = await Simplifier.ReduceAsync(document.AnalysisDocument, Simplifier.Annotation, cancellationToken: token).ConfigureAwait(false);
-							}
-						);
-
-						document.Editor.StartInsertionMode (options);
-						return;
-					}
-				}
 
 				var oldSolution = documentContext.AnalysisDocument.Project.Solution;
 				var updatedSolution = oldSolution;

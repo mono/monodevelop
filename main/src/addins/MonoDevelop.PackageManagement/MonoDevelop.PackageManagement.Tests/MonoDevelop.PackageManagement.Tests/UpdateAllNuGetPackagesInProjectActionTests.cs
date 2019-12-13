@@ -103,6 +103,11 @@ namespace MonoDevelop.PackageManagement.Tests
 			restoreManager.AddUnrestoredPackageForProject (projectName, solutionManager.SolutionDirectory);
 		}
 
+		void AddRestoredPackageForProject (string projectName)
+		{
+			restoreManager.AddRestoredPackageForProject (projectName, solutionManager.SolutionDirectory);
+		}
+
 		[Test]
 		public void Execute_PackagesAreRestoredAndNoPrereleasePackages_ActionsResolvedFromNuGetPackageManager ()
 		{
@@ -200,6 +205,20 @@ namespace MonoDevelop.PackageManagement.Tests
 
 			Assert.IsNull (packageManager.ExecutedActions);
 			Assert.AreEqual (project, noUpdateFoundForProject);
+		}
+
+		[Test]
+		public void Execute_OnePackageAlreadyRestored_PackageIsNotRestored ()
+		{
+			CreateAction ("MyProject");
+			solutionManager.SolutionDirectory = @"d:\projects\MyProject".ToNativePath ();
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			nugetProject.AddPackageReference ("Test", "1.2");
+			AddRestoredPackageForProject ("MyProject");
+
+			action.Execute ();
+
+			Assert.IsNull (restoreManager.PackagesToBeRestored);
 		}
 
 		[Test]
@@ -510,6 +529,23 @@ namespace MonoDevelop.PackageManagement.Tests
 			Assert.AreEqual (action.ProjectContext, packageManager.OpenReadmeFilesWithProjectContext);
 			Assert.AreEqual ("Test", packageIdentity.Id);
 			Assert.AreEqual ("1.2", packageIdentity.Version.ToString ());
+		}
+
+		[Test]
+		public void Execute_TwoPackageActionsSamePackageId_OpenReadmeFileForPackageOnce ()
+		{
+			CreateAction ();
+			AddPackageToProject ("Test", "1.0");
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+			AddInstallPackageIntoProjectAction ("Test", "1.2");
+
+			action.Execute ();
+
+			Assert.AreEqual (1, packageManager.OpenReadmeFilesForPackages.Count);
+			Assert.AreEqual (nugetProject, packageManager.OpenReadmeFilesForProject);
+			Assert.AreEqual (action.ProjectContext, packageManager.OpenReadmeFilesWithProjectContext);
+			Assert.AreEqual ("Test", packageManager.OpenReadmeFilesForPackages [0].Id);
+			Assert.AreEqual ("1.2", packageManager.OpenReadmeFilesForPackages [0].Version.ToString ());
 		}
 	}
 }

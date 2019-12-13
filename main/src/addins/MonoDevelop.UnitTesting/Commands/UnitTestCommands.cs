@@ -29,6 +29,7 @@
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Projects;
 using MonoDevelop.Ide;
+using MonoDevelop.Core;
 
 namespace MonoDevelop.UnitTesting.Commands
 {
@@ -43,6 +44,7 @@ namespace MonoDevelop.UnitTesting.Commands
 		ShowTestDetails,
 		GoToFailure,
 		RerunTest,
+		DebugAllTests,
 	}
 
 	public enum TestChartCommands
@@ -72,7 +74,7 @@ namespace MonoDevelop.UnitTesting.Commands
 	{
 		protected override void Run ()
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				if (test != null)
@@ -82,7 +84,45 @@ namespace MonoDevelop.UnitTesting.Commands
 		
 		protected override void Update (CommandInfo info)
 		{
-			WorkspaceObject ob = IdeApp.ProjectOperations.CurrentSelectedObject;
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
+			if (ob != null) {
+				UnitTest test = UnitTestService.FindRootTest (ob);
+				info.Enabled = (test != null);
+			} else
+				info.Enabled = false;
+		}
+	}
+
+	class DebugAllTestsHandler : CommandHandler
+	{
+		protected async override void Run ()
+		{
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
+			if (ob != null) {
+				var testGroup = UnitTestService.FindRootTest (ob) as UnitTestGroup;
+				var tests = testGroup.Tests;
+				if (tests == null)
+					return;
+
+				var debugModeSet = Runtime.ProcessService.GetDebugExecutionMode ();
+				if (debugModeSet == null)
+					return;
+
+				foreach (UnitTest test in tests) {
+					foreach (var mode in debugModeSet.ExecutionModes) {
+						if (test.CanRun (mode.ExecutionHandler)) {
+							ExecutionContext context = new ExecutionContext (mode.ExecutionHandler, IdeApp.Workbench.ProgressMonitors.ConsoleFactory, null);
+							await UnitTestService.RunTests (new UnitTest [] { test }, context, true).Task;
+							continue;
+						}
+					}
+				}
+			}
+		}
+
+		protected override void Update (CommandInfo info)
+		{
+			SolutionFolder ob = IdeApp.ProjectOperations.CurrentSelectedSolution?.RootFolder;
 			if (ob != null) {
 				UnitTest test = UnitTestService.FindRootTest (ob);
 				info.Enabled = (test != null);

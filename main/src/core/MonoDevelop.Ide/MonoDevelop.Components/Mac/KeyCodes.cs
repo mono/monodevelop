@@ -39,7 +39,8 @@ namespace MonoDevelop.Components.Mac
 	[Flags]
 	internal enum KeyModifierFlag
 	{
-		None = 0x100
+		None = 0x100,
+		Shift = 0x20102
 	}
 }
 

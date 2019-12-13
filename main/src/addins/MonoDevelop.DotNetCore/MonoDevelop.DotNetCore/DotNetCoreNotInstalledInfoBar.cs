@@ -32,28 +32,17 @@ namespace MonoDevelop.DotNetCore
 {
 	class DotNetCoreNotInstalledInfoBar
 	{
-		string downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
+		string downloadUrl;
 
-		public string Message { get; set; }
-		public bool IsUnsupportedVersion { get; set; }
-		public bool IsNetStandard { get; set; }
-		public DotNetCoreVersion RequiredDotNetCoreVersion { get; set; }
-		public string CurrentDotNetCorePath { get; set; }
-
-		public void Prompt ()
+		public void Prompt (string message, DotNetCoreVersion requiredDotNetCoreVersion)
 		{
 			var items = new InfoBarItem [] {
 				new InfoBarItem (GettextCatalog.GetString ("Download .NET Core"), InfoBarItemKind.Button, DownloadButtonClicked, true)
 				};
-			
-			if (IsUnsupportedVersion || IsNetStandard || RequiredDotNetCoreVersion == null) //for .net standard we'll show generic message
-				Message = DotNetCoreSdk.GetNotSupportedVersionMessage ();
-			else {
-				Message = DotNetCoreSdk.GetNotSupportedVersionMessage (RequiredDotNetCoreVersion.OriginalString);
-				downloadUrl = DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (RequiredDotNetCoreVersion);
-			}
 
-			IdeApp.Workbench.ShowInfoBar (false, new InfoBarOptions (Message) {
+			downloadUrl = requiredDotNetCoreVersion != null ? DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl (requiredDotNetCoreVersion) : DotNetCoreDownloadUrl.GetDotNetCoreDownloadUrl ();
+			
+			IdeApp.Workbench.ShowInfoBar (false, new InfoBarOptions (message) {
 				Items = items
 			});
 		}

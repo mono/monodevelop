@@ -53,6 +53,18 @@ namespace MonoDevelop.Ide.Navigation
 			: base (doc)
 		{
 			offset = textView.Caret.Position.BufferPosition;
+			RefreshWithCurrentOffset (textView);
+		}
+
+		void RefreshWithCurrentOffset (ITextView textView)
+		{
+			if (textView != null && offset is SnapshotPoint sp) {
+				var currentSnapshot = sp.Snapshot.TextBuffer.CurrentSnapshot;
+				var position = sp.TranslateTo (currentSnapshot, PointTrackingMode.Negative).Position;
+				var currentLine = currentSnapshot.GetLineFromPosition (position);
+				line = currentLine.LineNumber;
+				column = position - currentLine.Start.Position;
+			}
 		}
 
 		protected override void OnDocumentClosing ()
@@ -128,19 +140,9 @@ namespace MonoDevelop.Ide.Navigation
 
 		protected void JumpToCurrentLocation (ITextView textView)
 		{
-			var editorOperationsFactoryService = CompositionManager.Instance.GetExportedValue<IEditorOperationsFactoryService> ();
-			var editorOperations = editorOperationsFactoryService.GetEditorOperations (textView);
-			VirtualSnapshotPoint point;
-			if (offset is SnapshotPoint sp1 && sp1.Snapshot.TextBuffer == textView.TextBuffer) {
-				var currentSnapshot = textView.TextBuffer.CurrentSnapshot;
-				var sp = sp1.TranslateTo (currentSnapshot, PointTrackingMode.Positive);
-				point = new VirtualSnapshotPoint (currentSnapshot, sp);
-			} else {
-				var snapshotLine = textView.TextSnapshot.GetLineFromLineNumber (Math.Min (textView.TextSnapshot.LineCount - 1, this.line));
-				point = new VirtualSnapshotPoint (textView.TextSnapshot, Math.Min (textView.TextSnapshot.Length - 1, snapshotLine.Start.Position + column));
-				offset = point.Position;
-			}
-			editorOperations.SelectAndMoveCaret (point, point, TextSelectionMode.Stream, EnsureSpanVisibleOptions.AlwaysCenter);
+#if !WINDOWS
+			textView.NavigateToLineAndColumn (Math.Max (0, Line), Math.Max (0, Column));
+#endif
 		}
 
 		public override bool Equals (object o)

@@ -93,8 +93,13 @@
 		<File pattern="*.fsx" />
 		<File pattern="*.fsi" />
 	</MimeType>
-	<MimeType id="application/x-msbuild" _description="MSBuild targets file" baseType="application/xml">
+	<MimeType id="application/x-msbuild" _description="MSBuild files" baseType="application/xml">
 		<File pattern="*.targets" />
+		<File pattern="*.proj" />
+		<File pattern="*.props" />
+		<File pattern="*.tasks" />
+		<File pattern="*.overridetasks" />
+		<File pattern="*.projitems" />
 	</MimeType>
 
 </Extension>

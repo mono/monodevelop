@@ -25,12 +25,36 @@
 //
 //
 
-using System.Linq;
+using System;
+
+using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger
 {
 	public class LocalsPad : ObjectValuePad
 	{
+		static readonly bool EnableFakeNodes;
+
+		static LocalsPad ()
+		{
+			var env = Environment.GetEnvironmentVariable ("VSMAC_DEBUGGER_TESTING");
+
+			if (!string.IsNullOrEmpty (env)) {
+				var options = env.Split (new char [] { ',' });
+
+				for (int i = 0; i < options.Length; i++) {
+					var option = options[i].Trim ();
+
+					if (option == "fake-locals") {
+						EnableFakeNodes = true;
+						return;
+					}
+				}
+			}
+
+			EnableFakeNodes = false;
+		}
+
 		public LocalsPad ()
 		{
 			if (UseNewTreeView) {
@@ -41,6 +65,25 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		void AddFakeNodes ()
+		{
+			var xx = new System.Collections.Generic.List<ObjectValueNode> ();
+
+			xx.Add (new FakeObjectValueNode ("f1"));
+			xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
+
+			xx.Add (new FakeEvaluatingGroupObjectValueNode (1));
+			xx.Add (new FakeEvaluatingGroupObjectValueNode (0));
+			xx.Add (new FakeEvaluatingGroupObjectValueNode (5));
+
+			xx.Add (new FakeEvaluatingObjectValueNode ());
+			xx.Add (new FakeEnumerableObjectValueNode (10));
+			xx.Add (new FakeEnumerableObjectValueNode (20));
+			xx.Add (new FakeEnumerableObjectValueNode (23));
+
+			controller.AddValues (xx);
+		}
+
 		void ReloadValues ()
 		{
 			var frame = DebuggingService.CurrentFrame;
@@ -48,26 +91,25 @@ namespace MonoDevelop.Debugger
 			if (frame == null)
 				return;
 
-			var locals = frame.GetAllLocals ().Where (l => !string.IsNullOrWhiteSpace (l.Name) && l.Name != "?").ToArray();
+			var locals = frame.GetAllLocals ();
+
+			DebuggerLoggingService.LogMessage ("Begin Local Variables:");
+			foreach (var local in locals)
+				DebuggerLoggingService.LogMessage ("\t{0}", local.Name);
+			DebuggerLoggingService.LogMessage ("End Local Variables");
+
 			if (UseNewTreeView) {
-				controller.ClearValues ();
-				controller.AddValues (locals);
+				_treeview.BeginUpdates ();
+				try {
+					controller.ClearValues ();
+					controller.AddValues (locals);
+				} finally {
+					_treeview.EndUpdates ();
+				}
 
-				//var xx = new System.Collections.Generic.List<ObjectValueNode> ();
 
-				//xx.Add (new FakeObjectValueNode ("f1"));
-				//xx.Add (new FakeIsImplicitNotSupportedObjectValueNode ());
-
-				//xx.Add (new FakeEvaluatingGroupObjectValueNode (1));
-				//xx.Add (new FakeEvaluatingGroupObjectValueNode (0));
-				//xx.Add (new FakeEvaluatingGroupObjectValueNode (5));
-
-				//xx.Add (new FakeEvaluatingObjectValueNode ());
-				//xx.Add (new FakeEnumerableObjectValueNode (10));
-				//xx.Add (new FakeEnumerableObjectValueNode (20));
-				//xx.Add (new FakeEnumerableObjectValueNode (23));
-
-				//controller.AddValues (xx);
+				if (EnableFakeNodes)
+					AddFakeNodes ();
 			} else {
 				tree.ClearValues ();
 				tree.AddValues (locals);

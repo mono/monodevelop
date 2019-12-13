@@ -44,6 +44,7 @@ using MonoDevelop.Ide.Navigation;
 using MonoDevelop.Ide.TextEditing;
 using MonoDevelop.Ide.Desktop;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MonoDevelop.Ide.Tasks
 {
@@ -418,8 +419,11 @@ namespace MonoDevelop.Ide.Tasks
 		class TaskNavigationPoint : TextFileNavigationPoint
 		{
 			TaskListEntry task;
-			
-			public TaskNavigationPoint (TaskListEntry task) : base (task.FileName, task.Line, task.Column)
+
+			// Due to changes in the editor, the offsets of how we count lines seem to be different
+			// so it makes sense that we try to do translation at this point, where it doesn't change
+			// the logic in either <see cref="TextFileNavigationPoint"/> or in the TaskStore.
+			public TaskNavigationPoint (TaskListEntry task) : base (task.FileName, task.Line - 1, task.Column - 1)
 			{
 				this.task = task;
 			}
@@ -448,7 +452,7 @@ namespace MonoDevelop.Ide.Tasks
 			
 			// Jump over tasks with different severity or with no file name
 			while (n != -1 && n < tasks.Count && 
-				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFile (tasks [n])))
+				(iteratingSeverity != tasks [n].Severity || !IsProjectTaskFileInternal (tasks [n])))
 				n++;
 			
 			TaskListEntry ct = n != -1 && n < tasks.Count ? tasks [n] : null;
@@ -477,7 +481,13 @@ namespace MonoDevelop.Ide.Tasks
 		/// <summary>
 		/// Determines whether the task's file should be opened automatically when jumping to the next error.
 		/// </summary>
+		[Obsolete("This will be removed in a future release", error: true)]
 		public static bool IsProjectTaskFile (TaskListEntry t)
+		{
+			return IsProjectTaskFileInternal (t);
+		}
+
+		internal static bool IsProjectTaskFileInternal (TaskListEntry t)
 		{
 			if (t.FileName.IsNullOrEmpty)
 				return false;
@@ -494,12 +504,12 @@ namespace MonoDevelop.Ide.Tasks
 			if (!IdeServices.DesktopService.GetMimeTypeIsText (mimeType))
 				return false;
 
-			//only files for which we have a default internal display binding
-			var binding = IdeServices.DisplayBindingService.GetDefaultBinding (t.FileName, mimeType, p);
-			if (binding == null || !binding.CanUseAsDefault || binding is IExternalDisplayBinding)
-				return false;
+			// only valid files are those that have a way to view them
+			// .Result here is currently safe because none of the actual calls to OnGetSupportedControllers(Async)
+			// is actually requesting the UI thread scheduler.
+			var fileViewers = IdeServices.DisplayBindingService.GetFileViewers (t.FileName, p).Result;
 
-			return true;
+			return fileViewers.Any (viewer => viewer.CanUseAsDefault && !viewer.IsExternal);
 		}
 		
 		

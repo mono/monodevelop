@@ -191,7 +191,7 @@ namespace MonoDevelop.Ide.Editor
 			void WatchDirectories ()
 			{
 				var directories = watchedFiles.Count == 0 ? null : watchedFiles.Select (file => new FilePath (file).ParentDirectory);
-				FileWatcherService.WatchDirectories (this, directories);
+				FileWatcherService.WatchDirectories (this, directories).Ignore ();
 			}
 		}
 	}

@@ -126,6 +126,7 @@ namespace MonoDevelop.Components
 					label = new Label ();
 					label.Font = Theme.Font;
 					label.Margin = new WidgetSpacing (5, 4, 5, 4);
+					label.Accessible.Role = Xwt.Accessibility.Role.Label;
 					Content = label;
 				});
 			}
@@ -148,16 +149,21 @@ namespace MonoDevelop.Components
 					case TaskSeverity.Information:
 					case TaskSeverity.Comment:
 						label.TextColor = Styles.PopoverWindow.InformationTextColor;
+						label.Accessible.Title = GettextCatalog.GetString ("Information Message");
 						break;
 					case TaskSeverity.Error:
 						label.TextColor = Styles.PopoverWindow.ErrorTextColor;
+						label.Accessible.Title = GettextCatalog.GetString ("Error Message");
 						break;
 					case TaskSeverity.Warning:
 						label.TextColor = Styles.PopoverWindow.WarningTextColor;
+						label.Accessible.Title = GettextCatalog.GetString ("Warning Message");
 						break;
 				}
-			} else
+			} else {
 				label.TextColor = Styles.PopoverWindow.DefaultTextColor;
+				label.Accessible.Title = GettextCatalog.GetString ("Information Message");
+			}
 
 			if (hasMarkup)
 				label.Markup = text;

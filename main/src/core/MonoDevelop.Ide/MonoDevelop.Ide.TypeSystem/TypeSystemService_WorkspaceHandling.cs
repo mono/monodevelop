@@ -48,7 +48,6 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		object workspaceLock = new object();
 		ImmutableList<MonoDevelopWorkspace> workspaces = ImmutableList<MonoDevelopWorkspace>.Empty;
-		ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> workspaceRequests = new ConcurrentDictionary<MonoDevelop.Projects.Solution, TaskCompletionSource<MonoDevelopWorkspace>> ();
 
 		public ImmutableArray<Microsoft.CodeAnalysis.Workspace> AllWorkspaces {
 			get {
@@ -80,18 +79,19 @@ namespace MonoDevelop.Ide.TypeSystem
 			var workspace = GetWorkspace (solution);
 			if (workspace != emptyWorkspace)
 				return workspace;
-			var tcs = workspaceRequests.GetOrAdd (solution, _ => new TaskCompletionSource<MonoDevelopWorkspace> ());
-			try {
-				workspace = GetWorkspace (solution);
-				if (workspace != emptyWorkspace)
-					return workspace;
-				cancellationToken.ThrowIfCancellationRequested ();
-				cancellationToken.Register (() => tcs.TrySetCanceled ());
-				workspace = await tcs.Task;
-			} finally {
-				workspaceRequests.TryRemove (solution, out tcs);
+
+			WorkspaceRequestRegistration registration;
+			lock (solution.ExtendedProperties.SyncRoot) {
+				registration = (WorkspaceRequestRegistration)solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)];
+				if (registration == null)
+					solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)] = registration = new WorkspaceRequestRegistration ();
 			}
-			return workspace;
+
+			workspace = GetWorkspace (solution);
+			if (workspace != emptyWorkspace)
+				return workspace;
+
+			return await registration.GetWorkspaceAsync (cancellationToken);
 		}
 
 		internal MonoDevelopWorkspace GetWorkspace (WorkspaceId id)
@@ -157,13 +157,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			foreach (var workspace in mdWorkspaces) {
 				var (solution, solutionInfo) = await workspace.LoadSolution (cancellationToken).ConfigureAwait (false);
 
-				if (workspaceRequests.TryGetValue (solution, out var request)) {
-					if (solutionInfo == null) {
-						// Check for solutionInfo == null rather than cancellation was requested, as cancellation does not happen
-						// after all project infos are loaded.
-						request.TrySetCanceled ();
-					} else {
-						request.TrySetResult (workspace);
+				lock (solution.ExtendedProperties.SyncRoot) {
+					if (solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)] is WorkspaceRequestRegistration registration) {
+						solution.ExtendedProperties.Remove (typeof (WorkspaceRequestRegistration));
+
+						if (solutionInfo == null) {
+							// Check for solutionInfo == null rather than cancellation was requested, as cancellation does not happen
+							// after all project infos are loaded.
+							registration.Dispose ();
+						} else {
+							registration.Complete (workspace);
+						}
 					}
 				}
 			}
@@ -186,12 +190,15 @@ namespace MonoDevelop.Ide.TypeSystem
 						lock (workspaceLock)
 							workspaces = workspaces.Remove (result);
 
-						if (workspaceRequests.TryGetValue (solution, out var request)) {
-							request.TrySetCanceled ();
-						}
-
 						result.Dispose ();
 					}
+
+					lock (solution.ExtendedProperties.SyncRoot) {
+						if (solution.ExtendedProperties [typeof (WorkspaceRequestRegistration)] is WorkspaceRequestRegistration registration) {
+							registration.Dispose ();
+						}
+					}
+
 					solution.SolutionItemAdded -= OnSolutionItemAdded;
 					solution.SolutionItemRemoved -= OnSolutionItemRemoved;
 					if (solution.ParentWorkspace == null)
@@ -326,7 +333,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			var project = owner as MonoDevelop.Projects.Project;
 			if (project == null || !project.IsCompileable (filePath) || project.ParentSolution == null) {
-				return false;
+				return TryOpenDocumentInAllWorkspaces (filePath, textBuffer);
 			}
 
 			var workspace = GetWorkspace (project.ParentSolution);
@@ -367,6 +374,27 @@ namespace MonoDevelop.Ide.TypeSystem
 			return false;
 		}
 
+		bool TryOpenDocumentInAllWorkspaces (FilePath filePath, ITextBuffer textBuffer)
+		{
+			bool opened = false;
+			foreach (var workspace in workspaces) {
+				var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+				foreach (var documentId in documentIds) {
+					if (workspace.IsDocumentOpen (documentId))
+						continue;
+
+					if (workspace.CurrentSolution.ContainsAdditionalDocument (documentId)) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						opened = true;
+					} else if (workspace.CurrentSolution.ContainsAnalyzerConfigDocument (documentId)) {
+						workspace.InformDocumentOpen (documentId, textBuffer.AsTextContainer ());
+						opened = true;
+					}
+				}
+			}
+			return opened;
+		}
+
 		void UnregisterOpenDocument (OpenDocumentReference reference)
 		{
 			Runtime.AssertMainThread ();
@@ -387,6 +415,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			var solution = (reference.Owner as SolutionItem)?.ParentSolution;
 			if (solution != null)
 				TryCloseDocumentInWorkspace (reference.FilePath, reference.TextBuffer.AsTextContainer (), solution);
+			else
+				TryCloseDocumentInAllWorkspaces (reference.FilePath, reference.TextBuffer.AsTextContainer ());
 		}
 
 		private void TryCloseDocumentInWorkspace (FilePath filePath, SourceTextContainer container, MonoDevelop.Projects.Solution solution)
@@ -399,6 +429,16 @@ namespace MonoDevelop.Ide.TypeSystem
 			var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
 			foreach (var documentId in documentIds) {
 				workspace.InformDocumentClose (documentId, container);
+			}
+		}
+
+		void TryCloseDocumentInAllWorkspaces (FilePath filePath, SourceTextContainer container)
+		{
+			foreach (var workspace in workspaces) {
+				var documentIds = workspace.CurrentSolution.GetDocumentIdsWithFilePath (filePath);
+				foreach (var documentId in documentIds) {
+					workspace.InformDocumentClose (documentId, container);
+				}
 			}
 		}
 
@@ -524,7 +564,6 @@ namespace MonoDevelop.Ide.TypeSystem
 						var projectInfo = await ws.LoadProject (project, CancellationToken.None, oldProject, framework);
 						if (oldProject != null) {
 							if (oldProjectIds.Remove (projectInfo.Id)) {
-								projectInfo = ws.AddVirtualDocuments (projectInfo);
 								ws.OnProjectReloaded (projectInfo);
 							} else {
 								ws.OnProjectAdded (projectInfo);

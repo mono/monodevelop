@@ -29,6 +29,8 @@ using CoreGraphics;
 using ObjCRuntime;
 using Foundation;
 
+using MonoDevelop.Components.AtkCocoaHelper;
+
 namespace Gtk
 {
 	/// <summary>
@@ -51,9 +53,6 @@ namespace Gtk
 		static extern IntPtr gdk_quartz_window_get_nsview (IntPtr window);
 
 		[DllImport (LIBGTKQUARTZ)]
-		static extern IntPtr gdk_quartz_event_get_nsevent (IntPtr evnt);
-
-		[DllImport (LIBGTKQUARTZ)]
 		static extern void gdk_window_coords_to_parent (
 			IntPtr window,
 			double x,
@@ -64,27 +63,42 @@ namespace Gtk
 		[DllImport (LIBGTKQUARTZ)]
 		static extern bool gdk_window_has_native (IntPtr window);
 
-		static NSEvent GetNSEvent (Gdk.Event evnt)
-		{
-			if (evnt == null || evnt.Handle == IntPtr.Zero)
-				return null;
-
-			var nsEventHandle = gdk_quartz_event_get_nsevent (evnt.Handle);
-			if (nsEventHandle == IntPtr.Zero)
-				return null;
-
-			return Runtime.GetNSObject<NSEvent> (nsEventHandle);
-		}
-
 		NSView view;
 		NSView superview;
+		bool disposeViewOnGtkDestroy;
 		bool sizeAllocated;
 
+		protected override void OnShown ()
+		{
+			view.Hidden = false;
+			base.OnShown ();
+		}
+
+		protected override void OnHidden ()
+		{
+			view.Hidden = true;
+			base.OnHidden ();
+		}
+
 		public GtkNSViewHost (NSView view)
+			: this (view, disposeViewOnGtkDestroy: false)
+		{
+		}
+
+		public GtkNSViewHost (NSView view, bool disposeViewOnGtkDestroy)
 		{
 			this.view = view ?? throw new ArgumentNullException (nameof (view));
+			this.disposeViewOnGtkDestroy = disposeViewOnGtkDestroy;
 
 			WidgetFlags |= WidgetFlags.NoWindow;
+
+			Accessible.SetRole (AtkCocoa.Roles.AXGroup);
+
+			var accessibility = AtkCocoaMacExtensions.GetNSAccessibilityElement (Accessible);
+			if (accessibility != null) {
+				accessibility.AccessibilityElement = true;
+				accessibility.AccessibilityChildren = new NSObject [] { view };
+			}
 		}
 
 		void UpdateViewFrame ()
@@ -144,6 +158,10 @@ namespace Gtk
 			LogEnter ();
 			try {
 				view?.RemoveFromSuperview ();
+
+				if (disposeViewOnGtkDestroy)
+					view?.Dispose ();
+
 				view = null;
 				superview = null;
 
@@ -177,11 +195,15 @@ namespace Gtk
 					var superviewHandle = gdk_quartz_window_get_nsview (GdkWindow.Handle);
 					if (superviewHandle != IntPtr.Zero)
 						superview = Runtime.GetNSObject<NSView> (superviewHandle);
-					}
+						//we don't want accessibility exploring this view
+						superview.AccessibilityElement = false;
+				}
 
 				if (superview != null && view != null) {
 					superview.AddSubview (view);
 					superview.SortSubviews (CompareViews);
+					//we don't want include gdk_quartz children in accessibility navigation hierarchy
+					superview.AccessibilityChildren = Array.Empty<NSObject>();
 				}
 				base.OnRealized ();
 
@@ -322,50 +344,6 @@ namespace Gtk
 			try {
 				UpdateViewFrame ();
 				return base.OnWidgetEvent (evnt);
-			} finally {
-				LogExit ();
-			}
-		}
-
-		bool ForwardEvent<TEvent> (
-			TEvent evnt,
-			Action<NSView, NSEvent> forwardCall,
-			Func<TEvent, bool> baseCall) where TEvent : Gdk.Event
-		{
-			var acceptsFirstResponderView = GetAcceptsFirstResponderView ();
-			if (acceptsFirstResponderView == null)
-				return false;
-
-			var nsEvent = GetNSEvent (evnt);
-			if (nsEvent == null)
-				return false;
-
-			forwardCall (acceptsFirstResponderView, nsEvent);
-
-			return baseCall (evnt);
-		}
-
-		protected override bool OnKeyPressEvent (Gdk.EventKey evnt)
-		{
-			LogEnter ();
-			try {
-				return ForwardEvent (
-					evnt,
-					(v, e) => v.KeyDown (e),
-					base.OnKeyReleaseEvent);
-			} finally {
-				LogExit ();
-			}
-		}
-
-		protected override bool OnKeyReleaseEvent (Gdk.EventKey evnt)
-		{
-			LogEnter ();
-			try {
-				return ForwardEvent (
-					evnt,
-					(v, e) => v.KeyUp (e),
-					base.OnKeyReleaseEvent);
 			} finally {
 				LogExit ();
 			}

@@ -146,7 +146,7 @@
         { "name": "Xml Name", "fore": "text" },
         { "name": "Xml Text", "fore": "text" },
 
-        { "name": "Css Property Name", "fore": "black", "weight": "bold" },
+        { "name": "Css Property Name", "fore": "text", "weight": "bold" },
         { "name": "User Event Declaration", "fore": "text", "weight": "bold" },
         { "name": "User Event Usage", "fore": "text", "weight": "bold" },
         { "name": "User Field Declaration", "fore": "text", "weight": "bold" },

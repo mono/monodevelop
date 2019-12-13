@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Template
+	originator="Microsoft"
+	created="2019/09/23"
+	lastModified="2019/09/23">
+
+	<TemplateConfiguration>
+		<_Name>Razor Component</_Name>
+		<Icon>md-html-file-icon</Icon>
+		<_Category>ASP.NET Core</_Category>
+		<LanguageName>C#</LanguageName>
+		<DefaultFilename>Index</DefaultFilename>
+		<_Description>Creates a reusable UI component implemented with Razor.</_Description>
+	</TemplateConfiguration>
+
+	<Conditions>
+		<Or>
+			<AspNetCore minVersion="3.0"/>
+			<ProjectCapability Name="DotNetCoreRazor"/>
+		</Or>
+	</Conditions>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.razor" src="RazorComponent.razor" />
+	</TemplateFiles>
+</Template>

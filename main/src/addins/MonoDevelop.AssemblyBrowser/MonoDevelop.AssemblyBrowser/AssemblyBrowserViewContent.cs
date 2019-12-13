@@ -102,11 +102,6 @@ namespace MonoDevelop.AssemblyBrowser
 			}
 		}
 
-		internal void EnsureDefinitionsLoaded (ImmutableList<AssemblyLoader> definitions)
-		{
-			widget.EnsureDefinitionsLoaded (definitions);
-		}
-
 		protected override void OnDispose ()
 		{
 			if (cts != null) {
@@ -177,7 +172,7 @@ namespace MonoDevelop.AssemblyBrowser
 			} else {
 				var token = cts.Token;
 
-				var workspace = IdeApp.TypeSystemService.GetWorkspaceAsync (IdeApp.ProjectOperations.CurrentSelectedSolution)
+				var workspace = IdeApp.TypeSystemService.GetWorkspaceAsync (IdeApp.ProjectOperations.CurrentSelectedSolution, token)
 					.ContinueWith (t => {
 						if (token.IsCancellationRequested)
 							return;

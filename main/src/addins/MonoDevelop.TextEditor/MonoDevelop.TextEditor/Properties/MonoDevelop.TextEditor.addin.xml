@@ -18,6 +18,10 @@
 		<ExtensionNode name="SupportedFileType" type="MonoDevelop.TextEditor.SupportedFileTypeExtensionNode" />
 	</ExtensionPoint>
 
+	<ExtensionPoint path="/MonoDevelop/TextEditor/LegacyEditorSupport" name="Opts in file types to be opened in the legacy editor">
+		<ExtensionNode name="LegacyEditorSupport" type="MonoDevelop.TextEditor.LegacyEditorSupportExtensionNode" />
+	</ExtensionPoint>
+
 <!--
 	<ExtensionPoint path = "/MonoDevelop/TextEditor/ContextMenu/NavigationBar" name = "Navigation bar context menu">
 		<Description>Context menu for the navigation bar.</Description>
@@ -57,15 +61,6 @@
 		<Assembly file="../../../bin/Microsoft.VisualStudio.Platform.VSEditor.dll"/>
 		-->
 		<Assembly file="MonoDevelop.TextEditor.dll"/>
-	</Extension>
-
-	<Extension path="/MonoDevelop/TextEditor/SupportedFileTypes">
-		<SupportedFileType id="csharp" extensions=".cs,.csx" featureFlag="CSharpEnableNewEditor" />
-		<SupportedFileType id="textmate" extensions=".py,.md,.txt,.c,.cpp,.cxx,.h,.php"  featureFlag="CSharpEnableNewEditor" />
-	</Extension>
-
-	<Extension path="/MonoDevelop/Core/FeatureConfiguration/FeatureSwitchChecks">
-		<Type id="CSharpEnableNewEditor" class="MonoDevelop.TextEditor.CSharpEnableNewEditorSwitchController" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/Commands">
@@ -131,13 +126,15 @@
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DocumentEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DocumentEndCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockUp" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesUpCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.MoveBlockDown" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.MoveSelectedLinesDownCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.InsertNewLineAtEnd" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.OpenLineBelowCommandArgs" />
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteLeftChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.BackspaceKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.EditCommands.Delete" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.DeleteRightChar" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.DeleteKeyCommandArgs" />
 
-		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeCompletionListCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.CommitUniqueCompletionListItemCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowParameterCompletionWindow" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeSignatureHelpCommandArgs" />
+		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShowQuickInfo" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickInfoCommandArgs" />
 
 		<Map id="MonoDevelop.Refactoring.RefactoryCommands.QuickFix" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.InvokeQuickFixCommandArgs" />
 
@@ -155,6 +152,11 @@
 
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ExpandSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ExpandSelectionCommandArgs" />
 		<Map id="MonoDevelop.Ide.Commands.TextEditorCommands.ShrinkSelection" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.ContractSelectionCommandArgs" />
+		
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssue" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextIssueInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssue" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousIssueInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.NextIssueError" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToNextErrorInDocumentCommandArgs" />
+		<Map id="MonoDevelop.SourceEditor.SourceEditorCommands.PrevIssueError" argsType="Microsoft.VisualStudio.Text.Editor.Commanding.Commands.NavigateToPreviousErrorInDocumentCommandArgs" />
 	</Extension>
 
 	<!--
@@ -334,4 +336,12 @@
 	</Extension>
 
 -->
+	<ExtensionPoint path = "/MonoDevelop/Ide/Editor/TextMate" name = "TextMate folder">
+		<Description>TextMate folder with syntax highlighting definitions, code snippets and syntax color themes</Description>
+		<ExtensionNode name="Repository" type="MonoDevelop.TextEditor.TextMateRepositoryExtensionNode"/>
+	</ExtensionPoint>
+	
+	<Extension path="/MonoDevelop/Core/FeatureSwitches">
+		<FeatureSwitch id="AlwaysUseLegacyEditor" _description="Enable old editor" defaultValue="false" />
+	</Extension>
 </ExtensionModel>

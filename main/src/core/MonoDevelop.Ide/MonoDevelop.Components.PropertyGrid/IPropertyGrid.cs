@@ -45,5 +45,7 @@ namespace MonoDevelop.Components
 		void BlankPad ();
 		void OnPadContentShown ();
 		void Populate (bool saveEditSession);
+
+		public Gtk.Widget Widget { get; }
 	}
 }

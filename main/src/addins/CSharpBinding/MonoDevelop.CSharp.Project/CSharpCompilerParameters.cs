@@ -81,6 +81,11 @@ namespace MonoDevelop.CSharp.Project
 		[ItemProperty ("WarningsNotAsErrors", DefaultValue = "")]
 		string warningsNotAsErrors = "";
 
+		[ItemProperty ("Nullable", DefaultValue = "")]
+		string nullableContextOptions = "";
+
+		string outputType;
+
 		protected override void Write (IPropertySet pset)
 		{
 			pset.SetPropertyOrder ("DebugSymbols", "DebugType", "Optimize", "OutputPath", "DefineConstants", "ErrorReport", "WarningLevel", "TreatWarningsAsErrors", "DocumentationFile");
@@ -107,6 +112,7 @@ namespace MonoDevelop.CSharp.Project
 
 			optimize = pset.GetValue ("Optimize", (bool?)null);
 			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
+			outputType = pset.GetValue ("OutputType", "Library");
 		}
 
 		static MetadataReferenceResolver CreateMetadataReferenceResolver (IMetadataService metadataService, string projectDirectory, string outputDirectory)
@@ -135,7 +141,8 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
-			bool isLibrary = ParentProject.IsLibraryBasedProjectType;
+			var outputKind = OutputTypeToOutputKind (outputType);
+			bool isLibrary = outputKind == OutputKind.DynamicallyLinkedLibrary;
 			string mainTypeName = project.MainClass;
 			if (isLibrary || mainTypeName == string.Empty) {
 				// empty string is not accepted by Roslyn
@@ -143,7 +150,7 @@ namespace MonoDevelop.CSharp.Project
 			}
 
 			var options = new CSharpCompilationOptions (
-				isLibrary ? OutputKind.DynamicallyLinkedLibrary : OutputKind.ConsoleApplication,
+				outputKind,
 				mainTypeName: mainTypeName,
 				scriptClassName: "Script",
 				optimizationLevel: Optimize ? OptimizationLevel.Release : OptimizationLevel.Debug,
@@ -160,10 +167,25 @@ namespace MonoDevelop.CSharp.Project
 				concurrentBuild: true,
 				metadataReferenceResolver: metadataReferenceResolver,
 				assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default,
-				strongNameProvider: new DesktopStrongNameProvider ()
+				strongNameProvider: new DesktopStrongNameProvider (),
+				nullableContextOptions: NullableContextOptions
 			);
 
 			return options;
+		}
+
+		static OutputKind OutputTypeToOutputKind (string outputType)
+		{
+			switch (outputType.ToLowerInvariant ()) {
+			case "exe":
+				return OutputKind.ConsoleApplication;
+			case "winexe":
+				return OutputKind.WindowsApplication;
+			case "module":
+				return OutputKind.NetModule;
+			default:
+				return OutputKind.DynamicallyLinkedLibrary;
+			}
 		}
 
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
@@ -216,6 +238,35 @@ namespace MonoDevelop.CSharp.Project
 				SourceCodeKind.Regular,
 				ImmutableArray<string>.Empty.AddRange (symbols)
 			);
+		}
+
+		public NullableContextOptions NullableContextOptions {
+			get {
+				switch (nullableContextOptions.ToLower ()) {
+				case "enable":
+					return NullableContextOptions.Enable;
+				case "warnings":
+					return NullableContextOptions.Warnings;
+				case "annotations":
+					return NullableContextOptions.Annotations;
+				case "": // NOTE: Will need to update this if default ever changes
+				case "disable":
+					return NullableContextOptions.Disable;
+				default:
+					LoggingService.LogError ("Unknown Nullable string '" + nullableContextOptions + "'");
+					return NullableContextOptions.Disable;
+				}
+			}
+			set {
+				try {
+					if (NullableContextOptions == value) {
+						return;
+					}
+				} catch (Exception) { }
+
+				nullableContextOptions = value.ToString ();
+				NotifyChange ();
+			}
 		}
 
 

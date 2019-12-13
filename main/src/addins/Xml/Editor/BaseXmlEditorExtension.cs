@@ -540,7 +540,7 @@ namespace MonoDevelop.Xml.Editor
 			}
 		}
 
-		protected virtual ICompletionDataList ClosingTagCompletion (TextEditor buf, DocumentLocation currentLocation)
+		protected virtual ICompletionDataList ClosingTagCompletion (MonoDevelop.Ide.Editor.TextEditor buf, DocumentLocation currentLocation)
 		{
 			// This is handled sooner in UI thread before it's offloaded to background thread by code completion
 			if (XmlEditorOptions.AutoCompleteElements)
@@ -872,7 +872,7 @@ namespace MonoDevelop.Xml.Editor
 				window.FixedRowHeight = 22;
 				window.MaxVisibleRows = 14;
 				window.SelectItem (currentPath [index].Tag);
-				return window;
+				return (MonoDevelop.Components.Window)window;
 			} else {
 				if (ownerProjects.Count > 1)
 					index--;
