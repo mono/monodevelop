@@ -208,8 +208,8 @@ namespace MonoDevelop.TextEditor
 				}
 			}
 #if !WINDOWS
-			if (TextView is ITextView3 textView3)
-				return textView3.IsKeyboardFocused;
+			if (TextView is ICocoaTextView cocoaTextView)
+				return cocoaTextView.IsKeyboardFocused;
 #endif
 
 			return true;
