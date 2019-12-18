@@ -37,6 +37,8 @@ namespace MonoDevelop.UnitTesting.NUnit
 		NUnitAssemblyTestSuite rootSuite;
 		string fullName;
 		
+		public UnitTestCollection UnhandledTests;
+
 		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
 			fullName = !string.IsNullOrEmpty (tinfo.PathName) ? tinfo.PathName + "." + tinfo.Name : tinfo.Name;
@@ -46,6 +48,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.canMergeWithParent =  !string.IsNullOrEmpty (tinfo.PathName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeNamespace);
+			this.UnhandledTests = new UnitTestCollection ();
 		}
 
 		bool canMergeWithParent;
@@ -80,16 +83,32 @@ namespace MonoDevelop.UnitTesting.NUnit
 		{
 			if (testInfo.Tests == null)
 				return;
-			
+
 			foreach (NunitTestInfo test in testInfo.Tests) {
 				UnitTest newTest;
-				if (test.Tests != null)
+				if (test.Tests != null) {
 					newTest = new NUnitTestSuite (rootSuite, test);
-				else
+				} else {
 					newTest = new NUnitTestCase (rootSuite, test, ClassName);
+				}
 				newTest.FixtureTypeName = test.FixtureTypeName;
 				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
-				Tests.Add (newTest);
+
+				bool isNameSpace = false;
+				if (test.Tests != null) {
+					foreach (NunitTestInfo info in test.Tests) {
+						if (info.Tests != null) {
+							isNameSpace = true;
+						}
+					}
+				}
+
+				if (isNameSpace) {
+					((NUnitTestSuite)newTest).testInfo.Name = ((NUnitTestSuite)newTest).testInfo.TestId;
+					UnhandledTests.Add (newTest);
+				} else {
+					Tests.Add (newTest);
+				}
 			}
 		}
 		
