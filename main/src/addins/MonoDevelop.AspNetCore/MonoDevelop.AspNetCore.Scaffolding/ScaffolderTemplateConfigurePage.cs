@@ -67,11 +67,15 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 				case ComboField comboField:
 					ComboBox comboBox;
 					if (comboField.IsEditable) {
-						var comboBoxEntry = new ComboBoxEntry ();
+						var comboBoxEntry = new ComboBoxEntry {
+							Completes = true
+						};
+
 						comboBoxEntry.TextEntry.Changed += (sender, args) => {
 							if(!string.IsNullOrWhiteSpace(comboBoxEntry.TextEntry.Text))
 								comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
 						};
+
 						if(comboField.PlaceholderText != null)
 							comboBoxEntry.TextEntry.PlaceholderText = comboField.PlaceholderText;
 						comboBox = comboBoxEntry;
