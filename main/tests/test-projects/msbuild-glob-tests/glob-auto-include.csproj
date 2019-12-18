@@ -35,5 +35,5 @@
     <Compile Include="a*.cs" />
     <Extra Include="*b.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

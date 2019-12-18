@@ -34,5 +34,5 @@
   <ItemGroup>
     <Compile Include="**\\*.cs" Exclude="*9.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

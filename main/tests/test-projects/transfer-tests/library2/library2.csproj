@@ -40,5 +40,5 @@
     <Folder Include="f2\" />
     <Folder Include="f2-empty\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

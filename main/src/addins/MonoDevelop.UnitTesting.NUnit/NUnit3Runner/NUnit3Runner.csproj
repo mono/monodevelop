@@ -6,7 +6,7 @@
     <ProjectGuid>{D2A4E99E-FC2D-45A9-8BE7-1AB7DF95BA2A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AssemblyName>NUnitRunner</AssemblyName>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.UnitTesting\NUnit3</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -35,5 +35,5 @@
     <Compile Include="NUnitTestRunner.cs" />
     <Compile Include="EventListenerWrapper.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

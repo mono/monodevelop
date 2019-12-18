@@ -37,5 +37,5 @@
       <Link>Linked.txt</Link>
     </None>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

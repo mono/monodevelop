@@ -33,7 +33,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <ItemGroup>
     <ProjectReference Include="..\InvalidReferenceResolution\InvalidReference.csproj">
       <Project>{33489F20-0B73-45D9-944D-7F3E04F2EA6C}</Project>

@@ -6,7 +6,7 @@
     <ProjectGuid>{174E6044-DD3A-49AB-9A5C-2A1F341B7B4F}</ProjectGuid>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -71,7 +71,7 @@
       <Name>MonoDevelop.Debugger.VsCodeDebugProtocol</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Target Name="AfterBuild">
     <PropertyGroup>
       <UnitTestsDir>..\..\..\..\external\debugger-libs\UnitTests</UnitTestsDir>

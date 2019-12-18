@@ -38,6 +38,6 @@
   <ItemGroup>
     <Content Include="test.xaml" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Import Project="glob-import-metadata-prop2.targets" />
 </Project>

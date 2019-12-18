@@ -37,6 +37,6 @@
     <Compile Include="Program.cs" />
     <None Include="DoNotCompile.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 
 </Project>

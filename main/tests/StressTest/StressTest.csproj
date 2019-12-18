@@ -107,7 +107,7 @@
     <Folder Include="MonoDevelop.StressTest\Scenarios\" />
     <Folder Include="MonoDevelop.StressTest\Profiler\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Target Name="AfterBuild">
       <PropertyGroup>
         <MonoAddinsDir>..\..\external\mono-addins</MonoAddinsDir>

@@ -45,5 +45,5 @@
   <ItemGroup>
     <None Include="Nothing.xml" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

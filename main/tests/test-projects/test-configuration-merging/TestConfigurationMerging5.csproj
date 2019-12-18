@@ -25,5 +25,5 @@
     <OutputPath>bin\Release</OutputPath>
     <Optimize>True</Optimize>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

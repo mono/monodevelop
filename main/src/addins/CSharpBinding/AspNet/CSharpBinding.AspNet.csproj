@@ -7,7 +7,7 @@
     <ProjectGuid>{F426CBB2-77FC-4E14-9E28-E667C2D1299A}</ProjectGuid>
     <RootNamespace>AspNet</RootNamespace>
     <AssemblyName>MonoDevelop.CSharpBinding.AspNet</AssemblyName>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\CSharpBinding</OutputPath>
     <!--
     This needs to be ported to the new editor, and currently makes use of many deprecated APIs.
@@ -95,5 +95,5 @@
   <ItemGroup>
     <EmbeddedResource Include="ExtensionModel.addin.xml" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

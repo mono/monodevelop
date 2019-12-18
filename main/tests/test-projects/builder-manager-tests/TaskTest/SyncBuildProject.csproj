@@ -36,5 +36,5 @@
   </ItemGroup>
   <Target Name="QuickTarget">
   </Target>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

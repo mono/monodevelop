@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <ItemDefinitionGroup Condition=" '$(DefineMyItem)' == 'true' ">
     <MyItem>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -47,5 +47,5 @@
     <MyItem Include="Test.myitem">
     </MyItem>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -1,10 +1,11 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
   </PropertyGroup>
   <Import Project="$(ReferencesVSEditor)" />
+
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,8 +17,11 @@
     <ConfigureScriptExe>$(MSBuildProjectDirectory)\..\..\..\..\scripts\configure.exe</ConfigureScriptExe>
     <FullBuildInfo>fullbuildinfo</FullBuildInfo>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\bin\</OutputPath>
+    <TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>    
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>    
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>    
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>   
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Choose>
@@ -87,7 +91,7 @@
     -->
     <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
+    <!-- <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" /> -->
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Composition" Version="$(NuGetVersionVSComposition)" ExcludeAssets="all" />
     <!-- Need the net45 version, see https://github.com/mono/mono/issues/12461 -->
@@ -132,21 +136,21 @@
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Features.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.dll" />
-    <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.MSBuild.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.CodeAnalysis.Workspaces.MSBuild.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.DiaSymReader.dll" />
     <IncludeCopyLocal Include="Microsoft.Extensions.ObjectPool.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CodingConventions.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Composition.NetFxAttributes.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtility.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtility.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.ImageCatalog.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.InteractiveWindow.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Intellisense.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.OLE.Interop.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Platform.VSEditor.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.10.0.dll" />
@@ -155,12 +159,12 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.8.0.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Shell.Interop.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.dll" /> -->
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Internal.dll" /> -->
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.dll" /> -->
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" Condition="$(Configuration.Contains('Mac'))" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" />
+    <!--  <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Wpf.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.8.0.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextManager.Interop.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Threading.dll" />
@@ -763,18 +767,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MonoDevelop.Core.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Core.addin.xml" LogicalName="lalalal" />
     <EmbeddedResource Include="MonoDevelop.Projects.Policies\DefaultDotNetNamingPolicy.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
-      <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
-      <Name>Mono.Addins.Setup</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="MonoDevelop.Core.dll.config">
@@ -787,7 +781,11 @@
     <InternalsVisibleTo Include="MonoDevelop.Ide.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Setup\Mono.Addins.Setup.csproj" />
+    <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj" />
+  </ItemGroup>
+  
   <Target Name="BeforeBuild" Inputs="BuildVariables.cs.in; $(MSBuildProjectDirectory)\..\..\..\..\version.config" Outputs="BuildVariables.cs" Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\..\version.config')">
     <MakeDir Directories="$(FullBuildInfo)" />
     <Csc Sources="$(ConfigureScript)" OutputAssembly="$(ConfigureScriptExe)" ToolExe="$(CscToolExe)" ToolPath="$(CscToolPath)" Condition="!Exists('$(ConfigureScriptExe)')" />
@@ -800,4 +798,5 @@
     <Exec Command="&quot;$(Git)&quot; rev-parse HEAD &gt; $(VcRevision)" WorkingDirectory="$(MSBuildProjectDirectory)" IgnoreExitCode="True" />
     <RemoveDir Directories="$(FullBuildInfo)" />
   </Target>
+
 </Project>

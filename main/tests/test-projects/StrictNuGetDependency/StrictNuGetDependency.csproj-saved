@@ -33,5 +33,5 @@
     <PackageReference Include="Test.Xam.Strict.Dependency.A" Version="1.1.0" />
     <PackageReference Include="Test.Xam.Strict.Dependency.B" Version="1.1.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

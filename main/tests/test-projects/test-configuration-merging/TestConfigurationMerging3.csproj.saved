@@ -30,5 +30,5 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -6,7 +6,7 @@
     <ProjectGuid>{1038FBD8-750E-4081-BC65-D89FFED3C881}</ProjectGuid>
     <RootNamespace>SubversionAddinWindows</RootNamespace>
     <AssemblyName>SubversionAddinWindows</AssemblyName>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>

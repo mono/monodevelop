@@ -35,5 +35,5 @@
   <ItemGroup>
     <PackageReference Include="Test.Xam.AvailableItemName" Version="0.1.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

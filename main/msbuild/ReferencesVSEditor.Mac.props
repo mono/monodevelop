@@ -12,7 +12,7 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
-    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+    <!-- <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" /> -->
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />

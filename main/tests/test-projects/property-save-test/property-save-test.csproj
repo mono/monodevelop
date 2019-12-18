@@ -66,5 +66,5 @@
       <LogicalName>Foo</LogicalName>
     </EmbeddedResource><!-- Test -->
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>
