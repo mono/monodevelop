@@ -30,8 +30,6 @@
   <Import Project="..\.paket\paket.targets" />
   <Import Project="templates.targets" />
   <ItemGroup>
-    <DownloadNupkg Include="FSharp.Core" Version="4.5.4" ExtensionDir="Packages" />
-    <DownloadNupkg Include="System.ValueTuple" Version="4.5.0" ExtensionDir="Packages" />
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -74,6 +72,8 @@
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
+    <DownloadNupkg Include="FSharp.Core" Version="4.5.4" ExtensionDir="Packages" />
+    <DownloadNupkg Include="System.ValueTuple" Version="4.5.0" ExtensionDir="Packages" />
     <Compile Include="Services\Extensions.fs" />
     <Compile Include="Services\CompilerLocationUtils.fs" />
     <Compile Include="Services\OrderAssemblyReferences.fs" />
@@ -132,27 +132,18 @@
     <Compile Include="ScriptDebugging.fs" />
     <Compile Include="FSharpProjectCompilerOptions.fs" />
     <Compile Include="FindReferenceUsages.fs" />
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
-      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
-      <Name>MonoDevelop.FSharp.Gui</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
-      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
-      <Name>MonoDevelop.FSharp.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
-      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
-      <Name>MonoDevelop.Debugger</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
+    <IncludeCopyLocal Include="System.Reactive.dll" />
+    <IncludeCopyLocal Include="System.Reactive.Linq.dll" />
+    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
+    <IncludeCopyLocal Include="ExtCore.dll" />
+    <IncludeCopyLocal Include="Fantomas.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
+    <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />
+    <IncludeCopyLocal Include="FSharp.Core.dll" />
+    <IncludeCopyLocal Include="MonoDevelop.FSharp.Shared.dll" />
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
+      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
+      <Name>MonoDevelop.Refactoring</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
@@ -160,9 +151,27 @@
       <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Refactoring\MonoDevelop.Refactoring.csproj">
-      <Project>{100568FC-F4E8-439B-94AD-41D11724E45B}</Project>
-      <Name>MonoDevelop.Refactoring</Name>
+    <ProjectReference Include="..\..\..\src\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
+      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
+      <Name>MonoDevelop.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
+      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
+      <Name>MonoDevelop.Debugger</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.FSharp.Shared\MonoDevelop.FSharp.Shared.fsproj">
+      <Project>{AF5FEAD5-B50E-4F07-A274-32F23D5C504D}</Project>
+      <Name>MonoDevelop.FSharp.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoDevelop.FSharp.Gui\MonoDevelop.FSharp.Gui.csproj">
+      <Project>{FD0D1033-9145-48E5-8ED8-E2365252878C}</Project>
+      <Name>MonoDevelop.FSharp.Gui</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\addins\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
+      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
+      <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\src\addins\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
@@ -175,17 +184,6 @@
       <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <IncludeCopyLocal Include="System.Reactive.dll" />
-    <IncludeCopyLocal Include="System.Reactive.Linq.dll" />
-    <IncludeCopyLocal Include="Newtonsoft.Json.dll" />
-    <IncludeCopyLocal Include="ExtCore.dll" />
-    <IncludeCopyLocal Include="Fantomas.dll" />
-    <IncludeCopyLocal Include="FSharp.Compiler.CodeDom.dll" />
-    <IncludeCopyLocal Include="FSharp.Compiler.Service.dll" />
-    <IncludeCopyLocal Include="FSharp.Core.dll" />
-    <IncludeCopyLocal Include="MonoDevelop.FSharp.Shared.dll" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
