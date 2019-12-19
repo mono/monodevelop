@@ -408,7 +408,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							// It's OK to evaluate expressions in external code
 							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
 						}
-						if (body.Text.Contains ("but was not handled in user code")){
+						if (body.Text.Contains (GettextCatalog.GetString ("but was not handled in user code"))){
 							args = new TargetEventArgs (TargetEventType.UnhandledException);
 						} else {
 							if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
