@@ -167,7 +167,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			if (currentExceptionState != hasCustomExceptions || !unhandleExceptionRegistered) {
 				currentExceptionState = hasCustomExceptions;
 				var exceptionRequest = new SetExceptionBreakpointsRequest (
-					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false) || (f.Label == "User-Unhandled Exceptions")).Select (f => f.Filter).ToList ());
+					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false) || (f.Label == GettextCatalog.GetString("User-Unhandled Exceptions"))).Select (f => f.Filter).ToList ());
 				exceptionRequest.ExceptionOptions = new List<ExceptionOptions> () { new ExceptionOptions (ExceptionBreakMode.Unhandled)};
 				protocolClient.SendRequest (exceptionRequest, null);
 				unhandleExceptionRegistered = true;
