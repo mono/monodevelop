@@ -275,12 +275,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 				Tests.Add (newTest);
 
-				Queue queue = new Queue ();
+				var queue = new Queue<NUnitTestSuite> ();
 				queue.Enqueue (newTest);
 
 				var forceLoad = newTest.Tests;
 				while (queue.Count != 0) {
-					NUnitTestSuite unhandledList = (NUnitTestSuite) queue.Dequeue ();
+					NUnitTestSuite unhandledList = queue.Dequeue ();
 					foreach (NUnitTestSuite unhandeledTest in unhandledList.UnhandledTests) {
 						Tests.Add (unhandeledTest);
 					}
