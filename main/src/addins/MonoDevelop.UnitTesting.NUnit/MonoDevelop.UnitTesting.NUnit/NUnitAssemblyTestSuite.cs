@@ -286,7 +286,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 					}
 					foreach (UnitTest unhandeledTest in unhandledList.Tests) {
 						if (unhandeledTest is NUnitTestSuite) {
-							queue.Enqueue (unhandeledTest);
+							queue.Enqueue ((NUnitTestSuite)unhandeledTest);
 						}
 					}
 				}
