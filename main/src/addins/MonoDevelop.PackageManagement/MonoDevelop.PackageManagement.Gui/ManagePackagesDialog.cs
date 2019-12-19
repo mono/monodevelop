@@ -747,14 +747,17 @@ namespace MonoDevelop.PackageManagement
 				GetPackagesCountForAddPackagesButtonLabel (),
 				viewModel.PageSelected);
 
-			using (var dialog = new SelectProjectsDialog (selectProjectsViewModel)) {
-				Command result = dialog.ShowWithParent ();
-				if (result == Command.Ok) {
-					return dialog.GetSelectedProjects ();
-				} else {
-					return Enumerable.Empty<IDotNetProject> ();
+			return Toolkit.NativeEngine.Invoke (() => {
+				using (var dialog = new SelectProjectsDialog (selectProjectsViewModel)) {
+					Command result = dialog.Run (this);
+					if (result == Command.Ok) {
+						return dialog.GetSelectedProjects ();
+					} else {
+						return Enumerable.Empty<IDotNetProject> ();
+					}
 				}
-			}
+			});
+
 		}
 
 		/// <summary>
