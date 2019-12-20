@@ -69,12 +69,12 @@ namespace MonoDevelop.Projects
 
 			public override int GetHashCode ()
 			{
-				unchecked {
-					int r = 0;
-					for (int i = 0; i < keys.Count; ++i)
-						r ^= keys[i].GetHashCode ();
-					return r;
-				}
+				var hc = new HashCode ();
+
+				for (int i = 0; i < keys.Count; ++i)
+					hc.Add (keys [i]);
+
+				return hc.ToHashCode ();
 			}
 		}
 

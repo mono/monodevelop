@@ -947,11 +947,9 @@ namespace MonoDevelop.Components.Commands
 		public KeyboardShortcut Accel {
 			get; private set;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			return Chord.GetHashCode () ^ Accel.GetHashCode ();
-		}
+			=> HashCode.Combine (Chord, Accel);
 		
 		public override bool Equals (object obj)
 		{

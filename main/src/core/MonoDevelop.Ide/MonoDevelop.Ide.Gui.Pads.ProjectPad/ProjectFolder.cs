@@ -108,14 +108,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			ProjectFolder f = other as ProjectFolder;
 			return f != null && absolutePath == f.absolutePath && parentWorkspaceObject == f.parentWorkspaceObject;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			if (parentWorkspaceObject != null)
-				return (absolutePath + parentWorkspaceObject.Name).GetHashCode ();
-			else
-				return absolutePath.GetHashCode ();
-		}
+			=> HashCode.Combine (absolutePath, parentWorkspaceObject?.Name);
 		
 		public void Dispose ()
 		{

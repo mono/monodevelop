@@ -55,12 +55,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return Equals ((WorkspaceId)obj);
 		}
 
-		public override int GetHashCode ()
-		{
-			unchecked {
-				return Number.GetHashCode () ^ DateTime.GetHashCode ();
-			}
-		}
+		public override int GetHashCode () => HashCode.Combine (Number, DateTime);
 
 		public bool Equals (WorkspaceId other)
 		{

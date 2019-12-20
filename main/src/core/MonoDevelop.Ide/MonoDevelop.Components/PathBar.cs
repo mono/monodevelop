@@ -112,11 +112,7 @@ namespace MonoDevelop.Components
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return (Icon != null ? Icon.GetHashCode () : 0) ^ (Markup != null ? Markup.GetHashCode () : 0);
-			}
-		}
+			=> HashCode.Combine (Icon, Markup);
 
 		internal Xwt.Drawing.Image DarkIcon {
 			get {

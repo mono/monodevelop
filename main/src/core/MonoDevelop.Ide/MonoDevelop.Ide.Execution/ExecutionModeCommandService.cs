@@ -593,11 +593,7 @@ namespace MonoDevelop.Ide.Execution
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return runConfigurationId.GetHashCode () ^ executionModeId.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (runConfigurationId, executionModeId);
 	}
 	
 	class ExecutionCommandCustomizer: TypeExtensionNode, IExecutionCommandCustomizer

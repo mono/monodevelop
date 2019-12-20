@@ -90,11 +90,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return (ScopeStack != null ? ScopeStack.GetHashCode () : 0) ^ Foreground.GetHashCode () ^ Background.GetHashCode () ^ FontWeight.GetHashCode () ^ FontStyle.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (ScopeStack, Foreground, Background, FontWeight, FontStyle);
 
 		internal Gdk.GC CreateBgGC (Gdk.Drawable drawable)
 		{

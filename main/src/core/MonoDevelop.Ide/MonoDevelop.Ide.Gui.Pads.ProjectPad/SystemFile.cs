@@ -78,13 +78,8 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			SystemFile f = other as SystemFile;
 			return f != null && absolutePath == f.absolutePath && parent == f.parent;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			if (parent != null)
-				return (absolutePath + parent.Name).GetHashCode ();
-			else
-				return absolutePath.GetHashCode ();
-		}
+			=> HashCode.Combine (absolutePath, parent?.Name);
 	}
 }

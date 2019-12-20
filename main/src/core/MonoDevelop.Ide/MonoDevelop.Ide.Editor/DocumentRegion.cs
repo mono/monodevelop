@@ -104,9 +104,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public override int GetHashCode ()
-		{
-			return unchecked (Begin.GetHashCode () ^ End.GetHashCode ());
-		}
+			=> HashCode.Combine (Begin, End);
 
 		public bool Equals (DocumentRegion other)
 		{

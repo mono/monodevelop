@@ -156,11 +156,7 @@ namespace MonoDevelop.Ide.Editor
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return Anchor.GetHashCode () ^ Lead.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (Anchor, Lead);
 
 		public override string ToString ()
 		{

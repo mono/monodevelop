@@ -199,11 +199,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked { 
-				return path.GetHashCode () | parent.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (path, parent);
 	}
 }
 

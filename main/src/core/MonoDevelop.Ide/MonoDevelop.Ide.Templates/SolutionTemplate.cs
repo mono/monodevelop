@@ -250,11 +250,7 @@ namespace MonoDevelop.Ide.Templates
 		}
 
 		public override int GetHashCode ()
-		{
-			return (Id != null ? Id.GetHashCode () : 0)
-				^ (Name != null ? Name.GetHashCode () : 0)
-				^ (Category != null ? Category.GetHashCode () : 0);
-		}
+			=> HashCode.Combine (Id, Name, Category);
 
 		/// <summary>
 		/// Returns all other templates in the group. Does not include this template.

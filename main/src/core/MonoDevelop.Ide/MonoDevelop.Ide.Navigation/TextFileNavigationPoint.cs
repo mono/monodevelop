@@ -156,12 +156,8 @@ namespace MonoDevelop.Ide.Navigation
 				return false;
 			return base.Equals (other);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return line + base.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (line, base.GetHashCode ());
 	}
 }
