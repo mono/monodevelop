@@ -98,13 +98,13 @@ namespace MonoDevelop.PackageManagement
 		public Task LogAsync (LogLevel level, string data)
 		{
 			Log (level, data);
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		public Task LogAsync (ILogMessage message)
 		{
 			Log (message);
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		public void Log (LogLevel level, string data)

@@ -280,7 +280,7 @@ namespace MonoDevelop.Projects
 
 		protected internal virtual Task OnSave (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public virtual bool NeedsReload {
@@ -330,7 +330,7 @@ namespace MonoDevelop.Projects
 		{
 			Loading = false;
 			fileStatusTracker.ResetLoadTimes ();
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		/// <summary>

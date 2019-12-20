@@ -101,7 +101,7 @@ namespace MonoDevelop.Projects
 		
 		protected internal override Task OnSave (ProgressMonitor monitor)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 	}
 

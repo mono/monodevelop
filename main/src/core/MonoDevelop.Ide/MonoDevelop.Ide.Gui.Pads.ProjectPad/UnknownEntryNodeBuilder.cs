@@ -97,7 +97,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 		public async void OnReload ()
 		{
 			var solutions = new HashSet<Solution> ();
-			Task task = Task.FromResult (0);
+			Task task = Task.CompletedTask;
 			using (ProgressMonitor m = IdeApp.Workbench.ProgressMonitors.GetProjectLoadProgressMonitor (true)) {
 				m.BeginTask (null, CurrentNodes.Length);
 				foreach (ITreeNavigator node in CurrentNodes) {

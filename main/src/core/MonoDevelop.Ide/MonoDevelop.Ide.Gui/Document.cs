@@ -377,7 +377,7 @@ namespace MonoDevelop.Ide.Gui
 
 		public ITextBuffer TextBuffer => GetContent<ITextBuffer> ();
 
-		Task currentOperationTask = Task.FromResult (true);
+		Task currentOperationTask = Task.CompletedTask;
 
 		Task RunAsyncOperation (Func<Task> action)
 		{

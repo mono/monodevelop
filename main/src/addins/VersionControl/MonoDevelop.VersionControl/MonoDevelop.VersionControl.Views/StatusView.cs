@@ -459,7 +459,7 @@ namespace MonoDevelop.VersionControl.Views
 		}
 
 		CancellationTokenSource cancelUpdate = new CancellationTokenSource ();
-		Task updateTask = Task.FromResult (true);
+		Task updateTask = Task.CompletedTask;
 
 		async Task RunUpdate (CancellationToken cancel)
 		{
