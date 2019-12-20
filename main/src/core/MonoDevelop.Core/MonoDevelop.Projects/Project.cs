@@ -2971,7 +2971,7 @@ namespace MonoDevelop.Projects
 				// Now add configurations for which a platform has not been specified, but only if no other configuration
 				// exists with the same name. Combine them with individually specified platforms, if available
 				foreach (var c in confValues.Select (v => v.GetValue ("Configuration"))) {
-					if (platValues.Count > 0) {
+					if (platValues.Length > 0) {
 						foreach (var plat in platValues.Select (v => v.GetValue ("Platform"))) {
 							var ep = plat == "AnyCPU" ? "" : plat;
 							if (!configData.Any (cd => cd.Config == c && cd.Platform == ep))
