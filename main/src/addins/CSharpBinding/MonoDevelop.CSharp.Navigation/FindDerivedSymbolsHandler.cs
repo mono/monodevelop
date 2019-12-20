@@ -64,7 +64,7 @@ namespace MonoDevelop.CSharp.Refactoring
 		static Task FindDerivedSymbols (ISymbol symbol, CancellationTokenSource cancellationTokenSource)
 		{
 			if (symbol == null)
-				return Task.FromResult (0);
+				return Task.CompletedTask;
 			var solution = IdeApp.Workbench.ActiveDocument?.DocumentContext.AnalysisDocument?.Project?.Solution ?? IdeApp.TypeSystemService.Workspace.CurrentSolution;
 			return Task.Run (async delegate {
 				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);

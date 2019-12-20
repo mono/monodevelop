@@ -141,7 +141,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		protected virtual Task OnCompleted (CancellationToken token)
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		protected virtual void OnPropertyChanged (string propertyName)
