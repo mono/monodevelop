@@ -78,12 +78,7 @@ namespace MonoDevelop.Xml.Dom
 		}
 
 		public override int GetHashCode ()
-		{
-			int hash = 0;
-			if (prefix != null) hash += prefix.GetHashCode ();
-			if (name != null) hash += name.GetHashCode ();
-			return hash;
-		}
+			=> HashCode.Combine (prefix, name);
 
 		#endregion
 

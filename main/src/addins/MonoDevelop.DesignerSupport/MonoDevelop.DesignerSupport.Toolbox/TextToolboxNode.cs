@@ -58,14 +58,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 		{
 			return o is TextToolboxNode n && text == n.text && base.Equals (o);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = base.GetHashCode ();
-			if (text != null)
-				code ^= text.GetHashCode ();
-			return code;
-		}
+			=> HashCode.Combine (base.GetHashCode (), text);
 		
 		[LocalizedDescription ("The text that will be inserted into the document.")]
 		public string Text {

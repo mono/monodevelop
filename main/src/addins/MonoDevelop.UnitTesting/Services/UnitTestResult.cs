@@ -226,19 +226,7 @@ namespace MonoDevelop.UnitTesting
 		}
 
 		public override int GetHashCode ()
-		{
-			var unknowObject = new {
-				Status,
-				Passed,
-				Errors,
-				Failures,
-				Inconclusive,
-				NotRunnable,
-				Skipped,
-				Ignored
-			};
-			return unknowObject.GetHashCode ();
-		}
+			=> HashCode.Combine (Status, Passed, Errors, Failures, Inconclusive, NotRunnable, Skipped, Ignored);
 
 		public override bool Equals (object obj) => obj is UnitTestResult other && Equals (other);
 

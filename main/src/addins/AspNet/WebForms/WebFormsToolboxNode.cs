@@ -80,14 +80,9 @@ namespace MonoDevelop.AspNet.WebForms
 			WebFormsToolboxNode other = obj as WebFormsToolboxNode;
 			return (other != null) && (this.text != other.text) && base.Equals (other);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = base.GetHashCode ();
-			if (text != null)
-				code ^= text.GetHashCode ();
-			return code;
-		}
+			=> HashCode.Combine (base.GetHashCode (), text);
 		
 		void RegisterReference (MonoDevelop.Projects.DotNetProject project)
 		{
