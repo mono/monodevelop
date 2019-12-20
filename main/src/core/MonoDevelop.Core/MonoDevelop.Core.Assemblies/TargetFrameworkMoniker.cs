@@ -207,18 +207,9 @@ namespace MonoDevelop.Core.Assemblies
 		{
 			return Equals (obj as TargetFrameworkMoniker);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int ret = 0;
-			if (identifier != null)
-				ret ^= identifier.GetHashCode ();
-			if (version != null)
-				ret ^= version.GetHashCode ();
-			if (profile != null)
-				ret ^= profile.GetHashCode ();
-			return ret;
-		}
+			=> HashCode.Combine (identifier, version, profile);
 		
 		public static bool operator == (TargetFrameworkMoniker a, TargetFrameworkMoniker b)
 		{

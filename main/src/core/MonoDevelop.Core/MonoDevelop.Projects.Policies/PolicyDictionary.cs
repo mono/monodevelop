@@ -49,16 +49,9 @@ namespace MonoDevelop.Projects.Policies
 		{
 			return other.PolicyType.AssemblyQualifiedName == PolicyType.AssemblyQualifiedName && other.Scope == Scope;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = PolicyType.AssemblyQualifiedName.GetHashCode ();
-			unchecked {
-				if (Scope != null)
-					code += Scope.GetHashCode ();
-			}
-			return code;
-		}
+			=> HashCode.Combine (PolicyType.AssemblyQualifiedName, Scope);
 		
 		public override string ToString ()
 		{

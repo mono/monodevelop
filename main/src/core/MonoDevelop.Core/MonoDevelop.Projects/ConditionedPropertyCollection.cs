@@ -164,12 +164,12 @@ namespace MonoDevelop.Projects
 
 			public override int GetHashCode ()
 			{
-				unchecked {
-					int r = 0;
-					for (int i = 0; i < Values.Count; ++i)
-						r ^= Values [i].GetHashCode ();
-					return r;
-				}
+				var hc = new HashCode ();
+
+				for (int i = 0; i < Values.Count; ++i)
+					hc.Add (Values [i]);
+
+				return hc.ToHashCode ();
 			}
 		}
 

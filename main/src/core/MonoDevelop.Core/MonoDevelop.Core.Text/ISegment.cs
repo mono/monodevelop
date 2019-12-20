@@ -204,9 +204,7 @@ namespace MonoDevelop.Core.Text
 		/// A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.
 		/// </returns>
 		public override int GetHashCode ()
-		{
-			return Offset ^ Length;
-		}
+			=> HashCode.Combine (Offset, Length);
 
 		public static TextSegment FromBounds (int startOffset, int endOffset)
 		{

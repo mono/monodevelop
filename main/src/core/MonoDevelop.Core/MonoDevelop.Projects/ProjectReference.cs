@@ -754,16 +754,9 @@ namespace MonoDevelop.Projects
 				&& referenceType == other.referenceType
 				&& package == other.package;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int result = 0;
-			if (StoredReference != null)
-				result ^= StoredReference.GetHashCode ();
-			if (package != null)
-				result ^= package.GetHashCode ();
-			return result;
-		}
+			=> HashCode.Combine (StoredReference, package);
 		
 		internal void NotifyStatusChanged ()
 		{

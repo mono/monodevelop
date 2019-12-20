@@ -82,11 +82,9 @@ namespace MonoDevelop.Projects
 				return false;
 			return (path == sr.path) && (id == sr.id);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			return (Path + id).GetHashCode ();
-		}
+			=> HashCode.Combine (Path, id);
 		
 		public static bool operator == (SolutionItemReference r1, SolutionItemReference r2)
 		{

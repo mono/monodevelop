@@ -79,10 +79,8 @@ namespace MonoDevelop.Projects.MSBuild.Conditions {
 			return String.Format ("\"{0}\" at character position {1}", Value, Position);
 		}
 
-		public override int GetHashCode()
-		{
-			return (Value?.GetHashCode () ?? 0) ^ Type.GetHashCode () ^ Position.GetHashCode ();
-		}
+		public override int GetHashCode ()
+			=> HashCode.Combine (Value, Type, Position);
 
 		public override bool Equals (object obj)
 		{
