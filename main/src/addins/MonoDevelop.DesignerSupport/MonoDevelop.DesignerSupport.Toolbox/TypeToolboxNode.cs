@@ -86,14 +86,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			    && (this.type == null? node.type == null : this.type.Equals (node.type))
 			    && base.Equals (node);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = base.GetHashCode ();
-			if (type != null)
-				code ^= type.GetHashCode ();
-			return code;
-		}
+			=> HashCode.Combine (base.GetHashCode (), type);
 		
 		#endregion
 	}

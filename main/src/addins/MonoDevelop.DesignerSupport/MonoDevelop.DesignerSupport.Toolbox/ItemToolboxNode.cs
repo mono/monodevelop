@@ -130,20 +130,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 			ItemToolboxNode node = o as ItemToolboxNode;
 			return (node != null) && (node.Name == this.Name) && (node.Category == this.Category) && (node.Description == this.Description) && (node.Source == this.Source);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = 0;
-			if (Name != null)
-				code ^= Name.GetHashCode ();
-			if (Category != null)
-				code ^= Category.GetHashCode ();
-			if (Description != null)
-				code ^= Description.GetHashCode ();
-			if (Source != null)
-				code ^= Source.GetHashCode ();
-			return code;
-		}
+			=> HashCode.Combine (Name, Category, Description, Source);
 		
 		public int CompareTo (object other)
 		{

@@ -92,14 +92,9 @@ namespace MonoDevelop.DesignerSupport.Toolbox
 				    : this.toolboxItemType.Equals (other.toolboxItemType))
 			    && base.Equals (other);
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			int code = base.GetHashCode ();
-			if (toolboxItemType != null)
-				code ^= toolboxItemType.GetHashCode ();
-			return code;
-		}
+			=> HashCode.Combine (base.GetHashCode (), toolboxItemType);
 		
 		public ToolboxItem GetToolboxItem ()
 		{

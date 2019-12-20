@@ -56,16 +56,7 @@ namespace MonoDevelop.VersionControl
 		}
 
 		public override int GetHashCode ()
-		{
-			int result = 0;
-			result ^= RootPath.GetHashCode ();
-			if (VersionControlSystem != null)
-				result ^= VersionControlSystem.GetHashCode ();
-			if (LocationDescription != null)
-				result ^= LocationDescription.GetHashCode ();
-			result ^= Name.GetHashCode ();
-			return result;
-		}
+			=> HashCode.Combine (RootPath, VersionControlSystem, LocationDescription, name);
 
 		public virtual void CopyConfigurationFrom (Repository other)
 		{

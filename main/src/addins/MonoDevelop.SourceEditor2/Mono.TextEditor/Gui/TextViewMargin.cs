@@ -1050,11 +1050,7 @@ namespace Mono.TextEditor
 			}
 
 			public override int GetHashCode ()
-			{
-				unchecked {
-					return SelectionStart.GetHashCode () ^ SelectionEnd.GetHashCode ();
-				}
-			}
+				=> HashCode.Combine (SelectionStart, SelectionEnd);
 		}
 
 		Dictionary<int, LayoutDescriptor> layoutDict = new Dictionary<int, LayoutDescriptor> ();
