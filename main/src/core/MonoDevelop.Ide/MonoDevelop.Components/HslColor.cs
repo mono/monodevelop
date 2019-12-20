@@ -66,11 +66,7 @@ namespace MonoDevelop.Components
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return H.GetHashCode () ^ S.GetHashCode () ^ L.GetHashCode () ^ Alpha.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (H, S, L, Alpha);
 
 		void ToRgb (out double r, out double g, out double b)
 		{

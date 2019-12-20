@@ -57,9 +57,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 		}
 
 		public override int GetHashCode ()
-		{
-			return ApplicableSpan.GetHashCode () ^ data.GetHashCode ();
-		}
+			=> HashCode.Combine (ApplicableSpan, data);
 
 		public override bool Equals (object obj)
 		{

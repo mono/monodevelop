@@ -73,6 +73,7 @@ namespace MonoDevelop.Ide.CodeCompletion
 
 		public override int GetHashCode ()
 		{
+			// FIXME: This is expensive.
 			return Item.ToString ().GetHashCode ();
 		}
 

@@ -429,11 +429,7 @@ namespace MonoDevelop.Ide.Editor.Highlighting
 			}
 
 			public override int GetHashCode ()
-			{
-				unchecked {
-					return (Colors != null ? Colors.GetHashCode () : 0) ^ (Name != null ? Name.GetHashCode () : 0);
-				}
-			}
+				=> HashCode.Combine (Colors, Name);
 
 			internal static AmbientColor Import (Dictionary<string, ColorScheme.VSSettingColor> colors, string vsSetting)
 			{

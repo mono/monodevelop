@@ -126,10 +126,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ClassPad
 		}
 
 		public override int GetHashCode ()
-		{
-			if (project != null) return (namesp + project.Name).GetHashCode ();
-			else return namesp.GetHashCode ();
-		}
+			=> HashCode.Combine (namesp, project?.Name);
 
 		public override string ToString ()
 		{

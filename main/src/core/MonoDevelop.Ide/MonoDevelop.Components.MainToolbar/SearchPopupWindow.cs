@@ -1070,13 +1070,9 @@ namespace MonoDevelop.Components.MainToolbar
 				ItemIdentifier other = (ItemIdentifier)obj;
 				return Category == other.Category && DataSource == other.DataSource && Item == other.Item;
 			}
-			
+
 			public override int GetHashCode ()
-			{
-				unchecked {
-					return (Category != null ? Category.GetHashCode () : 0) ^ (DataSource != null ? DataSource.GetHashCode () : 0) ^ Item.GetHashCode ();
-				}
-			}
+				=> HashCode.Combine (Category, DataSource, Item);
 
 			public override string ToString ()
 			{

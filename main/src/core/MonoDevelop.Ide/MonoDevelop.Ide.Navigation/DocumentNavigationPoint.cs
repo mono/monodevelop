@@ -137,11 +137,9 @@ namespace MonoDevelop.Ide.Navigation
 			DocumentNavigationPoint dp = o as DocumentNavigationPoint;
 			return dp != null && ((doc != null && doc == dp.doc) || (FileName != FilePath.Null && FileName == dp.FileName));
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			return (FileName != FilePath.Null ? FileName.GetHashCode () : 0) + (doc != null ? doc.GetHashCode () : 0);
-		}
+			=> HashCode.Combine (FileName, doc);
 		
 		internal bool HandleRenameEvent (string oldName, string newName)
 		{

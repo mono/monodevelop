@@ -201,9 +201,7 @@ namespace MonoDevelop.Components.MainToolbar
 		}
 
 		public override int GetHashCode ()
-		{
-			return (Tag != null ? Tag.GetHashCode () : 0) ^ (Pattern != null ? Pattern.GetHashCode () : 0) ^ LineNumber.GetHashCode () ^ Column.GetHashCode ();
-		}
+			=> HashCode.Combine (Tag, Pattern, LineNumber);
 
 		public override bool Equals (object obj)
 		{

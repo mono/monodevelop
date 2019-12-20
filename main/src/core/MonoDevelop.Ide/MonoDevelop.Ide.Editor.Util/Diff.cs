@@ -181,11 +181,9 @@ namespace MonoDevelop.Ide.Editor.Util
 		{
 			return this == other;
 		}
-		
+
 		public override int GetHashCode ()
-		{
-			return InsertStart ^ RemoveStart ^ Inserted ^ Removed;
-		}
+			=> HashCode.Combine (InsertStart, RemoveStart, Inserted, Removed);
 		
 		public override string ToString ()
 		{
