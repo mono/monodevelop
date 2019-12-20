@@ -59,18 +59,9 @@ namespace MonoDevelop.Components.MainToolbar
 		//		return (ISearchDataSource)new SearchInSolutionDataSource (searchPattern);
 		//	});
 		//} 
-		static readonly string[] tags = { "search" };
+		public override string [] Tags { get; } = { "search" };
 
-		public override string[] Tags {
-			get {
-				return tags;
-			}
-		}
-
-		public override bool IsValidTag (string tag)
-		{
-			return tag == "search";
-		}
+		public override bool IsValidTag (string tag) => tag == "search";
 
 		class SearchInSolutionSearchResult : SearchResult
 		{
