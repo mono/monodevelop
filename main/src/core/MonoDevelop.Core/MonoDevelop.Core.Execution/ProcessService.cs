@@ -386,11 +386,9 @@ namespace MonoDevelop.Core.Execution
 					return false;
 				return mref.mset == mset && mref.mode.Name == mode.Name;
 			}
-			
+
 			public override int GetHashCode ()
-			{
-				return mset.GetHashCode () + mode.Name.GetHashCode ();
-			}
+				=> HashCode.Combine (mset, mode.Name);
 			
 			public IExecutionMode ExecutionMode {
 				get { return mode; }

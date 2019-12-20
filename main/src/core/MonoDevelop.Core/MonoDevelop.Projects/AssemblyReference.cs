@@ -123,11 +123,7 @@ namespace MonoDevelop.Projects
 		}
 
 		public override int GetHashCode ()
-		{
-			unchecked {
-				return FilePath.GetHashCode () ^ Aliases.GetHashCode ();
-			}
-		}
+			=> HashCode.Combine (FilePath, Aliases);
 
 		/// <summary>
 		/// Returns an enumerable collection of aliases. 
