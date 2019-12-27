@@ -122,6 +122,14 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 			}
 		}
 
+		static int RunDevCertsCommand (string dotNetCorePath, string command)
+		{
+			using (var process = Process.Start (dotNetCorePath, $"dev-certs https {command}")) {
+				process.WaitForExit ();
+				return process.ExitCode;
+			}
+		}
+
 		static int RunDotNetDevCerts (string dotNetCorePath)
 		{
 			int result = Syscall.setuid (0);
@@ -130,10 +138,10 @@ namespace MonoDevelop.AspNetCore.DevCertInstaller
 				return -3;
 			}
 
-			using (var process = Process.Start (dotNetCorePath, "dev-certs https --trust")) {
-				process.WaitForExit ();
-				return process.ExitCode;
-			}
+			// Clean the certificates to avoid issues with invalid ones
+			RunDevCertsCommand (dotNetCorePath, "--clean");
+
+			return RunDevCertsCommand (dotNetCorePath, "--trust");
 		}
 	}
 }

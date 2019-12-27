@@ -31,6 +31,7 @@ namespace MonoDevelop.AspNetCore
 		OK = 0,
 		Missing = 6,
 		Untrusted = 7,
+		CertificateBroken = 9,
 		Error = -1
 	}
 }
