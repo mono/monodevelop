@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
+			return DotNetCoreSupportsObject (item) && SupportsLaunchSettings ((DotNetProject)item);
 		}
 
 		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
