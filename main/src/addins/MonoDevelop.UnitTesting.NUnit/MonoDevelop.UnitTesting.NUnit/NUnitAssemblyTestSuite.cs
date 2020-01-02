@@ -281,12 +281,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 				var forceLoad = newTest.Tests;
 				while (queue.Count != 0) {
 					NUnitTestSuite unhandledList = queue.Dequeue ();
-					foreach (NUnitTestSuite unhandeledTest in unhandledList.UnhandledTests) {
-						Tests.Add (unhandeledTest);
+					foreach (NUnitTestSuite unhandledTest in unhandledList.UnhandledTests) {
+						Tests.Add (unhandledTest);
 					}
-					foreach (UnitTest unhandeledTest in unhandledList.Tests) {
-						if (unhandeledTest is NUnitTestSuite) {
-							queue.Enqueue ((NUnitTestSuite)unhandeledTest);
+					foreach (UnitTest unhandledTest in unhandledList.Tests) {
+						if (unhandledTest is NUnitTestSuite) {
+							queue.Enqueue ((NUnitTestSuite)unhandledTest);
 						}
 					}
 				}

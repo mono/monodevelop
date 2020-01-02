@@ -37,7 +37,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		NUnitAssemblyTestSuite rootSuite;
 		string fullName;
 		
-		public UnitTestCollection UnhandledTests;
+		UnitTestCollection unhandledTests;
 
 		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
@@ -48,7 +48,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.canMergeWithParent =  !string.IsNullOrEmpty (tinfo.PathName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeName) &&
 									   string.IsNullOrEmpty (tinfo.FixtureTypeNamespace);
-			this.UnhandledTests = new UnitTestCollection ();
+			this.unhandledTests = new UnitTestCollection ();
 		}
 
 		bool canMergeWithParent;
@@ -61,6 +61,12 @@ namespace MonoDevelop.UnitTesting.NUnit
 		public override bool HasTests {
 			get {
 				return true;
+			}
+		}
+
+		public override UnitTestCollection UnhandledTests {
+			get {
+				return unhandledTests;
 			}
 		}
 		
@@ -104,8 +110,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 				}
 
 				if (isNameSpace) {
-					((NUnitTestSuite)newTest).testInfo.Name = ((NUnitTestSuite)newTest).testInfo.TestId;
-					UnhandledTests.Add (newTest);
+					var newNamespaceTestSuite = (NUnitTestSuite)newTest;
+					newNamespaceTestSuite.testInfo.Name = newNamespaceTestSuite.testInfo.TestId;
+					unhandledTests.Add (newNamespaceTestSuite);
 				} else {
 					Tests.Add (newTest);
 				}
