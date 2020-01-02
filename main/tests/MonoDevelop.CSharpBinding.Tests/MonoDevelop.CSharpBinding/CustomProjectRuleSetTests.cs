@@ -79,6 +79,9 @@ namespace MonoDevelop.CSharpBinding.Tests
 
 				// Global ruleset option which is not overridden by project ruleset.
 				Assert.AreEqual (ReportDiagnostic.Error, diagnosticOptions ["SA1003"]);
+
+				// NoWarn set in project file directly should override project ruleset.
+				Assert.AreEqual (ReportDiagnostic.Suppress, diagnosticOptions ["SA1600"]);
 			}
 		}
 	}

@@ -192,8 +192,6 @@ namespace MonoDevelop.CSharp.Project
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
 		{
 			var result = new Dictionary<string, ReportDiagnostic> ();
-			foreach (var warning in GetSuppressedWarnings ())
-				result [warning] = ReportDiagnostic.Suppress;
 
 			var globalRuleSet = IdeApp.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
 			if (globalRuleSet != null) {
@@ -204,6 +202,11 @@ namespace MonoDevelop.CSharp.Project
 			if (ruleSet != null) {
 				AddSpecificDiagnosticOptions (result, ruleSet);
 			}
+
+			foreach (var warning in GetSuppressedWarnings ()) {
+				result [warning] = ReportDiagnostic.Suppress;
+			}
+
 			return result;
 		}
 
