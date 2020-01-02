@@ -64,7 +64,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 			}
 		}
 
-		public override UnitTestCollection UnhandledTests {
+		public UnitTestCollection UnhandledTests {
 			get {
 				return unhandledTests;
 			}
