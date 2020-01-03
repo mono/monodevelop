@@ -76,6 +76,8 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			return null;
 		}
 
+		internal static bool IsFileVisible (ProjectFile inputFile) => GetProjectNestingInfo (inputFile.Project).IsFileVisible (inputFile);
+
 		/// <summary>
 		/// The project file which had modifications, in most cases, the parent of the added/removed projectfile
 		/// </summary>
@@ -193,10 +195,20 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 		}
 
+		List<ProjectFile> currentVisibleFiles;
+		public bool IsFileVisible (ProjectFile file)
+		{
+			if (currentVisibleFiles == null) {
+				currentVisibleFiles = Project.GetVisibleFiles (Project.DefaultConfiguration.Selector).ToList ();
+			}
+
+			return currentVisibleFiles.Contains (file);
+		}
+
 		ProjectFileNestingInfo AddFile (ProjectFile projectFile)
 		{
 			var tmp = projectFiles.GetOrAdd (projectFile, new ProjectFileNestingInfo (projectFile));
-			tmp.Parent = FileNestingService.InternalGetParentFile (projectFile);
+			tmp.Parent = IsFileVisible (projectFile) ? FileNestingService.InternalGetParentFile (projectFile) : null;
 			if (tmp.Parent != null) {
 				var parent = projectFiles.GetOrAdd (tmp.Parent, new ProjectFileNestingInfo (tmp.Parent));
 				if (parent.Children == null) {
@@ -244,6 +256,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		void OnFileAddedToProject (object sender, ProjectFileEventArgs e)
 		{
+			currentVisibleFiles = null;
 			foreach (var file in e) {
 				var nestingInfo = AddFile (file.ProjectFile);
 				NotifyNestingRulesChanged (nestingInfo);
@@ -252,6 +265,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		void OnFileRemovedFromProject (object sender, ProjectFileEventArgs e)
 		{
+			currentVisibleFiles = null;
 			foreach (var file in e) {
 				var nestingInfo = RemoveFile (file.ProjectFile);
 				NotifyNestingRulesChanged (nestingInfo);
@@ -316,6 +330,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
 
 			projectFiles?.Clear ();
+			currentVisibleFiles?.Clear ();
 		}
 	}
 
