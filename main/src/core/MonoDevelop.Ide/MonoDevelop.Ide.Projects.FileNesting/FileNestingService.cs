@@ -179,6 +179,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			Project.FileAddedToProject += OnFileAddedToProject;
 			Project.FileRemovedFromProject += OnFileRemovedFromProject;
 			Project.FileRenamedInProject += OnFileRenamedInProject;
+			IdeApp.Workspace.ActiveConfigurationChanged += OnActiveConfigurationChanged;
 			Project.ParentSolution.UserProperties.Changed += OnUserPropertiesChanged;
 		}
 
@@ -199,7 +200,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 		public bool IsFileVisible (ProjectFile file)
 		{
 			if (currentVisibleFiles == null) {
-				currentVisibleFiles = Project.GetVisibleFiles (Project.DefaultConfiguration.Selector).ToList ();
+				currentVisibleFiles = Project.GetVisibleFiles (IdeApp.Workspace.ActiveConfiguration).ToList ();
 			}
 
 			return currentVisibleFiles.Contains (file);
@@ -304,6 +305,11 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 		}
 
+		void OnActiveConfigurationChanged (object sender, EventArgs e)
+		{
+			currentVisibleFiles = null;
+		}
+
 		public ProjectFile GetParentForFile (ProjectFile inputFile)
 		{
 			EnsureInitialized ();
@@ -328,6 +334,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			Project.FileRemovedFromProject -= OnFileRemovedFromProject;
 			Project.FileRenamedInProject -= OnFileRenamedInProject;
 			Project.ParentSolution.UserProperties.Changed -= OnUserPropertiesChanged;
+			IdeApp.Workspace.ActiveConfigurationChanged -= OnActiveConfigurationChanged;
 
 			projectFiles?.Clear ();
 			currentVisibleFiles?.Clear ();
