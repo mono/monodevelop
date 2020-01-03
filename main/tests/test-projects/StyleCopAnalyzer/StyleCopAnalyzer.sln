@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetFramework", "NetFramework\NetFramework.csproj", "{B24B963D-E5CD-46CA-907D-477B205C835B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetStandard", "NetStandard\NetStandard.csproj", "{C8CEDB3E-C6DD-475A-B365-48D47958CE4B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B24B963D-E5CD-46CA-907D-477B205C835B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B24B963D-E5CD-46CA-907D-477B205C835B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B24B963D-E5CD-46CA-907D-477B205C835B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B24B963D-E5CD-46CA-907D-477B205C835B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8CEDB3E-C6DD-475A-B365-48D47958CE4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8CEDB3E-C6DD-475A-B365-48D47958CE4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8CEDB3E-C6DD-475A-B365-48D47958CE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8CEDB3E-C6DD-475A-B365-48D47958CE4B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
