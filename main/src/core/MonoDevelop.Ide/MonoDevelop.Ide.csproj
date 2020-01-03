@@ -155,6 +155,7 @@
     <EmbeddedResource Include="icons\about-md-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\about-md-16~disabled.png" />
     <EmbeddedResource Include="icons\about-md-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\add-16.png" />
     <EmbeddedResource Include="icons\add-16%402x.png" />
     <EmbeddedResource Include="icons\add-16~contrast.png" />
@@ -175,6 +176,7 @@
     <EmbeddedResource Include="icons\add-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\add-16~sel.png" />
     <EmbeddedResource Include="icons\add-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\add-simple-16.png" />
     <EmbeddedResource Include="icons\add-simple-16%402x.png" />
     <EmbeddedResource Include="icons\add-simple-16~contrast.png" />
@@ -187,6 +189,7 @@
     <EmbeddedResource Include="icons\add-simple-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\add-simple-16~sel.png" />
     <EmbeddedResource Include="icons\add-simple-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\bookmark-clear-all-16.png" />
     <EmbeddedResource Include="icons\bookmark-clear-all-16%402x.png" />
     <EmbeddedResource Include="icons\bookmark-clear-all-16~contrast.png" />
@@ -195,6 +198,7 @@
     <EmbeddedResource Include="icons\bookmark-clear-all-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\bookmark-clear-all-16~dark.png" />
     <EmbeddedResource Include="icons\bookmark-clear-all-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\bookmark-next-16.png" />
     <EmbeddedResource Include="icons\bookmark-next-16%402x.png" />
     <EmbeddedResource Include="icons\bookmark-next-16~contrast.png" />
@@ -203,6 +207,7 @@
     <EmbeddedResource Include="icons\bookmark-next-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\bookmark-next-16~dark.png" />
     <EmbeddedResource Include="icons\bookmark-next-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\bookmark-prev-16.png" />
     <EmbeddedResource Include="icons\bookmark-prev-16%402x.png" />
     <EmbeddedResource Include="icons\bookmark-prev-16~contrast.png" />
@@ -211,6 +216,7 @@
     <EmbeddedResource Include="icons\bookmark-prev-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\bookmark-prev-16~dark.png" />
     <EmbeddedResource Include="icons\bookmark-prev-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\bookmark-toggle-16.png" />
     <EmbeddedResource Include="icons\bookmark-toggle-16%402x.png" />
     <EmbeddedResource Include="icons\bookmark-toggle-16~contrast.png" />
@@ -219,6 +225,7 @@
     <EmbeddedResource Include="icons\bookmark-toggle-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\bookmark-toggle-16~dark.png" />
     <EmbeddedResource Include="icons\bookmark-toggle-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\breadcrumb-next-16.png" />
     <EmbeddedResource Include="icons\breadcrumb-next-16%402x.png" />
     <EmbeddedResource Include="icons\breadcrumb-next-16~contrast.png" />
@@ -227,6 +234,7 @@
     <EmbeddedResource Include="icons\breadcrumb-next-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\breadcrumb-next-16~dark.png" />
     <EmbeddedResource Include="icons\breadcrumb-next-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\breadcrumb-prev-16.png" />
     <EmbeddedResource Include="icons\breadcrumb-prev-16%402x.png" />
     <EmbeddedResource Include="icons\breadcrumb-prev-16~contrast.png" />
@@ -235,6 +243,7 @@
     <EmbeddedResource Include="icons\breadcrumb-prev-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\breadcrumb-prev-16~dark.png" />
     <EmbeddedResource Include="icons\breadcrumb-prev-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-16.png" />
     <EmbeddedResource Include="icons\breakpoint-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-16~contrast.png" />
@@ -251,6 +260,7 @@
     <EmbeddedResource Include="icons\breakpoint-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-disable-all-16.png" />
     <EmbeddedResource Include="icons\breakpoint-disable-all-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-disable-all-16~contrast.png" />
@@ -267,6 +277,7 @@
     <EmbeddedResource Include="icons\breakpoint-disable-all-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-disable-all-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-disable-all-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-disabled-16.png" />
     <EmbeddedResource Include="icons\breakpoint-disabled-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-disabled-16~contrast.png" />
@@ -283,6 +294,7 @@
     <EmbeddedResource Include="icons\breakpoint-disabled-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-disabled-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-disabled-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-invalid-16.png" />
     <EmbeddedResource Include="icons\breakpoint-invalid-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-invalid-16~contrast.png" />
@@ -299,6 +311,7 @@
     <EmbeddedResource Include="icons\breakpoint-invalid-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-invalid-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-invalid-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-new-16.png" />
     <EmbeddedResource Include="icons\breakpoint-new-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-new-16~contrast.png" />
@@ -315,6 +328,7 @@
     <EmbeddedResource Include="icons\breakpoint-new-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-new-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-new-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\breakpoint-on-off-16.png" />
     <EmbeddedResource Include="icons\breakpoint-on-off-16%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-on-off-16~contrast.png" />
@@ -331,6 +345,7 @@
     <EmbeddedResource Include="icons\breakpoint-on-off-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\breakpoint-on-off-16~disabled.png" />
     <EmbeddedResource Include="icons\breakpoint-on-off-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\browser-16.png" />
     <EmbeddedResource Include="icons\browser-16%402x.png" />
     <EmbeddedResource Include="icons\browser-16~contrast.png" />
@@ -343,6 +358,7 @@
     <EmbeddedResource Include="icons\browser-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\browser-16~sel.png" />
     <EmbeddedResource Include="icons\browser-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\bug-16.png" />
     <EmbeddedResource Include="icons\bug-16%402x.png" />
     <EmbeddedResource Include="icons\bug-16~contrast.png" />
@@ -351,6 +367,7 @@
     <EmbeddedResource Include="icons\bug-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\bug-16~dark.png" />
     <EmbeddedResource Include="icons\bug-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\build-error-16.png" />
     <EmbeddedResource Include="icons\build-error-16%402x.png" />
     <EmbeddedResource Include="icons\build-error-16~contrast.png" />
@@ -363,6 +380,7 @@
     <EmbeddedResource Include="icons\build-error-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-error-16~sel.png" />
     <EmbeddedResource Include="icons\build-error-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-error-small-16.png" />
     <EmbeddedResource Include="icons\build-error-small-16%402x.png" />
     <EmbeddedResource Include="icons\build-error-small-16~contrast.png" />
@@ -375,6 +393,7 @@
     <EmbeddedResource Include="icons\build-error-small-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-error-small-16~sel.png" />
     <EmbeddedResource Include="icons\build-error-small-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-target-16.png" />
     <EmbeddedResource Include="icons\build-target-16%402x.png" />
     <EmbeddedResource Include="icons\build-target-16~contrast.png" />
@@ -387,6 +406,7 @@
     <EmbeddedResource Include="icons\build-target-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-target-16~sel.png" />
     <EmbeddedResource Include="icons\build-target-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-task-failed-16.png" />
     <EmbeddedResource Include="icons\build-task-failed-16%402x.png" />
     <EmbeddedResource Include="icons\build-task-failed-16~contrast.png" />
@@ -399,6 +419,7 @@
     <EmbeddedResource Include="icons\build-task-failed-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-task-failed-16~sel.png" />
     <EmbeddedResource Include="icons\build-task-failed-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-task-success-16.png" />
     <EmbeddedResource Include="icons\build-task-success-16%402x.png" />
     <EmbeddedResource Include="icons\build-task-success-16~contrast.png" />
@@ -411,6 +432,7 @@
     <EmbeddedResource Include="icons\build-task-success-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-task-success-16~sel.png" />
     <EmbeddedResource Include="icons\build-task-success-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-warning-16.png" />
     <EmbeddedResource Include="icons\build-warning-16%402x.png" />
     <EmbeddedResource Include="icons\build-warning-16~contrast.png" />
@@ -423,6 +445,7 @@
     <EmbeddedResource Include="icons\build-warning-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-warning-16~sel.png" />
     <EmbeddedResource Include="icons\build-warning-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\build-warning-small-16.png" />
     <EmbeddedResource Include="icons\build-warning-small-16%402x.png" />
     <EmbeddedResource Include="icons\build-warning-small-16~contrast.png" />
@@ -435,6 +458,7 @@
     <EmbeddedResource Include="icons\build-warning-small-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\build-warning-small-16~sel.png" />
     <EmbeddedResource Include="icons\build-warning-small-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\catchpoint-16.png" />
     <EmbeddedResource Include="icons\catchpoint-16%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-16~contrast.png" />
@@ -451,6 +475,7 @@
     <EmbeddedResource Include="icons\catchpoint-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-16~disabled.png" />
     <EmbeddedResource Include="icons\catchpoint-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\catchpoint-disabled-16.png" />
     <EmbeddedResource Include="icons\catchpoint-disabled-16%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-disabled-16~contrast.png" />
@@ -467,6 +492,7 @@
     <EmbeddedResource Include="icons\catchpoint-disabled-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-disabled-16~disabled.png" />
     <EmbeddedResource Include="icons\catchpoint-disabled-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\catchpoint-new-16.png" />
     <EmbeddedResource Include="icons\catchpoint-new-16%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-new-16~contrast.png" />
@@ -483,6 +509,7 @@
     <EmbeddedResource Include="icons\catchpoint-new-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\catchpoint-new-16~disabled.png" />
     <EmbeddedResource Include="icons\catchpoint-new-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\checkmark-16.png" />
     <EmbeddedResource Include="icons\checkmark-16%402x.png" />
     <EmbeddedResource Include="icons\checkmark-16~contrast.png" />
@@ -495,6 +522,7 @@
     <EmbeddedResource Include="icons\checkmark-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\checkmark-16~sel.png" />
     <EmbeddedResource Include="icons\checkmark-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\clear-16.png" />
     <EmbeddedResource Include="icons\clear-16%402x.png" />
     <EmbeddedResource Include="icons\clear-16~contrast.png" />
@@ -511,6 +539,7 @@
     <EmbeddedResource Include="icons\clear-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\clear-16~disabled.png" />
     <EmbeddedResource Include="icons\clear-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\close-all-documents-16.png" />
     <EmbeddedResource Include="icons\close-all-documents-16%402x.png" />
     <EmbeddedResource Include="icons\close-all-documents-16~contrast.png" />
@@ -519,6 +548,7 @@
     <EmbeddedResource Include="icons\close-all-documents-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\close-all-documents-16~dark.png" />
     <EmbeddedResource Include="icons\close-all-documents-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\close-solution-16.png" />
     <EmbeddedResource Include="icons\close-solution-16%402x.png" />
     <EmbeddedResource Include="icons\close-solution-16~contrast.png" />
@@ -527,6 +557,7 @@
     <EmbeddedResource Include="icons\close-solution-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\close-solution-16~dark.png" />
     <EmbeddedResource Include="icons\close-solution-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\code-16.png" />
     <EmbeddedResource Include="icons\code-16%402x.png" />
     <EmbeddedResource Include="icons\code-16~contrast.png" />
@@ -539,6 +570,7 @@
     <EmbeddedResource Include="icons\code-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\code-16~sel.png" />
     <EmbeddedResource Include="icons\code-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\columns-one-16.png" />
     <EmbeddedResource Include="icons\columns-one-16%402x.png" />
     <EmbeddedResource Include="icons\columns-one-16~contrast.png" />
@@ -547,6 +579,7 @@
     <EmbeddedResource Include="icons\columns-one-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\columns-one-16~dark.png" />
     <EmbeddedResource Include="icons\columns-one-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\columns-two-16.png" />
     <EmbeddedResource Include="icons\columns-two-16%402x.png" />
     <EmbeddedResource Include="icons\columns-two-16~contrast.png" />
@@ -555,6 +588,7 @@
     <EmbeddedResource Include="icons\columns-two-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\columns-two-16~dark.png" />
     <EmbeddedResource Include="icons\columns-two-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\command-16.png" />
     <EmbeddedResource Include="icons\command-16%402x.png" />
     <EmbeddedResource Include="icons\command-16~contrast.png" />
@@ -567,6 +601,7 @@
     <EmbeddedResource Include="icons\command-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\command-16~sel.png" />
     <EmbeddedResource Include="icons\command-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\comment-16.png" />
     <EmbeddedResource Include="icons\comment-16%402x.png" />
     <EmbeddedResource Include="icons\comment-16~contrast.png" />
@@ -575,6 +610,7 @@
     <EmbeddedResource Include="icons\comment-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\comment-16~dark.png" />
     <EmbeddedResource Include="icons\comment-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\copy-16.png" />
     <EmbeddedResource Include="icons\copy-16%402x.png" />
     <EmbeddedResource Include="icons\copy-16~contrast.png" />
@@ -583,6 +619,7 @@
     <EmbeddedResource Include="icons\copy-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\copy-16~dark.png" />
     <EmbeddedResource Include="icons\copy-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\copy-done-16.png" />
     <EmbeddedResource Include="icons\copy-done-16%402x.png" />
     <EmbeddedResource Include="icons\copy-done-16~contrast.png" />
@@ -591,6 +628,7 @@
     <EmbeddedResource Include="icons\copy-done-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\copy-done-16~dark.png" />
     <EmbeddedResource Include="icons\copy-done-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\cut-16.png" />
     <EmbeddedResource Include="icons\cut-16%402x.png" />
     <EmbeddedResource Include="icons\cut-16~contrast.png" />
@@ -599,6 +637,7 @@
     <EmbeddedResource Include="icons\cut-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\cut-16~dark.png" />
     <EmbeddedResource Include="icons\cut-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\debug-all-16.png" />
     <EmbeddedResource Include="icons\debug-all-16%402x.png" />
     <EmbeddedResource Include="icons\debug-all-16~contrast.png" />
@@ -611,6 +650,7 @@
     <EmbeddedResource Include="icons\debug-all-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\debug-all-16~sel.png" />
     <EmbeddedResource Include="icons\debug-all-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\dependency-16.png" />
     <EmbeddedResource Include="icons\dependency-16%402x.png" />
     <EmbeddedResource Include="icons\dependency-16~contrast.png" />
@@ -623,6 +663,7 @@
     <EmbeddedResource Include="icons\dependency-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\dependency-16~sel.png" />
     <EmbeddedResource Include="icons\dependency-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\disclose-arrow-down-16.png" />
     <EmbeddedResource Include="icons\disclose-arrow-down-16%402x.png" />
     <EmbeddedResource Include="icons\disclose-arrow-down-16~contrast.png" />
@@ -631,6 +672,7 @@
     <EmbeddedResource Include="icons\disclose-arrow-down-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\disclose-arrow-down-16~dark.png" />
     <EmbeddedResource Include="icons\disclose-arrow-down-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\disclose-arrow-up-16.png" />
     <EmbeddedResource Include="icons\disclose-arrow-up-16%402x.png" />
     <EmbeddedResource Include="icons\disclose-arrow-up-16~contrast.png" />
@@ -639,6 +681,7 @@
     <EmbeddedResource Include="icons\disclose-arrow-up-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\disclose-arrow-up-16~dark.png" />
     <EmbeddedResource Include="icons\disclose-arrow-up-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\done-16.png" />
     <EmbeddedResource Include="icons\done-16%402x.png" />
     <EmbeddedResource Include="icons\done-16~contrast.png" />
@@ -651,6 +694,7 @@
     <EmbeddedResource Include="icons\done-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\done-16~sel.png" />
     <EmbeddedResource Include="icons\done-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\done-24.png" />
     <EmbeddedResource Include="icons\done-24%402x.png" />
     <EmbeddedResource Include="icons\done-24~contrast.png" />
@@ -663,6 +707,7 @@
     <EmbeddedResource Include="icons\done-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\done-24~sel.png" />
     <EmbeddedResource Include="icons\done-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\done-32.png" />
     <EmbeddedResource Include="icons\done-32%402x.png" />
     <EmbeddedResource Include="icons\done-32~contrast.png" />
@@ -675,6 +720,7 @@
     <EmbeddedResource Include="icons\done-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\done-32~sel.png" />
     <EmbeddedResource Include="icons\done-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\done-48.png" />
     <EmbeddedResource Include="icons\done-48%402x.png" />
     <EmbeddedResource Include="icons\done-48~contrast.png" />
@@ -687,6 +733,7 @@
     <EmbeddedResource Include="icons\done-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\done-48~sel.png" />
     <EmbeddedResource Include="icons\done-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\edit-16.png" />
     <EmbeddedResource Include="icons\edit-16%402x.png" />
     <EmbeddedResource Include="icons\edit-16~contrast.png" />
@@ -703,6 +750,7 @@
     <EmbeddedResource Include="icons\edit-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\edit-16~disabled.png" />
     <EmbeddedResource Include="icons\edit-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\element-class-16.png" />
     <EmbeddedResource Include="icons\element-class-16%402x.png" />
     <EmbeddedResource Include="icons\element-class-16~contrast.png" />
@@ -715,6 +763,7 @@
     <EmbeddedResource Include="icons\element-class-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-class-16~sel.png" />
     <EmbeddedResource Include="icons\element-class-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-constant-16.png" />
     <EmbeddedResource Include="icons\element-constant-16%402x.png" />
     <EmbeddedResource Include="icons\element-constant-16~contrast.png" />
@@ -727,6 +776,7 @@
     <EmbeddedResource Include="icons\element-constant-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-constant-16~sel.png" />
     <EmbeddedResource Include="icons\element-constant-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-delegate-16.png" />
     <EmbeddedResource Include="icons\element-delegate-16%402x.png" />
     <EmbeddedResource Include="icons\element-delegate-16~contrast.png" />
@@ -739,6 +789,7 @@
     <EmbeddedResource Include="icons\element-delegate-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-delegate-16~sel.png" />
     <EmbeddedResource Include="icons\element-delegate-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-enum-16.png" />
     <EmbeddedResource Include="icons\element-enum-16%402x.png" />
     <EmbeddedResource Include="icons\element-enum-16~contrast.png" />
@@ -751,6 +802,7 @@
     <EmbeddedResource Include="icons\element-enum-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-enum-16~sel.png" />
     <EmbeddedResource Include="icons\element-enum-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-event-16.png" />
     <EmbeddedResource Include="icons\element-event-16%402x.png" />
     <EmbeddedResource Include="icons\element-event-16~contrast.png" />
@@ -763,6 +815,7 @@
     <EmbeddedResource Include="icons\element-event-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-event-16~sel.png" />
     <EmbeddedResource Include="icons\element-event-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-exception-16.png" />
     <EmbeddedResource Include="icons\element-exception-16%402x.png" />
     <EmbeddedResource Include="icons\element-exception-16~contrast.png" />
@@ -775,6 +828,7 @@
     <EmbeddedResource Include="icons\element-exception-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-exception-16~sel.png" />
     <EmbeddedResource Include="icons\element-exception-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-extensionmethod-16.png" />
     <EmbeddedResource Include="icons\element-extensionmethod-16%402x.png" />
     <EmbeddedResource Include="icons\element-extensionmethod-16~contrast.png" />
@@ -787,6 +841,7 @@
     <EmbeddedResource Include="icons\element-extensionmethod-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-extensionmethod-16~sel.png" />
     <EmbeddedResource Include="icons\element-extensionmethod-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-field-16.png" />
     <EmbeddedResource Include="icons\element-field-16%402x.png" />
     <EmbeddedResource Include="icons\element-field-16~contrast.png" />
@@ -799,6 +854,7 @@
     <EmbeddedResource Include="icons\element-field-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-field-16~sel.png" />
     <EmbeddedResource Include="icons\element-field-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-fs-field-16.png" />
     <EmbeddedResource Include="icons\element-fs-field-16%402x.png" />
     <EmbeddedResource Include="icons\element-fs-field-16~contrast.png" />
@@ -811,6 +867,7 @@
     <EmbeddedResource Include="icons\element-fs-field-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-fs-field-16~sel.png" />
     <EmbeddedResource Include="icons\element-fs-field-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-interface-16.png" />
     <EmbeddedResource Include="icons\element-interface-16%402x.png" />
     <EmbeddedResource Include="icons\element-interface-16~contrast.png" />
@@ -823,6 +880,7 @@
     <EmbeddedResource Include="icons\element-interface-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-interface-16~sel.png" />
     <EmbeddedResource Include="icons\element-interface-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-keyword-16.png" />
     <EmbeddedResource Include="icons\element-keyword-16%402x.png" />
     <EmbeddedResource Include="icons\element-keyword-16~contrast.png" />
@@ -835,6 +893,7 @@
     <EmbeddedResource Include="icons\element-keyword-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-keyword-16~sel.png" />
     <EmbeddedResource Include="icons\element-keyword-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-method-16.png" />
     <EmbeddedResource Include="icons\element-method-16%402x.png" />
     <EmbeddedResource Include="icons\element-method-16~contrast.png" />
@@ -847,6 +906,7 @@
     <EmbeddedResource Include="icons\element-method-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-method-16~sel.png" />
     <EmbeddedResource Include="icons\element-method-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-method-new-16.png" />
     <EmbeddedResource Include="icons\element-method-new-16%402x.png" />
     <EmbeddedResource Include="icons\element-method-new-16~contrast.png" />
@@ -859,6 +919,7 @@
     <EmbeddedResource Include="icons\element-method-new-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-method-new-16~sel.png" />
     <EmbeddedResource Include="icons\element-method-new-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-module-16.png" />
     <EmbeddedResource Include="icons\element-module-16%402x.png" />
     <EmbeddedResource Include="icons\element-module-16~contrast.png" />
@@ -871,6 +932,7 @@
     <EmbeddedResource Include="icons\element-module-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-module-16~sel.png" />
     <EmbeddedResource Include="icons\element-module-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-namespace-16.png" />
     <EmbeddedResource Include="icons\element-namespace-16%402x.png" />
     <EmbeddedResource Include="icons\element-namespace-16~contrast.png" />
@@ -883,6 +945,7 @@
     <EmbeddedResource Include="icons\element-namespace-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-namespace-16~sel.png" />
     <EmbeddedResource Include="icons\element-namespace-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-other-declaration-16.png" />
     <EmbeddedResource Include="icons\element-other-declaration-16%402x.png" />
     <EmbeddedResource Include="icons\element-other-declaration-16~contrast.png" />
@@ -895,6 +958,7 @@
     <EmbeddedResource Include="icons\element-other-declaration-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-other-declaration-16~sel.png" />
     <EmbeddedResource Include="icons\element-other-declaration-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-property-16.png" />
     <EmbeddedResource Include="icons\element-property-16%402x.png" />
     <EmbeddedResource Include="icons\element-property-16~contrast.png" />
@@ -907,6 +971,7 @@
     <EmbeddedResource Include="icons\element-property-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-property-16~sel.png" />
     <EmbeddedResource Include="icons\element-property-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-static-overlay-16.png" />
     <EmbeddedResource Include="icons\element-static-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-static-overlay-16~contrast.png" />
@@ -919,6 +984,7 @@
     <EmbeddedResource Include="icons\element-static-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-static-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-static-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-struct-16.png" />
     <EmbeddedResource Include="icons\element-struct-16%402x.png" />
     <EmbeddedResource Include="icons\element-struct-16~contrast.png" />
@@ -931,6 +997,7 @@
     <EmbeddedResource Include="icons\element-struct-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-struct-16~sel.png" />
     <EmbeddedResource Include="icons\element-struct-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-template-16.png" />
     <EmbeddedResource Include="icons\element-template-16%402x.png" />
     <EmbeddedResource Include="icons\element-template-16~contrast.png" />
@@ -943,6 +1010,7 @@
     <EmbeddedResource Include="icons\element-template-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-template-16~sel.png" />
     <EmbeddedResource Include="icons\element-template-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-template-surroundwith-16.png" />
     <EmbeddedResource Include="icons\element-template-surroundwith-16%402x.png" />
     <EmbeddedResource Include="icons\element-template-surroundwith-16~contrast.png" />
@@ -955,6 +1023,7 @@
     <EmbeddedResource Include="icons\element-template-surroundwith-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-template-surroundwith-16~sel.png" />
     <EmbeddedResource Include="icons\element-template-surroundwith-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-type-16.png" />
     <EmbeddedResource Include="icons\element-type-16%402x.png" />
     <EmbeddedResource Include="icons\element-type-16~contrast.png" />
@@ -967,6 +1036,7 @@
     <EmbeddedResource Include="icons\element-type-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-type-16~sel.png" />
     <EmbeddedResource Include="icons\element-type-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-variable-16.png" />
     <EmbeddedResource Include="icons\element-variable-16%402x.png" />
     <EmbeddedResource Include="icons\element-variable-16~contrast.png" />
@@ -979,6 +1049,7 @@
     <EmbeddedResource Include="icons\element-variable-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-variable-16~sel.png" />
     <EmbeddedResource Include="icons\element-variable-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16~contrast.png" />
@@ -991,6 +1062,7 @@
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-diamond-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16~contrast.png" />
@@ -1003,6 +1075,7 @@
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-internal-square-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16~contrast.png" />
@@ -1015,6 +1088,7 @@
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-private-diamond-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16~contrast.png" />
@@ -1027,6 +1101,7 @@
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-private-square-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16~contrast.png" />
@@ -1039,6 +1114,7 @@
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-diamond-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16~contrast.png" />
@@ -1051,6 +1127,7 @@
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\element-visibility-protected-square-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\empty-16.png" />
     <EmbeddedResource Include="icons\error-16.png" />
     <EmbeddedResource Include="icons\error-16%402x.png" />
@@ -1064,6 +1141,7 @@
     <EmbeddedResource Include="icons\error-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\error-16~sel.png" />
     <EmbeddedResource Include="icons\error-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\error-24.png" />
     <EmbeddedResource Include="icons\error-24%402x.png" />
     <EmbeddedResource Include="icons\error-24~contrast.png" />
@@ -1076,6 +1154,7 @@
     <EmbeddedResource Include="icons\error-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\error-24~sel.png" />
     <EmbeddedResource Include="icons\error-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\error-32.png" />
     <EmbeddedResource Include="icons\error-32%402x.png" />
     <EmbeddedResource Include="icons\error-32~contrast.png" />
@@ -1088,6 +1167,7 @@
     <EmbeddedResource Include="icons\error-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\error-32~sel.png" />
     <EmbeddedResource Include="icons\error-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\error-48.png" />
     <EmbeddedResource Include="icons\error-48%402x.png" />
     <EmbeddedResource Include="icons\error-48~contrast.png" />
@@ -1100,6 +1180,7 @@
     <EmbeddedResource Include="icons\error-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\error-48~sel.png" />
     <EmbeddedResource Include="icons\error-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\execute-16.png" />
     <EmbeddedResource Include="icons\execute-16%402x.png" />
     <EmbeddedResource Include="icons\execute-16~contrast.png" />
@@ -1124,6 +1205,7 @@
     <EmbeddedResource Include="icons\execute-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\execute-16~error.png" />
     <EmbeddedResource Include="icons\execute-16~error%402x.png" />
+
     <EmbeddedResource Include="icons\execute-all-16.png" />
     <EmbeddedResource Include="icons\execute-all-16%402x.png" />
     <EmbeddedResource Include="icons\execute-all-16~contrast.png" />
@@ -1140,6 +1222,7 @@
     <EmbeddedResource Include="icons\execute-all-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\execute-all-16~disabled.png" />
     <EmbeddedResource Include="icons\execute-all-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\expander-arrow-closed-8.png" />
     <EmbeddedResource Include="icons\expander-arrow-closed-8%402x.png" />
     <EmbeddedResource Include="icons\expander-arrow-closed-8~contrast.png" />
@@ -1152,6 +1235,7 @@
     <EmbeddedResource Include="icons\expander-arrow-closed-8~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\expander-arrow-closed-8~sel.png" />
     <EmbeddedResource Include="icons\expander-arrow-closed-8~sel%402x.png" />
+
     <EmbeddedResource Include="icons\expander-arrow-expanded-8.png" />
     <EmbeddedResource Include="icons\expander-arrow-expanded-8%402x.png" />
     <EmbeddedResource Include="icons\expander-arrow-expanded-8~contrast.png" />
@@ -1164,6 +1248,7 @@
     <EmbeddedResource Include="icons\expander-arrow-expanded-8~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel.png" />
     <EmbeddedResource Include="icons\expander-arrow-expanded-8~sel%402x.png" />
+
     <EmbeddedResource Include="icons\feedback-16.png" />
     <EmbeddedResource Include="icons\feedback-16%402x.png" />
     <EmbeddedResource Include="icons\feedback-16~contrast.png" />
@@ -1180,6 +1265,7 @@
     <EmbeddedResource Include="icons\feedback-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\feedback-16~disabled.png" />
     <EmbeddedResource Include="icons\feedback-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\file-class-16.png" />
     <EmbeddedResource Include="icons\file-class-16%402x.png" />
     <EmbeddedResource Include="icons\file-class-16~contrast.png" />
@@ -1192,6 +1278,7 @@
     <EmbeddedResource Include="icons\file-class-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-class-16~sel.png" />
     <EmbeddedResource Include="icons\file-class-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-class-32.png" />
     <EmbeddedResource Include="icons\file-class-32%402x.png" />
     <EmbeddedResource Include="icons\file-class-32~contrast.png" />
@@ -1204,6 +1291,7 @@
     <EmbeddedResource Include="icons\file-class-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-class-32~sel.png" />
     <EmbeddedResource Include="icons\file-class-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-css-16.png" />
     <EmbeddedResource Include="icons\file-css-16%402x.png" />
     <EmbeddedResource Include="icons\file-css-16~contrast.png" />
@@ -1216,6 +1304,7 @@
     <EmbeddedResource Include="icons\file-css-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-css-16~sel.png" />
     <EmbeddedResource Include="icons\file-css-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-css-32.png" />
     <EmbeddedResource Include="icons\file-css-32%402x.png" />
     <EmbeddedResource Include="icons\file-css-32~contrast.png" />
@@ -1228,6 +1317,7 @@
     <EmbeddedResource Include="icons\file-css-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-css-32~sel.png" />
     <EmbeddedResource Include="icons\file-css-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-enum-16.png" />
     <EmbeddedResource Include="icons\file-enum-16%402x.png" />
     <EmbeddedResource Include="icons\file-enum-16~contrast.png" />
@@ -1240,6 +1330,7 @@
     <EmbeddedResource Include="icons\file-enum-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-enum-16~sel.png" />
     <EmbeddedResource Include="icons\file-enum-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-enum-32.png" />
     <EmbeddedResource Include="icons\file-enum-32%402x.png" />
     <EmbeddedResource Include="icons\file-enum-32~contrast.png" />
@@ -1252,6 +1343,7 @@
     <EmbeddedResource Include="icons\file-enum-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-enum-32~sel.png" />
     <EmbeddedResource Include="icons\file-enum-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-generic-16.png" />
     <EmbeddedResource Include="icons\file-generic-16%402x.png" />
     <EmbeddedResource Include="icons\file-generic-16~contrast.png" />
@@ -1264,6 +1356,7 @@
     <EmbeddedResource Include="icons\file-generic-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-generic-16~sel.png" />
     <EmbeddedResource Include="icons\file-generic-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-generic-32.png" />
     <EmbeddedResource Include="icons\file-generic-32%402x.png" />
     <EmbeddedResource Include="icons\file-generic-32~contrast.png" />
@@ -1276,6 +1369,7 @@
     <EmbeddedResource Include="icons\file-generic-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-generic-32~sel.png" />
     <EmbeddedResource Include="icons\file-generic-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-gtk-16.png" />
     <EmbeddedResource Include="icons\file-gtk-16%402x.png" />
     <EmbeddedResource Include="icons\file-gtk-16~contrast.png" />
@@ -1288,6 +1382,7 @@
     <EmbeddedResource Include="icons\file-gtk-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-gtk-16~sel.png" />
     <EmbeddedResource Include="icons\file-gtk-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-gtk-32.png" />
     <EmbeddedResource Include="icons\file-gtk-32%402x.png" />
     <EmbeddedResource Include="icons\file-gtk-32~contrast.png" />
@@ -1300,6 +1395,7 @@
     <EmbeddedResource Include="icons\file-gtk-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-gtk-32~sel.png" />
     <EmbeddedResource Include="icons\file-gtk-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-header-16.png" />
     <EmbeddedResource Include="icons\file-header-16%402x.png" />
     <EmbeddedResource Include="icons\file-header-16~contrast.png" />
@@ -1312,6 +1408,7 @@
     <EmbeddedResource Include="icons\file-header-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-header-16~sel.png" />
     <EmbeddedResource Include="icons\file-header-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-header-32.png" />
     <EmbeddedResource Include="icons\file-header-32%402x.png" />
     <EmbeddedResource Include="icons\file-header-32~contrast.png" />
@@ -1324,6 +1421,7 @@
     <EmbeddedResource Include="icons\file-header-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-header-32~sel.png" />
     <EmbeddedResource Include="icons\file-header-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-image-16.png" />
     <EmbeddedResource Include="icons\file-image-16%402x.png" />
     <EmbeddedResource Include="icons\file-image-16~contrast.png" />
@@ -1336,6 +1434,7 @@
     <EmbeddedResource Include="icons\file-image-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-image-16~sel.png" />
     <EmbeddedResource Include="icons\file-image-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-image-32.png" />
     <EmbeddedResource Include="icons\file-image-32%402x.png" />
     <EmbeddedResource Include="icons\file-image-32~contrast.png" />
@@ -1348,6 +1447,7 @@
     <EmbeddedResource Include="icons\file-image-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-image-32~sel.png" />
     <EmbeddedResource Include="icons\file-image-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-information-16.png" />
     <EmbeddedResource Include="icons\file-information-16%402x.png" />
     <EmbeddedResource Include="icons\file-information-16~contrast.png" />
@@ -1360,6 +1460,7 @@
     <EmbeddedResource Include="icons\file-information-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-information-16~sel.png" />
     <EmbeddedResource Include="icons\file-information-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-information-32.png" />
     <EmbeddedResource Include="icons\file-information-32%402x.png" />
     <EmbeddedResource Include="icons\file-information-32~contrast.png" />
@@ -1372,6 +1473,7 @@
     <EmbeddedResource Include="icons\file-information-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-information-32~sel.png" />
     <EmbeddedResource Include="icons\file-information-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-interface-16.png" />
     <EmbeddedResource Include="icons\file-interface-16%402x.png" />
     <EmbeddedResource Include="icons\file-interface-16~contrast.png" />
@@ -1384,6 +1486,7 @@
     <EmbeddedResource Include="icons\file-interface-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-interface-16~sel.png" />
     <EmbeddedResource Include="icons\file-interface-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-interface-32.png" />
     <EmbeddedResource Include="icons\file-interface-32%402x.png" />
     <EmbeddedResource Include="icons\file-interface-32~contrast.png" />
@@ -1396,6 +1499,7 @@
     <EmbeddedResource Include="icons\file-interface-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-interface-32~sel.png" />
     <EmbeddedResource Include="icons\file-interface-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-js-16.png" />
     <EmbeddedResource Include="icons\file-js-16%402x.png" />
     <EmbeddedResource Include="icons\file-js-16~contrast.png" />
@@ -1408,6 +1512,7 @@
     <EmbeddedResource Include="icons\file-js-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-js-16~sel.png" />
     <EmbeddedResource Include="icons\file-js-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-js-32.png" />
     <EmbeddedResource Include="icons\file-js-32%402x.png" />
     <EmbeddedResource Include="icons\file-js-32~contrast.png" />
@@ -1420,6 +1525,7 @@
     <EmbeddedResource Include="icons\file-js-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-js-32~sel.png" />
     <EmbeddedResource Include="icons\file-js-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-less-16.png" />
     <EmbeddedResource Include="icons\file-less-16%402x.png" />
     <EmbeddedResource Include="icons\file-less-16~contrast.png" />
@@ -1432,6 +1538,7 @@
     <EmbeddedResource Include="icons\file-less-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-less-16~sel.png" />
     <EmbeddedResource Include="icons\file-less-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-less-32.png" />
     <EmbeddedResource Include="icons\file-less-32%402x.png" />
     <EmbeddedResource Include="icons\file-less-32~contrast.png" />
@@ -1444,6 +1551,7 @@
     <EmbeddedResource Include="icons\file-less-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-less-32~sel.png" />
     <EmbeddedResource Include="icons\file-less-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-resource-16.png" />
     <EmbeddedResource Include="icons\file-resource-16%402x.png" />
     <EmbeddedResource Include="icons\file-resource-16~contrast.png" />
@@ -1456,6 +1564,7 @@
     <EmbeddedResource Include="icons\file-resource-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-resource-16~sel.png" />
     <EmbeddedResource Include="icons\file-resource-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-resource-32.png" />
     <EmbeddedResource Include="icons\file-resource-32%402x.png" />
     <EmbeddedResource Include="icons\file-resource-32~contrast.png" />
@@ -1468,6 +1577,7 @@
     <EmbeddedResource Include="icons\file-resource-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-resource-32~sel.png" />
     <EmbeddedResource Include="icons\file-resource-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-script-16.png" />
     <EmbeddedResource Include="icons\file-script-16%402x.png" />
     <EmbeddedResource Include="icons\file-script-16~contrast.png" />
@@ -1480,6 +1590,7 @@
     <EmbeddedResource Include="icons\file-script-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-script-16~sel.png" />
     <EmbeddedResource Include="icons\file-script-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-script-32.png" />
     <EmbeddedResource Include="icons\file-script-32%402x.png" />
     <EmbeddedResource Include="icons\file-script-32~contrast.png" />
@@ -1492,6 +1603,7 @@
     <EmbeddedResource Include="icons\file-script-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-script-32~sel.png" />
     <EmbeddedResource Include="icons\file-script-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-scss-16.png" />
     <EmbeddedResource Include="icons\file-scss-16%402x.png" />
     <EmbeddedResource Include="icons\file-scss-16~contrast.png" />
@@ -1504,6 +1616,7 @@
     <EmbeddedResource Include="icons\file-scss-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-scss-16~sel.png" />
     <EmbeddedResource Include="icons\file-scss-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-scss-32.png" />
     <EmbeddedResource Include="icons\file-scss-32%402x.png" />
     <EmbeddedResource Include="icons\file-scss-32~contrast.png" />
@@ -1516,6 +1629,7 @@
     <EmbeddedResource Include="icons\file-scss-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-scss-32~sel.png" />
     <EmbeddedResource Include="icons\file-scss-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-source-16.png" />
     <EmbeddedResource Include="icons\file-source-16%402x.png" />
     <EmbeddedResource Include="icons\file-source-16~contrast.png" />
@@ -1528,6 +1642,7 @@
     <EmbeddedResource Include="icons\file-source-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-source-16~sel.png" />
     <EmbeddedResource Include="icons\file-source-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-source-32.png" />
     <EmbeddedResource Include="icons\file-source-32%402x.png" />
     <EmbeddedResource Include="icons\file-source-32~contrast.png" />
@@ -1540,6 +1655,7 @@
     <EmbeddedResource Include="icons\file-source-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-source-32~sel.png" />
     <EmbeddedResource Include="icons\file-source-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-struct-16.png" />
     <EmbeddedResource Include="icons\file-struct-16%402x.png" />
     <EmbeddedResource Include="icons\file-struct-16~contrast.png" />
@@ -1552,6 +1668,7 @@
     <EmbeddedResource Include="icons\file-struct-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-struct-16~sel.png" />
     <EmbeddedResource Include="icons\file-struct-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-struct-32.png" />
     <EmbeddedResource Include="icons\file-struct-32%402x.png" />
     <EmbeddedResource Include="icons\file-struct-32~contrast.png" />
@@ -1564,6 +1681,7 @@
     <EmbeddedResource Include="icons\file-struct-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-struct-32~sel.png" />
     <EmbeddedResource Include="icons\file-struct-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-text-16.png" />
     <EmbeddedResource Include="icons\file-text-16%402x.png" />
     <EmbeddedResource Include="icons\file-text-16~contrast.png" />
@@ -1576,6 +1694,7 @@
     <EmbeddedResource Include="icons\file-text-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-text-16~sel.png" />
     <EmbeddedResource Include="icons\file-text-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-text-32.png" />
     <EmbeddedResource Include="icons\file-text-32%402x.png" />
     <EmbeddedResource Include="icons\file-text-32~contrast.png" />
@@ -1588,6 +1707,7 @@
     <EmbeddedResource Include="icons\file-text-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-text-32~sel.png" />
     <EmbeddedResource Include="icons\file-text-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-ts-16.png" />
     <EmbeddedResource Include="icons\file-ts-16%402x.png" />
     <EmbeddedResource Include="icons\file-ts-16~contrast.png" />
@@ -1600,6 +1720,7 @@
     <EmbeddedResource Include="icons\file-ts-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-ts-16~sel.png" />
     <EmbeddedResource Include="icons\file-ts-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-ts-32.png" />
     <EmbeddedResource Include="icons\file-ts-32%402x.png" />
     <EmbeddedResource Include="icons\file-ts-32~contrast.png" />
@@ -1612,6 +1733,7 @@
     <EmbeddedResource Include="icons\file-ts-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-ts-32~sel.png" />
     <EmbeddedResource Include="icons\file-ts-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-unit-test-16.png" />
     <EmbeddedResource Include="icons\file-unit-test-16%402x.png" />
     <EmbeddedResource Include="icons\file-unit-test-16~contrast.png" />
@@ -1624,6 +1746,7 @@
     <EmbeddedResource Include="icons\file-unit-test-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-unit-test-16~sel.png" />
     <EmbeddedResource Include="icons\file-unit-test-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-unit-test-32.png" />
     <EmbeddedResource Include="icons\file-unit-test-32%402x.png" />
     <EmbeddedResource Include="icons\file-unit-test-32~contrast.png" />
@@ -1636,6 +1759,7 @@
     <EmbeddedResource Include="icons\file-unit-test-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-unit-test-32~sel.png" />
     <EmbeddedResource Include="icons\file-unit-test-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-web-16.png" />
     <EmbeddedResource Include="icons\file-web-16%402x.png" />
     <EmbeddedResource Include="icons\file-web-16~contrast.png" />
@@ -1648,6 +1772,7 @@
     <EmbeddedResource Include="icons\file-web-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-web-16~sel.png" />
     <EmbeddedResource Include="icons\file-web-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-web-32.png" />
     <EmbeddedResource Include="icons\file-web-32%402x.png" />
     <EmbeddedResource Include="icons\file-web-32~contrast.png" />
@@ -1660,6 +1785,7 @@
     <EmbeddedResource Include="icons\file-web-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\file-web-32~sel.png" />
     <EmbeddedResource Include="icons\file-web-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-xml-16.png" />
     <EmbeddedResource Include="icons\file-xml-16%402x.png" />
     <EmbeddedResource Include="icons\file-xml-16~contrast.png" />
@@ -1680,6 +1806,7 @@
     <EmbeddedResource Include="icons\file-xml-16~error%402x.png" />
     <EmbeddedResource Include="icons\file-xml-16~sel.png" />
     <EmbeddedResource Include="icons\file-xml-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\file-xml-32.png" />
     <EmbeddedResource Include="icons\file-xml-32%402x.png" />
     <EmbeddedResource Include="icons\file-xml-32~contrast.png" />
@@ -1700,6 +1827,7 @@
     <EmbeddedResource Include="icons\file-xml-32~error%402x.png" />
     <EmbeddedResource Include="icons\file-xml-32~sel.png" />
     <EmbeddedResource Include="icons\file-xml-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\find-16.png" />
     <EmbeddedResource Include="icons\find-16%402x.png" />
     <EmbeddedResource Include="icons\find-16~contrast.png" />
@@ -1712,6 +1840,7 @@
     <EmbeddedResource Include="icons\find-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\find-16~sel.png" />
     <EmbeddedResource Include="icons\find-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\find-and-replace-16.png" />
     <EmbeddedResource Include="icons\find-and-replace-16%402x.png" />
     <EmbeddedResource Include="icons\find-and-replace-16~contrast.png" />
@@ -1724,6 +1853,7 @@
     <EmbeddedResource Include="icons\find-and-replace-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\find-and-replace-16~sel.png" />
     <EmbeddedResource Include="icons\find-and-replace-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\find-next-16.png" />
     <EmbeddedResource Include="icons\find-next-16%402x.png" />
     <EmbeddedResource Include="icons\find-next-16~contrast.png" />
@@ -1732,6 +1862,7 @@
     <EmbeddedResource Include="icons\find-next-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\find-next-16~dark.png" />
     <EmbeddedResource Include="icons\find-next-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\find-prev-16.png" />
     <EmbeddedResource Include="icons\find-prev-16%402x.png" />
     <EmbeddedResource Include="icons\find-prev-16~contrast.png" />
@@ -1740,6 +1871,7 @@
     <EmbeddedResource Include="icons\find-prev-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\find-prev-16~dark.png" />
     <EmbeddedResource Include="icons\find-prev-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\folder-assets-16.png" />
     <EmbeddedResource Include="icons\folder-assets-16%402x.png" />
     <EmbeddedResource Include="icons\folder-assets-16~contrast.png" />
@@ -1752,6 +1884,7 @@
     <EmbeddedResource Include="icons\folder-assets-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-assets-16~sel.png" />
     <EmbeddedResource Include="icons\folder-assets-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-code-16.png" />
     <EmbeddedResource Include="icons\folder-code-16%402x.png" />
     <EmbeddedResource Include="icons\folder-code-16~contrast.png" />
@@ -1764,6 +1897,7 @@
     <EmbeddedResource Include="icons\folder-code-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-code-16~sel.png" />
     <EmbeddedResource Include="icons\folder-code-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-component-16.png" />
     <EmbeddedResource Include="icons\folder-component-16%402x.png" />
     <EmbeddedResource Include="icons\folder-component-16~contrast.png" />
@@ -1776,6 +1910,7 @@
     <EmbeddedResource Include="icons\folder-component-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-component-16~sel.png" />
     <EmbeddedResource Include="icons\folder-component-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-generic-16.png" />
     <EmbeddedResource Include="icons\folder-generic-16%402x.png" />
     <EmbeddedResource Include="icons\folder-generic-16~contrast.png" />
@@ -1788,6 +1923,7 @@
     <EmbeddedResource Include="icons\folder-generic-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-generic-16~sel.png" />
     <EmbeddedResource Include="icons\folder-generic-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-resource-16.png" />
     <EmbeddedResource Include="icons\folder-resource-16%402x.png" />
     <EmbeddedResource Include="icons\folder-resource-16~contrast.png" />
@@ -1800,6 +1936,7 @@
     <EmbeddedResource Include="icons\folder-resource-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-resource-16~sel.png" />
     <EmbeddedResource Include="icons\folder-resource-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-services-16.png" />
     <EmbeddedResource Include="icons\folder-services-16%402x.png" />
     <EmbeddedResource Include="icons\folder-services-16~contrast.png" />
@@ -1812,6 +1949,7 @@
     <EmbeddedResource Include="icons\folder-services-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-services-16~sel.png" />
     <EmbeddedResource Include="icons\folder-services-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\folder-solution-16.png" />
     <EmbeddedResource Include="icons\folder-solution-16%402x.png" />
     <EmbeddedResource Include="icons\folder-solution-16~contrast.png" />
@@ -1824,6 +1962,7 @@
     <EmbeddedResource Include="icons\folder-solution-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\folder-solution-16~sel.png" />
     <EmbeddedResource Include="icons\folder-solution-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\framework-16.png" />
     <EmbeddedResource Include="icons\framework-16%402x.png" />
     <EmbeddedResource Include="icons\framework-16~contrast.png" />
@@ -1836,6 +1975,7 @@
     <EmbeddedResource Include="icons\framework-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\framework-16~sel.png" />
     <EmbeddedResource Include="icons\framework-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\fullscreen-16.png" />
     <EmbeddedResource Include="icons\fullscreen-16%402x.png" />
     <EmbeddedResource Include="icons\fullscreen-16~contrast.png" />
@@ -1848,6 +1988,7 @@
     <EmbeddedResource Include="icons\fullscreen-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\fullscreen-16~sel.png" />
     <EmbeddedResource Include="icons\fullscreen-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\getting-started-16.png" />
     <EmbeddedResource Include="icons\getting-started-16%402x.png" />
     <EmbeddedResource Include="icons\getting-started-16~contrast.png" />
@@ -1860,6 +2001,7 @@
     <EmbeddedResource Include="icons\getting-started-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\getting-started-16~sel.png" />
     <EmbeddedResource Include="icons\getting-started-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\go-back-16.png" />
     <EmbeddedResource Include="icons\go-back-16%402x.png" />
     <EmbeddedResource Include="icons\go-back-16~contrast.png" />
@@ -1876,6 +2018,7 @@
     <EmbeddedResource Include="icons\go-back-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\go-back-16~disabled.png" />
     <EmbeddedResource Include="icons\go-back-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\go-down-16.png" />
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
     <EmbeddedResource Include="icons\go-down-16~contrast.png" />
@@ -1892,6 +2035,7 @@
     <EmbeddedResource Include="icons\go-down-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\go-down-16~disabled.png" />
     <EmbeddedResource Include="icons\go-down-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\go-forward-16.png" />
     <EmbeddedResource Include="icons\go-forward-16%402x.png" />
     <EmbeddedResource Include="icons\go-forward-16~contrast.png" />
@@ -1908,6 +2052,7 @@
     <EmbeddedResource Include="icons\go-forward-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\go-forward-16~disabled.png" />
     <EmbeddedResource Include="icons\go-forward-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\go-to-line-16.png" />
     <EmbeddedResource Include="icons\go-to-line-16%402x.png" />
     <EmbeddedResource Include="icons\go-to-line-16~contrast.png" />
@@ -1916,6 +2061,7 @@
     <EmbeddedResource Include="icons\go-to-line-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\go-to-line-16~dark.png" />
     <EmbeddedResource Include="icons\go-to-line-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\go-to-matching-brace-16.png" />
     <EmbeddedResource Include="icons\go-to-matching-brace-16%402x.png" />
     <EmbeddedResource Include="icons\go-to-matching-brace-16~contrast.png" />
@@ -1924,6 +2070,7 @@
     <EmbeddedResource Include="icons\go-to-matching-brace-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\go-to-matching-brace-16~dark.png" />
     <EmbeddedResource Include="icons\go-to-matching-brace-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\go-up-16.png" />
     <EmbeddedResource Include="icons\go-up-16%402x.png" />
     <EmbeddedResource Include="icons\go-up-16~contrast.png" />
@@ -1940,6 +2087,7 @@
     <EmbeddedResource Include="icons\go-up-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\go-up-16~disabled.png" />
     <EmbeddedResource Include="icons\go-up-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\group-by-category-16.png" />
     <EmbeddedResource Include="icons\group-by-category-16%402x.png" />
     <EmbeddedResource Include="icons\group-by-category-16~contrast.png" />
@@ -1948,6 +2096,7 @@
     <EmbeddedResource Include="icons\group-by-category-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\group-by-category-16~dark.png" />
     <EmbeddedResource Include="icons\group-by-category-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\help-16.png" />
     <EmbeddedResource Include="icons\help-16%402x.png" />
     <EmbeddedResource Include="icons\help-16~contrast.png" />
@@ -1960,6 +2109,7 @@
     <EmbeddedResource Include="icons\help-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\help-16~sel.png" />
     <EmbeddedResource Include="icons\help-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\home-16.png" />
     <EmbeddedResource Include="icons\home-16%402x.png" />
     <EmbeddedResource Include="icons\home-16~contrast.png" />
@@ -1972,6 +2122,7 @@
     <EmbeddedResource Include="icons\home-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\home-16~sel.png" />
     <EmbeddedResource Include="icons\home-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\indent-16.png" />
     <EmbeddedResource Include="icons\indent-16%402x.png" />
     <EmbeddedResource Include="icons\indent-16~contrast.png" />
@@ -1980,6 +2131,7 @@
     <EmbeddedResource Include="icons\indent-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\indent-16~dark.png" />
     <EmbeddedResource Include="icons\indent-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\information-16.png" />
     <EmbeddedResource Include="icons\information-16%402x.png" />
     <EmbeddedResource Include="icons\information-16~contrast.png" />
@@ -1992,6 +2144,7 @@
     <EmbeddedResource Include="icons\information-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\information-16~sel.png" />
     <EmbeddedResource Include="icons\information-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\information-24.png" />
     <EmbeddedResource Include="icons\information-24%402x.png" />
     <EmbeddedResource Include="icons\information-24~contrast.png" />
@@ -2004,6 +2157,7 @@
     <EmbeddedResource Include="icons\information-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\information-24~sel.png" />
     <EmbeddedResource Include="icons\information-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\information-32.png" />
     <EmbeddedResource Include="icons\information-32%402x.png" />
     <EmbeddedResource Include="icons\information-32~contrast.png" />
@@ -2016,6 +2170,7 @@
     <EmbeddedResource Include="icons\information-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\information-32~sel.png" />
     <EmbeddedResource Include="icons\information-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\information-48.png" />
     <EmbeddedResource Include="icons\information-48%402x.png" />
     <EmbeddedResource Include="icons\information-48~contrast.png" />
@@ -2028,6 +2183,7 @@
     <EmbeddedResource Include="icons\information-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\information-48~sel.png" />
     <EmbeddedResource Include="icons\information-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\jump-to-16.png" />
     <EmbeddedResource Include="icons\jump-to-16%402x.png" />
     <EmbeddedResource Include="icons\jump-to-16~contrast.png" />
@@ -2044,6 +2200,7 @@
     <EmbeddedResource Include="icons\jump-to-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\jump-to-16~disabled.png" />
     <EmbeddedResource Include="icons\jump-to-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\lightbulb-16.png" />
     <EmbeddedResource Include="icons\lightbulb-16%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-16~contrast.png" />
@@ -2056,6 +2213,7 @@
     <EmbeddedResource Include="icons\lightbulb-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-16~sel.png" />
     <EmbeddedResource Include="icons\lightbulb-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\lightbulb-error-16.png" />
     <EmbeddedResource Include="icons\lightbulb-error-16%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-error-16~contrast.png" />
@@ -2068,6 +2226,7 @@
     <EmbeddedResource Include="icons\lightbulb-error-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-error-16~sel.png" />
     <EmbeddedResource Include="icons\lightbulb-error-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16.png" />
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16~contrast.png" />
@@ -2080,6 +2239,7 @@
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16~sel.png" />
     <EmbeddedResource Include="icons\lightbulb-screwdriver-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\link-overlay-16.png" />
     <EmbeddedResource Include="icons\link-overlay-16%402x.png" />
     <EmbeddedResource Include="icons\link-overlay-16~contrast.png" />
@@ -2092,6 +2252,7 @@
     <EmbeddedResource Include="icons\link-overlay-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\link-overlay-16~sel.png" />
     <EmbeddedResource Include="icons\link-overlay-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\link-overlay-32.png" />
     <EmbeddedResource Include="icons\link-overlay-32%402x.png" />
     <EmbeddedResource Include="icons\link-overlay-32~contrast.png" />
@@ -2104,6 +2265,7 @@
     <EmbeddedResource Include="icons\link-overlay-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\link-overlay-32~sel.png" />
     <EmbeddedResource Include="icons\link-overlay-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\live-16.png" />
     <EmbeddedResource Include="icons\live-16%402x.png" />
     <EmbeddedResource Include="icons\live-16~contrast.png" />
@@ -2128,16 +2290,19 @@
     <EmbeddedResource Include="icons\live-16~active~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\live-16~active~sel.png" />
     <EmbeddedResource Include="icons\live-16~active~sel%402x.png" />
+
     <EmbeddedResource Include="icons\missing-image-16.png" />
     <EmbeddedResource Include="icons\missing-image-16%402x.png" />
     <EmbeddedResource Include="icons\missing-image-32.png" />
     <EmbeddedResource Include="icons\missing-image-32%402x.png" />
     <EmbeddedResource Include="icons\missing-image-48.png" />
     <EmbeddedResource Include="icons\missing-image-48%402x.png" />
+
     <EmbeddedResource Include="icons\monodevelop-16.png" />
     <EmbeddedResource Include="icons\monodevelop-22.png" />
     <EmbeddedResource Include="icons\monodevelop-32.png" />
     <EmbeddedResource Include="icons\monodevelop-48.png" />
+
     <EmbeddedResource Include="icons\new-folder-16.png" />
     <EmbeddedResource Include="icons\new-folder-16%402x.png" />
     <EmbeddedResource Include="icons\new-folder-16~contrast.png" />
@@ -2146,6 +2311,7 @@
     <EmbeddedResource Include="icons\new-folder-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\new-folder-16~dark.png" />
     <EmbeddedResource Include="icons\new-folder-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\new-namespace-16.png" />
     <EmbeddedResource Include="icons\new-namespace-16%402x.png" />
     <EmbeddedResource Include="icons\new-namespace-16~contrast.png" />
@@ -2154,6 +2320,7 @@
     <EmbeddedResource Include="icons\new-namespace-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\new-namespace-16~dark.png" />
     <EmbeddedResource Include="icons\new-namespace-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\new-project-16.png" />
     <EmbeddedResource Include="icons\new-project-16%402x.png" />
     <EmbeddedResource Include="icons\new-project-16~contrast.png" />
@@ -2162,6 +2329,7 @@
     <EmbeddedResource Include="icons\new-project-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\new-project-16~dark.png" />
     <EmbeddedResource Include="icons\new-project-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\new-solution-16.png" />
     <EmbeddedResource Include="icons\new-solution-16%402x.png" />
     <EmbeddedResource Include="icons\new-solution-16~contrast.png" />
@@ -2178,6 +2346,7 @@
     <EmbeddedResource Include="icons\new-solution-folder-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\new-solution-folder-16~dark.png" />
     <EmbeddedResource Include="icons\new-solution-folder-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\new-workspace-16.png" />
     <EmbeddedResource Include="icons\new-workspace-16%402x.png" />
     <EmbeddedResource Include="icons\new-workspace-16~contrast.png" />
@@ -2186,6 +2355,7 @@
     <EmbeddedResource Include="icons\new-workspace-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\new-workspace-16~dark.png" />
     <EmbeddedResource Include="icons\new-workspace-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\open-16.png" />
     <EmbeddedResource Include="icons\open-16%402x.png" />
     <EmbeddedResource Include="icons\open-16~contrast.png" />
@@ -2194,6 +2364,7 @@
     <EmbeddedResource Include="icons\open-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\open-16~dark.png" />
     <EmbeddedResource Include="icons\open-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\package-16.png" />
     <EmbeddedResource Include="icons\package-16%402x.png" />
     <EmbeddedResource Include="icons\package-16~contrast.png" />
@@ -2214,6 +2385,7 @@
     <EmbeddedResource Include="icons\package-16~error%402x.png" />
     <EmbeddedResource Include="icons\package-16~sel.png" />
     <EmbeddedResource Include="icons\package-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\package-24.png" />
     <EmbeddedResource Include="icons\package-24%402x.png" />
     <EmbeddedResource Include="icons\package-24~contrast.png" />
@@ -2226,6 +2398,7 @@
     <EmbeddedResource Include="icons\package-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\package-24~sel.png" />
     <EmbeddedResource Include="icons\package-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\package-32.png" />
     <EmbeddedResource Include="icons\package-32%402x.png" />
     <EmbeddedResource Include="icons\package-32~contrast.png" />
@@ -2238,6 +2411,7 @@
     <EmbeddedResource Include="icons\package-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\package-32~sel.png" />
     <EmbeddedResource Include="icons\package-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\package-48.png" />
     <EmbeddedResource Include="icons\package-48%402x.png" />
     <EmbeddedResource Include="icons\package-48~contrast.png" />
@@ -2250,6 +2424,7 @@
     <EmbeddedResource Include="icons\package-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\package-48~sel.png" />
     <EmbeddedResource Include="icons\package-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\package-source-16.png" />
     <EmbeddedResource Include="icons\package-source-16%402x.png" />
     <EmbeddedResource Include="icons\package-source-16~contrast.png" />
@@ -2262,6 +2437,7 @@
     <EmbeddedResource Include="icons\package-source-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\package-source-16~sel.png" />
     <EmbeddedResource Include="icons\package-source-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-application-output-16.png" />
     <EmbeddedResource Include="icons\pad-application-output-16%402x.png" />
     <EmbeddedResource Include="icons\pad-application-output-16~contrast.png" />
@@ -2282,6 +2458,7 @@
     <EmbeddedResource Include="icons\pad-application-output-16~error%402x.png" />
     <EmbeddedResource Include="icons\pad-application-output-16~sel.png" />
     <EmbeddedResource Include="icons\pad-application-output-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-classes-16.png" />
     <EmbeddedResource Include="icons\pad-classes-16%402x.png" />
     <EmbeddedResource Include="icons\pad-classes-16~contrast.png" />
@@ -2294,6 +2471,7 @@
     <EmbeddedResource Include="icons\pad-classes-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-classes-16~sel.png" />
     <EmbeddedResource Include="icons\pad-classes-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-device-deployment-16.png" />
     <EmbeddedResource Include="icons\pad-device-deployment-16%402x.png" />
     <EmbeddedResource Include="icons\pad-device-deployment-16~contrast.png" />
@@ -2314,6 +2492,7 @@
     <EmbeddedResource Include="icons\pad-device-deployment-16~error%402x.png" />
     <EmbeddedResource Include="icons\pad-device-deployment-16~sel.png" />
     <EmbeddedResource Include="icons\pad-device-deployment-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-download-16.png" />
     <EmbeddedResource Include="icons\pad-download-16%402x.png" />
     <EmbeddedResource Include="icons\pad-download-16~contrast.png" />
@@ -2334,6 +2513,7 @@
     <EmbeddedResource Include="icons\pad-download-16~error%402x.png" />
     <EmbeddedResource Include="icons\pad-download-16~sel.png" />
     <EmbeddedResource Include="icons\pad-download-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-error-list-16.png" />
     <EmbeddedResource Include="icons\pad-error-list-16%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-16~contrast.png" />
@@ -2346,6 +2526,7 @@
     <EmbeddedResource Include="icons\pad-error-list-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-16~sel.png" />
     <EmbeddedResource Include="icons\pad-error-list-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-error-list-errors-16.png" />
     <EmbeddedResource Include="icons\pad-error-list-errors-16%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-errors-16~contrast.png" />
@@ -2366,6 +2547,7 @@
     <EmbeddedResource Include="icons\pad-error-list-errors-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-errors-16~sel.png" />
     <EmbeddedResource Include="icons\pad-error-list-errors-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-error-list-warnings-16.png" />
     <EmbeddedResource Include="icons\pad-error-list-warnings-16%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~contrast.png" />
@@ -2386,6 +2568,7 @@
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~sel.png" />
     <EmbeddedResource Include="icons\pad-error-list-warnings-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-execute-16.png" />
     <EmbeddedResource Include="icons\pad-execute-16%402x.png" />
     <EmbeddedResource Include="icons\pad-execute-16~contrast.png" />
@@ -2398,6 +2581,7 @@
     <EmbeddedResource Include="icons\pad-execute-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-execute-16~sel.png" />
     <EmbeddedResource Include="icons\pad-execute-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-generic-16.png" />
     <EmbeddedResource Include="icons\pad-generic-16%402x.png" />
     <EmbeddedResource Include="icons\pad-generic-16~contrast.png" />
@@ -2418,6 +2602,7 @@
     <EmbeddedResource Include="icons\pad-generic-16~error%402x.png" />
     <EmbeddedResource Include="icons\pad-generic-16~sel.png" />
     <EmbeddedResource Include="icons\pad-generic-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-help-16.png" />
     <EmbeddedResource Include="icons\pad-help-16%402x.png" />
     <EmbeddedResource Include="icons\pad-help-16~contrast.png" />
@@ -2430,6 +2615,7 @@
     <EmbeddedResource Include="icons\pad-help-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-help-16~sel.png" />
     <EmbeddedResource Include="icons\pad-help-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-immediate-16.png" />
     <EmbeddedResource Include="icons\pad-immediate-16%402x.png" />
     <EmbeddedResource Include="icons\pad-immediate-16~contrast.png" />
@@ -2442,6 +2628,7 @@
     <EmbeddedResource Include="icons\pad-immediate-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-immediate-16~sel.png" />
     <EmbeddedResource Include="icons\pad-immediate-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-search-16.png" />
     <EmbeddedResource Include="icons\pad-search-16%402x.png" />
     <EmbeddedResource Include="icons\pad-search-16~contrast.png" />
@@ -2454,6 +2641,7 @@
     <EmbeddedResource Include="icons\pad-search-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-search-16~sel.png" />
     <EmbeddedResource Include="icons\pad-search-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-solution-16.png" />
     <EmbeddedResource Include="icons\pad-solution-16%402x.png" />
     <EmbeddedResource Include="icons\pad-solution-16~contrast.png" />
@@ -2466,6 +2654,7 @@
     <EmbeddedResource Include="icons\pad-solution-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-solution-16~sel.png" />
     <EmbeddedResource Include="icons\pad-solution-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-task-list-16.png" />
     <EmbeddedResource Include="icons\pad-task-list-16%402x.png" />
     <EmbeddedResource Include="icons\pad-task-list-16~contrast.png" />
@@ -2478,6 +2667,7 @@
     <EmbeddedResource Include="icons\pad-task-list-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\pad-task-list-16~sel.png" />
     <EmbeddedResource Include="icons\pad-task-list-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pad-upload-16.png" />
     <EmbeddedResource Include="icons\pad-upload-16%402x.png" />
     <EmbeddedResource Include="icons\pad-upload-16~contrast.png" />
@@ -2498,6 +2688,7 @@
     <EmbeddedResource Include="icons\pad-upload-16~error%402x.png" />
     <EmbeddedResource Include="icons\pad-upload-16~sel.png" />
     <EmbeddedResource Include="icons\pad-upload-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\palette-16.png" />
     <EmbeddedResource Include="icons\palette-16%402x.png" />
     <EmbeddedResource Include="icons\palette-16~contrast.png" />
@@ -2510,6 +2701,7 @@
     <EmbeddedResource Include="icons\palette-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\palette-16~sel.png" />
     <EmbeddedResource Include="icons\palette-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\parser-16.png" />
     <EmbeddedResource Include="icons\parser-16%402x.png" />
     <EmbeddedResource Include="icons\parser-16~contrast.png" />
@@ -2522,6 +2714,7 @@
     <EmbeddedResource Include="icons\parser-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\parser-16~sel.png" />
     <EmbeddedResource Include="icons\parser-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\paste-16.png" />
     <EmbeddedResource Include="icons\paste-16%402x.png" />
     <EmbeddedResource Include="icons\paste-16~contrast.png" />
@@ -2530,6 +2723,7 @@
     <EmbeddedResource Include="icons\paste-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\paste-16~dark.png" />
     <EmbeddedResource Include="icons\paste-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\pin-down-16.png" />
     <EmbeddedResource Include="icons\pin-down-16%402x.png" />
     <EmbeddedResource Include="icons\pin-down-16~contrast.png" />
@@ -2550,6 +2744,7 @@
     <EmbeddedResource Include="icons\pin-down-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\pin-down-16~sel.png" />
     <EmbeddedResource Include="icons\pin-down-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\pin-up-16.png" />
     <EmbeddedResource Include="icons\pin-up-16%402x.png" />
     <EmbeddedResource Include="icons\pin-up-16~contrast.png" />
@@ -2570,6 +2765,7 @@
     <EmbeddedResource Include="icons\pin-up-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\pin-up-16~sel.png" />
     <EmbeddedResource Include="icons\pin-up-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-android-16.png" />
     <EmbeddedResource Include="icons\platform-android-16%402x.png" />
     <EmbeddedResource Include="icons\platform-android-16~contrast.png" />
@@ -2582,6 +2778,7 @@
     <EmbeddedResource Include="icons\platform-android-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-android-16~sel.png" />
     <EmbeddedResource Include="icons\platform-android-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-crossplatform-16.png" />
     <EmbeddedResource Include="icons\platform-crossplatform-16%402x.png" />
     <EmbeddedResource Include="icons\platform-crossplatform-16~contrast.png" />
@@ -2594,6 +2791,7 @@
     <EmbeddedResource Include="icons\platform-crossplatform-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-crossplatform-16~sel.png" />
     <EmbeddedResource Include="icons\platform-crossplatform-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-ios-16.png" />
     <EmbeddedResource Include="icons\platform-ios-16%402x.png" />
     <EmbeddedResource Include="icons\platform-ios-16~contrast.png" />
@@ -2606,6 +2804,7 @@
     <EmbeddedResource Include="icons\platform-ios-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-ios-16~sel.png" />
     <EmbeddedResource Include="icons\platform-ios-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-macos-16.png" />
     <EmbeddedResource Include="icons\platform-macos-16%402x.png" />
     <EmbeddedResource Include="icons\platform-macos-16~contrast.png" />
@@ -2618,6 +2817,7 @@
     <EmbeddedResource Include="icons\platform-macos-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-macos-16~sel.png" />
     <EmbeddedResource Include="icons\platform-macos-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-netcore-16.png" />
     <EmbeddedResource Include="icons\platform-netcore-16%402x.png" />
     <EmbeddedResource Include="icons\platform-netcore-16~contrast.png" />
@@ -2630,6 +2830,7 @@
     <EmbeddedResource Include="icons\platform-netcore-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-netcore-16~sel.png" />
     <EmbeddedResource Include="icons\platform-netcore-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-other-16.png" />
     <EmbeddedResource Include="icons\platform-other-16%402x.png" />
     <EmbeddedResource Include="icons\platform-other-16~contrast.png" />
@@ -2642,6 +2843,7 @@
     <EmbeddedResource Include="icons\platform-other-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-other-16~sel.png" />
     <EmbeddedResource Include="icons\platform-other-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-tvos-16.png" />
     <EmbeddedResource Include="icons\platform-tvos-16%402x.png" />
     <EmbeddedResource Include="icons\platform-tvos-16~contrast.png" />
@@ -2654,6 +2856,7 @@
     <EmbeddedResource Include="icons\platform-tvos-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-tvos-16~sel.png" />
     <EmbeddedResource Include="icons\platform-tvos-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\platform-watchos-16.png" />
     <EmbeddedResource Include="icons\platform-watchos-16%402x.png" />
     <EmbeddedResource Include="icons\platform-watchos-16~contrast.png" />
@@ -2666,6 +2869,7 @@
     <EmbeddedResource Include="icons\platform-watchos-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\platform-watchos-16~sel.png" />
     <EmbeddedResource Include="icons\platform-watchos-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\plugin-menu-16.png" />
     <EmbeddedResource Include="icons\plugin-menu-16%402x.png" />
     <EmbeddedResource Include="icons\plugin-menu-16~contrast.png" />
@@ -2674,6 +2878,7 @@
     <EmbeddedResource Include="icons\plugin-menu-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\plugin-menu-16~dark.png" />
     <EmbeddedResource Include="icons\plugin-menu-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\popup-close-16.png" />
     <EmbeddedResource Include="icons\popup-close-16%402x.png" />
     <EmbeddedResource Include="icons\popup-close-16~contrast.png" />
@@ -2682,6 +2887,7 @@
     <EmbeddedResource Include="icons\popup-close-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\popup-close-16~dark.png" />
     <EmbeddedResource Include="icons\popup-close-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\popup-close-hover-16.png" />
     <EmbeddedResource Include="icons\popup-close-hover-16%402x.png" />
     <EmbeddedResource Include="icons\popup-close-hover-16~contrast.png" />
@@ -2690,6 +2896,7 @@
     <EmbeddedResource Include="icons\popup-close-hover-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\popup-close-hover-16~dark.png" />
     <EmbeddedResource Include="icons\popup-close-hover-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\preferences-16.png" />
     <EmbeddedResource Include="icons\preferences-16%402x.png" />
     <EmbeddedResource Include="icons\preferences-16~contrast.png" />
@@ -2698,6 +2905,7 @@
     <EmbeddedResource Include="icons\preferences-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\preferences-16~dark.png" />
     <EmbeddedResource Include="icons\preferences-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-author-information-16.png" />
     <EmbeddedResource Include="icons\prefs-author-information-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-author-information-16~contrast.png" />
@@ -2710,6 +2918,7 @@
     <EmbeddedResource Include="icons\prefs-author-information-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-author-information-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-author-information-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-build-16.png" />
     <EmbeddedResource Include="icons\prefs-build-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-build-16~contrast.png" />
@@ -2722,6 +2931,7 @@
     <EmbeddedResource Include="icons\prefs-build-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-build-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-build-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-code-formatting-16.png" />
     <EmbeddedResource Include="icons\prefs-code-formatting-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-code-formatting-16~contrast.png" />
@@ -2734,6 +2944,7 @@
     <EmbeddedResource Include="icons\prefs-code-formatting-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-code-formatting-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-code-formatting-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-code-templates-16.png" />
     <EmbeddedResource Include="icons\prefs-code-templates-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-code-templates-16~contrast.png" />
@@ -2746,6 +2957,7 @@
     <EmbeddedResource Include="icons\prefs-code-templates-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-code-templates-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-code-templates-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-compiler-16.png" />
     <EmbeddedResource Include="icons\prefs-compiler-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-compiler-16~contrast.png" />
@@ -2758,6 +2970,7 @@
     <EmbeddedResource Include="icons\prefs-compiler-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-compiler-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-compiler-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16.png" />
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~contrast.png" />
@@ -2770,6 +2983,7 @@
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-dotnet-naming-policies-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-external-tools-16.png" />
     <EmbeddedResource Include="icons\prefs-external-tools-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-external-tools-16~contrast.png" />
@@ -2782,6 +2996,7 @@
     <EmbeddedResource Include="icons\prefs-external-tools-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-external-tools-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-external-tools-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-feedback-16.png" />
     <EmbeddedResource Include="icons\prefs-feedback-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-feedback-16~contrast.png" />
@@ -2794,6 +3009,7 @@
     <EmbeddedResource Include="icons\prefs-feedback-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-feedback-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-feedback-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-fonts-16.png" />
     <EmbeddedResource Include="icons\prefs-fonts-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-fonts-16~contrast.png" />
@@ -2806,6 +3022,7 @@
     <EmbeddedResource Include="icons\prefs-fonts-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-fonts-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-fonts-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-generic-16.png" />
     <EmbeddedResource Include="icons\prefs-generic-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-generic-16~contrast.png" />
@@ -2818,6 +3035,7 @@
     <EmbeddedResource Include="icons\prefs-generic-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-generic-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-generic-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-header-16.png" />
     <EmbeddedResource Include="icons\prefs-header-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-header-16~contrast.png" />
@@ -2830,6 +3048,7 @@
     <EmbeddedResource Include="icons\prefs-header-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-header-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-header-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-key-bindings-16.png" />
     <EmbeddedResource Include="icons\prefs-key-bindings-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-key-bindings-16~contrast.png" />
@@ -2842,6 +3061,7 @@
     <EmbeddedResource Include="icons\prefs-key-bindings-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-key-bindings-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-key-bindings-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-language-16.png" />
     <EmbeddedResource Include="icons\prefs-language-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-language-16~contrast.png" />
@@ -2854,6 +3074,7 @@
     <EmbeddedResource Include="icons\prefs-language-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-language-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-language-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-load-save-16.png" />
     <EmbeddedResource Include="icons\prefs-load-save-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-load-save-16~contrast.png" />
@@ -2866,6 +3087,7 @@
     <EmbeddedResource Include="icons\prefs-load-save-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-load-save-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-load-save-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-maintenance-16.png" />
     <EmbeddedResource Include="icons\prefs-maintenance-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-maintenance-16~contrast.png" />
@@ -2878,6 +3100,7 @@
     <EmbeddedResource Include="icons\prefs-maintenance-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-maintenance-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-maintenance-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-metadata-16.png" />
     <EmbeddedResource Include="icons\prefs-metadata-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-metadata-16~contrast.png" />
@@ -2890,6 +3113,7 @@
     <EmbeddedResource Include="icons\prefs-metadata-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-metadata-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-metadata-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-name-conventions-16.png" />
     <EmbeddedResource Include="icons\prefs-name-conventions-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-name-conventions-16~contrast.png" />
@@ -2902,6 +3126,7 @@
     <EmbeddedResource Include="icons\prefs-name-conventions-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-name-conventions-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-name-conventions-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-output-16.png" />
     <EmbeddedResource Include="icons\prefs-output-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-output-16~contrast.png" />
@@ -2914,6 +3139,7 @@
     <EmbeddedResource Include="icons\prefs-output-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-output-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-output-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-performance-16.png" />
     <EmbeddedResource Include="icons\prefs-performance-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-performance-16~contrast.png" />
@@ -2926,6 +3152,7 @@
     <EmbeddedResource Include="icons\prefs-performance-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-performance-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-performance-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-play-16.png" />
     <EmbeddedResource Include="icons\prefs-play-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-play-16~contrast.png" />
@@ -2938,6 +3165,7 @@
     <EmbeddedResource Include="icons\prefs-play-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-play-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-play-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-project-16.png" />
     <EmbeddedResource Include="icons\prefs-project-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-project-16~contrast.png" />
@@ -2950,6 +3178,7 @@
     <EmbeddedResource Include="icons\prefs-project-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-project-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-project-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-sdk-locations-16.png" />
     <EmbeddedResource Include="icons\prefs-sdk-locations-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-sdk-locations-16~contrast.png" />
@@ -2962,6 +3191,7 @@
     <EmbeddedResource Include="icons\prefs-sdk-locations-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-sdk-locations-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-sdk-locations-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-signing-16.png" />
     <EmbeddedResource Include="icons\prefs-signing-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-signing-16~contrast.png" />
@@ -2974,6 +3204,7 @@
     <EmbeddedResource Include="icons\prefs-signing-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-signing-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-signing-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-solution-16.png" />
     <EmbeddedResource Include="icons\prefs-solution-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-solution-16~contrast.png" />
@@ -2986,6 +3217,7 @@
     <EmbeddedResource Include="icons\prefs-solution-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-solution-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-solution-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-source-16.png" />
     <EmbeddedResource Include="icons\prefs-source-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-source-16~contrast.png" />
@@ -2998,6 +3230,7 @@
     <EmbeddedResource Include="icons\prefs-source-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-source-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-source-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-startup-project-16.png" />
     <EmbeddedResource Include="icons\prefs-startup-project-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-startup-project-16~contrast.png" />
@@ -3010,6 +3243,7 @@
     <EmbeddedResource Include="icons\prefs-startup-project-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-startup-project-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-startup-project-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-task-list-16.png" />
     <EmbeddedResource Include="icons\prefs-task-list-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-task-list-16~contrast.png" />
@@ -3022,6 +3256,7 @@
     <EmbeddedResource Include="icons\prefs-task-list-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-task-list-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-task-list-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-updates-16.png" />
     <EmbeddedResource Include="icons\prefs-updates-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-updates-16~contrast.png" />
@@ -3034,6 +3269,7 @@
     <EmbeddedResource Include="icons\prefs-updates-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-updates-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-updates-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\prefs-visual-style-16.png" />
     <EmbeddedResource Include="icons\prefs-visual-style-16%402x.png" />
     <EmbeddedResource Include="icons\prefs-visual-style-16~contrast.png" />
@@ -3046,6 +3282,7 @@
     <EmbeddedResource Include="icons\prefs-visual-style-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\prefs-visual-style-16~sel.png" />
     <EmbeddedResource Include="icons\prefs-visual-style-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\preview-16.png" />
     <EmbeddedResource Include="icons\preview-16%402x.png" />
     <EmbeddedResource Include="icons\preview-16~contrast.png" />
@@ -3058,6 +3295,7 @@
     <EmbeddedResource Include="icons\preview-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\preview-16~sel.png" />
     <EmbeddedResource Include="icons\preview-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\preview-active-16.png" />
     <EmbeddedResource Include="icons\preview-active-16%402x.png" />
     <EmbeddedResource Include="icons\preview-active-16~contrast.png" />
@@ -3070,6 +3308,7 @@
     <EmbeddedResource Include="icons\preview-active-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\preview-active-16~sel.png" />
     <EmbeddedResource Include="icons\preview-active-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\preview-hover-16.png" />
     <EmbeddedResource Include="icons\preview-hover-16%402x.png" />
     <EmbeddedResource Include="icons\preview-hover-16~contrast.png" />
@@ -3082,6 +3321,7 @@
     <EmbeddedResource Include="icons\preview-hover-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\preview-hover-16~sel.png" />
     <EmbeddedResource Include="icons\preview-hover-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\print-16.png" />
     <EmbeddedResource Include="icons\print-16%402x.png" />
     <EmbeddedResource Include="icons\print-16~contrast.png" />
@@ -3090,6 +3330,7 @@
     <EmbeddedResource Include="icons\print-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\print-16~dark.png" />
     <EmbeddedResource Include="icons\print-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\project-16.png" />
     <EmbeddedResource Include="icons\project-16%402x.png" />
     <EmbeddedResource Include="icons\project-16~contrast.png" />
@@ -3102,6 +3343,7 @@
     <EmbeddedResource Include="icons\project-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\project-16~sel.png" />
     <EmbeddedResource Include="icons\project-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\project-assembly-16.png" />
     <EmbeddedResource Include="icons\project-assembly-16%402x.png" />
     <EmbeddedResource Include="icons\project-assembly-16~contrast.png" />
@@ -3114,6 +3356,7 @@
     <EmbeddedResource Include="icons\project-assembly-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\project-assembly-16~sel.png" />
     <EmbeddedResource Include="icons\project-assembly-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\question-16.png" />
     <EmbeddedResource Include="icons\question-16%402x.png" />
     <EmbeddedResource Include="icons\question-16~contrast.png" />
@@ -3126,6 +3369,7 @@
     <EmbeddedResource Include="icons\question-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\question-16~sel.png" />
     <EmbeddedResource Include="icons\question-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\question-24.png" />
     <EmbeddedResource Include="icons\question-24%402x.png" />
     <EmbeddedResource Include="icons\question-24~contrast.png" />
@@ -3138,6 +3382,7 @@
     <EmbeddedResource Include="icons\question-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\question-24~sel.png" />
     <EmbeddedResource Include="icons\question-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\question-32.png" />
     <EmbeddedResource Include="icons\question-32%402x.png" />
     <EmbeddedResource Include="icons\question-32~contrast.png" />
@@ -3150,6 +3395,7 @@
     <EmbeddedResource Include="icons\question-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\question-32~sel.png" />
     <EmbeddedResource Include="icons\question-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\question-48.png" />
     <EmbeddedResource Include="icons\question-48%402x.png" />
     <EmbeddedResource Include="icons\question-48~contrast.png" />
@@ -3162,6 +3408,7 @@
     <EmbeddedResource Include="icons\question-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\question-48~sel.png" />
     <EmbeddedResource Include="icons\question-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\recent-16.png" />
     <EmbeddedResource Include="icons\recent-16%402x.png" />
     <EmbeddedResource Include="icons\recent-16~contrast.png" />
@@ -3174,6 +3421,7 @@
     <EmbeddedResource Include="icons\recent-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\recent-16~sel.png" />
     <EmbeddedResource Include="icons\recent-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\redo-16.png" />
     <EmbeddedResource Include="icons\redo-16%402x.png" />
     <EmbeddedResource Include="icons\redo-16~contrast.png" />
@@ -3190,6 +3438,7 @@
     <EmbeddedResource Include="icons\redo-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\redo-16~disabled.png" />
     <EmbeddedResource Include="icons\redo-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\reference-16.png" />
     <EmbeddedResource Include="icons\reference-16%402x.png" />
     <EmbeddedResource Include="icons\reference-16~contrast.png" />
@@ -3202,6 +3451,7 @@
     <EmbeddedResource Include="icons\reference-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\reference-16~sel.png" />
     <EmbeddedResource Include="icons\reference-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\reference-assembly-16.png" />
     <EmbeddedResource Include="icons\reference-assembly-16%402x.png" />
     <EmbeddedResource Include="icons\reference-assembly-16~contrast.png" />
@@ -3214,6 +3464,7 @@
     <EmbeddedResource Include="icons\reference-assembly-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\reference-assembly-16~sel.png" />
     <EmbeddedResource Include="icons\reference-assembly-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\reference-invalid-16.png" />
     <EmbeddedResource Include="icons\reference-invalid-16%402x.png" />
     <EmbeddedResource Include="icons\reference-invalid-16~contrast.png" />
@@ -3226,6 +3477,7 @@
     <EmbeddedResource Include="icons\reference-invalid-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\reference-invalid-16~sel.png" />
     <EmbeddedResource Include="icons\reference-invalid-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\reference-project-16.png" />
     <EmbeddedResource Include="icons\reference-project-16%402x.png" />
     <EmbeddedResource Include="icons\reference-project-16~contrast.png" />
@@ -3238,6 +3490,7 @@
     <EmbeddedResource Include="icons\reference-project-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\reference-project-16~sel.png" />
     <EmbeddedResource Include="icons\reference-project-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\refresh-16.png" />
     <EmbeddedResource Include="icons\refresh-16%402x.png" />
     <EmbeddedResource Include="icons\refresh-16~contrast.png" />
@@ -3254,6 +3507,7 @@
     <EmbeddedResource Include="icons\refresh-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\refresh-16~disabled.png" />
     <EmbeddedResource Include="icons\refresh-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\region-16.png" />
     <EmbeddedResource Include="icons\region-16%402x.png" />
     <EmbeddedResource Include="icons\region-16~contrast.png" />
@@ -3266,6 +3520,7 @@
     <EmbeddedResource Include="icons\region-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\region-16~sel.png" />
     <EmbeddedResource Include="icons\region-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\remove-16.png" />
     <EmbeddedResource Include="icons\remove-16%402x.png" />
     <EmbeddedResource Include="icons\remove-16~contrast.png" />
@@ -3286,6 +3541,7 @@
     <EmbeddedResource Include="icons\remove-16~disabled%402x.png" />
     <EmbeddedResource Include="icons\remove-16~sel.png" />
     <EmbeddedResource Include="icons\remove-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\remove-simple-16.png" />
     <EmbeddedResource Include="icons\remove-simple-16%402x.png" />
     <EmbeddedResource Include="icons\remove-simple-16~contrast.png" />
@@ -3298,6 +3554,7 @@
     <EmbeddedResource Include="icons\remove-simple-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\remove-simple-16~sel.png" />
     <EmbeddedResource Include="icons\remove-simple-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\revert-16.png" />
     <EmbeddedResource Include="icons\revert-16%402x.png" />
     <EmbeddedResource Include="icons\revert-16~contrast.png" />
@@ -3314,6 +3571,7 @@
     <EmbeddedResource Include="icons\revert-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\revert-16~disabled.png" />
     <EmbeddedResource Include="icons\revert-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\run-unit-tests-16.png" />
     <EmbeddedResource Include="icons\run-unit-tests-16%402x.png" />
     <EmbeddedResource Include="icons\run-unit-tests-16~contrast.png" />
@@ -3322,6 +3580,7 @@
     <EmbeddedResource Include="icons\run-unit-tests-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\run-unit-tests-16~dark.png" />
     <EmbeddedResource Include="icons\run-unit-tests-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\save-16.png" />
     <EmbeddedResource Include="icons\save-16%402x.png" />
     <EmbeddedResource Include="icons\save-16~contrast.png" />
@@ -3330,6 +3589,7 @@
     <EmbeddedResource Include="icons\save-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\save-16~dark.png" />
     <EmbeddedResource Include="icons\save-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\save-all-16.png" />
     <EmbeddedResource Include="icons\save-all-16%402x.png" />
     <EmbeddedResource Include="icons\save-all-16~contrast.png" />
@@ -3338,6 +3598,7 @@
     <EmbeddedResource Include="icons\save-all-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\save-all-16~dark.png" />
     <EmbeddedResource Include="icons\save-all-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\scroll-16.png" />
     <EmbeddedResource Include="icons\scroll-16%402x.png" />
     <EmbeddedResource Include="icons\scroll-16~contrast.png" />
@@ -3350,6 +3611,7 @@
     <EmbeddedResource Include="icons\scroll-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\scroll-16~sel.png" />
     <EmbeddedResource Include="icons\scroll-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\searchbox-clear-macos-16.png" />
     <EmbeddedResource Include="icons\searchbox-clear-macos-16%402x.png" />
     <EmbeddedResource Include="icons\searchbox-clear-macos-16~contrast.png" />
@@ -3358,12 +3620,14 @@
     <EmbeddedResource Include="icons\searchbox-clear-macos-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\searchbox-clear-macos-16~dark.png" />
     <EmbeddedResource Include="icons\searchbox-clear-macos-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\searchbox-clear-win-24.png" />
     <EmbeddedResource Include="icons\searchbox-clear-win-24~dark.png" />
     <EmbeddedResource Include="icons\searchbox-clear-win-24~hover.png" />
     <EmbeddedResource Include="icons\searchbox-clear-win-24~hover~dark.png" />
     <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed.png" />
     <EmbeddedResource Include="icons\searchbox-clear-win-24~pressed~dark.png" />
+
     <EmbeddedResource Include="icons\searchbox-search-macos-16.png" />
     <EmbeddedResource Include="icons\searchbox-search-macos-16%402x.png" />
     <EmbeddedResource Include="icons\searchbox-search-macos-16~contrast.png" />
@@ -3372,12 +3636,14 @@
     <EmbeddedResource Include="icons\searchbox-search-macos-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\searchbox-search-macos-16~dark.png" />
     <EmbeddedResource Include="icons\searchbox-search-macos-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\searchbox-search-win-24.png" />
     <EmbeddedResource Include="icons\searchbox-search-win-24~dark.png" />
     <EmbeddedResource Include="icons\searchbox-search-win-24~hover.png" />
     <EmbeddedResource Include="icons\searchbox-search-win-24~hover~dark.png" />
     <EmbeddedResource Include="icons\searchbox-search-win-24~pressed.png" />
     <EmbeddedResource Include="icons\searchbox-search-win-24~pressed~dark.png" />
+
     <EmbeddedResource Include="icons\select-all-16.png" />
     <EmbeddedResource Include="icons\select-all-16%402x.png" />
     <EmbeddedResource Include="icons\select-all-16~contrast.png" />
@@ -3394,6 +3660,7 @@
     <EmbeddedResource Include="icons\select-all-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\select-all-16~disabled.png" />
     <EmbeddedResource Include="icons\select-all-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\service-16.png" />
     <EmbeddedResource Include="icons\service-16%402x.png" />
     <EmbeddedResource Include="icons\service-16~contrast.png" />
@@ -3406,6 +3673,7 @@
     <EmbeddedResource Include="icons\service-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\service-16~sel.png" />
     <EmbeddedResource Include="icons\service-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\service-24.png" />
     <EmbeddedResource Include="icons\service-24%402x.png" />
     <EmbeddedResource Include="icons\service-24~contrast.png" />
@@ -3418,6 +3686,7 @@
     <EmbeddedResource Include="icons\service-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\service-24~sel.png" />
     <EmbeddedResource Include="icons\service-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\solution-16.png" />
     <EmbeddedResource Include="icons\solution-16%402x.png" />
     <EmbeddedResource Include="icons\solution-16~contrast.png" />
@@ -3430,6 +3699,7 @@
     <EmbeddedResource Include="icons\solution-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\solution-16~sel.png" />
     <EmbeddedResource Include="icons\solution-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\sort-alphabetically-16.png" />
     <EmbeddedResource Include="icons\sort-alphabetically-16%402x.png" />
     <EmbeddedResource Include="icons\sort-alphabetically-16~contrast.png" />
@@ -3438,6 +3708,7 @@
     <EmbeddedResource Include="icons\sort-alphabetically-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\sort-alphabetically-16~dark.png" />
     <EmbeddedResource Include="icons\sort-alphabetically-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-14-1.png" />
     <EmbeddedResource Include="icons\spinner-14-1%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-1~contrast.png" />
@@ -3450,6 +3721,7 @@
     <EmbeddedResource Include="icons\spinner-14-1~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-1~sel.png" />
     <EmbeddedResource Include="icons\spinner-14-1~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-14-2.png" />
     <EmbeddedResource Include="icons\spinner-14-2%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-2~contrast.png" />
@@ -3462,6 +3734,7 @@
     <EmbeddedResource Include="icons\spinner-14-2~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-2~sel.png" />
     <EmbeddedResource Include="icons\spinner-14-2~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-14-3.png" />
     <EmbeddedResource Include="icons\spinner-14-3%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-3~contrast.png" />
@@ -3474,6 +3747,7 @@
     <EmbeddedResource Include="icons\spinner-14-3~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-3~sel.png" />
     <EmbeddedResource Include="icons\spinner-14-3~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-14-4.png" />
     <EmbeddedResource Include="icons\spinner-14-4%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-4~contrast.png" />
@@ -3486,6 +3760,7 @@
     <EmbeddedResource Include="icons\spinner-14-4~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-4~sel.png" />
     <EmbeddedResource Include="icons\spinner-14-4~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-14-5.png" />
     <EmbeddedResource Include="icons\spinner-14-5%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-5~contrast.png" />
@@ -3498,6 +3773,7 @@
     <EmbeddedResource Include="icons\spinner-14-5~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-14-5~sel.png" />
     <EmbeddedResource Include="icons\spinner-14-5~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-16-1.png" />
     <EmbeddedResource Include="icons\spinner-16-1%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-1~contrast.png" />
@@ -3510,6 +3786,7 @@
     <EmbeddedResource Include="icons\spinner-16-1~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-1~sel.png" />
     <EmbeddedResource Include="icons\spinner-16-1~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-16-2.png" />
     <EmbeddedResource Include="icons\spinner-16-2%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-2~contrast.png" />
@@ -3522,6 +3799,7 @@
     <EmbeddedResource Include="icons\spinner-16-2~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-2~sel.png" />
     <EmbeddedResource Include="icons\spinner-16-2~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-16-3.png" />
     <EmbeddedResource Include="icons\spinner-16-3%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-3~contrast.png" />
@@ -3534,6 +3812,7 @@
     <EmbeddedResource Include="icons\spinner-16-3~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-3~sel.png" />
     <EmbeddedResource Include="icons\spinner-16-3~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-16-4.png" />
     <EmbeddedResource Include="icons\spinner-16-4%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-4~contrast.png" />
@@ -3546,6 +3825,7 @@
     <EmbeddedResource Include="icons\spinner-16-4~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-4~sel.png" />
     <EmbeddedResource Include="icons\spinner-16-4~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-16-5.png" />
     <EmbeddedResource Include="icons\spinner-16-5%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-5~contrast.png" />
@@ -3558,6 +3838,7 @@
     <EmbeddedResource Include="icons\spinner-16-5~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-16-5~sel.png" />
     <EmbeddedResource Include="icons\spinner-16-5~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-18-1.png" />
     <EmbeddedResource Include="icons\spinner-18-1%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-1~contrast.png" />
@@ -3570,6 +3851,7 @@
     <EmbeddedResource Include="icons\spinner-18-1~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-1~sel.png" />
     <EmbeddedResource Include="icons\spinner-18-1~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-18-2.png" />
     <EmbeddedResource Include="icons\spinner-18-2%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-2~contrast.png" />
@@ -3582,6 +3864,7 @@
     <EmbeddedResource Include="icons\spinner-18-2~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-2~sel.png" />
     <EmbeddedResource Include="icons\spinner-18-2~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-18-3.png" />
     <EmbeddedResource Include="icons\spinner-18-3%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-3~contrast.png" />
@@ -3594,6 +3877,7 @@
     <EmbeddedResource Include="icons\spinner-18-3~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-3~sel.png" />
     <EmbeddedResource Include="icons\spinner-18-3~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-18-4.png" />
     <EmbeddedResource Include="icons\spinner-18-4%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-4~contrast.png" />
@@ -3606,6 +3890,7 @@
     <EmbeddedResource Include="icons\spinner-18-4~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-4~sel.png" />
     <EmbeddedResource Include="icons\spinner-18-4~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-18-5.png" />
     <EmbeddedResource Include="icons\spinner-18-5%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-5~contrast.png" />
@@ -3618,6 +3903,7 @@
     <EmbeddedResource Include="icons\spinner-18-5~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-18-5~sel.png" />
     <EmbeddedResource Include="icons\spinner-18-5~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-36-1.png" />
     <EmbeddedResource Include="icons\spinner-36-1%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-1~contrast.png" />
@@ -3630,6 +3916,7 @@
     <EmbeddedResource Include="icons\spinner-36-1~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-1~sel.png" />
     <EmbeddedResource Include="icons\spinner-36-1~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-36-2.png" />
     <EmbeddedResource Include="icons\spinner-36-2%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-2~contrast.png" />
@@ -3642,6 +3929,7 @@
     <EmbeddedResource Include="icons\spinner-36-2~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-2~sel.png" />
     <EmbeddedResource Include="icons\spinner-36-2~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-36-3.png" />
     <EmbeddedResource Include="icons\spinner-36-3%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-3~contrast.png" />
@@ -3654,6 +3942,7 @@
     <EmbeddedResource Include="icons\spinner-36-3~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-3~sel.png" />
     <EmbeddedResource Include="icons\spinner-36-3~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-36-4.png" />
     <EmbeddedResource Include="icons\spinner-36-4%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-4~contrast.png" />
@@ -3666,6 +3955,7 @@
     <EmbeddedResource Include="icons\spinner-36-4~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-4~sel.png" />
     <EmbeddedResource Include="icons\spinner-36-4~sel%402x.png" />
+
     <EmbeddedResource Include="icons\spinner-36-5.png" />
     <EmbeddedResource Include="icons\spinner-36-5%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-5~contrast.png" />
@@ -3678,6 +3968,7 @@
     <EmbeddedResource Include="icons\spinner-36-5~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\spinner-36-5~sel.png" />
     <EmbeddedResource Include="icons\spinner-36-5~sel%402x.png" />
+
     <EmbeddedResource Include="icons\star-16.png" />
     <EmbeddedResource Include="icons\star-16%402x.png" />
     <EmbeddedResource Include="icons\star-16~contrast.png" />
@@ -3686,6 +3977,7 @@
     <EmbeddedResource Include="icons\star-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\star-16~dark.png" />
     <EmbeddedResource Include="icons\star-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\star-hover-16.png" />
     <EmbeddedResource Include="icons\star-hover-16%402x.png" />
     <EmbeddedResource Include="icons\star-hover-16~contrast.png" />
@@ -3694,6 +3986,7 @@
     <EmbeddedResource Include="icons\star-hover-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\star-hover-16~dark.png" />
     <EmbeddedResource Include="icons\star-hover-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-1-16.png" />
     <EmbeddedResource Include="icons\status-connecting-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-1-16~contrast.png" />
@@ -3702,6 +3995,7 @@
     <EmbeddedResource Include="icons\status-connecting-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-2-16.png" />
     <EmbeddedResource Include="icons\status-connecting-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-2-16~contrast.png" />
@@ -3710,6 +4004,7 @@
     <EmbeddedResource Include="icons\status-connecting-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-3-16.png" />
     <EmbeddedResource Include="icons\status-connecting-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-3-16~contrast.png" />
@@ -3718,6 +4013,7 @@
     <EmbeddedResource Include="icons\status-connecting-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-4-16.png" />
     <EmbeddedResource Include="icons\status-connecting-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-4-16~contrast.png" />
@@ -3726,6 +4022,7 @@
     <EmbeddedResource Include="icons\status-connecting-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-5-16.png" />
     <EmbeddedResource Include="icons\status-connecting-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-5-16~contrast.png" />
@@ -3734,6 +4031,7 @@
     <EmbeddedResource Include="icons\status-connecting-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-connecting-6-16.png" />
     <EmbeddedResource Include="icons\status-connecting-6-16%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-6-16~contrast.png" />
@@ -3742,6 +4040,7 @@
     <EmbeddedResource Include="icons\status-connecting-6-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-connecting-6-16~dark.png" />
     <EmbeddedResource Include="icons\status-connecting-6-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-1-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-1-16~contrast.png" />
@@ -3750,6 +4049,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-2-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-2-16~contrast.png" />
@@ -3758,6 +4058,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-3-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-3-16~contrast.png" />
@@ -3766,6 +4067,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-4-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-4-16~contrast.png" />
@@ -3774,6 +4076,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-5-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-5-16~contrast.png" />
@@ -3782,6 +4085,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-device-deploying-6-16.png" />
     <EmbeddedResource Include="icons\status-device-deploying-6-16%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-6-16~contrast.png" />
@@ -3790,6 +4094,7 @@
     <EmbeddedResource Include="icons\status-device-deploying-6-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-device-deploying-6-16~dark.png" />
     <EmbeddedResource Include="icons\status-device-deploying-6-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-error-16.png" />
     <EmbeddedResource Include="icons\status-error-16%402x.png" />
     <EmbeddedResource Include="icons\status-error-16~contrast.png" />
@@ -3798,6 +4103,7 @@
     <EmbeddedResource Include="icons\status-error-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-error-16~dark.png" />
     <EmbeddedResource Include="icons\status-error-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-error-count-16.png" />
     <EmbeddedResource Include="icons\status-error-count-16%402x.png" />
     <EmbeddedResource Include="icons\status-error-count-16~contrast.png" />
@@ -3806,6 +4112,7 @@
     <EmbeddedResource Include="icons\status-error-count-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-error-count-16~dark.png" />
     <EmbeddedResource Include="icons\status-error-count-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-instrumentation-16.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16%402x.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16~contrast.png" />
@@ -3814,6 +4121,7 @@
     <EmbeddedResource Include="icons\status-instrumentation-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16~dark.png" />
     <EmbeddedResource Include="icons\status-instrumentation-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-parsing-16.png" />
     <EmbeddedResource Include="icons\status-parsing-16%402x.png" />
     <EmbeddedResource Include="icons\status-parsing-16~contrast.png" />
@@ -3822,6 +4130,7 @@
     <EmbeddedResource Include="icons\status-parsing-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-parsing-16~dark.png" />
     <EmbeddedResource Include="icons\status-parsing-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-1-16.png" />
     <EmbeddedResource Include="icons\status-pulling-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-1-16~contrast.png" />
@@ -3830,6 +4139,7 @@
     <EmbeddedResource Include="icons\status-pulling-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-2-16.png" />
     <EmbeddedResource Include="icons\status-pulling-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-2-16~contrast.png" />
@@ -3838,6 +4148,7 @@
     <EmbeddedResource Include="icons\status-pulling-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-3-16.png" />
     <EmbeddedResource Include="icons\status-pulling-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-3-16~contrast.png" />
@@ -3846,6 +4157,7 @@
     <EmbeddedResource Include="icons\status-pulling-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-4-16.png" />
     <EmbeddedResource Include="icons\status-pulling-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-4-16~contrast.png" />
@@ -3854,6 +4166,7 @@
     <EmbeddedResource Include="icons\status-pulling-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-5-16.png" />
     <EmbeddedResource Include="icons\status-pulling-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-5-16~contrast.png" />
@@ -3862,6 +4175,7 @@
     <EmbeddedResource Include="icons\status-pulling-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pulling-6-16.png" />
     <EmbeddedResource Include="icons\status-pulling-6-16%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-6-16~contrast.png" />
@@ -3870,6 +4184,7 @@
     <EmbeddedResource Include="icons\status-pulling-6-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pulling-6-16~dark.png" />
     <EmbeddedResource Include="icons\status-pulling-6-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-1-16.png" />
     <EmbeddedResource Include="icons\status-pushing-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-1-16~contrast.png" />
@@ -3878,6 +4193,7 @@
     <EmbeddedResource Include="icons\status-pushing-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-2-16.png" />
     <EmbeddedResource Include="icons\status-pushing-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-2-16~contrast.png" />
@@ -3886,6 +4202,7 @@
     <EmbeddedResource Include="icons\status-pushing-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-3-16.png" />
     <EmbeddedResource Include="icons\status-pushing-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-3-16~contrast.png" />
@@ -3894,6 +4211,7 @@
     <EmbeddedResource Include="icons\status-pushing-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-4-16.png" />
     <EmbeddedResource Include="icons\status-pushing-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-4-16~contrast.png" />
@@ -3902,6 +4220,7 @@
     <EmbeddedResource Include="icons\status-pushing-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-5-16.png" />
     <EmbeddedResource Include="icons\status-pushing-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-5-16~contrast.png" />
@@ -3910,6 +4229,7 @@
     <EmbeddedResource Include="icons\status-pushing-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-pushing-6-16.png" />
     <EmbeddedResource Include="icons\status-pushing-6-16%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-6-16~contrast.png" />
@@ -3918,6 +4238,7 @@
     <EmbeddedResource Include="icons\status-pushing-6-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-pushing-6-16~dark.png" />
     <EmbeddedResource Include="icons\status-pushing-6-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-ready-16.png" />
     <EmbeddedResource Include="icons\status-ready-16%402x.png" />
     <EmbeddedResource Include="icons\status-ready-16~contrast.png" />
@@ -3926,6 +4247,7 @@
     <EmbeddedResource Include="icons\status-ready-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-ready-16~dark.png" />
     <EmbeddedResource Include="icons\status-ready-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-searching-1-16.png" />
     <EmbeddedResource Include="icons\status-searching-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-searching-1-16~contrast.png" />
@@ -3934,6 +4256,7 @@
     <EmbeddedResource Include="icons\status-searching-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-searching-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-searching-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-searching-2-16.png" />
     <EmbeddedResource Include="icons\status-searching-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-searching-2-16~contrast.png" />
@@ -3942,6 +4265,7 @@
     <EmbeddedResource Include="icons\status-searching-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-searching-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-searching-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-searching-3-16.png" />
     <EmbeddedResource Include="icons\status-searching-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-searching-3-16~contrast.png" />
@@ -3950,6 +4274,7 @@
     <EmbeddedResource Include="icons\status-searching-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-searching-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-searching-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-searching-4-16.png" />
     <EmbeddedResource Include="icons\status-searching-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-searching-4-16~contrast.png" />
@@ -3958,6 +4283,7 @@
     <EmbeddedResource Include="icons\status-searching-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-searching-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-searching-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-success-16.png" />
     <EmbeddedResource Include="icons\status-success-16%402x.png" />
     <EmbeddedResource Include="icons\status-success-16~contrast.png" />
@@ -3966,6 +4292,7 @@
     <EmbeddedResource Include="icons\status-success-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-success-16~dark.png" />
     <EmbeddedResource Include="icons\status-success-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-1-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-1-16~contrast.png" />
@@ -3974,6 +4301,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-2-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-2-16~contrast.png" />
@@ -3982,6 +4310,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-3-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-3-16~contrast.png" />
@@ -3990,6 +4319,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-4-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-4-16~contrast.png" />
@@ -3998,6 +4328,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-5-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-5-16~contrast.png" />
@@ -4006,6 +4337,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-downloading-6-16.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-6-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-6-16~contrast.png" />
@@ -4014,6 +4346,7 @@
     <EmbeddedResource Include="icons\status-updates-downloading-6-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-6-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-downloading-6-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-paused-16.png" />
     <EmbeddedResource Include="icons\status-updates-paused-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-paused-16~contrast.png" />
@@ -4022,6 +4355,7 @@
     <EmbeddedResource Include="icons\status-updates-paused-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-paused-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-paused-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-updates-ready-16.png" />
     <EmbeddedResource Include="icons\status-updates-ready-16%402x.png" />
     <EmbeddedResource Include="icons\status-updates-ready-16~contrast.png" />
@@ -4030,6 +4364,7 @@
     <EmbeddedResource Include="icons\status-updates-ready-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-updates-ready-16~dark.png" />
     <EmbeddedResource Include="icons\status-updates-ready-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-waiting-1-16.png" />
     <EmbeddedResource Include="icons\status-waiting-1-16%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-1-16~contrast.png" />
@@ -4038,6 +4373,7 @@
     <EmbeddedResource Include="icons\status-waiting-1-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-1-16~dark.png" />
     <EmbeddedResource Include="icons\status-waiting-1-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-waiting-2-16.png" />
     <EmbeddedResource Include="icons\status-waiting-2-16%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-2-16~contrast.png" />
@@ -4046,6 +4382,7 @@
     <EmbeddedResource Include="icons\status-waiting-2-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-2-16~dark.png" />
     <EmbeddedResource Include="icons\status-waiting-2-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-waiting-3-16.png" />
     <EmbeddedResource Include="icons\status-waiting-3-16%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-3-16~contrast.png" />
@@ -4054,6 +4391,7 @@
     <EmbeddedResource Include="icons\status-waiting-3-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-3-16~dark.png" />
     <EmbeddedResource Include="icons\status-waiting-3-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-waiting-4-16.png" />
     <EmbeddedResource Include="icons\status-waiting-4-16%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-4-16~contrast.png" />
@@ -4062,6 +4400,7 @@
     <EmbeddedResource Include="icons\status-waiting-4-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-4-16~dark.png" />
     <EmbeddedResource Include="icons\status-waiting-4-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-waiting-5-16.png" />
     <EmbeddedResource Include="icons\status-waiting-5-16%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-5-16~contrast.png" />
@@ -4070,6 +4409,7 @@
     <EmbeddedResource Include="icons\status-waiting-5-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-waiting-5-16~dark.png" />
     <EmbeddedResource Include="icons\status-waiting-5-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-warning-16.png" />
     <EmbeddedResource Include="icons\status-warning-16%402x.png" />
     <EmbeddedResource Include="icons\status-warning-16~contrast.png" />
@@ -4078,6 +4418,7 @@
     <EmbeddedResource Include="icons\status-warning-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-warning-16~dark.png" />
     <EmbeddedResource Include="icons\status-warning-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\status-warning-count-16.png" />
     <EmbeddedResource Include="icons\status-warning-count-16%402x.png" />
     <EmbeddedResource Include="icons\status-warning-count-16~contrast.png" />
@@ -4086,6 +4427,7 @@
     <EmbeddedResource Include="icons\status-warning-count-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\status-warning-count-16~dark.png" />
     <EmbeddedResource Include="icons\status-warning-count-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\stop-16.png" />
     <EmbeddedResource Include="icons\stop-16%402x.png" />
     <EmbeddedResource Include="icons\stop-16~contrast.png" />
@@ -4102,6 +4444,7 @@
     <EmbeddedResource Include="icons\stop-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\stop-16~disabled.png" />
     <EmbeddedResource Include="icons\stop-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\style-16.png" />
     <EmbeddedResource Include="icons\style-16%402x.png" />
     <EmbeddedResource Include="icons\style-16~contrast.png" />
@@ -4114,6 +4457,7 @@
     <EmbeddedResource Include="icons\style-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\style-16~sel.png" />
     <EmbeddedResource Include="icons\style-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\tab-close-9.png" />
     <EmbeddedResource Include="icons\tab-close-9%402x.png" />
     <EmbeddedResource Include="icons\tab-close-9~contrast.png" />
@@ -4122,6 +4466,7 @@
     <EmbeddedResource Include="icons\tab-close-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tab-close-9~dark.png" />
     <EmbeddedResource Include="icons\tab-close-9~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tab-dirty-9.png" />
     <EmbeddedResource Include="icons\tab-dirty-9%402x.png" />
     <EmbeddedResource Include="icons\tab-dirty-9~contrast.png" />
@@ -4130,6 +4475,7 @@
     <EmbeddedResource Include="icons\tab-dirty-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tab-dirty-9~dark.png" />
     <EmbeddedResource Include="icons\tab-dirty-9~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tab-pinned-9.png" />
     <EmbeddedResource Include="icons\tab-pinned-9%402x.png" />
     <EmbeddedResource Include="icons\tab-pinned-9~contrast.png" />
@@ -4138,6 +4484,7 @@
     <EmbeddedResource Include="icons\tab-pinned-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tab-pinned-9~dark.png" />
     <EmbeddedResource Include="icons\tab-pinned-9~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tab-unpinned-9.png" />
     <EmbeddedResource Include="icons\tab-unpinned-9%402x.png" />
     <EmbeddedResource Include="icons\tab-unpinned-9~contrast.png" />
@@ -4146,6 +4493,7 @@
     <EmbeddedResource Include="icons\tab-unpinned-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tab-unpinned-9~dark.png" />
     <EmbeddedResource Include="icons\tab-unpinned-9~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-menu-12.png" />
     <EmbeddedResource Include="icons\tabbar-menu-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-menu-12~contrast.png" />
@@ -4154,6 +4502,7 @@
     <EmbeddedResource Include="icons\tabbar-menu-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-menu-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-menu-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-menu-hover-12.png" />
     <EmbeddedResource Include="icons\tabbar-menu-hover-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-menu-hover-12~contrast.png" />
@@ -4162,6 +4511,7 @@
     <EmbeddedResource Include="icons\tabbar-menu-hover-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-menu-hover-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-menu-hover-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-next-12.png" />
     <EmbeddedResource Include="icons\tabbar-next-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-next-12~contrast.png" />
@@ -4170,6 +4520,7 @@
     <EmbeddedResource Include="icons\tabbar-next-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-next-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-next-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-next-hover-12.png" />
     <EmbeddedResource Include="icons\tabbar-next-hover-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-next-hover-12~contrast.png" />
@@ -4178,6 +4529,7 @@
     <EmbeddedResource Include="icons\tabbar-next-hover-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-next-hover-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-next-hover-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-prev-12.png" />
     <EmbeddedResource Include="icons\tabbar-prev-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-prev-12~contrast.png" />
@@ -4186,6 +4538,7 @@
     <EmbeddedResource Include="icons\tabbar-prev-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-prev-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-prev-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tabbar-prev-hover-12.png" />
     <EmbeddedResource Include="icons\tabbar-prev-hover-12%402x.png" />
     <EmbeddedResource Include="icons\tabbar-prev-hover-12~contrast.png" />
@@ -4194,6 +4547,7 @@
     <EmbeddedResource Include="icons\tabbar-prev-hover-12~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\tabbar-prev-hover-12~dark.png" />
     <EmbeddedResource Include="icons\tabbar-prev-hover-12~dark%402x.png" />
+
     <EmbeddedResource Include="icons\test-failed-16.png" />
     <EmbeddedResource Include="icons\test-failed-16%402x.png" />
     <EmbeddedResource Include="icons\test-failed-16~contrast.png" />
@@ -4202,6 +4556,7 @@
     <EmbeddedResource Include="icons\test-failed-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\test-failed-16~dark.png" />
     <EmbeddedResource Include="icons\test-failed-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\tree-chevron-closed.png" />
     <EmbeddedResource Include="icons\tree-chevron-closed%402x.png" />
     <EmbeddedResource Include="icons\tree-chevron-closed~contrast.png" />
@@ -4214,6 +4569,7 @@
     <EmbeddedResource Include="icons\tree-chevron-closed~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\tree-chevron-closed~sel.png" />
     <EmbeddedResource Include="icons\tree-chevron-closed~sel%402x.png" />
+
     <EmbeddedResource Include="icons\tree-chevron-open.png" />
     <EmbeddedResource Include="icons\tree-chevron-open%402x.png" />
     <EmbeddedResource Include="icons\tree-chevron-open~contrast.png" />
@@ -4226,6 +4582,7 @@
     <EmbeddedResource Include="icons\tree-chevron-open~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\tree-chevron-open~sel.png" />
     <EmbeddedResource Include="icons\tree-chevron-open~sel%402x.png" />
+
     <EmbeddedResource Include="icons\typography-16.png" />
     <EmbeddedResource Include="icons\typography-16%402x.png" />
     <EmbeddedResource Include="icons\typography-16~contrast.png" />
@@ -4238,6 +4595,7 @@
     <EmbeddedResource Include="icons\typography-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\typography-16~sel.png" />
     <EmbeddedResource Include="icons\typography-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\undo-16.png" />
     <EmbeddedResource Include="icons\undo-16%402x.png" />
     <EmbeddedResource Include="icons\undo-16~contrast.png" />
@@ -4254,6 +4612,7 @@
     <EmbeddedResource Include="icons\undo-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\undo-16~disabled.png" />
     <EmbeddedResource Include="icons\undo-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\unindent-16.png" />
     <EmbeddedResource Include="icons\unindent-16%402x.png" />
     <EmbeddedResource Include="icons\unindent-16~contrast.png" />
@@ -4262,6 +4621,7 @@
     <EmbeddedResource Include="icons\unindent-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\unindent-16~dark.png" />
     <EmbeddedResource Include="icons\unindent-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\unstar-16.png" />
     <EmbeddedResource Include="icons\unstar-16%402x.png" />
     <EmbeddedResource Include="icons\unstar-16~contrast.png" />
@@ -4270,6 +4630,7 @@
     <EmbeddedResource Include="icons\unstar-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\unstar-16~dark.png" />
     <EmbeddedResource Include="icons\unstar-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\unstar-hover-16.png" />
     <EmbeddedResource Include="icons\unstar-hover-16%402x.png" />
     <EmbeddedResource Include="icons\unstar-hover-16~contrast.png" />
@@ -4278,6 +4639,7 @@
     <EmbeddedResource Include="icons\unstar-hover-16~contrast~dark%402x.png" />
     <EmbeddedResource Include="icons\unstar-hover-16~dark.png" />
     <EmbeddedResource Include="icons\unstar-hover-16~dark%402x.png" />
+
     <EmbeddedResource Include="icons\updates-16.png" />
     <EmbeddedResource Include="icons\updates-16%402x.png" />
     <EmbeddedResource Include="icons\updates-16~contrast.png" />
@@ -4294,6 +4656,7 @@
     <EmbeddedResource Include="icons\updates-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\updates-16~disabled.png" />
     <EmbeddedResource Include="icons\updates-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\warning-16.png" />
     <EmbeddedResource Include="icons\warning-16%402x.png" />
     <EmbeddedResource Include="icons\warning-16~contrast.png" />
@@ -4306,6 +4669,7 @@
     <EmbeddedResource Include="icons\warning-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\warning-16~sel.png" />
     <EmbeddedResource Include="icons\warning-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\warning-24.png" />
     <EmbeddedResource Include="icons\warning-24%402x.png" />
     <EmbeddedResource Include="icons\warning-24~contrast.png" />
@@ -4318,6 +4682,7 @@
     <EmbeddedResource Include="icons\warning-24~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\warning-24~sel.png" />
     <EmbeddedResource Include="icons\warning-24~sel%402x.png" />
+
     <EmbeddedResource Include="icons\warning-32.png" />
     <EmbeddedResource Include="icons\warning-32%402x.png" />
     <EmbeddedResource Include="icons\warning-32~contrast.png" />
@@ -4330,6 +4695,7 @@
     <EmbeddedResource Include="icons\warning-32~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\warning-32~sel.png" />
     <EmbeddedResource Include="icons\warning-32~sel%402x.png" />
+
     <EmbeddedResource Include="icons\warning-48.png" />
     <EmbeddedResource Include="icons\warning-48%402x.png" />
     <EmbeddedResource Include="icons\warning-48~contrast.png" />
@@ -4342,6 +4708,7 @@
     <EmbeddedResource Include="icons\warning-48~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\warning-48~sel.png" />
     <EmbeddedResource Include="icons\warning-48~sel%402x.png" />
+
     <EmbeddedResource Include="icons\web-search-16.png" />
     <EmbeddedResource Include="icons\web-search-16%402x.png" />
     <EmbeddedResource Include="icons\web-search-16~contrast.png" />
@@ -4358,6 +4725,7 @@
     <EmbeddedResource Include="icons\web-search-16~dark~disabled%402x.png" />
     <EmbeddedResource Include="icons\web-search-16~disabled.png" />
     <EmbeddedResource Include="icons\web-search-16~disabled%402x.png" />
+
     <EmbeddedResource Include="icons\widget-16.png" />
     <EmbeddedResource Include="icons\widget-16%402x.png" />
     <EmbeddedResource Include="icons\widget-16~contrast.png" />
@@ -4370,6 +4738,7 @@
     <EmbeddedResource Include="icons\widget-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\widget-16~sel.png" />
     <EmbeddedResource Include="icons\widget-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\workspace-16.png" />
     <EmbeddedResource Include="icons\workspace-16%402x.png" />
     <EmbeddedResource Include="icons\workspace-16~contrast.png" />
@@ -4382,6 +4751,7 @@
     <EmbeddedResource Include="icons\workspace-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\workspace-16~sel.png" />
     <EmbeddedResource Include="icons\workspace-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\zoom-actual-16.png" />
     <EmbeddedResource Include="icons\zoom-actual-16%402x.png" />
     <EmbeddedResource Include="icons\zoom-actual-16~contrast.png" />
@@ -4394,6 +4764,7 @@
     <EmbeddedResource Include="icons\zoom-actual-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\zoom-actual-16~sel.png" />
     <EmbeddedResource Include="icons\zoom-actual-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\zoom-in-16.png" />
     <EmbeddedResource Include="icons\zoom-in-16%402x.png" />
     <EmbeddedResource Include="icons\zoom-in-16~contrast.png" />
@@ -4406,6 +4777,7 @@
     <EmbeddedResource Include="icons\zoom-in-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\zoom-in-16~sel.png" />
     <EmbeddedResource Include="icons\zoom-in-16~sel%402x.png" />
+
     <EmbeddedResource Include="icons\zoom-out-16.png" />
     <EmbeddedResource Include="icons\zoom-out-16%402x.png" />
     <EmbeddedResource Include="icons\zoom-out-16~contrast.png" />
@@ -4421,14 +4793,28 @@
 
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~contrast.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~contrast%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~contrast~dark.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~dark.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-close-9~dark%402x.png" />
+
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~contrast.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~contrast%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~contrast~dark.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark%402x.png" />
+
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~contrast.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~contrast%402x.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~contrast~dark.png" />
+    <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~contrast~dark%402x.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~dark.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-minimize-9~dark%402x.png" />
 
@@ -4549,14 +4935,27 @@
 
     <EmbeddedResource Include="templates\images\project-32.png" />
     <EmbeddedResource Include="templates\images\project-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-32~dark~sel.png" />
     <EmbeddedResource Include="templates\images\project-32~dark~sel%402x.png" />
     <EmbeddedResource Include="templates\images\project-32~sel.png" />
     <EmbeddedResource Include="templates\images\project-32~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\project-template.png" />
+    <EmbeddedResource Include="templates\images\project-template%402x.png" />
+    <EmbeddedResource Include="templates\images\project-template~dark.png" />
+    <EmbeddedResource Include="templates\images\project-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-console-32.png" />
     <EmbeddedResource Include="templates\images\project-console-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-console-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-console-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-console-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-console-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-console-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-console-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-console-32~dark~sel.png" />
@@ -4567,8 +4966,13 @@
     <EmbeddedResource Include="templates\images\project-console-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-console-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-console-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-32~dark~sel.png" />
@@ -4579,8 +4983,13 @@
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-pcl-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-32~dark~sel.png" />
@@ -4591,8 +5000,13 @@
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-crossplatform-shared-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-gui-32.png" />
     <EmbeddedResource Include="templates\images\project-gui-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-gui-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-gui-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-gui-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-gui-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-gui-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-gui-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-gui-32~dark~sel.png" />
@@ -4603,8 +5017,13 @@
     <EmbeddedResource Include="templates\images\project-gui-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-gui-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-gui-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-library-32.png" />
     <EmbeddedResource Include="templates\images\project-library-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-library-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-library-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-library-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-library-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-library-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-library-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-library-32~dark~sel.png" />
@@ -4615,8 +5034,13 @@
     <EmbeddedResource Include="templates\images\project-library-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-library-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-library-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-package-32.png" />
     <EmbeddedResource Include="templates\images\project-package-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-package-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-package-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-package-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-package-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-package-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-package-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-package-32~dark~sel.png" />
@@ -4627,12 +5051,13 @@
     <EmbeddedResource Include="templates\images\project-package-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-package-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-package-template~dark%402x.png" />
-    <EmbeddedResource Include="templates\images\project-template.png" />
-    <EmbeddedResource Include="templates\images\project-template%402x.png" />
-    <EmbeddedResource Include="templates\images\project-template~dark.png" />
-    <EmbeddedResource Include="templates\images\project-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\project-test-32.png" />
     <EmbeddedResource Include="templates\images\project-test-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-test-32~dark.png" />
     <EmbeddedResource Include="templates\images\project-test-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\project-test-32~dark~sel.png" />
@@ -4643,8 +5068,13 @@
     <EmbeddedResource Include="templates\images\project-test-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-test-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-test-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\solution-32.png" />
     <EmbeddedResource Include="templates\images\solution-32%402x.png" />
+    <EmbeddedResource Include="templates\images\solution-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\solution-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\solution-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\solution-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\solution-32~dark.png" />
     <EmbeddedResource Include="templates\images\solution-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\solution-32~dark~sel.png" />
@@ -4655,8 +5085,13 @@
     <EmbeddedResource Include="templates\images\solution-template%402x.png" />
     <EmbeddedResource Include="templates\images\solution-template~dark.png" />
     <EmbeddedResource Include="templates\images\solution-template~dark%402x.png" />
+
     <EmbeddedResource Include="templates\images\workspace-32.png" />
     <EmbeddedResource Include="templates\images\workspace-32%402x.png" />
+    <EmbeddedResource Include="templates\images\workspace-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\workspace-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\workspace-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\workspace-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="templates\images\workspace-32~dark.png" />
     <EmbeddedResource Include="templates\images\workspace-32~dark%402x.png" />
     <EmbeddedResource Include="templates\images\workspace-32~dark~sel.png" />
