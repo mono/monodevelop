@@ -148,40 +148,19 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.DotNetCore.addin.xml" />
-    <EmbeddedResource Include="images\project-netcore-32.png" />
-    <EmbeddedResource Include="images\project-netcore-32%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-32~dark.png" />
-    <EmbeddedResource Include="images\project-netcore-32~dark%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-32~dark~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-32~dark~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-32~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-32~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~dark.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~dark%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~dark~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~dark~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-console-32~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-template.png" />
-    <EmbeddedResource Include="images\project-netcore-console-template%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-console-template~dark.png" />
-    <EmbeddedResource Include="images\project-netcore-console-template~dark%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~dark.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~dark%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~sel.png" />
-    <EmbeddedResource Include="images\project-netcore-library-32~sel%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-template.png" />
-    <EmbeddedResource Include="images\project-netcore-library-template%402x.png" />
-    <EmbeddedResource Include="images\project-netcore-library-template~dark.png" />
-    <EmbeddedResource Include="images\project-netcore-library-template~dark%402x.png" />
+    <EmbeddedResource Include="gtk-gui\gui.stetic" />
+
+    <EmbeddedResource Include="images\preview-netcore.png" />
+    <EmbeddedResource Include="images\preview-netcore%402x.png" />
+    <EmbeddedResource Include="images\preview-netcore~dark.png" />
+    <EmbeddedResource Include="images\preview-netcore~dark%402x.png" />
+
     <EmbeddedResource Include="images\project-crossplatform-library-32.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-32%402x.png" />
+    <EmbeddedResource Include="images\project-crossplatform-library-32~contrast.png" />
+    <EmbeddedResource Include="images\project-crossplatform-library-32~contrast%402x.png" />
+    <EmbeddedResource Include="images\project-crossplatform-library-32~contrast~dark.png" />
+    <EmbeddedResource Include="images\project-crossplatform-library-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-32~dark.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-32~dark%402x.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-32~dark~sel.png" />
@@ -192,12 +171,64 @@
     <EmbeddedResource Include="images\project-crossplatform-library-template%402x.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-template~dark.png" />
     <EmbeddedResource Include="images\project-crossplatform-library-template~dark%402x.png" />
+
+    <EmbeddedResource Include="images\project-netcore-32.png" />
+    <EmbeddedResource Include="images\project-netcore-32%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-32~contrast.png" />
+    <EmbeddedResource Include="images\project-netcore-32~contrast%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-32~contrast~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-32~contrast~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-32~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-32~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-32~dark~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-32~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-32~sel%402x.png" />
     <EmbeddedResource Include="images\project-netcore-template.png" />
     <EmbeddedResource Include="images\project-netcore-template%402x.png" />
     <EmbeddedResource Include="images\project-netcore-template~dark.png" />
     <EmbeddedResource Include="images\project-netcore-template~dark%402x.png" />
+
+    <EmbeddedResource Include="images\project-netcore-console-32.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~contrast.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~contrast%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~contrast~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~contrast~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~dark~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-console-32~sel%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-template.png" />
+    <EmbeddedResource Include="images\project-netcore-console-template%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-console-template~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-console-template~dark%402x.png" />
+
+    <EmbeddedResource Include="images\project-netcore-library-32.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~contrast.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~contrast%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~contrast~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~contrast~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~dark%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~sel.png" />
+    <EmbeddedResource Include="images\project-netcore-library-32~sel%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-template.png" />
+    <EmbeddedResource Include="images\project-netcore-library-template%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-library-template~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-library-template~dark%402x.png" />
+
     <EmbeddedResource Include="images\project-netcore-test-32.png" />
     <EmbeddedResource Include="images\project-netcore-test-32%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-test-32~contrast.png" />
+    <EmbeddedResource Include="images\project-netcore-test-32~contrast%402x.png" />
+    <EmbeddedResource Include="images\project-netcore-test-32~contrast~dark.png" />
+    <EmbeddedResource Include="images\project-netcore-test-32~contrast~dark%402x.png" />
     <EmbeddedResource Include="images\project-netcore-test-32~dark.png" />
     <EmbeddedResource Include="images\project-netcore-test-32~dark%402x.png" />
     <EmbeddedResource Include="images\project-netcore-test-32~dark~sel.png" />
@@ -208,11 +239,6 @@
     <EmbeddedResource Include="images\project-netcore-test-template%402x.png" />
     <EmbeddedResource Include="images\project-netcore-test-template~dark.png" />
     <EmbeddedResource Include="images\project-netcore-test-template~dark%402x.png" />
-    <EmbeddedResource Include="gtk-gui\gui.stetic" />
-    <EmbeddedResource Include="images\preview-netcore.png" />
-    <EmbeddedResource Include="images\preview-netcore%402x.png" />
-    <EmbeddedResource Include="images\preview-netcore~dark.png" />
-    <EmbeddedResource Include="images\preview-netcore~dark%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.AspNetCore" />
