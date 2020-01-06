@@ -9,34 +9,37 @@ using Mono.Debugging.Client;
 
 using MonoDevelop.Core;
 
-using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
+using VsStackFrame = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame;
+using VsFrameFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
 	class VSCodeDebuggerBacktrace : IBacktrace
 	{
+		readonly VSCodeDebuggerSession session;
+		readonly VsStackFrame[] frames;
+		readonly List<Scope>[] scopes;
+		readonly VsFrameFormat format;
 		readonly int threadId;
-		VSCodeDebuggerSession vsCodeDebuggerSession;
-		int totalFramesCount;
-		Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame [] frames;
-		VsFormat frame0Format;
 
-		public VSCodeDebuggerBacktrace (VSCodeDebuggerSession vsCodeDebuggerSession, int threadId)
+		public VSCodeDebuggerBacktrace (VSCodeDebuggerSession session, int threadId)
 		{
+			this.session = session;
 			this.threadId = threadId;
-			this.vsCodeDebuggerSession = vsCodeDebuggerSession;
-			frame0Format = VsCodeStackFrame.GetStackFrameFormat (vsCodeDebuggerSession.EvaluationOptions);
-			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = 0, Levels = 1, Format = frame0Format });
-			totalFramesCount = body.TotalFrames ?? 0;
-			frames = new Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame [totalFramesCount];
-			if (totalFramesCount > 0 && body.StackFrames.Count > 0)
-				frames [0] = body.StackFrames [0];
+
+			format = VsCodeStackFrame.GetStackFrameFormat (session.EvaluationOptions);
+
+			var response = session.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = 0, Levels = 1, Format = format });
+
+			FrameCount = response.TotalFrames ?? 0;
+			frames = new VsStackFrame[FrameCount];
+			scopes = new List<Scope>[FrameCount];
+			if (FrameCount > 0 && response.StackFrames.Count > 0)
+				frames[0] = response.StackFrames[0];
 		}
 
 		public int FrameCount {
-			get {
-				return totalFramesCount;
-			}
+			get; private set;
 		}
 
 		public AssemblyLine [] Disassemble (int frameIndex, int firstLine, int count)
@@ -44,17 +47,27 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			throw new NotImplementedException ();
 		}
 
+		List<Scope> GetScopes (int frameIndex)
+		{
+			if (scopes[frameIndex] == null) {
+				var response = session.protocolClient.SendRequestSync (new ScopesRequest (frames[frameIndex].Id));
+				scopes[frameIndex] = response.Scopes;
+			}
+
+			return scopes[frameIndex];
+		}
+
 		public ObjectValue [] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
-			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames[frameIndex].Id));
 			var results = new List<ObjectValue> ();
+			var frame = frames[frameIndex];
 
-			foreach (var scope in scopeBody.Scopes) {
-				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
+			foreach (var scope in GetScopes (frameIndex)) {
+				using (var timer = session.EvaluationStats.StartTimer ()) {
 					VariablesResponse response;
 
 					try {
-						response = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (scope.VariablesReference));
+						response = session.protocolClient.SendRequestSync (new VariablesRequest (scope.VariablesReference));
 					} catch (Exception ex) {
 						LoggingService.LogError ($"[VsCodeDebugger] Failed to get local variables for the scope: {scope.Name}", ex);
 						timer.Success = false;
@@ -62,7 +75,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					}
 					
 					foreach (var variable in response.Variables)
-						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, scope.VariablesReference, frames[frameIndex].Id));
+						results.Add (VsCodeVariableToObjectValue (session, variable, scope.VariablesReference, frame.Id));
 					
 					timer.Success = true;
 				}
@@ -85,50 +98,74 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			var results = new List<ObjectValue> ();
 			foreach (var expr in expressions) {
-				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-					var responseBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new EvaluateRequest (expr) { FrameId = frames[frameIndex].Id });
-					results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, expr, expr, responseBody.Type, responseBody.Result, responseBody.VariablesReference, 0, frames [frameIndex].Id));
+				using (var timer = session.EvaluationStats.StartTimer ()) {
+					var response = session.protocolClient.SendRequestSync (new EvaluateRequest (expr) { FrameId = frames[frameIndex].Id });
+					results.Add (VsCodeVariableToObjectValue (session, expr, expr, response.Type, response.Result, response.VariablesReference, 0, frames [frameIndex].Id));
 					timer.Success = true;
 				}
 			}
 			return results.ToArray ();
 		}
 
-		internal static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession vsCodeDebuggerSession, string name, string evalName, string type, string value, int variablesReference, int parentVariablesReference, int frameId)
+		static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession session, string name, string evalName, string type, string value, int variablesReference, int parentVariablesReference, int frameId)
 		{
-			return new VSCodeObjectSource (vsCodeDebuggerSession, variablesReference, parentVariablesReference, name, type, evalName, frameId, value).GetValue (default (ObjectPath), null);
+			return new VSCodeObjectSource (session, variablesReference, parentVariablesReference, name, type, evalName, frameId, value).GetValue (default (ObjectPath), null);
+		}
+
+		internal static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession session, Variable variable, int variablesReference, int frameId)
+		{
+			return VsCodeVariableToObjectValue (session, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesReference, frameId);
+		}
+
+		ObjectValue[] GetVariables (int frameIndex, string scopeName)
+		{
+			var results = new List<ObjectValue> ();
+			var frame = frames [frameIndex];
+
+			foreach (var scope in GetScopes (frameIndex)) {
+				if (!scope.Name.Equals (scopeName, StringComparison.Ordinal))
+					continue;
+
+				using (var timer = session.EvaluationStats.StartTimer ()) {
+					VariablesResponse response;
+
+					try {
+						response = session.protocolClient.SendRequestSync (new VariablesRequest (scope.VariablesReference));
+					} catch (Exception ex) {
+						LoggingService.LogError ($"[VsCodeDebugger] Failed to get local variables for the scope: {scope.Name}", ex);
+						timer.Success = false;
+						continue;
+					}
+
+					foreach (var variable in response.Variables)
+						results.Add (VsCodeVariableToObjectValue (session, variable, scope.VariablesReference, frame.Id));
+
+					timer.Success = true;
+				}
+			}
+
+			return results.ToArray ();
 		}
 
 		public ObjectValue [] GetLocalVariables (int frameIndex, EvaluationOptions options)
 		{
-			List<ObjectValue> results = new List<ObjectValue> ();
-			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames [frameIndex].Id));
-			foreach (var variablesGroup in scopeBody.Scopes) {
-				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
-					foreach (var variable in varibles.Variables) {
-						results.Add (ObjectValue.CreatePrimitive (null, new ObjectPath (variable.Name), variable.Type ?? "<unknown>", new EvaluationResult (variable.Value), ObjectValueFlags.None));
-					}
-					timer.Success = true;
-				}
-			}
-			return results.ToArray ();
+			return GetVariables (frameIndex, "Locals");
 		}
 
 		public ObjectValue [] GetParameters (int frameIndex, EvaluationOptions options)
 		{
-			return new ObjectValue [0];//TODO: Find out how to seperate Params from other Locals
+			return GetVariables (frameIndex, "Arguments");
 		}
 
 		public Mono.Debugging.Client.StackFrame [] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			//Optimisation for getting 1st frame of thread(used for ThreadPad)
-			if (firstIndex == 0 && lastIndex == 1 && totalFramesCount > 0) {
-				return new Mono.Debugging.Client.StackFrame [] { new VsCodeStackFrame (frame0Format, threadId, 0, frames [0]) };
+			if (firstIndex == 0 && lastIndex == 1 && FrameCount > 0) {
+				return new Mono.Debugging.Client.StackFrame [] { new VsCodeStackFrame (this.format, threadId, 0, frames [0]) };
 			}
-			var stackFrames = new Mono.Debugging.Client.StackFrame [Math.Min (lastIndex - firstIndex, totalFramesCount - firstIndex)];
-			var format = VsCodeStackFrame.GetStackFrameFormat (vsCodeDebuggerSession.EvaluationOptions);
-			var body = vsCodeDebuggerSession.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = firstIndex, Levels = stackFrames.Length, Format = format });
+			var stackFrames = new Mono.Debugging.Client.StackFrame [Math.Min (lastIndex - firstIndex, FrameCount - firstIndex)];
+			var format = VsCodeStackFrame.GetStackFrameFormat (session.EvaluationOptions);
+			var body = session.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = firstIndex, Levels = stackFrames.Length, Format = format });
 			for (int i = 0; i < stackFrames.Length; i++) {
 				frames [i + firstIndex] = body.StackFrames [i];
 				stackFrames [i] = new VsCodeStackFrame (format, threadId, i, body.StackFrames [i]);
