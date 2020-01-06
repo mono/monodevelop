@@ -304,6 +304,98 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 		}
 
+		/// <summary>
+		/// Simulates a .NET Standard sdk project being change to a multi-target project in the text editor, saved,
+		/// then adding a new file to the project. Previously the Project.Modified event handler would be removed
+		/// and the type system would never update itself.
+		/// </summary>
+		[Test]
+		public async Task SingleTargetFramework_ReloadProjectAfterChangingToMultiTargetFramework_TypeSystemRespondsToProjectModifiedEvents ()
+		{
+			FilePath solFile = Util.GetSampleProject ("multi-target-reload", "multi-target-reload.sln");
+
+			CreateNuGetConfigFile (solFile.ParentDirectory);
+			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
+				try {
+					var project = sol.GetAllProjects ().Single ();
+
+					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+					var projects = ws.CurrentSolution.Projects.ToArray ();
+
+					// Should be one Roslyn project.
+					Assert.AreEqual (1, projectIds.Length);
+					Assert.AreEqual (1, projects.Length);
+
+					var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
+
+					string xml = File.ReadAllText (updatedProjectFileName);
+					File.WriteAllText (project.FileName, xml);
+
+					var reloadedProject = (DotNetProject)await sol.RootFolder.ReloadItem (Util.GetMonitor (), project);
+
+					// Try a few times since the type system needs time to reload
+					const int timeout = 10000; // ms
+					int howLong = 0;
+					const int interval = 200; // ms
+
+
+					while (true) {
+						var newProjectIds = ws.CurrentSolution.ProjectIds.ToArray ();
+						projects = ws.CurrentSolution.Projects.ToArray ();
+
+						var netstandardProject = projects.FirstOrDefault (p => p.Name == "netstandard (netstandard2.0)");
+						var netframeworkProject = projects.FirstOrDefault (p => p.Name == "netstandard (net462)");
+						if (netframeworkProject != null && netstandardProject != null) {
+							Assert.AreEqual (2, newProjectIds.Length);
+							Assert.AreEqual (2, projects.Length);
+							break;
+						}
+
+						if (howLong >= timeout) {
+							Assert.Fail ("Timed out waiting for type system information to be updated.");
+						}
+
+						await Task.Delay (interval);
+						howLong += interval;
+					}
+
+					// Add a new file.
+					var projectFileName = reloadedProject.BaseDirectory.Combine ("Test.cs");
+					File.WriteAllText (projectFileName, "class Test { }");
+
+					var projectFile = new ProjectFile (projectFileName, BuildAction.Compile);
+					reloadedProject.Files.Add (projectFile);
+
+					howLong = 0;
+
+					while (true) {
+						projects = ws.CurrentSolution.Projects.ToArray ();
+
+						var netstandardProject = projects.FirstOrDefault (p => p.Name == "netstandard (netstandard2.0)");
+						var netframeworkProject = projects.FirstOrDefault (p => p.Name == "netstandard (net462)");
+
+						if (netstandardProject.Documents.Any (d => d.Name == "Test.cs") &&
+							netframeworkProject.Documents.Any (d => d.Name == "Test.cs")) {
+							// OK - document registered with type system service.
+							return;
+						}
+
+						if (howLong >= timeout) {
+							Assert.Fail ("Timed out waiting for type system information to be updated after adding file.");
+						}
+
+						await Task.Delay (interval);
+						howLong += interval;
+					}
+				} finally {
+					TypeSystemServiceTestExtensions.UnloadSolution (sol);
+				}
+			}
+		}
+
 		[Test]
 		public async Task CSharpFile_BuildActionNone_FileNotUsed ()
 		{
