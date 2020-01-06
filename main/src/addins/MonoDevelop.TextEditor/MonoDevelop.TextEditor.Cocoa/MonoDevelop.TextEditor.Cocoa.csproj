@@ -108,7 +108,9 @@
     <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.DifferenceViewer.Implementation.dll" />
     <IncludeCopyLocal Include="Microsoft.VisualStudio.TextMate.Core.dll" />
   </ItemGroup>
-  <None Remove="**\*.png" />
+  <ItemGroup>
+    <None Remove="**\*.png" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\go-down-16.png" />
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
