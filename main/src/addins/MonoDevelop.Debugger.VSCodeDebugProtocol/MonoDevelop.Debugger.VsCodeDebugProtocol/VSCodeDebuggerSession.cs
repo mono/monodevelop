@@ -156,6 +156,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		}
 
 		bool currentExceptionState = false;
+		bool unhandleExceptionRegistered = false;
 		void UpdateExceptions ()
 		{
 			//Disposed
@@ -163,11 +164,13 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				return;
 
 			var hasCustomExceptions = breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (e => e.Enabled);
-			if (currentExceptionState != hasCustomExceptions) {
+			if (currentExceptionState != hasCustomExceptions || !unhandleExceptionRegistered) {
 				currentExceptionState = hasCustomExceptions;
-				protocolClient.SendRequest (new SetExceptionBreakpointsRequest (
-					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false)).Select (f => f.Filter).ToList ()
-				), null);
+				var exceptionRequest = new SetExceptionBreakpointsRequest (
+					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false)).Select (f => f.Filter).ToList ());
+				exceptionRequest.ExceptionOptions = new List<ExceptionOptions> () {new ExceptionOptions(ExceptionBreakMode.UserUnhandled)};
+				protocolClient.SendRequest (exceptionRequest, null);
+				unhandleExceptionRegistered = true;
 			}
 		}
 
@@ -268,6 +271,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
+			UpdateExceptions ();
 		}
 
 		protected void Attach (long processId)
@@ -277,6 +281,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			protocolClient.SendRequestSync (attachRequest);
 			OnStarted ();
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
+			UpdateExceptions ();
 		}
 
 		protected internal DebugProtocolHost protocolClient;
@@ -347,6 +352,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return string.IsNullOrWhiteSpace (catchpoint.ConditionExpression) || EvaluateCondition (frameId, catchpoint.ConditionExpression) != false;
 		}
 
+
 		protected void HandleEvent (object sender, EventReceivedEventArgs obj)
 		{
 			Task.Run (() => {
@@ -403,12 +409,16 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							// It's OK to evaluate expressions in external code
 							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
 						}
-
-						if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
-							OnContinue ();
-							return;
+						var response = protocolClient.SendRequestSync (new ExceptionInfoRequest (body.ThreadId ?? -1));
+						if (response.BreakMode.Equals (ExceptionBreakMode.UserUnhandled)) {
+							args = new TargetEventArgs (TargetEventType.UnhandledException);
+						} else {
+							if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
+								OnContinue ();
+								return;
+							}
+							args = new TargetEventArgs (TargetEventType.ExceptionThrown);
 						}
-						args = new TargetEventArgs (TargetEventType.ExceptionThrown);
 						break;
 					default:
 						throw new NotImplementedException (body.Reason.ToString ());
