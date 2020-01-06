@@ -57,7 +57,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			controller.AllowExpanding = false;
 
 			treeView = controller.GetMacControl (ObjectValueTreeViewFlags.PinnedWatchFlags);
-
+			treeView.UIElementName = "PinnedWatch";
 			controller.PinnedWatch = watch;
 
 			if (watch.Value != null)

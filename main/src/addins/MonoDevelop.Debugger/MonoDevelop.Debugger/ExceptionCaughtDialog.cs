@@ -194,6 +194,7 @@ widget ""*.exception_help_link_label"" style ""exception-help-link-label""
 
 				if (Platform.IsMac) {
 					macExceptionValueTreeView = controller.GetMacControl (ObjectValueTreeViewFlags.ObjectValuePadFlags);
+					macExceptionValueTreeView.UIElementName = "ExceptionCaughtDialog";
 				} else {
 					exceptionValueTreeView = controller.GetGtkControl (ObjectValueTreeViewFlags.ExceptionCaughtFlags);
 				}

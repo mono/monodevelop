@@ -7,7 +7,7 @@ using Gtk;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-
+using Mono.Debugging.Client;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Documents;
 
@@ -119,22 +119,27 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 			return null;
 		}
 
-		private async Task EvaluateAndShowTooltipAsync (IAsyncQuickInfoSession session, ITextView view, SnapshotPoint point, DataTipInfo debugInfo, CancellationToken cancellationToken)
+		async Task EvaluateAndShowTooltipAsync (IAsyncQuickInfoSession session, ITextView view, SnapshotPoint point, DataTipInfo debugInfo, CancellationToken cancellationToken)
 		{
 			var options = DebuggingService.DebuggerSession.EvaluationOptions.Clone ();
 			options.AllowMethodEvaluation = true;
 			options.AllowTargetInvoke = true;
+			ObjectValue val;
 
-			var val = DebuggingService.CurrentFrame.GetExpressionValue (debugInfo.Text, options);
+			using (var timer = DebuggingService.CurrentFrame.DebuggerSession.TooltipStats.StartTimer ()) {
+				val = DebuggingService.CurrentFrame.GetExpressionValue (debugInfo.Text, options);
 
-			if (val.IsEvaluating)
-				await WaitOneAsync (val.WaitHandle, cancellationToken);
+				if (val.IsEvaluating)
+					await WaitOneAsync (val.WaitHandle, cancellationToken);
 
-			if (cancellationToken.IsCancellationRequested)
-				return;
+				if (cancellationToken.IsCancellationRequested)
+					return;
 
-			if (val == null || val.IsUnknown || val.IsNotSupported)
-				return;
+				if (val == null || val.IsUnknown || val.IsNotSupported)
+					return;
+
+				timer.Success = true;
+			}
 
 			if (!view.Properties.TryGetProperty (typeof (Widget), out Widget gtkParent))
 				return;

@@ -182,8 +182,10 @@ namespace MonoDevelop.Debugger
 			UpdateContents ();
 
 			if (Node is AddNewExpressionObjectValueNode) {
-				if (newValue.Length > 0)
+				if (newValue.Length > 0) {
 					TreeView.OnExpressionAdded (newValue);
+					Counters.ManuallyAddedWatch.Inc (1);
+				}
 			} else if (newValue != oldValue) {
 				TreeView.OnExpressionEdited (Node, newValue);
 			}
@@ -429,6 +431,12 @@ namespace MonoDevelop.Debugger
 			SetPreviewButtonIcon (PreviewButtonIcon.Active);
 
 			DebuggingService.ShowPreviewVisualizer (val, IdeApp.Workbench.RootWindow, buttonArea);
+
+			var metadata = new Dictionary<string, object> ();
+			metadata["UIElementName"] = TreeView.UIElementName;
+			metadata["ObjectValue.Type"] = val.TypeName;
+
+			Counters.OpenedPreviewer.Inc (1, null, metadata);
 		}
 
 		void OnEditorLostFocus (object sender, EventArgs e)
