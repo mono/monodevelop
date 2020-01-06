@@ -7,6 +7,8 @@ using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 
+using MonoDevelop.Core;
+
 using VsFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
 namespace MonoDevelop.Debugger.VsCodeDebugProtocol
@@ -44,17 +46,28 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		public ObjectValue [] GetAllLocals (int frameIndex, EvaluationOptions options)
 		{
-			List<ObjectValue> results = new List<ObjectValue> ();
-			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames [frameIndex].Id));
-			foreach (var variablesGroup in scopeBody.Scopes) {
+			var scopeBody = vsCodeDebuggerSession.protocolClient.SendRequestSync (new ScopesRequest (frames[frameIndex].Id));
+			var results = new List<ObjectValue> ();
+
+			foreach (var scope in scopeBody.Scopes) {
 				using (var timer = vsCodeDebuggerSession.EvaluationStats.StartTimer ()) {
-					var varibles = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (variablesGroup.VariablesReference));
-					foreach (var variable in varibles.Variables) {
-						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesGroup.VariablesReference, frames [frameIndex].Id));
+					VariablesResponse response;
+
+					try {
+						response = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (scope.VariablesReference));
+					} catch (Exception ex) {
+						LoggingService.LogError ($"[VsCodeDebugger] Failed to get local variables for the scope: {scope.Name}", ex);
+						timer.Success = false;
+						continue;
 					}
+					
+					foreach (var variable in response.Variables)
+						results.Add (VsCodeVariableToObjectValue (vsCodeDebuggerSession, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, scope.VariablesReference, frames[frameIndex].Id));
+					
 					timer.Success = true;
 				}
 			}
+
 			return results.ToArray ();
 		}
 
