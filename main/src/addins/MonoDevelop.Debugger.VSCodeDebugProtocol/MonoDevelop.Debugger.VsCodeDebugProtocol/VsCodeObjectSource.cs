@@ -280,7 +280,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						var children = vsCodeDebuggerSession.protocolClient.SendRequestSync (new VariablesRequest (
 							variablesReference
 						)).Variables;
-						objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c.Name, c.EvaluateName, c.Type, c.Value, c.VariablesReference, variablesReference, frameId)).ToArray ();
+						objValChildren = children.Select (c => VSCodeDebuggerBacktrace.VsCodeVariableToObjectValue (vsCodeDebuggerSession, c, variablesReference, frameId)).ToArray ();
 						timer.Success = true;
 					}
 				}
