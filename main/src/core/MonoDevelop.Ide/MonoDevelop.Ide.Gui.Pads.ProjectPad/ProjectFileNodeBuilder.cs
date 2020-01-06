@@ -366,19 +366,22 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 					folderFile.Subtype = Subtype.Directory;
 					project.Files.Add (folderFile);
 				}
-
 				var children = FileNestingService.GetDependentOrNestedTree (file);
 				if (children != null) {
 					foreach (var child in children.ToArray ()) {
-						project.Files.Remove (child);
-						if(delete)
+						// Delete file before removing them from the project to avoid Remove items being added
+						// if the project is currently being saved in memory or to disk.
+						if (delete)
 							FileService.DeleteFile (child.Name);
+						project.Files.Remove (child);
 					}
 				}
 
-				project.Files.Remove (file);
+				// Delete file before removing them from the project to avoid Remove items being added
+				// if the project is currently being saved in memory or to disk.
 				if (delete && !file.IsLink)
 					FileService.DeleteFile (file.Name);
+				project.Files.Remove (file);
 			}
 		}
 
