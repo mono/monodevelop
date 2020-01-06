@@ -931,18 +931,10 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 			if (changed) {
 				ReconstructString ();
 				// announce new status if vo/a11y is enabled
-				if (MonoDevelop.Ide.Desktop.PlatformService.AccessibilityInUse) {
-					MakeAccessibilityAnnouncement (text);
+				if (IdeServices.DesktopService.AccessibilityInUse) {
+					IdeServices.DesktopService.MakeAccessibilityAnnouncement (text);
 				}
 			}
-		}
-
-		static void MakeAccessibilityAnnouncement (string text)
-		{
-			using var message = new NSString (text);
-			using var dictionary = new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, message,
-													 NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
-			NSAccessibility.PostNotification (NSApplication.SharedApplication.AccessibilityMainWindow, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
 		}
 
 		bool LoadText (string message, bool isMarkup, MessageType statusType)

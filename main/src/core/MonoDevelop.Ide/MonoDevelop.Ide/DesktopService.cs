@@ -447,6 +447,11 @@ namespace MonoDevelop.Ide
 			PlatformService.RestartIde (reopenWorkspace);
 		}
 
+		public void MakeAccessibilityAnnouncement(string text)
+		{
+			PlatformService.MakeAccessibilityAnnouncement (text);
+		}
+
 		public bool AccessibilityInUse {
 			get {
 				return PlatformService.AccessibilityInUse;
