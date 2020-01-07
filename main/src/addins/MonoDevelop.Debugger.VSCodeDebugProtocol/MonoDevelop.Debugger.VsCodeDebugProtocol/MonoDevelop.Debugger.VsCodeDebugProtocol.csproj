@@ -48,6 +48,8 @@
     <Compile Include="VsCodeStackFrame.cs" />
     <Compile Include="VsCodeObjectSource.cs" />
     <Compile Include="VsCodeBacktrace.cs" />
+    <Compile Include="VSCodeVariableSource.cs" />
+    <Compile Include="VSCodeEvaluationSource.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
