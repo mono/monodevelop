@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
-
-using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
+using Mono.Debugging.Backend;
+
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
 
 using MonoDevelop.Core;
 
+using StackFrame = Mono.Debugging.Client.StackFrame;
 using VsStackFrame = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrame;
 using VsFrameFormat = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.StackFrameFormat;
 
@@ -74,8 +75,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						continue;
 					}
 					
-					foreach (var variable in response.Variables)
-						results.Add (VsCodeVariableToObjectValue (session, variable, scope.VariablesReference, frame.Id));
+					foreach (var variable in response.Variables) {
+						var source = new VSCodeVariableSource (session, variable, scope.VariablesReference, frame.Id);
+						results.Add (source.GetValue (default (ObjectPath), null));
+					}
 					
 					timer.Success = true;
 				}
@@ -97,30 +100,25 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		public ObjectValue [] GetExpressionValues (int frameIndex, string [] expressions, EvaluationOptions options)
 		{
 			var results = new List<ObjectValue> ();
+			var frame = frames[frameIndex];
+
 			foreach (var expr in expressions) {
 				using (var timer = session.EvaluationStats.StartTimer ()) {
-					var response = session.protocolClient.SendRequestSync (new EvaluateRequest (expr) { FrameId = frames[frameIndex].Id });
-					results.Add (VsCodeVariableToObjectValue (session, expr, expr, response.Type, response.Result, response.VariablesReference, 0, frames [frameIndex].Id));
+					var response = session.protocolClient.SendRequestSync (new EvaluateRequest (expr) { FrameId = frame.Id });
+					var source = new VSCodeEvaluationSource (session, expr, response, frame.Id);
+
+					results.Add (source.GetValue (default (ObjectPath), null));
 					timer.Success = true;
 				}
 			}
+
 			return results.ToArray ();
-		}
-
-		static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession session, string name, string evalName, string type, string value, int variablesReference, int parentVariablesReference, int frameId)
-		{
-			return new VSCodeObjectSource (session, variablesReference, parentVariablesReference, name, type, evalName, frameId, value).GetValue (default (ObjectPath), null);
-		}
-
-		internal static ObjectValue VsCodeVariableToObjectValue (VSCodeDebuggerSession session, Variable variable, int variablesReference, int frameId)
-		{
-			return VsCodeVariableToObjectValue (session, variable.Name, variable.EvaluateName, variable.Type, variable.Value, variable.VariablesReference, variablesReference, frameId);
 		}
 
 		ObjectValue[] GetVariables (int frameIndex, string scopeName)
 		{
 			var results = new List<ObjectValue> ();
-			var frame = frames [frameIndex];
+			var frame = frames[frameIndex];
 
 			foreach (var scope in GetScopes (frameIndex)) {
 				if (!scope.Name.Equals (scopeName, StringComparison.Ordinal))
@@ -137,8 +135,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 						continue;
 					}
 
-					foreach (var variable in response.Variables)
-						results.Add (VsCodeVariableToObjectValue (session, variable, scope.VariablesReference, frame.Id));
+					foreach (var variable in response.Variables) {
+						var source = new VSCodeVariableSource (session, variable, scope.VariablesReference, frame.Id);
+						results.Add (source.GetValue (default (ObjectPath), null));
+					}
 
 					timer.Success = true;
 				}
@@ -157,18 +157,18 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return GetVariables (frameIndex, "Arguments");
 		}
 
-		public Mono.Debugging.Client.StackFrame [] GetStackFrames (int firstIndex, int lastIndex)
+		public StackFrame [] GetStackFrames (int firstIndex, int lastIndex)
 		{
 			//Optimisation for getting 1st frame of thread(used for ThreadPad)
-			if (firstIndex == 0 && lastIndex == 1 && FrameCount > 0) {
-				return new Mono.Debugging.Client.StackFrame [] { new VsCodeStackFrame (this.format, threadId, 0, frames [0]) };
-			}
-			var stackFrames = new Mono.Debugging.Client.StackFrame [Math.Min (lastIndex - firstIndex, FrameCount - firstIndex)];
+			if (firstIndex == 0 && lastIndex == 1 && FrameCount > 0)
+				return new StackFrame[] { new VsCodeStackFrame (this.format, threadId, 0, frames[0]) };
+
+			var stackFrames = new StackFrame [Math.Min (lastIndex - firstIndex, FrameCount - firstIndex)];
 			var format = VsCodeStackFrame.GetStackFrameFormat (session.EvaluationOptions);
 			var body = session.protocolClient.SendRequestSync (new StackTraceRequest (threadId) { StartFrame = firstIndex, Levels = stackFrames.Length, Format = format });
 			for (int i = 0; i < stackFrames.Length; i++) {
-				frames [i + firstIndex] = body.StackFrames [i];
-				stackFrames [i] = new VsCodeStackFrame (format, threadId, i, body.StackFrames [i]);
+				frames[i + firstIndex] = body.StackFrames [i];
+				stackFrames[i] = new VsCodeStackFrame (format, threadId, i, body.StackFrames [i]);
 			}
 			return stackFrames;
 		}
