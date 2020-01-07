@@ -102,7 +102,7 @@ namespace MonoDevelop.AspNetCore
 				EnvironmentVariables.Add ("ASPNETCORE_ENVIRONMENT", "Development");
 #pragma warning disable CS0618 //disables warnings threw by obsolete methods used in nameof()
 			if (CurrentProfile.LaunchBrowser == null)
-				CurrentProfile.LaunchBrowser = pset.GetValue (nameof (LaunchBrowser), true);
+				CurrentProfile.LaunchBrowser = pset.GetValue (nameof (LaunchBrowser), false);
 			if (string.IsNullOrEmpty (CurrentProfile.TryGetApplicationUrl ())) {
 
 				if (CurrentProfile.OtherSettings == null)

@@ -143,6 +143,10 @@ namespace MonoDevelop.Debugger
 				"bounds", NSNull.Null);
 		}
 
+		public string UIElementName {
+			get; set;
+		}
+
 		public ObjectValueTreeViewController Controller {
 			get; private set;
 		}
@@ -451,6 +455,8 @@ namespace MonoDevelop.Debugger
 			}
 
 			NodePinned?.Invoke (this, new ObjectValueNodeEventArgs (node));
+
+			Counters.PinnedWatch.Inc (1);
 		}
 
 		public void Pin (ObjectValueNode node)
@@ -475,6 +481,12 @@ namespace MonoDevelop.Debugger
 
 		internal bool ShowVisualizer (ObjectValueNode node)
 		{
+			var metadata = new Dictionary<string, object> ();
+			metadata["UIElementName"] = UIElementName;
+			metadata["ObjectValue.Type"] = node.TypeName;
+
+			Counters.OpenedVisualizer.Inc (1, null, metadata);
+
 			var args = new ObjectValueNodeEventArgs (node);
 			NodeShowVisualiser?.Invoke (this, args);
 			return args.Response is bool b && b;
@@ -563,6 +575,19 @@ namespace MonoDevelop.Debugger
 				// TODO: all this scrolling kind of seems awkward
 				//if (path != null)
 				//	ScrollToCell (path, expCol, true, 0f, 0f);
+
+				var parent = node.Parent;
+				int level = 0;
+				while (parent != null) {
+					parent = parent.Parent;
+					level++;
+				}
+
+				var metadata = new Dictionary<string, object> ();
+				metadata["UIElementName"] = UIElementName;
+				metadata["NodeLevel"] = level;
+
+				Counters.ExpandedNode.Inc (1, null, metadata);
 			}
 		}
 
@@ -883,6 +908,11 @@ namespace MonoDevelop.Debugger
 
 			foreach (var expression in expressions)
 				DebuggingService.AddWatch (expression);
+
+			var metadata = new Dictionary<string, object> ();
+			metadata["ExpressionCount"] = expressions.Count;
+
+			Counters.AddedWatchFromLocals.Inc (1, null, metadata);
 		}
 
 		void OnAddWatch (object sender, EventArgs args)

@@ -80,7 +80,10 @@ namespace MonoDevelop.Debugger
 			ObjectValue[] qvalues;
 
 			if (StackFrame != null) {
-				qvalues = StackFrame.GetExpressionValues (unknown.ToArray (), true);
+				using (var timer = StackFrame.DebuggerSession.WatchExpressionStats.StartTimer ()) {
+					qvalues = StackFrame.GetExpressionValues (unknown.ToArray (), true);
+					timer.Success = true;
+				}
 			} else {
 				qvalues = new ObjectValue[unknown.Count];
 				for (int i = 0; i < qvalues.Length; i++)
