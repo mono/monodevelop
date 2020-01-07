@@ -368,6 +368,7 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementCanReferenceProjectExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateMultipleNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainerCollection.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPluginFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />

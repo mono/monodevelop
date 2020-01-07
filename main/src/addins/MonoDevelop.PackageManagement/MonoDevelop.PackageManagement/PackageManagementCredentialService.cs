@@ -77,7 +77,7 @@ namespace MonoDevelop.PackageManagement
 		static IEnumerable<ICredentialProvider> GetPluginsCredentialProviders ()
 		{
 			var builder = new SecurePluginCredentialProviderBuilder (
-				PluginManager.Instance,
+				PackageManagementServices.PluginManager,
 				canShowDialog: false,
 				logger: NuGet.Common.NullLogger.Instance
 			);
