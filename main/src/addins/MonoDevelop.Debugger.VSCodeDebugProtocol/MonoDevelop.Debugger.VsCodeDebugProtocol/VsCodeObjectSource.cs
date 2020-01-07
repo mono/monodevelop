@@ -65,6 +65,64 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			get;
 		}
 
+		protected ObjectValueFlags GetFlags (VariablePresentationHint hint)
+		{
+			var flags = ObjectValueFlags.None;
+
+			if (hint != null) {
+				if (hint.Attributes.HasValue) {
+					var attributes = hint.Attributes.Value;
+
+					if ((attributes & VariablePresentationHint.AttributesValue.FailedEvaluation) != 0)
+						return ObjectValueFlags.Error;
+					if ((attributes & VariablePresentationHint.AttributesValue.Constant) != 0)
+						flags |= ObjectValueFlags.Literal;
+					if ((attributes & VariablePresentationHint.AttributesValue.ReadOnly) != 0)
+						flags |= ObjectValueFlags.ReadOnly;
+					if ((attributes & VariablePresentationHint.AttributesValue.Static) != 0)
+						flags |= ObjectValueFlags.ReadOnly;
+					if ((attributes & VariablePresentationHint.AttributesValue.CanHaveObjectId) != 0)
+						flags |= ObjectValueFlags.Primitive;
+					if ((attributes & VariablePresentationHint.AttributesValue.HasObjectId) != 0)
+						flags |= ObjectValueFlags.Object;
+				}
+
+				if (hint.Kind.HasValue) {
+					var kind = hint.Kind.Value;
+
+					if ((kind & VariablePresentationHint.KindValue.Property) != 0)
+						flags |= ObjectValueFlags.Property;
+					if ((kind & VariablePresentationHint.KindValue.BaseClass) != 0)
+						flags |= ObjectValueFlags.Type;
+					if ((kind & VariablePresentationHint.KindValue.Class) != 0)
+						flags |= ObjectValueFlags.Type;
+					if ((kind & VariablePresentationHint.KindValue.InnerClass) != 0)
+						flags |= ObjectValueFlags.Type;
+					if ((kind & VariablePresentationHint.KindValue.Interface) != 0)
+						flags |= ObjectValueFlags.Type;
+					if ((kind & VariablePresentationHint.KindValue.MostDerivedClass) != 0)
+						flags |= ObjectValueFlags.Type;
+					if ((kind & VariablePresentationHint.KindValue.Data) != 0)
+						flags |= ObjectValueFlags.Variable;
+				}
+
+				if (hint.Visibility.HasValue) {
+					var visibility = hint.Visibility.Value;
+
+					if ((visibility & VariablePresentationHint.VisibilityValue.Protected) != 0)
+						flags |= ObjectValueFlags.Protected;
+					if ((visibility & VariablePresentationHint.VisibilityValue.Internal) != 0)
+						flags |= ObjectValueFlags.Internal;
+					if ((visibility & VariablePresentationHint.VisibilityValue.Private) != 0)
+						flags |= ObjectValueFlags.Private;
+					if ((visibility & VariablePresentationHint.VisibilityValue.Public) != 0)
+						flags |= ObjectValueFlags.Public;
+				}
+			}
+
+			return flags;
+		}
+
 		protected static string GetActualTypeName (string type)
 		{
 			int startIndex;

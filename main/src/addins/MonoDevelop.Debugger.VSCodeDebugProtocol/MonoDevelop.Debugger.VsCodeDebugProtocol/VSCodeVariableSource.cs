@@ -20,8 +20,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 			var actualType = GetActualTypeName (variable.Type);
 
-			// FIXME: can we use VariablePresentationHint.AttributesValue.ReadOnly/Constant/Static etc for Flags?
 			Flags = parentVariablesReference > 0 ? ObjectValueFlags.None : ObjectValueFlags.ReadOnly;
+			Flags |= GetFlags (variable.PresentationHint);
 			name = GetFixedVariableName (variable.Name);
 			type = actualType.Replace (", ", ",");
 
@@ -35,7 +35,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				Flags |= ObjectValueFlags.ArrayElement;
 
 			if (type == null || value == $"'{name}' threw an exception of type '{type}'")
-				Flags |= ObjectValueFlags.Error;
+				Flags = ObjectValueFlags.Error;
 		}
 
 		protected override string Display {
