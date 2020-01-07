@@ -32,7 +32,6 @@ using MonoDevelop.Core;
 using NuGet.CommandLine;
 using NuGet.Credentials;
 using NuGet.Protocol;
-using NuGet.Protocol.Plugins;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -61,7 +60,6 @@ namespace MonoDevelop.PackageManagement
 			var credentialProviders = new List<ICredentialProvider>();
 
 			credentialProviders.Add (CreateSettingsCredentialProvider ());
-			credentialProviders.AddRange (GetPluginsCredentialProviders ());
 			credentialProviders.Add (new MonoDevelopCredentialProvider ());
 
 			return credentialProviders;
@@ -72,17 +70,6 @@ namespace MonoDevelop.PackageManagement
 			var settings = SettingsLoader.LoadDefaultSettings ();
 			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
 			return new SettingsCredentialProvider (packageSourceProvider);
-		}
-
-		static IEnumerable<ICredentialProvider> GetPluginsCredentialProviders ()
-		{
-			var builder = new SecurePluginCredentialProviderBuilder (
-				PluginManager.Instance,
-				canShowDialog: false,
-				logger: NuGet.Common.NullLogger.Instance
-			);
-			var providers = builder.BuildAllAsync ().Result;
-			return providers;
 		}
 
 		/// <summary>
