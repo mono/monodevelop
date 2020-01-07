@@ -37,7 +37,7 @@ namespace MonoDevelop.CSharp.Debugger
 			if (analysisDocument == null)
 				return default (DataTipInfo);
 
-			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Debugging.ILanguageDebugInfoService> ();
 			if (debugInfoService == null)
 				return default (DataTipInfo);
 
@@ -78,7 +78,7 @@ namespace MonoDevelop.CSharp.Debugger
 			if (analysisDocument == null)
 				return default (DataTipInfo);
 
-			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Debugging.ILanguageDebugInfoService> ();
 			if (debugInfoService == null)
 				return default (DataTipInfo);
 

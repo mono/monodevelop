@@ -266,9 +266,6 @@
     <Compile Include="Gui\MonoDevelop.CSharp.Project.CompilerOptionsPanelWidget.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerCompletionProvider.cs" />
     <Compile Include="MonoDevelop.CSharp.Refactoring\CSharpFindReferenceUsagesProvider.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\CSharpLanguageDebugInfoService.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\LocationInfoGetter.cs" />
-    <Compile Include="MonoDevelop.CSharp.Resolver\DataTipInfoGetter.cs" />
     <Compile Include="MonoDevelop.CSharp.Completion\CSharpCompletionTextEditorExtension.IDebuggerExpressionResolver.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.PasteFormattingRule.cs" />
     <Compile Include="MonoDevelop.CSharp.Formatting\CSharpTextPasteHandler.PasteStrategy.cs" />

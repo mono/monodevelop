@@ -48,7 +48,7 @@ namespace MonoDevelop.CSharp.Completion
 			var analysisDocument = doc.AnalysisDocument;
 			if (analysisDocument == null)
 				return default (DebugDataTipInfo);
-			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Editor.Implementation.Debugging.ILanguageDebugInfoService> ();
+			var debugInfoService = analysisDocument.GetLanguageService<Microsoft.CodeAnalysis.Debugging.ILanguageDebugInfoService> ();
 			if (debugInfoService == null)
 				return default (DebugDataTipInfo);
 

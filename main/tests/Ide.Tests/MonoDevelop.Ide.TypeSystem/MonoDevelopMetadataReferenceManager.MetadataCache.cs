@@ -72,7 +72,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var keysToRemove = pooledObject.Object;
 					foreach (var kv in _metadataCache) {
 						// metadata doesn't exist anymore. delete it from cache
-						if (!kv.Value.HasValue) {
+						if (!kv.Value.TryGetValue (out _)) {
 							keysToRemove.Add (kv.Key);
 						}
 					}
