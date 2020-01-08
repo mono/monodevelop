@@ -3,7 +3,7 @@ framework: net472
 source https://nuget.org/api/v2/
 
 nuget ExtCore framework: >= net40
-nuget FSharp.Compiler.Service 31.0.0
+nuget FSharp.Compiler.Service 33.0.1
 nuget FSharp.Core
 nuget System.ValueTuple
 nuget Fantomas 3.0.0-beta-002
