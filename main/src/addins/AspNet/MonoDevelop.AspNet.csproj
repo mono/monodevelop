@@ -255,7 +255,7 @@
   <ItemGroup>
     <ExtensionContent Include="Razor\Razor-templates.xml" />
     <ExtensionContent Include="CodeTemplates\**\*.*" />
-    <ExtensionContent Include="Templates\**\*.*" />
+    <ExtensionContent Include="Templates\**\*.*" Exclude="**\*.png" />
     <ExtensionContent Include="Html\Schemas\**\*.*" />
   </ItemGroup>
   <ItemGroup>
