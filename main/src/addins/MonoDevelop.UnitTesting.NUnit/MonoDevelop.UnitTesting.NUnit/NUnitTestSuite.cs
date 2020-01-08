@@ -37,7 +37,7 @@ namespace MonoDevelop.UnitTesting.NUnit
 		NUnitAssemblyTestSuite rootSuite;
 		string fullName;
 		
-		UnitTestCollection unhandledTests;
+		UnitTestCollection childNamespaces;
 
 		public NUnitTestSuite (NUnitAssemblyTestSuite rootSuite, NunitTestInfo tinfo): base (tinfo.Name)
 		{
@@ -45,33 +45,25 @@ namespace MonoDevelop.UnitTesting.NUnit
 			this.testInfo = tinfo;
 			this.rootSuite = rootSuite;
 			this.TestSourceCodeDocumentId = this.TestId = tinfo.TestId;
-			this.canMergeWithParent =  !string.IsNullOrEmpty (tinfo.PathName) &&
-									   string.IsNullOrEmpty (tinfo.FixtureTypeName) &&
-									   string.IsNullOrEmpty (tinfo.FixtureTypeNamespace);
-			this.unhandledTests = new UnitTestCollection ();
+			this.childNamespaces = new UnitTestCollection ();
 		}
 
-		bool canMergeWithParent;
-		public override bool CanMergeWithParent {
-			get {
-				return canMergeWithParent;
-			}
-		}
-		
 		public override bool HasTests {
 			get {
 				return true;
 			}
 		}
 
-		public UnitTestCollection UnhandledTests {
+		public UnitTestCollection ChildNamespaces {
 			get {
-				return unhandledTests;
+				return childNamespaces;
 			}
 		}
 		
 		public string ClassName {
-			get { return fullName; }
+			get {
+				return fullName;
+			}
 		}
 		
 		protected override UnitTestResult OnRun (TestContext testContext)
@@ -91,29 +83,42 @@ namespace MonoDevelop.UnitTesting.NUnit
 				return;
 
 			foreach (NunitTestInfo test in testInfo.Tests) {
-				UnitTest newTest;
 				if (test.Tests != null) {
-					newTest = new NUnitTestSuite (rootSuite, test);
-				} else {
-					newTest = new NUnitTestCase (rootSuite, test, ClassName);
-				}
-				newTest.FixtureTypeName = test.FixtureTypeName;
-				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
+					var newTest = new NUnitTestSuite (rootSuite, test);
+					newTest.FixtureTypeName = test.FixtureTypeName;
+					newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 
-				bool isNameSpace = false;
-				if (test.Tests != null) {
-					foreach (NunitTestInfo info in test.Tests) {
-						if (info.Tests != null) {
+					bool isNameSpace = false;
+					foreach (NunitTestInfo child in test.Tests) {
+						if (child.Tests != null) {
 							isNameSpace = true;
 						}
 					}
-				}
 
-				if (isNameSpace) {
-					var newNamespaceTestSuite = (NUnitTestSuite)newTest;
-					newNamespaceTestSuite.testInfo.Name = newNamespaceTestSuite.testInfo.TestId;
-					unhandledTests.Add (newNamespaceTestSuite);
+					bool hasClassAsChild = false;
+					foreach (NunitTestInfo child in test.Tests) {
+						if (child.Tests != null && child.Tests [0].Tests == null) {
+							hasClassAsChild = true;
+						}
+					}
+
+					if (isNameSpace) {
+						var forceLoad = newTest.Tests;
+						foreach (var child in newTest.ChildNamespaces) {
+							//Console.WriteLine (newTest.Title + " " + child.Title);
+							child.Title = newTest.Title + "." + child.Title;
+							childNamespaces.Add (child);
+						}
+						if (hasClassAsChild) {
+							childNamespaces.Add (newTest);
+						}
+					} else {
+						Tests.Add (newTest);
+					}
 				} else {
+					var newTest = new NUnitTestCase (rootSuite, test, ClassName);
+					newTest.FixtureTypeName = test.FixtureTypeName;
+					newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 					Tests.Add (newTest);
 				}
 			}

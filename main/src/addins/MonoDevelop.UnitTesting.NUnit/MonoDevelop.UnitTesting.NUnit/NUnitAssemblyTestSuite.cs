@@ -273,22 +273,33 @@ namespace MonoDevelop.UnitTesting.NUnit
 				var newTest = new NUnitTestSuite (this, test);
 				newTest.FixtureTypeName = test.FixtureTypeName;
 				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
-				Tests.Add (newTest);
 
-				var queue = new Queue<NUnitTestSuite> ();
-				queue.Enqueue (newTest);
-
-				var forceLoad = newTest.Tests;
-				while (queue.Count != 0) {
-					NUnitTestSuite unhandledList = queue.Dequeue ();
-					foreach (NUnitTestSuite unhandledTest in unhandledList.UnhandledTests) {
-						Tests.Add (unhandledTest);
-					}
-					foreach (UnitTest unhandledTest in unhandledList.Tests) {
-						if (unhandledTest is NUnitTestSuite) {
-							queue.Enqueue ((NUnitTestSuite)unhandledTest);
+				bool isNameSpace = false;
+				if (test.Tests != null) {
+					foreach (NunitTestInfo child in test.Tests) {
+						if (child.Tests != null) {
+							isNameSpace = true;
 						}
 					}
+				}
+
+				bool hasClassAsChild = false;
+				if (test.Tests != null) {
+					foreach (NunitTestInfo child in test.Tests) {
+						if (child.Tests != null && child.Tests[0].Tests == null) {
+							hasClassAsChild = true;
+						}
+					}
+				}
+
+				if (!isNameSpace || hasClassAsChild) {
+					Tests.Add (newTest);
+				}
+
+				var forceLoad = newTest.Tests;
+				foreach (NUnitTestSuite child in newTest.ChildNamespaces) {
+					child.Title = newTest.Title + "." + child.Title;
+					Tests.Add (child);
 				}
 			}
 			oldList = new UnitTest [Tests.Count];

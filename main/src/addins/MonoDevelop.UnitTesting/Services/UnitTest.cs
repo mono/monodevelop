@@ -43,6 +43,7 @@ namespace MonoDevelop.UnitTesting
 	public abstract class UnitTest: IDisposable
 	{
 		string name;
+		string title;
 		IResultsStore resultsStore;
 		internal UnitTestResult lastResult;
 		UnitTest parent;
@@ -190,7 +191,8 @@ namespace MonoDevelop.UnitTesting
 		}
 		
 		public virtual string Title {
-			get { return Name; }
+			get { return title ?? name; }
+			set { title = value; }
 		}
 		
 		public TestStatus Status {
