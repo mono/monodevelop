@@ -87,6 +87,8 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
 
+				RemoveUnsupportedNetCoreAppTargetFrameworks (targetFrameworks);
+
 				if (!SupportsNetCore2x ()) {
 					RemoveUnsupportedNetCoreApp2xTargetFrameworks (targetFrameworks);
 				}
@@ -103,6 +105,11 @@ namespace MonoDevelop.DotNetCore.Templating
 		static void RemoveUnsupportedNetStandardTargetFrameworksForFSharp (List<TargetFramework> targetFrameworks)
 		{
 			targetFrameworks.RemoveAll (framework => framework.IsLowerThanNetStandard16 ());
+		}
+
+		static void RemoveUnsupportedNetCoreAppTargetFrameworks (List<TargetFramework> targetFrameworks)
+		{
+			targetFrameworks.RemoveAll (framework => framework.IsNetCoreAppOrHigher (DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion));
 		}
 
 		/// <summary>
