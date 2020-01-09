@@ -38,6 +38,7 @@ namespace MonoDevelop.PackageManagement
 		public void Run (IDotNetProject project = null, string initialSearch = null)
 		{
 			try {
+				PackageManagementCredentialService.Reset ();
 				bool configurePackageSources = false;
 				do {
 					using (ManagePackagesDialog dialog = CreateDialog (initialSearch, project)) {
