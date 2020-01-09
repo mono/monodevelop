@@ -1140,7 +1140,8 @@ namespace MonoDevelop.MacIntegration
 		bool HasAnyDockWindowFocused ()
 		{
 			foreach (var window in Gtk.Window.ListToplevels ()) {
-				if (!window.HasToplevelFocus) {
+				// Gtk.Window.HasToplevelFocus may return false for a window that embeds a Cocoa view
+				if (!window.HasToplevelFocus && GtkQuartz.GetWindow (window) != NSApplication.SharedApplication.KeyWindow) {
 					continue;
 				}
 				if (window is Components.Docking.DockFloatingWindow floatingWindow) {

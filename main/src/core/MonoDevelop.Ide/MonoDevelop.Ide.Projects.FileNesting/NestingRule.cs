@@ -63,9 +63,9 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		ProjectFile CheckParentForFile (ProjectFile inputFile, FilePath parentFile, FilePath inDirectory)
 		{
-			if (inputFile.FilePath != parentFile && !parentFile.IsDirectory && inDirectory == parentFile.ParentDirectory) {
+			if (inputFile.FilePath != parentFile && inDirectory == parentFile.ParentDirectory) {
 				var parent = inputFile.Project.Files.GetFile (parentFile);
-				if (parent != null) {
+				if (parent != null && parent.Subtype != Subtype.Directory) {
 					Debug.WriteLine ($"Applied rule for nesting {inputFile} under {parentFile}");
 					return parent;
 				}

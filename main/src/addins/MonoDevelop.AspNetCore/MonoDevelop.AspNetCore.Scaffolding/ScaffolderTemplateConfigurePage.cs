@@ -74,7 +74,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 						};
 						if(comboField.PlaceholderText != null)
 							comboBoxEntry.TextEntry.PlaceholderText = comboField.PlaceholderText;
-						comboBoxEntry.Items.Add ("");
 						comboBox = comboBoxEntry;
 					} else {
 						comboBox = new ComboBox ();
@@ -91,9 +90,6 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 								foreach (var option in options) {
 									comboBox.Items.Add (option);
 								}
-								comboField.SelectedValue = options.FirstOrDefault ();
-								if (comboBox.Items.Count > 0)
-									comboBox.SelectedIndex = 0;
 							});
 
 						});
