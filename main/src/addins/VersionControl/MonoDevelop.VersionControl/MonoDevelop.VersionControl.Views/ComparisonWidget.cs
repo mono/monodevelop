@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Mono.TextEditor;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
+using MonoDevelop.Components.AtkCocoaHelper;
 using System.ComponentModel;
 using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui;
@@ -87,6 +88,12 @@ namespace MonoDevelop.VersionControl.Views
 				new MonoTextEditor (new TextDocument (), options),
 				new MonoTextEditor (new TextDocument (), options),
 			};
+			editors [0].Accessible.SetShouldIgnore (false);
+			editors [0].Accessible.SetRole (AtkCocoa.Roles.AXGroup);
+			editors [0].Accessible.SetTitle (GettextCatalog.GetString ("Comparing Revision Editor"));
+			editors [1].Accessible.SetShouldIgnore (false);
+			editors [1].Accessible.SetRole (AtkCocoa.Roles.AXGroup);
+			editors [1].Accessible.SetTitle (GettextCatalog.GetString ("Original Revision Editor"));
 
 			if (!viewOnly) {
 				revisionStore = new ListStore (typeof(Revision), typeof (string), typeof (string), typeof (string));
@@ -109,7 +116,8 @@ namespace MonoDevelop.VersionControl.Views
 				originalComboBox.PackStart (authorRenderer, true);
 				originalComboBox.AddAttribute (authorRenderer, "text", 3);
 
-				//				originalComboBox.AccessibilityTextFormat = GettextCatalog.GetString ("Select original revision, current: {0}");
+				originalComboBox.Accessible.SetTitle (GettextCatalog.GetString ("Original Revision"));
+
 				originalComboBox.Active = 0;
 				originalComboBox.Sensitive = false;
 
@@ -122,7 +130,8 @@ namespace MonoDevelop.VersionControl.Views
 				diffComboBox.PackStart (authorRenderer, true);
 				diffComboBox.AddAttribute (authorRenderer, "text", 3);
 
-				//				diffComboBox.AccessibilityTextFormat = GettextCatalog.GetString ("Select  diff revision, current: {0}");
+				diffComboBox.Accessible.SetTitle (GettextCatalog.GetString ("Compared Revision"));
+
 				diffComboBox.Active = 0;
 				diffComboBox.Sensitive = false;
 				this.headerWidgets = new [] { diffComboBox, originalComboBox };
