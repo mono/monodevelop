@@ -105,7 +105,6 @@ namespace MonoDevelop.UnitTesting.NUnit
 					if (isNameSpace) {
 						var forceLoad = newTest.Tests;
 						foreach (var child in newTest.ChildNamespaces) {
-							//Console.WriteLine (newTest.Title + " " + child.Title);
 							child.Title = newTest.Title + "." + child.Title;
 							childNamespaces.Add (child);
 						}
