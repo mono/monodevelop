@@ -96,11 +96,8 @@ namespace MonoDevelop.DesignerSupport
 			var collection = new List<DescriptorPropertyInfo> ();
 
 			foreach (object propertyProvider in providers) {
-				//get the current properties for this provider
-				var currentType = propertyProvider.GetType ();
-
-				//we want all property descriptors for this propertyProvider type
-				var propertyDescriptors = System.ComponentModel.TypeDescriptor.GetProperties (currentType);
+				//we want all property descriptors for this propertyProvider
+				var propertyDescriptors = System.ComponentModel.TypeDescriptor.GetProperties (propertyProvider);
 
 				foreach (System.ComponentModel.PropertyDescriptor propertyDescriptor in propertyDescriptors) {
 					if (propertyDescriptor.IsBrowsable) {
