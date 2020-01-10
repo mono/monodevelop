@@ -574,6 +574,7 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.StartupConfigurationChanged -= HandleStartupItemChanged;
 				currentSolution.Saved -= HandleSolutionSaved;
 				currentSolution.EntrySaved -= HandleSolutionEntrySaved;
+				currentSolution.SolutionItemAdded -= HandleSolutionItemAdded;
 			}
 
 			currentSolution = e.Solution;
@@ -582,6 +583,7 @@ namespace MonoDevelop.Components.MainToolbar
 				currentSolution.StartupConfigurationChanged += HandleStartupItemChanged;
 				currentSolution.Saved += HandleSolutionSaved;
 				currentSolution.EntrySaved += HandleSolutionEntrySaved;
+				currentSolution.SolutionItemAdded += HandleSolutionItemAdded;
 			}
 
 			TrackStartupProject ();
@@ -622,6 +624,14 @@ namespace MonoDevelop.Components.MainToolbar
 			// Skip the per-project update when a solution is being saved. The solution Saved callback will do the final update.
 			if (!e.SavingSolution)
 				HandleSolutionSaved (sender, e);
+		}
+
+		void HandleSolutionItemAdded (object sender, SolutionItemChangeEventArgs e)
+		{
+			// When a solution item is added due to a reload we need to ensure the configurationMergers dictionary is
+			// using the new project and not the old disposed project.
+			if (e.Reloading)
+				UpdateCombos ();
 		}
 
 		void HandleStartupItemChanged (object sender, EventArgs e)
