@@ -352,10 +352,15 @@ namespace MonoDevelop.MacIntegration
 
 			// At this point, Cocoa should have been initialized; it is initialized along with Gtk+ at the beginning of IdeStartup.Run
 			// If LaunchReason is still Unknown at this point, it means we have missed the NSApplicationDidLaunch notification for some reason and
-			// we fall back to it being a Normal startup to unblock anything waiting for that notification.
+			// we fall back to the AppDelegate's version to unblock anything waiting for that notification.
 			if (IdeApp.LaunchReason == IdeApp.LaunchType.Unknown) {
-				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
-				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+				if (appDelegate.LaunchReason != AppDelegate.LaunchType.Unknown) {
+					IdeApp.LaunchReason = appDelegate.LaunchReason == AppDelegate.LaunchType.Normal ? IdeApp.LaunchType.Normal : IdeApp.LaunchType.LaunchedFromFileManager;
+				} else {
+					// Fall back to Normal if even the app delegate doesn't know
+					LoggingService.LogWarning ("Unknown startup reason, assuming Normal");
+					IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+				}
 			}
 
 			ideAppleEvents = new MacIdeAppleEvents ();
