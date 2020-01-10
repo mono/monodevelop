@@ -2304,10 +2304,18 @@ namespace MonoDevelop.Components.Commands
 		
 		Window GetActiveWindow (Window win)
 		{
-			Gtk.Window [] wins = Gtk.Window.ListToplevels ();
-
-			bool hasFocus = false;
 			bool lastFocusedExists = lastFocused == null;
+			bool hasFocus = false;
+#if MAC
+			var nsWindow = AppKit.NSApplication.SharedApplication.KeyWindow;
+			hasFocus = nsWindow != null;
+			if (hasFocus) {
+				lastFocusedExists |= lastFocused?.nativeWidget == nsWindow;
+				lastFocused = win = nsWindow;
+			} else {
+#endif
+
+			Gtk.Window [] wins = Gtk.Window.ListToplevels ();
 			Gtk.Window newFocused = null;
 			foreach (Gtk.Window w in wins) {
 				if (w.Visible) {
@@ -2324,18 +2332,9 @@ namespace MonoDevelop.Components.Commands
 				}
 			}
 
-#if MAC
-			if (!hasFocus) {
-				var nsWindow = AppKit.NSApplication.SharedApplication.KeyWindow;
-				hasFocus = nsWindow != null;
-				if (hasFocus) {
-					lastFocused = win = nsWindow;
-				}
-			} else {
-				lastFocused = newFocused;
-			}
-#else
 			lastFocused = newFocused;
+#if MAC
+			}
 #endif
 
 			UpdateAppFocusStatus (hasFocus, lastFocusedExists);
@@ -2343,8 +2342,7 @@ namespace MonoDevelop.Components.Commands
 			if (win != null && win.IsRealized) {
 				RegisterTopWindow (win);
 				return win;
-			}
-			else
+			} else
 				return null;
 		}
 		
