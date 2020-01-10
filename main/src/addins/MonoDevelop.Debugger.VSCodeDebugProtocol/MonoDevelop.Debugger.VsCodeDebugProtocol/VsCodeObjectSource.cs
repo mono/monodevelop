@@ -448,12 +448,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		public object GetRawValue (ObjectPath path, EvaluationOptions options)
 		{
-			// Note: If the type is a string, then we already have the full value
-			if (Type.Equals ("string", StringComparison.Ordinal)) {
-				var rawValue = Unquote (Value);
-
-				return new RawValueString (new RawString (rawValue));
+			switch (Type) {
+			case "string": return new RawValueString (new RawString (Unquote (Value)));
+			case "double": return double.Parse (Value, NumberStyles.Float, CultureInfo.InvariantCulture);
+			case "float": return float.Parse (Value, NumberStyles.Float, CultureInfo.InvariantCulture);
+			case "ulong": return ulong.Parse (Value, NumberStyles.None, CultureInfo.InvariantCulture);
+			case "long": return long.Parse (Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+			case "uint": return uint.Parse (Value, NumberStyles.None, CultureInfo.InvariantCulture);
+			case "int": return int.Parse (Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+			case "ushort": return ushort.Parse (Value, NumberStyles.None, CultureInfo.InvariantCulture);
+			case "short": return short.Parse (Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+			case "byte": return byte.Parse (Value, NumberStyles.None, CultureInfo.InvariantCulture);
+			case "sbyte": return sbyte.Parse (Value, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+			case "char": return char.Parse (Value.Substring (1, Value.Length - 2));
 			}
+
+			// TODO: handle array types
 
 			//using (var timer = Session.EvaluationStats.StartTimer ()) {
 			//	var response = Session.protocolClient.SendRequestSync (new EvaluateRequest (Expression) { FrameId = FrameId });
