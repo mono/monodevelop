@@ -31,7 +31,7 @@ using MonoDevelop.UnitTesting.NUnit.External;
 
 namespace MonoDevelop.UnitTesting.NUnit
 {
-	class NUnitTestSuite: UnitTestGroup
+	public class NUnitTestSuite: UnitTestGroup
 	{
 		NunitTestInfo testInfo;
 		NUnitAssemblyTestSuite rootSuite;
