@@ -122,6 +122,7 @@ namespace MonoDevelop.UnitTesting.Tests
 			{
 				FixtureTypeNamespace = fixtureTypeNamespace;
 				FixtureTypeName = fixtureTypeName;
+			}
 		}
 	}
 
