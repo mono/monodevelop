@@ -116,7 +116,7 @@ module CompletionServer =
                         if input.EndsWith(";;") then
                             let result, warnings = fsiSession.EvalInteractionNonThrowing (currentInput + "\n" + input)
                             match result with
-                            | Choice1Of2 () -> ()
+                            | Choice1Of2 _fsiValue -> ()
                             | Choice2Of2 exn -> do! writeOutput (exn |> string)
                             for w in warnings do
                                 do! writeOutput (sprintf "%s at %d,%d" w.Message w.StartLineAlternate w.StartColumn)

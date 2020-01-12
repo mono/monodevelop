@@ -37,19 +37,19 @@ type FileSystem (defaultFileSystem : IFileSystem, openDocuments: unit -> Documen
             getOpenDocContent fileName
             |> Option.getOrElse (fun () -> defaultFileSystem.ReadAllBytesShim fileName)
 
-        member x.GetLastWriteTimeShim fileName =
-            let r = maybe {
-               let! doc = getOpenDoc fileName
-               if doc.IsDirty then
-                 let key, newhash = fileName, doc.Editor.Text.GetHashCode()
-                 return match timestamps.TryGetValue (key) with
-                        | true, (hash, date) when hash = newhash -> date
-                        | _       -> let d = System.DateTime.Now
-                                     timestamps.[key] <- (newhash,d)
-                                     d
-               else return! None
-             }
-            r |> Option.getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName)
+        member x.GetLastWriteTimeShim fileName = defaultFileSystem.GetLastWriteTimeShim(fileName)
+            //let r = maybe {
+            //   let! doc = getOpenDoc fileName
+            //   if doc.IsDirty then
+            //     let key, newhash = fileName, doc.Editor.Text.GetHashCode()
+            //     return match timestamps.TryGetValue (key) with
+            //            | true, (hash, date) when hash = newhash -> date
+            //            | _       -> let d = System.DateTime.Now
+            //                         timestamps.[key] <- (newhash,d)
+            //                         d
+            //   else return! None
+            // }
+            //r |> Option.getOrElse (fun () -> defaultFileSystem.GetLastWriteTimeShim fileName)
 
         member x.GetTempPathShim() = defaultFileSystem.GetTempPathShim()
         member x.FileStreamCreateShim fileName = defaultFileSystem.FileStreamCreateShim fileName

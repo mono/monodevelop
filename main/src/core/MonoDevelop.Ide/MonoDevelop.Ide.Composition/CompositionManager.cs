@@ -126,7 +126,7 @@ namespace MonoDevelop.Ide.Composition
 
 			// Try to use cached MEF data
 			using (timer) {
-				var canUse = metadata.ValidCache = caching.CanUse ();
+				var canUse = metadata.ValidCache = false;//caching.CanUse ();
 				if (canUse) {
 					LoggingService.LogInfo ("Creating MEF composition from cache");
 					RuntimeComposition = await TryCreateRuntimeCompositionFromCache (caching);

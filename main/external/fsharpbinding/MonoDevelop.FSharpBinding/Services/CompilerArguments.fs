@@ -184,8 +184,9 @@ module CompilerArguments =
        let outputFile = project.GetOutputFileName(configSelector).ToString()
        if not (String.IsNullOrWhiteSpace outputFile) then 
            yield "--out:" + outputFile
-       if Project.isPortable project || Project.isDotNetCoreProject project then
-           yield "--targetprofile:netcore"
+       //if Project.isPortable project || Project.isDotNetCoreProject project then
+           //yield "--targetprofile:netcore"
+       yield "--targetprofile:mscorlib"
        if not (String.IsNullOrWhiteSpace fsconfig.PlatformTarget) then
            yield "--platform:" + fsconfig.PlatformTarget
        yield "--fullpaths"
