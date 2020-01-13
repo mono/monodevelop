@@ -483,7 +483,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return await TryLoadSolution (cancellationToken).ConfigureAwait (false);
 		}
 
-		async Task ReloadProjects (CancellationToken cancellationToken)
+		internal async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
 				using var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
@@ -1088,6 +1088,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		HashSet<MonoDevelop.Projects.Project> tryApplyState_changedProjects = new HashSet<MonoDevelop.Projects.Project> ();
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
+		HashSet<MonoDevelop.Projects.Project> tryApplyState_modifiedProjects = new HashSet<MonoDevelop.Projects.Project> ();
 
 		/// <summary>
 		/// Used by tests to validate that project has been saved.
@@ -1132,8 +1133,24 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
 					freezeProjectModify = false;
+					if (tryApplyState_modifiedProjects.Count > 0)
+						NotifyProjectsModified ();
 					FileService.ThawEvents ();
 				}
+			}
+		}
+
+		void NotifyProjectsModified ()
+		{
+			try {
+				foreach (var project in tryApplyState_modifiedProjects) {
+					// New .editorconfig file added so we need to update the project info.
+					project.NotifyModified ("CoreCompileFiles");
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("tryApplyState_modifiedProjects NotifyModifed error", ex);
+			} finally {
+				tryApplyState_modifiedProjects.Clear ();
 			}
 		}
 
@@ -1260,11 +1277,17 @@ namespace MonoDevelop.Ide.TypeSystem
 					var solutionFolder = GetSolutionItemsFolder (mdProject);
 					if (!solutionFolder.Files.Contains (path)) {
 						solutionFolder.Files.Add (path);
+						mdProject.ParentSolution.SaveAsync (new ProgressMonitor ()).Ignore ();
 					}
 				}
 				if (!mdProject.IsFileInProject (file.FilePath)) {
 					mdProject.Files.Add (file);
 				}
+				// Need to trigger Project.Modified event after TryApp is run so project is reloaded by the type system
+				// service. Adding the file to the Files collection will not trigger the modified event since
+				// the build action is not EditorConfigFiles. Also this event would be ignored anyway during TryApply.
+				// Also handles if the link already existed.
+				tryApplyState_modifiedProjects.Add (mdProject);
 				tryApplyState_changedProjects.Add (mdProject);
 			}
 
@@ -1284,7 +1307,6 @@ namespace MonoDevelop.Ide.TypeSystem
 			folder = new MonoDevelop.Projects.SolutionFolder ();
 			folder.Name = name;
 			project.ParentSolution.RootFolder.Items.Add (folder);
-			project.ParentSolution.SaveAsync (new ProgressMonitor ()).Ignore ();
 			return folder;
 		}
 
@@ -1317,6 +1339,7 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyAnalyzerConfigDocumentRemoved (DocumentId documentId)
 		{
+			LoggingService.LogInfo ("ApplyAnalyzerConfigDocumentRemoved {0}", documentId);
 			base.ApplyAnalyzerConfigDocumentRemoved (documentId);
 		}
 
