@@ -270,7 +270,22 @@ namespace MonoDevelop.Ide.TypeSystem
 					var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
 
 					string xml = File.ReadAllText (updatedProjectFileName);
-					File.WriteAllText (project.FileName, xml);
+
+					// Handle sharing violations when writing the project file by retrying a few times.
+					int maxRetries = 10;
+					for (int i = 0; i < maxRetries; ++i) {
+						try {
+							File.WriteAllText (project.FileName, xml);
+							break;
+						} catch (Exception ex) {
+							if (i + 1 >= maxRetries) {
+								throw;
+							} else {
+								Console.WriteLine ("MultiTargetFramework_ReloadProject_TargetFrameworksChanged File.WriteAllText error: {0}", ex.Message);
+								await Task.Delay (500);
+							}
+						}
+					}
 
 					await sol.RootFolder.ReloadItem (Util.GetMonitor (), project);
 
