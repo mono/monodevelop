@@ -32,7 +32,12 @@ namespace MonoDevelop.Ide.TypeSystem
 			textBuffer?.Properties.RemoveProperty (typeof (IMonoDevelopHostDocument));
 		}
 
-		internal static IMonoDevelopHostDocument FromDocument(Document document)
+		internal static IMonoDevelopHostDocument FromDocument (Document document)
+		{
+			return FromDocument ((TextDocument)document);
+		}
+
+		internal static IMonoDevelopHostDocument FromDocument(TextDocument document)
 		{
 			IMonoDevelopHostDocument containedDocument = null;
 			if (document.TryGetText (out SourceText sourceText)) {
