@@ -103,11 +103,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 		public static bool HasChildren (ProjectFile inputFile)
 		{
-			if (!AppliesToProject (inputFile.Project)) {
-				return false;
-			}
-			var children = GetProjectNestingInfo (inputFile.Project).GetChildrenForFile (inputFile);
-			return (children?.Count ?? 0) > 0;
+			return (GetChildren (inputFile)?.Count ?? 0) > 0;
 		}
 
 		public static ProjectFileCollection GetChildren (ProjectFile inputFile)
@@ -204,6 +200,22 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 				}
 				if (parent.Children.GetFile (projectFile.FilePath) == null) {
 					parent.Children.Add (projectFile);
+				}
+			}
+
+			// Check existing files for children of the newly added file
+			foreach (var file in Project.Files.Where (
+				x => x != projectFile && x.Subtype != Subtype.Directory && x.FilePath.ParentDirectory == projectFile.FilePath.ParentDirectory)) {
+				var isParent = FileNestingService.InternalGetParentFile (file) == projectFile;
+				if (isParent) {
+					var child = projectFiles.GetOrAdd (file, new ProjectFileNestingInfo (file));
+					if (child.Parent == null) {
+						if (tmp.Children == null) {
+							tmp.Children = new ProjectFileCollection ();
+						}
+						tmp.Children.Add (file);
+						child.Parent = projectFile;
+					}
 				}
 			}
 
