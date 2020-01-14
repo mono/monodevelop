@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Gtk;
 using Mono.Addins;
 using MonoDevelop.Projects;
 
