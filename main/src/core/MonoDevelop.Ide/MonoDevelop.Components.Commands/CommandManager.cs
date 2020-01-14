@@ -768,7 +768,13 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
-		internal void RemoveEmbededView (GtkNSViewHost gtkNSViewHost) => viewHosts.Remove (gtkNSViewHost);
+		internal void RemoveEmbededView (GtkNSViewHost gtkNSViewHost)
+		{
+			if (gtkNSViewHost == null) {
+				throw new ArgumentNullException ("cannot unregister a null GtkNSViewHost");
+			}
+			viewHosts.Remove (gtkNSViewHost);
+		}
 
 		bool ProcessKeyEventCore (Gdk.EventKey ev)
 		{
