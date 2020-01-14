@@ -25,10 +25,13 @@ namespace MonoDevelop.VersionControl
 
 		int references;
 
-		public FilePath RootPath
-		{
-			get;
-			protected set;
+		FilePath rootPath;
+		public FilePath RootPath {
+			get => rootPath;
+			protected set {
+				rootPath = value;
+				OnRootPathChanged ();
+			}
 		}
 
 		internal FilePath RepositoryPath { get; set; }
@@ -72,6 +75,10 @@ namespace MonoDevelop.VersionControl
 			name = other.name;
 			vcsName = other.vcsName;
 			vcs = other.vcs;
+		}
+
+		protected virtual void OnRootPathChanged ()
+		{
 		}
 
 		public Repository Clone ()

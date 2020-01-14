@@ -56,19 +56,23 @@ namespace MonoDevelop.VersionControl
 		
 		public override void MoveFile (FilePath source, FilePath dest)
 		{
-			ProgressMonitor monitor = new ProgressMonitor ();
+			try {
+				ProgressMonitor monitor = new ProgressMonitor ();
 
-			Repository srcRepo = GetRepository (source);
-			Repository dstRepo = GetRepository (dest);
-			
-			if (dstRepo != null && dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
-				srcRepo.MoveFileAsync (source, dest, true, monitor).Wait();
-			else {
-				CopyFile (source, dest, true);
-				srcRepo.DeleteFileAsync (source, true, monitor, false).Wait();
+				Repository srcRepo = GetRepository (source);
+				Repository dstRepo = GetRepository (dest);
+
+				if (dstRepo != null && dstRepo.CanMoveFilesFrom (srcRepo, source, dest))
+					srcRepo.MoveFileAsync (source, dest, true, monitor).Wait ();
+				else {
+					CopyFile (source, dest, true);
+					srcRepo.DeleteFileAsync (source, true, monitor, false).Wait ();
+				}
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while moving file", e);
 			}
 		}
-		
+
 		public override void RenameDirectory (FilePath path, string newName)
 		{
 			MoveDirectory (path, path.ParentDirectory.Combine (newName));
@@ -81,45 +85,61 @@ namespace MonoDevelop.VersionControl
 
 		public override void DeleteFile (FilePath file)
 		{
-			Repository repo = GetRepository (file);
-			repo.DeleteFileAsync (file, true, new ProgressMonitor (), false).Wait ();
+			try {
+				Repository repo = GetRepository (file);
+				repo.DeleteFileAsync (file, true, new ProgressMonitor (), false).Wait ();
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while deleting file", e);
+			}
 		}
-		
+
 		public override void CreateDirectory (FilePath path)
 		{
-			Repository repo = GetRepository (path);
-			repo.ClearCachedVersionInfo (path);
-			System.IO.Directory.CreateDirectory (path);
-			repo.Add (path, false, new ProgressMonitor ());
+			try {
+				Repository repo = GetRepository (path);
+				repo.ClearCachedVersionInfo (path);
+				System.IO.Directory.CreateDirectory (path);
+				repo.Add (path, false, new ProgressMonitor ());
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while create directory", e);
+			}
 		}
 
 		public override void MoveDirectory (FilePath sourcePath, FilePath destPath)
 		{
-			ProgressMonitor monitor = new ProgressMonitor ();
-			
-			Repository srcRepo = GetRepository (sourcePath);
-			Repository dstRepo = GetRepository (destPath);
+			try {
+				ProgressMonitor monitor = new ProgressMonitor ();
 
-			if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath)) {
-				try {
-					srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor).Wait();
-				} catch (AggregateException e) {
-					foreach (var inner in e.InnerExceptions) {
-						if (inner is OperationCanceledException)
-							continue;
-						LoggingService.LogError ("Error while moving directory.", inner);
+				Repository srcRepo = GetRepository (sourcePath);
+				Repository dstRepo = GetRepository (destPath);
+
+				if (dstRepo.CanMoveFilesFrom (srcRepo, sourcePath, destPath)) {
+					try {
+						srcRepo.MoveDirectoryAsync (sourcePath, destPath, true, monitor).Wait ();
+					} catch (AggregateException e) {
+						foreach (var inner in e.InnerExceptions) {
+							if (inner is OperationCanceledException)
+								continue;
+							LoggingService.LogError ("Error while moving directory.", inner);
+						}
 					}
+				} else {
+					CopyDirectory (sourcePath, destPath);
+					srcRepo.DeleteDirectory (sourcePath, true, monitor, false);
 				}
-			}  else {
-				CopyDirectory (sourcePath, destPath);
-				srcRepo.DeleteDirectory (sourcePath, true, monitor, false);
+			} catch (Exception e) {
+				LoggingService.LogError("Error while moving directory.", e);
 			}
 		}
 
 		public override void DeleteDirectory (FilePath path)
 		{
-			Repository repo = GetRepository (path);
-			repo.DeleteDirectory (path, true, new ProgressMonitor (), false);
+			try {
+				Repository repo = GetRepository (path);
+				repo.DeleteDirectory (path, true, new ProgressMonitor (), false);
+			} catch (Exception e) {
+				LoggingService.LogError ("Error while deleting file", e);
+			}
 		}
 
 		public override void RequestFileEdit (FilePath file)
