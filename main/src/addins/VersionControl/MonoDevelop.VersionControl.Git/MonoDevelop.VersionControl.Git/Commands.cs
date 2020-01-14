@@ -225,9 +225,16 @@ namespace MonoDevelop.VersionControl.Git
 
 	class ManageStashesHandler: GitCommandHandler
 	{
-		protected override void Run ()
+		protected override async void Run ()
 		{
-			GitService.ShowStashManager (Repository);
+			try { 
+				var dlg = new StashManagerDialog ();
+				await dlg.InitializeAsync (Repository);
+				MessageService.ShowCustomDialog (dlg);
+				dlg.Dispose ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError (e);
+			}
 		}
 	}
 }
