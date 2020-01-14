@@ -47,6 +47,7 @@
     <Compile Include="Features\Completion\AbstractCSharpCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\ProtocolMemberCompletionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpCompletionTextEditorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpCompilerParametersTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />

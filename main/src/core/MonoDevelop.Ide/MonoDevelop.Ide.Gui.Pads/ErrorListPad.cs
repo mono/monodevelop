@@ -1041,7 +1041,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 			SetInitialOutputViewSize (control.Allocation.Width);
 
 			if (visible) {
-				Counters.BuildLogShown++;
+				Counters.BuildLogShown.Inc (1);
 			}
 		}
 

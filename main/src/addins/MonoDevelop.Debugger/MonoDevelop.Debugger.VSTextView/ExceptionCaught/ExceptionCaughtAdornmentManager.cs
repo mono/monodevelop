@@ -43,6 +43,7 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		private readonly string filePath;
 		readonly IXPlatAdornmentLayer _exceptionCaughtLayer;
 		FileLineExtension extension;
+		NSPanel exceptionCaughtButtonWindow;
 
 		public ExceptionCaughtAdornmentManager (ICocoaViewFactory cocoaViewFactory, ICocoaTextView textView)
 		{
@@ -68,6 +69,10 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 			if (e.Extension == extension) {
 				extension = null;
 				_exceptionCaughtLayer.RemoveAllAdornments ();
+				if (exceptionCaughtButtonWindow != null) {
+					exceptionCaughtButtonWindow.Close ();
+					exceptionCaughtButtonWindow = null;
+				}
 			}
 		}
 
@@ -81,11 +86,14 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 		private void RenderAdornment (FileLineExtension fileLineExtension)
 		{
 			NSView view;
-			if (fileLineExtension is ExceptionCaughtButton button)
+			bool mini;
+			if (fileLineExtension is ExceptionCaughtButton button) {
+				mini = false;
 				view = CreateButton (cocoaViewFactory, button);
-			else if (fileLineExtension is ExceptionCaughtMiniButton miniButton)
+			} else if (fileLineExtension is ExceptionCaughtMiniButton miniButton) {
+				mini = true;
 				view = CreateMiniButton (cocoaViewFactory, miniButton);
-			else
+			} else
 				return;
 			if (extension != fileLineExtension) {
 				extension = fileLineExtension;
@@ -97,17 +105,38 @@ namespace MonoDevelop.Debugger.VSTextView.ExceptionCaught
 				return;
 			if (!textView.TextViewLines.FormattedSpan.Contains (span.End))
 				return;
-			try {
-				var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
-				view.SetFrameOrigin (new CGPoint (
-					Math.Round (charBound.Left),
-					Math.Round (charBound.TextTop + charBound.TextHeight / 2 - view.Frame.Height / 2)));
-			} catch (Exception e) {
-				view.SetFrameOrigin (default);
-				LoggingService.LogInternalError ("https://vsmac.dev/923058", e);
-			}
 			_exceptionCaughtLayer.RemoveAllAdornments ();
-			_exceptionCaughtLayer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, null, view, null);
+			if (exceptionCaughtButtonWindow != null) {
+				exceptionCaughtButtonWindow.Close ();
+				exceptionCaughtButtonWindow = null;
+			}
+			var charBound = textView.TextViewLines.GetCharacterBounds (span.End);
+			if (mini) {
+				try {
+					view.SetFrameOrigin (new CGPoint (
+					Math.Round (charBound.Left),
+					Math.Round (charBound.TextTop - charBound.TextHeight / 2 - view.Frame.Height / 2)));
+				} catch (Exception e) {
+					view.SetFrameOrigin (default);
+					LoggingService.LogInternalError ("https://vsmac.dev/923058", e);
+				}
+				_exceptionCaughtLayer.AddAdornment (XPlatAdornmentPositioningBehavior.TextRelative, span, null, view, null);
+			} else {
+				var editorWindow = textView.VisualElement.Window;
+				var pointOnScreen = editorWindow.ConvertPointToScreen (textView.VisualElement.ConvertPointToView (new CGPoint (charBound.Left, charBound.TextTop), null));
+				exceptionCaughtButtonWindow = new NSPanel (CGRect.Empty, NSWindowStyle.Borderless, NSBackingStore.Buffered, false);
+				exceptionCaughtButtonWindow.AccessibilityRole = NSAccessibilityRoles.PopoverRole;
+				editorWindow.AddChildWindow (exceptionCaughtButtonWindow, NSWindowOrderingMode.Above);
+				exceptionCaughtButtonWindow.IsOpaque = false;
+				exceptionCaughtButtonWindow.BackgroundColor = NSColor.Clear;
+				exceptionCaughtButtonWindow.HasShadow = true;
+				exceptionCaughtButtonWindow.ContentView = view;
+				var fittingSize = view.FittingSize;
+				var x = Math.Min (editorWindow.Screen.VisibleFrame.Width - fittingSize.Width, pointOnScreen.X);
+				var y = Math.Max (0, pointOnScreen.Y - fittingSize.Height / 2);
+				exceptionCaughtButtonWindow.SetFrame (new CGRect (x, y, fittingSize.Width, fittingSize.Height), true);
+				exceptionCaughtButtonWindow.MakeKeyAndOrderFront (null);
+			}
 		}
 
 		private void TextView_LayoutChanged (object sender, TextViewLayoutChangedEventArgs e)

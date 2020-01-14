@@ -336,7 +336,10 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ClearProjectData (ProjectId projectId)
 		{
 			var actualProject = ProjectMap.RemoveProject (projectId);
-			UnloadMonoProject (actualProject);
+			// Do not unload the project if there are still project ids mappings defined for this project.
+			// This prevents the Project.Modified event being unsubscribed for the wrong project on project reload.
+			if (actualProject != null && ProjectMap.GetIds (actualProject) == null)
+				UnloadMonoProject (actualProject);
 			dynamicFileManager?.UnloadProject (projectId);
 
 			base.ClearProjectData (projectId);

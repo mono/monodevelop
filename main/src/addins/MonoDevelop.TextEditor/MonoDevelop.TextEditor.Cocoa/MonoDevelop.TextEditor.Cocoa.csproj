@@ -133,6 +133,14 @@
     <None Remove="icons\go-down-16%402x.png" />
     <None Remove="icons\go-down-16~contrast.png" />
     <None Remove="icons\go-down-16~contrast%402x.png" />
+    <None Remove="icons\vs-go-to-line-16.png" />
+    <None Remove="icons\vs-go-to-line-16~contrast%402x.png" />
+    <None Remove="icons\vs-go-to-line-16~contrast~dark.png" />
+    <None Remove="icons\vs-go-to-line-16~contrast~dark%402x.png" />
+    <None Remove="icons\vs-go-to-line-16~contrast.png" />
+    <None Remove="icons\vs-go-to-line-16%402x.png" />
+    <None Remove="icons\vs-go-to-line-16~dark%402x.png" />
+    <None Remove="icons\vs-go-to-line-16~dark.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="icons\vs-find-replace-close-16.png" />
@@ -159,6 +167,14 @@
     <EmbeddedResource Include="icons\go-down-16%402x.png" />
     <EmbeddedResource Include="icons\go-down-16~contrast.png" />
     <EmbeddedResource Include="icons\go-down-16~contrast%402x.png" />
+    <EmbeddedResource Include="icons\vs-go-to-line-16.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~contrast%402x.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~contrast~dark.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~contrast~dark%402x.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~contrast.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16%402x.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~dark%402x.png"/>
+    <EmbeddedResource Include="icons\vs-go-to-line-16~dark.png"/>
   </ItemGroup>
   <Target Name="BuildTextMate" BeforeTargets="Compile">
     <MSBuild Projects="$(VSEditorCoreDirectory)src\Editor\TextMate\TMRegEx\TMRegEx.proj" Targets="Build" Properties="Configuration=$(Configuration)" />

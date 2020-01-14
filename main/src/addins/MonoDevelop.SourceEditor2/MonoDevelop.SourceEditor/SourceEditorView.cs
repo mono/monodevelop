@@ -195,7 +195,7 @@ namespace MonoDevelop.SourceEditor
 
 		private SourceEditorView (DocumentAndLoaded doc)
 		{
-			Counters.LoadedEditors++;
+			Counters.LoadedEditors.Inc (1);
 			breakpoints = DebuggingService.Breakpoints;
 
 			widget = new SourceEditorWidget (this, doc.Document);
@@ -1056,7 +1056,7 @@ namespace MonoDevelop.SourceEditor
 
 			StoreSettings ();
 
-			Counters.LoadedEditors--;
+			Counters.LoadedEditors.Dec (1);
 
 			/*	if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();*/
