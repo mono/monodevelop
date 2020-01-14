@@ -236,7 +236,7 @@ namespace MonoDevelop.Ide.Gui
 
 		internal Document (DocumentManager documentManager, IShell shell, DocumentController controller, DocumentControllerDescription controllerDescription, IWorkbenchWindow window)
 		{
-			Counters.OpenDocuments++;
+			Counters.OpenDocuments.Inc (1);
 
 			this.shell = shell;
 			this.documentManager = documentManager;
@@ -578,7 +578,7 @@ namespace MonoDevelop.Ide.Gui
 
 				shell.CloseView (window, true);
 
-				Counters.OpenDocuments--;
+				Counters.OpenDocuments.Dec (1);
 
 				Dispose ();
 

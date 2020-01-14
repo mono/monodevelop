@@ -156,7 +156,7 @@ namespace MonoDevelop.Core.Execution
 			// 	p.Exited += exited;
 			// p.EnableRaisingEvents = true;
 			
-			Counters.ProcessesStarted++;
+			Counters.ProcessesStarted.Inc (1);
 			p.Start ();
 
 			if (exited != null)
@@ -212,7 +212,7 @@ namespace MonoDevelop.Core.Execution
 				if (p != null) {
 					if (exited != null)
 						p.Task.ContinueWith (t => exited (p, EventArgs.Empty), Runtime.MainTaskScheduler);
-					Counters.ProcessesStarted++;
+					Counters.ProcessesStarted.Inc (1);
 					return p;
 				} else {
 					LoggingService.LogError ("Could not create external console for command: " + command + " " + arguments);

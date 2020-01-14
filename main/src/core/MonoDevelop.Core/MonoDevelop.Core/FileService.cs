@@ -805,9 +805,9 @@ namespace MonoDevelop.Core
 		{
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
-					Counters.DirectoriesCreated++;
+					Counters.DirectoriesCreated.Inc (1);
 				else
-					Counters.FilesCreated++;
+					Counters.FilesCreated.Inc (1);
 			}
 
 			eventQueue.RaiseEvent (EventDataKind.Created, args);
@@ -830,9 +830,9 @@ namespace MonoDevelop.Core
 		{
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
-					Counters.DirectoriesRenamed++;
+					Counters.DirectoriesRenamed.Inc (1);
 				else
-					Counters.FilesRenamed++;
+					Counters.FilesRenamed.Inc (1);
 			}
 
 			eventQueue.RaiseEvent (EventDataKind.Renamed, args);
@@ -843,9 +843,9 @@ namespace MonoDevelop.Core
 		{
 			foreach (FileEventInfo fi in args) {
 				if (fi.IsDirectory)
-					Counters.DirectoriesRemoved++;
+					Counters.DirectoriesRemoved.Inc (1);
 				else
-					Counters.FilesRemoved++;
+					Counters.FilesRemoved.Inc (1);
 			}
 
 			eventQueue.RaiseEvent (EventDataKind.Removed, args);
@@ -854,7 +854,7 @@ namespace MonoDevelop.Core
 		public static event EventHandler<FileEventArgs> FileChanged;
 		static void OnFileChanged (FileEventArgs args)
 		{
-			Counters.FileChangeNotifications++;
+			Counters.FileChangeNotifications.Inc (1);
 			eventQueue.RaiseEvent (EventDataKind.Changed, args);
 		}
 
