@@ -157,6 +157,14 @@ namespace MonoDevelop.Projects
 				item.VirtualPathChanged += ProjectVirtualPathChanged;
 				item.PathChanged += FilePathChanged;
 
+				// Update per-directory index
+				if (item.Subtype != Subtype.Directory) {
+					if (!folders.TryGetValue (item.FilePath.ParentDirectory, out var folderChildren)) {
+						folderChildren = ImmutableList<ProjectFile>.Empty;
+					}
+					folders = folders.SetItem (item.FilePath.ParentDirectory, folderChildren.Add (item));
+				}
+
 				if (item.Project != null) {
 					// Note: the ProjectVirtualPath is useless unless a Project is specified.
 					var node = root.Find (item.ProjectVirtualPath, true);
@@ -195,18 +203,6 @@ namespace MonoDevelop.Projects
 		{
 			var pairs = AddProjectFiles (items);
 			files = files.SetItems (pairs);
-
-			// Update per-directory index
-			foreach (var item in pairs) {
-				if (item.Value.Subtype == Subtype.Directory)
-					continue;
-
-				if (!folders.TryGetValue (item.Key.ParentDirectory, out var folderChildren)) {
-					folderChildren = ImmutableList<ProjectFile>.Empty;
-				}
-				folders = folders.SetItem (item.Key.ParentDirectory, folderChildren.Add (item.Value));
-			}
-
 			base.OnItemsAdded (items);
 		}
 
