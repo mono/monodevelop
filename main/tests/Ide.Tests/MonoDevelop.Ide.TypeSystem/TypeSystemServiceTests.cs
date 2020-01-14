@@ -279,6 +279,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							break;
 						} catch (Exception ex) {
 							if (i + 1 >= maxRetries) {
+								ShowFileLockInformation (project.FileName);
 								throw;
 							} else {
 								Console.WriteLine ("MultiTargetFramework_ReloadProject_TargetFrameworksChanged File.WriteAllText error: {0}", ex.Message);
@@ -316,6 +317,28 @@ namespace MonoDevelop.Ide.TypeSystem
 				} finally {
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
+			}
+		}
+
+		void ShowFileLockInformation (FilePath fileName)
+		{
+			Console.WriteLine (
+				"ShowFileLockInformation CurrentProcessId={0} lsof output:",
+				Process.GetCurrentProcess ().Id);
+
+			using (var process = new Process ()) {
+				process.StartInfo.UseShellExecute = false;
+				process.StartInfo.RedirectStandardOutput = true;
+				process.StartInfo.CreateNoWindow = true;
+
+				process.StartInfo.FileName = "lsof";
+				//process.StartInfo.Arguments = " \"" + fileName.FileName + "\"";
+
+				process.OutputDataReceived += (s, e) => Console.WriteLine (e.Data);
+
+				process.Start ();
+				process.BeginOutputReadLine ();
+				process.WaitForExit ();
 			}
 		}
 
