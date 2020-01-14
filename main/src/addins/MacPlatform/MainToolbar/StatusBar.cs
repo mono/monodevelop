@@ -43,6 +43,7 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using MonoDevelop.MacInterop;
+using MonoDevelop.Components.AtkCocoaHelper;
 
 namespace MonoDevelop.MacIntegration.MainToolbar
 {
@@ -927,8 +928,13 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 			bool changed = LoadText (message, isMarkup, statusType);
 			LoadPixbuf (image);
-			if (changed)
+			if (changed) {
 				ReconstructString ();
+				// announce new status if vo/a11y is enabled
+				if (IdeServices.DesktopService.AccessibilityInUse) {
+					IdeServices.DesktopService.MakeAccessibilityAnnouncement (text);
+				}
+			}
 		}
 
 		bool LoadText (string message, bool isMarkup, MessageType statusType)

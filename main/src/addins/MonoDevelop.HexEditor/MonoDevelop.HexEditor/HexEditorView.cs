@@ -65,8 +65,6 @@ namespace MonoDevelop.HexEditor
 			window = new ScrollView (hexEditor);
 			await LoadContent ();
 
-			hexEditor.SetFocus ();
-
 			return new XwtControl (window);
 		}
 
