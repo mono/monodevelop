@@ -36,6 +36,7 @@ namespace MonoDevelop.DotNetCore
 	public static class DotNetCoreSdk
 	{
 		static readonly Version DotNetCoreVersion2_1 = new Version (2, 1, 0);
+		internal static readonly DotNetCoreVersion DotNetCoreUnsupportedTargetFrameworkVersion = new DotNetCoreVersion (3, 2, 0);
 
 		static DotNetCoreSdk ()
 		{
