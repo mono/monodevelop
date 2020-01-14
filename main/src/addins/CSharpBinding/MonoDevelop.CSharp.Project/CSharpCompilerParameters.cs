@@ -141,7 +141,7 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
-			var outputKind = OutputTypeToOutputKind (outputType);
+			var outputKind = outputType == null ? GetOutputKindFromProject (project) : OutputTypeToOutputKind (outputType);
 			bool isLibrary = outputKind == OutputKind.DynamicallyLinkedLibrary;
 			string mainTypeName = project.MainClass;
 			if (isLibrary || mainTypeName == string.Empty) {
@@ -172,6 +172,20 @@ namespace MonoDevelop.CSharp.Project
 			);
 
 			return options;
+		}
+
+		static OutputKind GetOutputKindFromProject (CSharpProject project)
+		{
+			switch (project.CompileTarget) {
+			case CompileTarget.Exe:
+				return OutputKind.ConsoleApplication;
+			case CompileTarget.WinExe:
+				return OutputKind.WindowsApplication;
+			case CompileTarget.Module:
+				return OutputKind.NetModule;
+			default:
+				return OutputKind.DynamicallyLinkedLibrary;
+			}
 		}
 
 		static OutputKind OutputTypeToOutputKind (string outputType)
