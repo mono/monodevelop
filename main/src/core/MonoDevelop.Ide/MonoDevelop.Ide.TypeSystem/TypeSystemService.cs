@@ -201,7 +201,12 @@ namespace MonoDevelop.Ide.TypeSystem
 						var docId = mdWorkspace.GetDocumentId (projectId, fileName);
 						if (docId != null) {
 							projects.Add (mdProject);
-							mdWorkspace.OnAnalyzerConfigDocumentRemoved (docId);
+							try {
+								mdWorkspace.OnAnalyzerConfigDocumentRemoved (docId);
+							} catch (Exception ex) {
+								// Ignore error so other projects can be updated.
+								LoggingService.LogError ("OnAnalyzerConfigDocumentRemoved error", ex);
+							}
 						}
 					}
 				}

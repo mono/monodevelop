@@ -1181,8 +1181,11 @@ namespace MonoDevelop.Ide.TypeSystem
 				// Need to trigger Project.Modified event after TryApp is run so project is reloaded by the type system
 				// service. Adding the file to the Files collection will not trigger the modified event since
 				// the build action is not EditorConfigFiles. Also this event would be ignored anyway during TryApply.
-				// Also handles if the link already existed.
-				tryApplyState_modifiedProjects.Add (mdProject);
+				// Also handles if the link already existed. Need to refresh all projects since the document added
+				// method will only be called once.
+				foreach (var affectedProject in mdProject.ParentSolution.GetAllProjects ()) {
+					tryApplyState_modifiedProjects.Add (affectedProject);
+				}
 				tryApplyState_changedProjects.Add (mdProject);
 			}
 
