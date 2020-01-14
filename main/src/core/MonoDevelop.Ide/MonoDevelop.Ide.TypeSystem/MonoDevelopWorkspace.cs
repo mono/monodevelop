@@ -728,9 +728,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
 		}
 
-		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text)
+		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text, bool isAnalyzerConfigFile = false)
 		{
-			var document = GetDocument (id);
+			TextDocument document = isAnalyzerConfigFile ? GetAnalyzerConfigDocument (id) : GetDocument (id);
 			if (document == null)
 				return;
 
@@ -747,12 +747,21 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				}
 			}
-			var (projection, filePath) = Projections.Get (document.FilePath);
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
-			// Guard against already done changes in linked files.
-			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
-			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
-				return;
+			Projection projection = null;
+			FilePath filePath;
+			ITextDocument data = null;
+			bool isOpen;
+			if (isAnalyzerConfigFile) {
+				filePath = document.FilePath;
+				data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+			} else {
+				(projection, filePath) = Projections.Get (document.FilePath);
+				data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+				// Guard against already done changes in linked files.
+				// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
+				if (((Document)document).GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
+					return;
+				}
 			}
 
 			lock (tryApplyState_documentTextChangedContents) {
@@ -796,20 +805,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				data.Save ();
 				if (projection != null) {
-					await UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments ((Document)document, data);
+				} else if (isAnalyzerConfigFile) {
+					OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = documentManager.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0)?.DocumentContext;
-				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
-				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (typeSystemService.InsertionModeAnnotation));
-				SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
-												  .Where (s => s.IsToken)
-												  .Select (s => s.AsToken ())
-												  .Cast<SyntaxToken?> ()
-												  .FirstOrDefault ();
+
+				SyntaxNode root = null;
+				SyntaxNode annotatedNode = null;
+				SyntaxToken? renameTokenOpt = null;
+
+				if (!isAnalyzerConfigFile) {
+					root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
+					annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (typeSystemService.InsertionModeAnnotation));
+					renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
+						.Where (s => s.IsToken)
+						.Select (s => s.AsToken ())
+						.Cast<SyntaxToken?> ()
+						.FirstOrDefault ();
+				}
 
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
@@ -933,7 +951,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (projection != null) {
-					await UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments ((Document)document, data);
+				} else if (isAnalyzerConfigFile) {
+					OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
@@ -943,99 +963,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override void ApplyAnalyzerConfigDocumentTextChanged (DocumentId id, SourceText text)
 		{
 			lock (projectModifyLock)
-				tryApplyState_documentTextChangedTasks.Add (ApplyAnalyzerConfigDocumentTextChangedCore (id, text));
-		}
-
-		/// <summary>
-		/// TODO: Fix code duplication with ApplyDocumentTextChangedCore
-		/// </summary>
-		async Task ApplyAnalyzerConfigDocumentTextChangedCore (DocumentId id, SourceText text)
-		{
-			var document = GetAnalyzerConfigDocument (id);
-			if (document == null)
-				return;
-
-			var hostDocument = MonoDevelopHostDocumentRegistration.FromDocument (document);
-			if (hostDocument != null) {
-				hostDocument.UpdateText (text);
-				return;
-			}
-			if (IsDocumentOpen (id)) {
-				var textBuffer = (await document.GetTextAsync (CancellationToken.None)).Container.TryGetTextBuffer ();
-
-				if (textBuffer != null) {
-					UpdateText (text, textBuffer, Microsoft.VisualStudio.Text.EditOptions.DefaultMinimalChange);
-					return;
-				}
-			}
-			var filePath = document.FilePath;
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
-
-			lock (tryApplyState_documentTextChangedContents) {
-				if (tryApplyState_documentTextChangedContents.TryGetValue (filePath, out SourceText formerText)) {
-					if (formerText.Length == text.Length && formerText.ToString () == text.ToString ())
-						return;
-				}
-				tryApplyState_documentTextChangedContents [filePath] = text;
-			}
-
-			if (!isOpen || !document.TryGetText (out SourceText oldFile)) {
-				oldFile = await document.GetTextAsync ();
-			}
-			var changes = text.GetTextChanges (oldFile).OrderByDescending (c => c.Span.Start).ToList ();
-			int delta = 0;
-
-			if (!isOpen) {
-				delta = ApplyChanges (null, data, changes);
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				if (formatter != null && formatter.SupportsPartialDocumentFormatting) {
-					var mp = GetMonoProject (CurrentSolution.GetProject (id.ProjectId));
-					string currentText = data.Text;
-
-					foreach (var change in changes) {
-						delta -= change.Span.Length - change.NewText.Length;
-						var startOffset = change.Span.Start - delta;
-
-						string str;
-						if (change.NewText.Length == 0) {
-							str = formatter.FormatText (mp.Policies, currentText, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-						} else {
-							str = formatter.FormatText (mp.Policies, currentText, new TextSegment (startOffset, change.NewText.Length));
-						}
-						data.ReplaceText (startOffset, change.NewText.Length, str);
-					}
-				}
-				data.Save ();
-				OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
-			} else {
-				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
-				var documentContext = documentManager.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0)?.DocumentContext;
-
-				if (documentContext != null) {
-					var editor = (TextEditor)data;
-					await Runtime.RunInMainThread (async () => {
-						using (var undo = editor.OpenUndoGroup ()) {
-							var oldVersion = editor.Version;
-							delta = ApplyChanges (null, data, changes);
-							var versionBeforeFormat = editor.Version;
-
-							if (formatter != null && formatter.SupportsOnTheFlyFormatting) {
-								foreach (var change in changes) {
-									delta -= change.Span.Length - change.NewText.Length;
-									var startOffset = change.Span.Start - delta;
-									if (change.NewText.Length == 0) {
-										formatter.OnTheFlyFormat (editor, documentContext, TextSegment.FromBounds (Math.Max (0, startOffset - 1), Math.Min (data.Length, startOffset + 1)));
-									} else {
-										formatter.OnTheFlyFormat (editor, documentContext, new TextSegment (startOffset, change.NewText.Length));
-									}
-								}
-							}
-						}
-					});
-				}
-
-				OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
-			}
+				tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text, isAnalyzerConfigFile: true));
 		}
 
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
@@ -1184,17 +1112,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
-			var id = info.Id;
-			MonoDevelop.Projects.Project mdProject = null;
+			var mdProject = GetMonoProject (info);
 
-			if (id.ProjectId != null) {
-				var project = CurrentSolution.GetProject (id.ProjectId);
-				mdProject = GetMonoProject (project);
-				if (mdProject == null)
-					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
-			}
-
-			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			var path = DetermineFilePath (info, mdProject, true);
 			// If file is already part of project don't re-add it, example of this is .cshtml
 			if (mdProject?.IsFileInProject (path) == true) {
 				this.OnDocumentAdded (info);
@@ -1202,23 +1122,10 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
-			string formattedText;
-			var formatter = CodeFormatterService.GetFormatter (desktopService.GetMimeTypeForUri (path));
-			if (formatter != null && mdProject != null) {
-				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
-			} else {
-				formattedText = text.ToString ();
-			}
-
-			var textSource = new StringTextSource (formattedText, text.Encoding ?? System.Text.Encoding.UTF8);
-			try {
-				textSource.WriteTextTo (path);
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while saving file to " + path, e);
-			}
+			FormatFile (text, mdProject, path);
 
 			if (mdProject != null) {
-				var data = ProjectMap.GetData (id.ProjectId);
+				var data = ProjectMap.GetData (info.Id.ProjectId);
 				data.DocumentData.Add (info.Id, path);
 				var file = new MonoDevelop.Projects.ProjectFile (path);
 				mdProject.Files.Add (file);
@@ -1228,47 +1135,35 @@ namespace MonoDevelop.Ide.TypeSystem
 			this.OnDocumentAdded (info);
 		}
 
-		/// <summary>
-		/// TODO: Code is similar to ApplyDocumentAdded. Can we share code similar to VisualStudioWorkspaceImpl?
-		/// https://github.com/dotnet/roslyn/blob/3149ba26d3ea5949532028c71b9533658a8cab8b/src/VisualStudio/Core/Def/Implementation/ProjectSystem/VisualStudioWorkspaceImpl.cs#L719-L732
-		/// </summary>
-		protected override void ApplyAnalyzerConfigDocumentAdded (DocumentInfo info, SourceText text)
+		MonoDevelop.Projects.Project GetMonoProject (DocumentInfo info)
 		{
 			var id = info.Id;
-			MonoDevelop.Projects.Project mdProject = null;
-
 			if (id.ProjectId != null) {
 				var project = CurrentSolution.GetProject (id.ProjectId);
-				mdProject = GetMonoProject (project);
+				var mdProject = GetMonoProject (project);
 				if (mdProject == null)
-					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
+					LoggingService.LogWarning ("Couldn't find project for document {0} (Project {1}).", info.Name, id.ProjectId);
+				return mdProject;
 			}
+			return null;
+		}
 
-			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
-			// If file is already part of project don't re-add it, example of this is .cshtml
+		protected override void ApplyAnalyzerConfigDocumentAdded (DocumentInfo info, SourceText text)
+		{
+			var mdProject = GetMonoProject (info);
+
+			var path = DetermineFilePath (info, mdProject, true);
+			// If file is already part of project don't re-add it unless it does not exist.
 			if (mdProject?.IsFileInProject (path) == true && File.Exists (path)) {
 				OnAnalyzerConfigDocumentAdded (info);
 				return;
 			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
-			string formattedText;
-			var formatter = CodeFormatterService.GetFormatter (desktopService.GetMimeTypeForUri (path));
-			if (formatter != null && mdProject != null) {
-				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
-			} else {
-				formattedText = text.ToString ();
-			}
-
-			var textSource = new StringTextSource (formattedText, text.Encoding ?? System.Text.Encoding.UTF8);
-			try {
-				textSource.WriteTextTo (path);
-			} catch (Exception e) {
-				LoggingService.LogError ("Exception while saving file to " + path, e);
-			}
+			FormatFile (text, mdProject, path);
 
 			if (mdProject != null) {
-				var data = ProjectMap.GetData (id.ProjectId);
+				var data = ProjectMap.GetData (info.Id.ProjectId);
 				data.DocumentData.Add (info.Id, path);
 
 				var file = new MonoDevelop.Projects.ProjectFile (path, MonoDevelop.Projects.BuildAction.None);
@@ -1292,6 +1187,24 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			OnAnalyzerConfigDocumentAdded (info);
+		}
+
+		void FormatFile (SourceText text, MonoDevelop.Projects.Project mdProject, string path)
+		{
+			string formattedText;
+			var formatter = CodeFormatterService.GetFormatter (desktopService.GetMimeTypeForUri (path));
+			if (formatter != null && mdProject != null) {
+				formattedText = formatter.FormatText (mdProject.Policies, text.ToString ());
+			} else {
+				formattedText = text.ToString ();
+			}
+
+			var textSource = new StringTextSource (formattedText, text.Encoding ?? System.Text.Encoding.UTF8);
+			try {
+				textSource.WriteTextTo (path);
+			} catch (Exception e) {
+				LoggingService.LogError ("Exception while saving file to " + path, e);
+			}
 		}
 
 		MonoDevelop.Projects.SolutionFolder GetSolutionItemsFolder (MonoDevelop.Projects.Project project)
@@ -1343,16 +1256,17 @@ namespace MonoDevelop.Ide.TypeSystem
 			base.ApplyAnalyzerConfigDocumentRemoved (documentId);
 		}
 
-		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
+		string DetermineFilePath (DocumentInfo info, MonoDevelop.Projects.Project mdProject, bool createDirectory = false)
 		{
-			var path = filePath;
+			var path = info.FilePath;
 
 			if (string.IsNullOrEmpty (path)) {
-				var monoProject = GetMonoProject (id.ProjectId);
+				var monoProject = GetMonoProject (info.Id.ProjectId);
 
 				// If the first namespace name matches the name of the project, then we don't want to
 				// generate a folder for that.  The project is implicitly a folder with that name.
 				IEnumerable<string> folders;
+				var docFolders = info.Folders;
 				if (docFolders != null && monoProject != null && docFolders.FirstOrDefault () == monoProject.Name) {
 					folders = docFolders.Skip (1);
 				} else {
@@ -1367,9 +1281,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while creating directory for a new file : " + baseDirectory, e);
 					}
-					path = Path.Combine (baseDirectory, name);
+					path = Path.Combine (baseDirectory, info.Name);
 				} else {
-					path = Path.Combine (defaultFolder, name);
+					path = Path.Combine (mdProject?.FileName.ParentDirectory, info.Name);
 				}
 			}
 			return path;
