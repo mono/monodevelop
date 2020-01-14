@@ -49,6 +49,7 @@ namespace MonoDevelop.Debugger
 		readonly XwtControl xwtControl;
 		DebuggerSessionOptions options;
 		StackFrame frame;
+		bool downloading;
 
 		public NoSourceView ()
 		{
@@ -64,69 +65,116 @@ namespace MonoDevelop.Debugger
 		{
 			var fileName = GetFilename (frame.SourceLocation?.FileName);
 			this.options = options;
-
-			var box = new VBox ();
-			box.Margin = 30;
-			box.Spacing = 10;
-
 			this.frame = frame;
+
+			var vbox = new VBox {
+				Spacing = 10,
+				Margin = 30
+			};
 
 			if (!string.IsNullOrEmpty (fileName)) {
 				DocumentTitle = GettextCatalog.GetString ("Source Not Found");
-				var headerLabel = new Label ();
-				headerLabel.Markup = GettextCatalog.GetString ("{0} file not found", $"<b>{fileName}</b>");
-				box.PackStart (headerLabel);
-
-				var actionsBox = new HBox ();
-
-				var buttonBrowseAndFind = new Button (GettextCatalog.GetString ("Browse and find {0}", fileName));
-				buttonBrowseAndFind.Clicked += OpenFindSourceFileDialog;
-				actionsBox.PackStart (buttonBrowseAndFind);
+				var headerLabel = new Label {
+					Markup = GettextCatalog.GetString ("{0} file not found", $"<b>{fileName}</b>")
+				};
+				headerLabel.Font = headerLabel.Font.WithScaledSize (2);
+				vbox.PackStart (headerLabel);
 
 				if (frame.SourceLocation?.SourceLink != null && options.AutomaticSourceLinkDownload == AutomaticSourceDownload.Ask) {
-					var button = new Button (GettextCatalog.GetString ("Download via Source Link"));
-					button.Name = "SourceLinkButton";
-					button.Clicked += DownloadSourceLink;
-					actionsBox.PackStart (button);
+					var sourceLinkVbox = new VBox {
+						MarginBottom = 20,
+						MarginTop = 10,
+						Spacing = 10,
+					};
 
-					var checkbox = new CheckBox (GettextCatalog.GetString ("Always get source code automatically"));
-					checkbox.Name = "SourceLinkCheckbox";
-					actionsBox.PackStart (checkbox);
+					var label = new Label {
+						Markup = GettextCatalog.GetString ("External source code is available. Would you like to download {0} and view it?", $"<a href=\"clicked\">{fileName}</a>"),
+						Name = "SourceLinkLabel"
+					};
+					label.LinkClicked += DownloadSourceLink;
+
+					sourceLinkVbox.PackStart (label);
+
+					var sourceLinkHbox = new HBox {
+						Spacing = 10
+					};
+
+					var button = new Button (GettextCatalog.GetString ("Download {0}", fileName)) {
+						Name = "SourceLinkButton"
+					};
+					button.Clicked += DownloadSourceLink;
+					sourceLinkHbox.PackStart (button);
+
+					var checkbox = new CheckBox (GettextCatalog.GetString ("Always download source code automatically")) {
+						Name = "SourceLinkCheckbox"
+					};
+					sourceLinkHbox.PackStart (checkbox);
+
+					sourceLinkVbox.PackStart (sourceLinkHbox);
+
+					vbox.PackStart (sourceLinkVbox);
+
+					var separator = new HSeparator ();
+					vbox.PackStart (separator);
 				}
 
-				box.PackStart (actionsBox);
+				var buttonBox = new HBox ();
+
+				var buttonBrowse = new Button (GettextCatalog.GetString ("Browse…"));
+				buttonBrowse.Clicked += OpenFindSourceFileDialog;
+				buttonBox.PackStart (buttonBrowse);
+
+				if (disassemblySupported) {
+					var buttonDisassembly = new Button (GettextCatalog.GetString ("Go to Disassembly"));
+					buttonDisassembly.Clicked += (sender, e) => {
+						DebuggingService.ShowDisassembly ();
+						Document.Close (false).Ignore ();
+					};
+					buttonBox.PackStart (buttonDisassembly);
+				}
+
+				var hbox = new HBox {
+					MarginTop = 20,
+					Spacing = 10
+				};
+
+				hbox.PackStart (buttonBox);
 
 				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					var manageLookupsLabel = new Label ();
-					manageLookupsLabel.Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Solution Options") + "</a>");
+					var manageLookupsLabel = new Label {
+						Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}.", "<a href=\"clicked\">" + GettextCatalog.GetString ("Solution Options") + "</a>"),
+						MarginLeft = 10
+					};
 					manageLookupsLabel.LinkClicked += (sender, e) => {
 						if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
 							return;
 						IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedSolution, "DebugSourceFiles");
 					};
-					box.PackStart (manageLookupsLabel);
+					hbox.PackStart (manageLookupsLabel);
 				}
-				headerLabel.Font = headerLabel.Font.WithScaledSize (2);
+
+				vbox.PackStart (hbox);
 			} else {
 				DocumentTitle = GettextCatalog.GetString ("Source Not Available");
 				var headerLabel = new Label (GettextCatalog.GetString ("Source Not Available"));
-				box.PackStart (headerLabel);
+				vbox.PackStart (headerLabel);
 				var label = new Label (GettextCatalog.GetString ("Source information is missing from the debug information for this module"));
-				box.PackStart (label);
 				headerLabel.Font = label.Font.WithScaledSize (2);
+				vbox.PackStart (label);
+
+				if (disassemblySupported) {
+					var labelDisassembly = new Label {
+						Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>")
+					};
+					labelDisassembly.LinkClicked += (sender, e) => {
+						DebuggingService.ShowDisassembly ();
+						Document.Close (false).Ignore ();
+					};
+					vbox.PackStart (labelDisassembly);
+				}
 			}
 
-			if (disassemblySupported) {
-				var labelDisassembly = new Label ();
-				labelDisassembly.Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>");
-				labelDisassembly.LinkClicked += (sender, e) => {
-					DebuggingService.ShowDisassembly ();
-					Document.Close (false).Ignore ();
-				};
-				box.PackStart (labelDisassembly);
-			}
-
-			return box;
+			return vbox;
 		}
 
 		string GetFilename (string fileName)
@@ -221,23 +269,39 @@ namespace MonoDevelop.Debugger
 
 		async void DownloadSourceLink (object sender, EventArgs e)
 		{
-			var button = (Button) sender;
+			if (downloading)
+				return;
 
-			// don't allow the user to click the button again
-			button.Sensitive = false;
+			downloading = true;
 
-			var actionsBox = (HBox) button.Parent;
-			var checkbox = actionsBox.Children.OfType<CheckBox> ().FirstOrDefault (x => x.Name == "SourceLinkCheckbox");
-			if (checkbox != null && checkbox.Active) {
-				options.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
-				DebuggingService.SetUserOptions (options);
-			}
+			try {
+				var widget = (Widget) sender;
+				HBox hbox = null;
 
-			var doc = await DownloadAndOpenAsync (frame);
+				switch (widget.Name) {
+				case "SourceLinkLabel":
+					var vbox = (VBox) widget.Parent;
+					hbox = vbox.Children.OfType<HBox> ().FirstOrDefault ();
+					break;
+				case "SourceLinkButton":
+					hbox = (HBox) widget.Parent;
+					break;
+				}
 
-			if (doc != null) {
-				// close the NoSourceView document tab
-				await Document.Close (false);
+				var checkbox = hbox?.Children.OfType<CheckBox> ().FirstOrDefault (x => x.Name == "SourceLinkCheckbox");
+				if (checkbox != null && checkbox.Active) {
+					options.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
+					DebuggingService.SetUserOptions (options);
+				}
+
+				var doc = await DownloadAndOpenAsync (frame);
+
+				if (doc != null) {
+					// close the NoSourceView document tab
+					await Document.Close (false);
+				}
+			} finally {
+				downloading = false;
 			}
 		}
 
