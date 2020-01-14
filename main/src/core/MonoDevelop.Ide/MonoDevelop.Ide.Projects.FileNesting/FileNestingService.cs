@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Gtk;
 using Mono.Addins;
 using MonoDevelop.Projects;
 
@@ -204,8 +205,10 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			}
 
 			// Check existing files for children of the newly added file
-			foreach (var file in Project.Files.Where (
-				x => x != projectFile && x.Subtype != Subtype.Directory && x.FilePath.ParentDirectory == projectFile.FilePath.ParentDirectory)) {
+			foreach (var file in Project.Files.GetFilesInFolder (projectFile.FilePath.ParentDirectory)) {
+				if (file == projectFile)
+					continue;
+
 				var isParent = FileNestingService.InternalGetParentFile (file) == projectFile;
 				if (isParent) {
 					var child = projectFiles.GetOrAdd (file, new ProjectFileNestingInfo (file));
