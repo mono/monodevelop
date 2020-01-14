@@ -115,11 +115,13 @@ namespace MonoDevelop.Projects
 	public class ProjectFileCollection : ProjectItemCollection<ProjectFile>
 	{
 		ImmutableDictionary<FilePath, ProjectFile> files;
+		ImmutableDictionary<FilePath, ImmutableList<ProjectFile>> folders;
 		ProjectFileNode root;
 
 		public ProjectFileCollection ()
 		{
 			files = ImmutableDictionary<FilePath, ProjectFile>.Empty;
+			folders = ImmutableDictionary<FilePath, ImmutableList<ProjectFile>>.Empty;
 			root = new ProjectFileNode ();
 		}
 
@@ -182,6 +184,7 @@ namespace MonoDevelop.Projects
 			}
 
 			files = files.Remove (item.FilePath);
+			folders [item.FilePath.ParentDirectory].Remove (item);
 
 			item.VirtualPathChanged -= ProjectVirtualPathChanged;
 			item.PathChanged -= FilePathChanged;
@@ -192,6 +195,18 @@ namespace MonoDevelop.Projects
 		{
 			var pairs = AddProjectFiles (items);
 			files = files.SetItems (pairs);
+
+			// Update per-directory index
+			foreach (var item in pairs) {
+				if (item.Value.Subtype == Subtype.Directory)
+					continue;
+
+				if (!folders.TryGetValue (item.Key.ParentDirectory, out var folderChildren)) {
+					folderChildren = ImmutableList<ProjectFile>.Empty;
+				}
+				folders = folders.SetItem (item.Key.ParentDirectory, folderChildren.Add (item.Value));
+			}
+
 			base.OnItemsAdded (items);
 		}
 
@@ -242,7 +257,7 @@ namespace MonoDevelop.Projects
 
 			yield break;
 		}
-		
+
 		public ProjectFile[] GetFilesInPath (FilePath path)
 		{
 			List<ProjectFile> list = new List<ProjectFile> ();
@@ -251,6 +266,15 @@ namespace MonoDevelop.Projects
 					list.Add (file);
 			}
 			return list.ToArray ();
+		}
+
+		public IReadOnlyList<ProjectFile> GetFilesInFolder (FilePath path)
+		{
+			if (folders.TryGetValue (path, out var folderChildren)) {
+				return folderChildren;
+			}
+
+			return new List<ProjectFile> ();
 		}
 
 		internal void RemoveFilesInPath (FilePath path)
