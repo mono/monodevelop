@@ -674,8 +674,11 @@ namespace MonoDevelop.Components.Commands
 			return null;
 		}
 
-		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
-		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView) => GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
+		bool IsLastView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
+			=> GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).LastOrDefault () == view;
+
+		bool IsFirstView (AppKit.NSView view, bool addViewBeforeChildren, bool removeContentView)
+			=> GetOrderedFocusableViews (view, addViewBeforeChildren, removeContentView).FirstOrDefault () == view;
 
 		GtkNSViewHost GetGtkNSViewHostFromView (AppKit.NSView view) => view == null ? null : viewHosts.FirstOrDefault (s => s.Content == view);
 
@@ -723,14 +726,14 @@ namespace MonoDevelop.Components.Commands
 			if (addViewBeforeChildren && CanBecomeKeyView (view, contentView as IGtkViewHostContentView) && contentView != view)
 				toAddViews.Add (view);
 
-			if (view.IsFlipped) {
-				foreach (var subview in view.Subviews.OrderBy (s => s.Frame.Left).ThenBy (h => h.Frame.Top)) {
-					AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
-				}
-			} else {
-				foreach (var subview in view.Subviews.OrderBy (s => s.Frame.Left).ThenByDescending (h => h.Frame.Top)) {
-					AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
-				}
+			var possibleChildren = view.Subviews.OrderBy (s => s.Frame.Left);
+			if (view.IsFlipped)
+				possibleChildren = possibleChildren.ThenBy (h => h.Frame.Top);
+			else
+				possibleChildren = possibleChildren.ThenByDescending (h => h.Frame.Top);
+
+			foreach (var subview in possibleChildren) {
+				AddRecursivelyFocusableViews (subview, toAddViews, addViewBeforeChildren, contentView);
 			}
 
 			if (!addViewBeforeChildren && CanBecomeKeyView (view, contentView as IGtkViewHostContentView) && contentView != view)
@@ -758,7 +761,7 @@ namespace MonoDevelop.Components.Commands
 		internal void RegisterEmbededView (Gtk.GtkNSViewHost gtkNSViewHost)
 		{
 			if (gtkNSViewHost == null) {
-				throw new NullReferenceException ("cannot register a null GtkNSViewHost");
+				throw new ArgumentNullException ("cannot register a null GtkNSViewHost");
 			}
 			if (!viewHosts.Contains (gtkNSViewHost)) {
 				viewHosts.Add (gtkNSViewHost);
