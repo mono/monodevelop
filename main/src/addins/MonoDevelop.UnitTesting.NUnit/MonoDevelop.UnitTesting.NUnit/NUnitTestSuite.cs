@@ -88,21 +88,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 					newTest.FixtureTypeName = test.FixtureTypeName;
 					newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 
-					bool isNameSpace = false;
-					foreach (NunitTestInfo child in test.Tests) {
-						if (child.Tests != null) {
-							isNameSpace = true;
-						}
-					}
+					ChildStatus (test, out bool isNamespace, out bool hasClassAsChild);
 
-					bool hasClassAsChild = false;
-					foreach (NunitTestInfo child in test.Tests) {
-						if (child.Tests != null && child.Tests [0].Tests == null) {
-							hasClassAsChild = true;
-						}
-					}
-
-					if (isNameSpace) {
+					if (isNamespace) {
 						var forceLoad = newTest.Tests;
 						foreach (var child in newTest.ChildNamespaces) {
 							child.Title = newTest.Title + "." + child.Title;
@@ -119,6 +107,19 @@ namespace MonoDevelop.UnitTesting.NUnit
 					newTest.FixtureTypeName = test.FixtureTypeName;
 					newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 					Tests.Add (newTest);
+				}
+			}
+		}
+
+		public void ChildStatus (NunitTestInfo test, out bool isNamespace, out bool hasClassAsChild)
+		{
+			isNamespace = false;
+			hasClassAsChild = false;
+			foreach (NunitTestInfo child in test.Tests) {
+				if (child.Tests != null) {
+					isNamespace = true;
+					if (child.Tests [0].Tests == null)
+						hasClassAsChild = true;
 				}
 			}
 		}

@@ -274,25 +274,9 @@ namespace MonoDevelop.UnitTesting.NUnit
 				newTest.FixtureTypeName = test.FixtureTypeName;
 				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
 
-				bool isNameSpace = false;
-				if (test.Tests != null) {
-					foreach (NunitTestInfo child in test.Tests) {
-						if (child.Tests != null) {
-							isNameSpace = true;
-						}
-					}
-				}
+				newTest.ChildStatus (test, out bool isNamespace, out bool hasClassAsChild);
 
-				bool hasClassAsChild = false;
-				if (test.Tests != null) {
-					foreach (NunitTestInfo child in test.Tests) {
-						if (child.Tests != null && child.Tests[0].Tests == null) {
-							hasClassAsChild = true;
-						}
-					}
-				}
-
-				if (!isNameSpace || hasClassAsChild) {
+				if (!isNamespace || hasClassAsChild) {
 					Tests.Add (newTest);
 				}
 
