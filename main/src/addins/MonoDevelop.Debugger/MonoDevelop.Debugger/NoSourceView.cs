@@ -46,14 +46,21 @@ namespace MonoDevelop.Debugger
 	public class NoSourceView : DocumentController
 	{
 		readonly ScrollView scrollView = new ScrollView ();
-		readonly XwtControl xwtControl;
+		readonly XwtControl control;
 		DebuggerSessionOptions options;
+		Label manageOptionsLabel;
+		CheckBox sourceLinkCheckbox;
+		Button sourceLinkButton;
+		Label sourceLinkLabel;
+		Button disassemblyButton;
+		Label disassemblyLabel;
+		Button browseButton;
 		StackFrame frame;
 		bool downloading;
 
 		public NoSourceView ()
 		{
-			xwtControl = new XwtControl (scrollView);
+			control = new XwtControl (scrollView);
 		}
 
 		public void Update (DebuggerSessionOptions options, StackFrame frame, bool disassemblySupported)
@@ -87,28 +94,24 @@ namespace MonoDevelop.Debugger
 						Spacing = 10,
 					};
 
-					var label = new Label {
+					sourceLinkLabel = new Label {
 						Markup = GettextCatalog.GetString ("External source code is available. Would you like to download {0} and view it?", $"<a href=\"clicked\">{fileName}</a>"),
 						Name = "SourceLinkLabel"
 					};
-					label.LinkClicked += DownloadSourceLink;
+					sourceLinkLabel.LinkClicked += OnDownloadSourceClicked;
 
-					sourceLinkVbox.PackStart (label);
+					sourceLinkVbox.PackStart (sourceLinkLabel);
 
 					var sourceLinkHbox = new HBox {
 						Spacing = 10
 					};
 
-					var button = new Button (GettextCatalog.GetString ("Download {0}", fileName)) {
-						Name = "SourceLinkButton"
-					};
-					button.Clicked += DownloadSourceLink;
-					sourceLinkHbox.PackStart (button);
+					sourceLinkButton = new Button (GettextCatalog.GetString ("Download {0}", fileName));
+					sourceLinkButton.Clicked += OnDownloadSourceClicked;
+					sourceLinkHbox.PackStart (sourceLinkButton);
 
-					var checkbox = new CheckBox (GettextCatalog.GetString ("Always download source code automatically")) {
-						Name = "SourceLinkCheckbox"
-					};
-					sourceLinkHbox.PackStart (checkbox);
+					sourceLinkCheckbox = new CheckBox (GettextCatalog.GetString ("Always download source code automatically"));
+					sourceLinkHbox.PackStart (sourceLinkCheckbox);
 
 					sourceLinkVbox.PackStart (sourceLinkHbox);
 
@@ -120,17 +123,14 @@ namespace MonoDevelop.Debugger
 
 				var buttonBox = new HBox ();
 
-				var buttonBrowse = new Button (GettextCatalog.GetString ("Browse…"));
-				buttonBrowse.Clicked += OpenFindSourceFileDialog;
-				buttonBox.PackStart (buttonBrowse);
+				browseButton = new Button (GettextCatalog.GetString ("Browse…"));
+				browseButton.Clicked += OnBrowseClicked;
+				buttonBox.PackStart (browseButton);
 
 				if (disassemblySupported) {
-					var buttonDisassembly = new Button (GettextCatalog.GetString ("Go to Disassembly"));
-					buttonDisassembly.Clicked += (sender, e) => {
-						DebuggingService.ShowDisassembly ();
-						Document.Close (false).Ignore ();
-					};
-					buttonBox.PackStart (buttonDisassembly);
+					disassemblyButton = new Button (GettextCatalog.GetString ("Go to Disassembly"));
+					disassemblyButton.Clicked += OnGoToDisassemblyClicked;
+					buttonBox.PackStart (disassemblyButton);
 				}
 
 				var hbox = new HBox {
@@ -141,16 +141,12 @@ namespace MonoDevelop.Debugger
 				hbox.PackStart (buttonBox);
 
 				if (IdeApp.ProjectOperations.CurrentSelectedSolution != null) {
-					var manageLookupsLabel = new Label {
+					manageOptionsLabel = new Label {
 						Markup = GettextCatalog.GetString ("Manage the locations used to find source files in the {0}.", "<a href=\"clicked\">" + GettextCatalog.GetString ("Solution Options") + "</a>"),
 						MarginLeft = 10
 					};
-					manageLookupsLabel.LinkClicked += (sender, e) => {
-						if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
-							return;
-						IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedSolution, "DebugSourceFiles");
-					};
-					hbox.PackStart (manageLookupsLabel);
+					manageOptionsLabel.LinkClicked += OnManageSolutionOptionsClicked;
+					hbox.PackStart (manageOptionsLabel);
 				}
 
 				vbox.PackStart (hbox);
@@ -163,14 +159,11 @@ namespace MonoDevelop.Debugger
 				vbox.PackStart (label);
 
 				if (disassemblySupported) {
-					var labelDisassembly = new Label {
+					disassemblyLabel = new Label {
 						Markup = GettextCatalog.GetString ("View disassembly in the {0}", "<a href=\"clicked\">" + GettextCatalog.GetString ("Disassembly Tab") + "</a>")
 					};
-					labelDisassembly.LinkClicked += (sender, e) => {
-						DebuggingService.ShowDisassembly ();
-						Document.Close (false).Ignore ();
-					};
-					vbox.PackStart (labelDisassembly);
+					disassemblyLabel.LinkClicked += OnGoToDisassemblyClicked;
+					vbox.PackStart (disassemblyLabel);
 				}
 			}
 
@@ -189,11 +182,25 @@ namespace MonoDevelop.Debugger
 			return fileName;
 		}
 
-		async void OpenFindSourceFileDialog (object sender, EventArgs e)
+		void OnGoToDisassemblyClicked (object sender, EventArgs e)
+		{
+			DebuggingService.ShowDisassembly ();
+			Document.Close (false).Ignore ();
+		}
+
+		void OnManageSolutionOptionsClicked (object sender, EventArgs e)
+		{
+			if (IdeApp.ProjectOperations.CurrentSelectedSolution == null)
+				return;
+
+			IdeApp.ProjectOperations.ShowOptions (IdeApp.ProjectOperations.CurrentSelectedSolution, "DebugSourceFiles");
+		}
+
+		async void OnBrowseClicked (object sender, EventArgs e)
 		{
 			var sf = DebuggingService.CurrentFrame;
 			if (sf == null) {
-				LoggingService.LogWarning ($"CurrentFrame was null in {nameof (OpenFindSourceFileDialog)}");
+				LoggingService.LogWarning ($"CurrentFrame was null in {nameof (OnBrowseClicked)}");
 				return;
 			}
 			var dlg = new Ide.Gui.Dialogs.OpenFileDialog (GettextCatalog.GetString ("File to Open") + " " + sf.SourceLocation.FileName, FileChooserAction.Open) {
@@ -267,7 +274,7 @@ namespace MonoDevelop.Debugger
 			return doc;
 		}
 
-		async void DownloadSourceLink (object sender, EventArgs e)
+		async void OnDownloadSourceClicked (object sender, EventArgs e)
 		{
 			if (downloading)
 				return;
@@ -275,21 +282,7 @@ namespace MonoDevelop.Debugger
 			downloading = true;
 
 			try {
-				var widget = (Widget) sender;
-				HBox hbox = null;
-
-				switch (widget.Name) {
-				case "SourceLinkLabel":
-					var vbox = (VBox) widget.Parent;
-					hbox = vbox.Children.OfType<HBox> ().FirstOrDefault ();
-					break;
-				case "SourceLinkButton":
-					hbox = (HBox) widget.Parent;
-					break;
-				}
-
-				var checkbox = hbox?.Children.OfType<CheckBox> ().FirstOrDefault (x => x.Name == "SourceLinkCheckbox");
-				if (checkbox != null && checkbox.Active) {
+				if (sourceLinkCheckbox != null && sourceLinkCheckbox.Active) {
 					options.AutomaticSourceLinkDownload = AutomaticSourceDownload.Always;
 					DebuggingService.SetUserOptions (options);
 				}
@@ -307,7 +300,29 @@ namespace MonoDevelop.Debugger
 
 		protected override Task<Control> OnGetViewControlAsync (CancellationToken token, DocumentViewContent view)
 		{
-			return Task.FromResult<Control> (xwtControl);
+			return Task.FromResult<Control> (control);
+		}
+
+		protected override void OnDispose ()
+		{
+			if (sourceLinkButton != null) {
+				sourceLinkLabel.LinkClicked -= OnDownloadSourceClicked;
+				sourceLinkButton.Clicked -= OnDownloadSourceClicked;
+			}
+
+			if (browseButton != null)
+				browseButton.Clicked -= OnBrowseClicked;
+
+			if (disassemblyButton != null)
+				disassemblyButton.Clicked -= OnGoToDisassemblyClicked;
+
+			if (disassemblyLabel != null)
+				disassemblyLabel.LinkClicked -= OnGoToDisassemblyClicked;
+
+			if (manageOptionsLabel != null)
+				manageOptionsLabel.LinkClicked -= OnManageSolutionOptionsClicked;
+
+			base.OnDispose ();
 		}
 	}
 }
