@@ -58,7 +58,7 @@ namespace MonoDevelop.PackageManagement
 			yield return new Lazy<INuGetResourceProvider> (() => new PackageMetadataResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new AutoCompleteResourceV2FeedProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new AutoCompleteResourceV3Provider ());
-			yield return new Lazy<INuGetResourceProvider> (() => new PluginResourceProvider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new PluginResourceProvider (PackageManagementServices.PluginManager));
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceUnzippedProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceV2Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceV3Provider ());
