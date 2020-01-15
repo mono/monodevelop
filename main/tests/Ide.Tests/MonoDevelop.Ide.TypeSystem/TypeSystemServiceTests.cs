@@ -246,7 +246,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			FilePath solFile = Util.GetSampleProject ("multi-target", "multi-target.sln");
 
-			var csprojectPath = Path.Combine(Path.GetDirectoryName (solFile.FullPath), "multi-target.csproj");
+			var csprojectPath = new FilePath(Path.Combine(Path.GetDirectoryName (solFile.FullPath), "multi-target.csproj"));
 
 			ShowFileLockInformation (csprojectPath, "#1");
 
