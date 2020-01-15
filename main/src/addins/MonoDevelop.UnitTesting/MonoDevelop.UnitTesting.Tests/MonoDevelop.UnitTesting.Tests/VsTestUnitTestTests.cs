@@ -166,7 +166,7 @@ namespace MonoDevelop.UnitTesting.Tests
 			return classInfo;
 		}
 
-		NunitTestInfo namespaceWithDot ()
+		NunitTestInfo NamespaceWithDot ()
 		{
 			NunitTestInfo namespaceInfo = new NunitTestInfo {
 				FixtureTypeName = "",
