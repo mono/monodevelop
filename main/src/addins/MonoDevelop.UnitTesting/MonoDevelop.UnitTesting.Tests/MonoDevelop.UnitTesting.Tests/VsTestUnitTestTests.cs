@@ -148,7 +148,7 @@ namespace MonoDevelop.UnitTesting.Tests
 
 		}
 
-		NunitTestInfo directClassCase ()
+		NunitTestInfo DirectClassCase ()
 		{
 			NunitTestInfo classInfo = new NunitTestInfo {
 				FixtureTypeName = "TestClass",
