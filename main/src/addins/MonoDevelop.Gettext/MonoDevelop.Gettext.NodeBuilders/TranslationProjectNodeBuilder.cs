@@ -157,7 +157,7 @@ namespace MonoDevelop.Gettext.NodeBuilders
 					chooser.Dispose ();
 				}
 			}
-			static Task currentUpdateTranslationOperation = Task.FromResult (0);
+			static Task currentUpdateTranslationOperation = Task.CompletedTask;
 			
 			void UpdateTranslationsAsync (ProgressMonitor monitor, TranslationProject project)
 			{

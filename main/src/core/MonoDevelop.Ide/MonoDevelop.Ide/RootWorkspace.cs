@@ -429,7 +429,7 @@ namespace MonoDevelop.Ide
 
 		Task IBuildTarget.PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)

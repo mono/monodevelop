@@ -60,7 +60,7 @@ namespace MonoDevelop.PackageManagement
 				return buildIntegratedProject.PostProcessAsync (context, token);
 			}
 
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public static void OnAfterExecuteActions (this NuGetProject project, IEnumerable<NuGetProjectAction> actions)

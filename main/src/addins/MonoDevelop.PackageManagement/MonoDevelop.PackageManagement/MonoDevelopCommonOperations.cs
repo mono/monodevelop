@@ -36,7 +36,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		public Task CollapseAllNodes (ISolutionManager solutionManager)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public Task OpenFile (string fullPath)
@@ -48,7 +48,7 @@ namespace MonoDevelop.PackageManagement
 
 		public Task SaveSolutionExplorerNodeStates (ISolutionManager solutionManager)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 	}
 }

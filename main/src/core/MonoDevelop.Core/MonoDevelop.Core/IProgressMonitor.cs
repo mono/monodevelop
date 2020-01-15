@@ -44,11 +44,11 @@ namespace MonoDevelop.Core
 
 	public class AsyncOperation
 	{
-		public static AsyncOperation CompleteOperation = new AsyncOperation (Task.FromResult(0), null);
+		public static AsyncOperation CompleteOperation = new AsyncOperation (Task.CompletedTask, null);
 
 		protected AsyncOperation ()
 		{
-			Task = Task.FromResult (0);
+			Task = Task.CompletedTask;
 			CancellationTokenSource = new CancellationTokenSource ();
 		}
 

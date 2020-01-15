@@ -158,20 +158,20 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
-		static Task finishedTask = Task.FromResult (true);
+
 		internal static Task InformAutoSaveThread (ITextSource content, string fileName, bool isDirty)
 		{
 			if (content == null)
 				throw new ArgumentNullException (nameof (content));
 			if (!autoSaveEnabled || string.IsNullOrEmpty (fileName))
-				return finishedTask;
+				return Task.CompletedTask;
 			if (isDirty) {
 				return Task.Run (() => {
 					CreateAutoSave (fileName, content);
 				});
 			} else {
 				RemoveAutoSaveFile (fileName);
-				return finishedTask;
+				return Task.CompletedTask;
 			}
 		}
 

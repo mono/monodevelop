@@ -286,7 +286,7 @@ namespace MonoDevelop.UnitTesting
 		// Forces the reloading of tests, if they have changed
 		public virtual Task Refresh (CancellationToken ct)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 		
 		public UnitTestResult Run (TestContext testContext)
@@ -336,7 +336,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (parent != null)
 				return parent.Build ();
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 		
 		public void RegisterResult (TestContext context, UnitTestResult result)

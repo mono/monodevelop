@@ -333,7 +333,7 @@ namespace MonoDevelop.Ide.Editor
 		private Task UpdateContextOptions (object sender, CodingConventionsChangedEventArgs arg)
 		{
 			if (context == null)
-				return Task.FromResult (false);
+				return Task.CompletedTask;
 
 			bool followCodingConventions = IdeApp.Preferences.Editor.FollowCodingConventions;
 
@@ -368,7 +368,7 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 			this.FireChange ();
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		#region new options

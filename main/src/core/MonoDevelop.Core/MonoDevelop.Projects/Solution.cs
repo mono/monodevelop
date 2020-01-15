@@ -925,7 +925,7 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)

@@ -283,7 +283,7 @@ namespace MonoDevelop.PackageManagement
 
 		public Task BeginProcessingAsync ()
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		// TODO: Support recursive.
@@ -304,7 +304,7 @@ namespace MonoDevelop.PackageManagement
 
 		public Task EndProcessingAsync ()
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		public bool FileExistsInProject (string path)

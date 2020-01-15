@@ -1080,7 +1080,7 @@ namespace MonoDevelop.Projects
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		/// <summary>
@@ -1105,7 +1105,7 @@ namespace MonoDevelop.Projects
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		bool DoGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)
