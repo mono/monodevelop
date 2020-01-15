@@ -23,20 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using Mono.Debugging.Client;
-using System.Diagnostics;
-using Mono.Debugging.Backend;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System.Text;
-using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Mono.Debugging.Client;
+
 using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol;
-using System.Threading;
+using Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages;
+
 using MonoDevelop.Core;
 using MonoDevelop.Core.Execution;
+
 using MonoFunctionBreakpoint = Mono.Debugging.Client.FunctionBreakpoint;
 using VsCodeFunctionBreakpoint = Microsoft.VisualStudio.Shared.VSCodeDebugProtocol.Messages.FunctionBreakpoint;
 
@@ -44,7 +47,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 {
 	public abstract class VSCodeDebuggerSession : DebuggerSession
 	{
+		readonly Dictionary<string, bool> enumTypes = new Dictionary<string, bool> ();
 		int currentThreadId;
+
+		internal bool IsEnum (string type, int frameId)
+		{
+			if (enumTypes.TryGetValue (type, out var isEnum))
+				return isEnum;
+
+			var request = new EvaluateRequest ($"typeof ({type}).IsEnum") { FrameId = frameId };
+			var response = protocolClient.SendRequestSync (request);
+
+			isEnum = response.Result.Equals ("true", StringComparison.OrdinalIgnoreCase);
+			enumTypes.Add (type, isEnum);
+
+			return isEnum;
+		}
 
 		protected override void OnContinue ()
 		{
@@ -227,7 +245,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.StandardOutputEncoding = Encoding.UTF8;
 			startInfo.UseShellExecute = false;
-			if (!MonoDevelop.Core.Platform.IsWindows)
+			if (!Platform.IsWindows)
 				startInfo.EnvironmentVariables ["PATH"] = Environment.GetEnvironmentVariable ("PATH") + ":/usr/local/share/dotnet/";
 			debugAgentProcess = Process.Start (startInfo);
 			debugAgentProcess.EnableRaisingEvents = true;
@@ -236,7 +254,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			protocolClient.RequestReceived += OnDebugAdaptorRequestReceived;
 			protocolClient.Run ();
 			protocolClient.EventReceived += HandleEvent;
-			InitializeRequest initRequest = CreateInitRequest ();
+			var initRequest = CreateInitRequest ();
 			Capabilities = protocolClient.SendRequestSync (initRequest);
 		}
 
@@ -265,7 +283,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			pauseWhenFinished = !startInfo.CloseExternalConsoleOnExit;
 			StartDebugAgent ();
-			LaunchRequest launchRequest = CreateLaunchRequest (startInfo);
+			var launchRequest = CreateLaunchRequest (startInfo);
 			protocolClient.SendRequestSync (launchRequest);
 			protocolClient.SendRequestSync (new ConfigurationDoneRequest ());
 		}
@@ -316,7 +334,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		bool? EvaluateCondition (int frameId, string exp)
 		{
-			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp, frameId)).Result;
+			var response = protocolClient.SendRequestSync (new EvaluateRequest (exp) { FrameId = frameId }).Result;
 
 			if (bool.TryParse (response, out var result))
 				return result;
@@ -455,7 +473,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					}
 					break;
 				}
-			});
+			}).Ignore ();
 		}
 
 		List<string> pathsWithBreakpoints = new List<string> ();
@@ -516,7 +534,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 								if (obj.Breakpoints [i].Line != sourceFile.ElementAt (i).OriginalLine)
 									breakpoints [sourceFile.ElementAt (i)].AdjustBreakpointLocation (obj.Breakpoints [i].Line, obj.Breakpoints [i].Column ?? 1);
 							}
-						});
+						}).Ignore ();
 					});
 			}
 
