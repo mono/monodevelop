@@ -83,8 +83,11 @@ namespace MonoDevelop.Components.Commands
 		bool toolbarUpdaterRunning;
 		bool enableToolbarUpdate;
 		int guiLock;
+
+		public bool IsGuiLocked => guiLock > 0;
+
 		int lastX, lastY;
-		
+
 		// Fields used to keep track of the application focus
 		bool appHasFocus;
 		Window lastFocused;
@@ -932,7 +935,7 @@ namespace MonoDevelop.Components.Commands
 					toolbar.SetEnabled (true);
 			}
 			
-			if (guiLock > 0)
+			if (IsGuiLocked)
 				guiLock--;
 			return guiLock == 0;
 		}
@@ -1591,7 +1594,7 @@ namespace MonoDevelop.Components.Commands
 
 			RegisterUserInteraction ();
 			
-			if (guiLock > 0)
+			if (IsGuiLocked)
 				return false;
 
 #if MAC
@@ -1841,7 +1844,7 @@ namespace MonoDevelop.Components.Commands
 							if (IsEnabled)
 								cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
-								if (info.DisableOnShellLock && guiLock > 0)
+								if (info.DisableOnShellLock && IsGuiLocked)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1851,7 +1854,7 @@ namespace MonoDevelop.Components.Commands
 							if (IsEnabled)
 								cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
-								if (info.DisableOnShellLock && guiLock > 0)
+								if (info.DisableOnShellLock && IsGuiLocked)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1903,7 +1906,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = null;
 			}
 
-			if (info.DisableOnShellLock && guiLock > 0)
+			if (info.DisableOnShellLock && IsGuiLocked)
 				info.Enabled = false;
 			return info;
 		}
