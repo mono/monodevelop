@@ -935,7 +935,7 @@ namespace MonoDevelop.Components.Commands
 					toolbar.SetEnabled (true);
 			}
 			
-			if (IsGuiLocked)
+			if (IsLocked)
 				guiLock--;
 			return guiLock == 0;
 		}
@@ -1594,7 +1594,7 @@ namespace MonoDevelop.Components.Commands
 
 			RegisterUserInteraction ();
 			
-			if (IsGuiLocked)
+			if (IsLocked)
 				return false;
 
 #if MAC
@@ -1844,7 +1844,7 @@ namespace MonoDevelop.Components.Commands
 							if (IsEnabled)
 								cui.Run (cmdTarget, info.ArrayInfo);
 							if (!info.ArrayInfo.Bypass) {
-								if (info.DisableOnShellLock && IsGuiLocked)
+								if (info.DisableOnShellLock && IsLocked)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1854,7 +1854,7 @@ namespace MonoDevelop.Components.Commands
 							if (IsEnabled)
 								cui.Run (cmdTarget, info);
 							if (!info.Bypass) {
-								if (info.DisableOnShellLock && IsGuiLocked)
+								if (info.DisableOnShellLock && IsLocked)
 									info.Enabled = false;
 								handlerFound = true;
 							}
@@ -1906,7 +1906,7 @@ namespace MonoDevelop.Components.Commands
 				CurrentCommand = null;
 			}
 
-			if (info.DisableOnShellLock && IsGuiLocked)
+			if (info.DisableOnShellLock && IsLocked)
 				info.Enabled = false;
 			return info;
 		}
