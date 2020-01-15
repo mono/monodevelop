@@ -246,12 +246,19 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			FilePath solFile = Util.GetSampleProject ("multi-target", "multi-target.sln");
 
+			var csprojectPath = Path.Combine(Path.GetDirectoryName (solFile.FullPath), "multi-target.csproj");
+
+			ShowFileLockInformation (csprojectPath, "#1");
+
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
+			ShowFileLockInformation (csprojectPath, "#2");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+			ShowFileLockInformation (csprojectPath, "#3");
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
 				try {
+					ShowFileLockInformation (csprojectPath, "#4");
 					var project = sol.GetAllProjects ().Single ();
 
 					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
@@ -270,6 +277,7 @@ namespace MonoDevelop.Ide.TypeSystem
 					var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
 
 					string xml = File.ReadAllText (updatedProjectFileName);
+					ShowFileLockInformation (csprojectPath, "#5");
 
 					// Handle sharing violations when writing the project file by retrying a few times.
 					int maxRetries = 10;
@@ -318,13 +326,14 @@ namespace MonoDevelop.Ide.TypeSystem
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
+			}
 		}
 
-		void ShowFileLockInformation (FilePath fileName)
+		void ShowFileLockInformation (FilePath fileName, string tag = String.Empty)
 		{
 			Console.WriteLine (
-				"ShowFileLockInformation CurrentProcessId={0} lsof output:",
-				Process.GetCurrentProcess ().Id);
+				"{0} ShowFileLockInformation CurrentProcessId={1} lsof output:",
+				tag, Process.GetCurrentProcess ().Id);
 
 			using (var process = new Process ()) {
 				process.StartInfo.UseShellExecute = false;
