@@ -84,7 +84,7 @@ namespace MonoDevelop.Components.Commands
 		bool enableToolbarUpdate;
 		int guiLock;
 
-		public bool IsGuiLocked => guiLock > 0;
+		public bool IsLocked => guiLock > 0;
 
 		int lastX, lastY;
 
