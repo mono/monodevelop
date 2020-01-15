@@ -139,7 +139,7 @@ namespace MonoDevelop.UnitTesting.Tests
 			var case1 = new NUnitTestSuite (null, DirectClassCase ());
 			var case2 = new NUnitTestSuite (null, NamespaceWithDot ());
 			var case3 = new NUnitTestSuite (null, nestedNamespace ());
-			var case4 = new NUnitTestSuite (null, namespaceNoDot ());  
+			var case4 = new NUnitTestSuite (null, NamespaceNoDot ());  
 
 			Assert.AreEqual(case1.Tests[0].Title, "TestClass");
 			Assert.AreEqual(case2.Tests[0].Title, "A.B");
