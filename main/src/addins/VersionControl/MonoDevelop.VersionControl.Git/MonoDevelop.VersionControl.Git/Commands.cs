@@ -184,11 +184,12 @@ namespace MonoDevelop.VersionControl.Git
 				dlg.Dispose ();
 			}
 		}
+
 		protected override async Task UpdateAsync (CommandInfo info, CancellationToken cancelToken)
 		{
 			var repo = UpdateVisibility (info);
 			if (repo != null)
-				info.Enabled = await repo.RunOperationAsync (repo.RootPath, repository => !repository.Info.IsHeadUnborn, cancelToken);
+				info.Enabled = await repo.RunOperationAsync (repo.RootPath, (repository, token) => !repository.Info.IsHeadUnborn, cancelToken);
 		}
 	}
 
