@@ -101,11 +101,9 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnFinish ()
 		{
-			try {
-				protocolClient.SendRequestSync (new StepOutRequest (currentThreadId));
-			} catch (Exception ex) {
+			protocolClient.SendRequest (new StepOutRequest (currentThreadId), null, (args, ex) => {
 				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepOut request failed", ex);
-			}
+			});
 		}
 
 		List<ProcessInfo> processInfo = new List<ProcessInfo>();
@@ -229,20 +227,16 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			try {
-				protocolClient.SendRequestSync (new NextRequest (currentThreadId));
-			} catch (Exception ex) {
+			protocolClient.SendRequest (new NextRequest (currentThreadId), null, (args, ex) => {
 				DebuggerLoggingService.LogError ("[VSCodeDebugger] NextInstruction request failed", ex);
-			}
+			});
 		}
 
 		protected override void OnNextLine ()
 		{
-			try {
-				protocolClient.SendRequestSync (new NextRequest (currentThreadId));
-			} catch (Exception ex) {
+			protocolClient.SendRequest (new NextRequest (currentThreadId), null, (args, ex) => {
 				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepOver request failed", ex);
-			}
+			});
 		}
 
 		protected override void OnRemoveBreakEvent (BreakEventInfo eventInfo)
@@ -606,8 +600,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					breakpoints.Select (b => b.Key).OfType<MonoFunctionBreakpoint> ()
 					.Where (b => b.Enabled)
 					.Select (b => new VsCodeFunctionBreakpoint (b.FunctionName))
-					.ToList ()),
-				(obj) => { });
+					.ToList ()), null);
 		}
 
 		protected InitializeResponse Capabilities;
@@ -619,20 +612,16 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnStepInstruction ()
 		{
-			try {
-				protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
-			} catch (Exception ex) {
+			protocolClient.SendRequest (new StepInRequest (currentThreadId), null, (args, ex) => {
 				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepInstruction request failed", ex);
-			}
+			});
 		}
 
 		protected override void OnStepLine ()
 		{
-			try {
-				protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
-			} catch (Exception ex) {
+			protocolClient.SendRequest (new StepInRequest (currentThreadId), null, (args, ex) => {
 				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepIn request failed", ex);
-			}
+			});
 		}
 
 		protected override void OnStop ()
@@ -656,7 +645,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				try {
 					protocolClient.SendRequestSync (new DisconnectRequest ());
 					protocolClient.Stop ();
-				} catch {
+				} catch (Exception ex) {
+					DebuggerLoggingService.LogError ("[VSCodeDebugger] Disconnect request failed", ex);
 				}
 				protocolClient = null;
 			}
