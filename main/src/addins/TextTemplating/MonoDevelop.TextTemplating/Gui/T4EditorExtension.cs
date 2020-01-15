@@ -31,7 +31,6 @@ using MonoDevelop.Ide.Gui.Content;
 using MonoDevelop.DesignerSupport;
 using MonoDevelop.TextTemplating.Parser;
 using MonoDevelop.Ide;
-using ICSharpCode.NRefactory.TypeSystem;
 using MonoDevelop.Ide.Editor.Extension;
 using MonoDevelop.Ide.Editor;
 using System.Threading.Tasks;
@@ -83,16 +82,6 @@ namespace MonoDevelop.TextTemplating.Gui
 					throw new InvalidOperationException ("Editor extension not yet initialized");
 				return DocumentContext.GetContent<TextEditor> ();
 			}
-		}
-		
-		protected string GetBufferText (DomRegion region)
-		{
-			int start = Editor.LocationToOffset (region.BeginLine, region.BeginColumn);
-			int end = Editor.LocationToOffset (region.EndLine, region.EndColumn);
-			if (end > start && start >= 0)
-				return Editor.GetTextBetween (start, end);
-			else
-				return null;
 		}
 		
 		#endregion

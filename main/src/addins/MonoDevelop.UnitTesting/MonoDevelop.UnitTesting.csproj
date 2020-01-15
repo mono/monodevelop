@@ -48,11 +48,6 @@
       <Name>Xwt</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.DotNetCore\MonoDevelop.DotNetCore.csproj">
       <Project>{6868153E-41EA-43A4-A81A-C1E7256373F7}</Project>
       <Name>MonoDevelop.DotNetCore</Name>

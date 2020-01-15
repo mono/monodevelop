@@ -401,37 +401,21 @@ namespace MonoDevelop.UnitTesting
 	}
 	
 	[Serializable]
-	public class TestRecordCollection: CollectionBase
+	public class TestRecordCollection: List<TestRecord>
 	{
-		public TestRecord this [int n] {
-			get { return (TestRecord) ((IList)this) [n]; }
-		}
-		
 		public TestRecord this [string name] {
 			get {
-				for (int n=0; n<List.Count; n++)
-					if (((TestRecord)List [n]).Name == name)
-						return (TestRecord) List [n];
+				foreach (var value in this) {
+					if (value.Name == name)
+						return value;
+				}
 				return null;
 			}
-		}
-		
-		public void Add (TestRecord test)
-		{
-			((IList)this).Add (test);
 		}
 	}
 	
 	[Serializable]
-	public class UnitTestResultCollection: CollectionBase
+	public class UnitTestResultCollection: List<UnitTestResult>
 	{
-		public UnitTestResult this [int n] {
-			get { return (UnitTestResult) ((IList)this) [n]; }
-		}
-		
-		public void Add (UnitTestResult test)
-		{
-			((IList)this).Add (test);
-		}
 	}	
 }
