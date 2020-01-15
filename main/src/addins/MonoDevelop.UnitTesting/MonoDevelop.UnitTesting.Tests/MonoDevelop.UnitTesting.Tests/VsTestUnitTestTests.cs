@@ -136,7 +136,7 @@ namespace MonoDevelop.UnitTesting.Tests
 		[Test]
 		public void TestVSTS1042673 ()
 		{
-			var case1 = new NUnitTestSuite (null, directClassCase ());
+			var case1 = new NUnitTestSuite (null, DirectClassCase ());
 			var case2 = new NUnitTestSuite (null, namespaceWithDot ());
 			var case3 = new NUnitTestSuite (null, nestedNamespace ());
 			var case4 = new NUnitTestSuite (null, namespaceNoDot ());  
