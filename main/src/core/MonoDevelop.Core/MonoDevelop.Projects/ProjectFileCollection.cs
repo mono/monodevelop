@@ -264,7 +264,7 @@ namespace MonoDevelop.Projects
 			return list.ToArray ();
 		}
 
-		public IReadOnlyList<ProjectFile> GetFilesInFolder (FilePath path)
+		public ImmutableList<ProjectFile> GetFilesInFolder (FilePath path)
 		{
 			if (folders.TryGetValue (path, out var folderChildren)) {
 				return folderChildren;

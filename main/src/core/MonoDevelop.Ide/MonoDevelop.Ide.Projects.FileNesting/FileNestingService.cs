@@ -210,7 +210,7 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 
 				var isParent = FileNestingService.InternalGetParentFile (file) == projectFile;
 				if (isParent) {
-					var child = projectFiles.GetOrAdd (file, new ProjectFileNestingInfo (file));
+					var child = projectFiles.GetOrAdd (file, file => new ProjectFileNestingInfo (file));
 					if (child.Parent == null) {
 						if (tmp.Children == null) {
 							tmp.Children = new ProjectFileCollection ();
