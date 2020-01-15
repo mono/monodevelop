@@ -270,7 +270,7 @@ namespace MonoDevelop.Projects
 				return folderChildren;
 			}
 
-			return new List<ProjectFile> ();
+			return ImmutableList<ProjectFile>.Empty;
 		}
 
 		internal void RemoveFilesInPath (FilePath path)
