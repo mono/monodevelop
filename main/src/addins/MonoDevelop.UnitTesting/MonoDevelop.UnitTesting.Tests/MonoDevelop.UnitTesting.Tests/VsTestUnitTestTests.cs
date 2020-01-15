@@ -197,7 +197,7 @@ namespace MonoDevelop.UnitTesting.Tests
 			return namespaceInfo;
 		}
 
-		NunitTestInfo nestedNamespace ()
+		NunitTestInfo NestedNamespace ()
 		{
 			NunitTestInfo namespaceInfo = new NunitTestInfo {
 				FixtureTypeName = "",
