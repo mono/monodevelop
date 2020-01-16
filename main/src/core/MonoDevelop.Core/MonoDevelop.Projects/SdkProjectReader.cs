@@ -65,7 +65,8 @@ namespace MonoDevelop.Projects
 				// 2) An Sdk node as a child of the Project node
 				// 3) An Sdk attribute on any Import node
 				var document = new XmlDocument ();
-				document.Load (new StreamReader (file));
+				using (var sr = new StreamReader (file))
+					document.Load (sr);
 				XmlNode projectNode = document.SelectSingleNode ("/Project");
 				if (projectNode != null) {
 					XmlAttribute sdkAttr = projectNode.Attributes ["Sdk"];
