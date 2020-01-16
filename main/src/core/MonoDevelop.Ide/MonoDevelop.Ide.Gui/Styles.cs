@@ -500,7 +500,7 @@ namespace MonoDevelop.Ide.Gui
 			StatusErrorTextColor = Color.FromName ("#ffffff");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
 			ErrorBoxForegroundColor = StatusErrorTextColor;
-			ErrorForegroundColor = StatusErrorTextColor;
+			ErrorForegroundColor = Color.FromName ("#c42c3e");
 
 			// Tabs
 
