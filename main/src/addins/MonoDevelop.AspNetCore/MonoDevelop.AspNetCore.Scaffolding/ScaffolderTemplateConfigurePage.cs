@@ -62,6 +62,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (input, 1, rowIndex);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					input.MinWidth = 300;
+					input.Accessible.LabelWidget = label;
 					input.SetFocus ();
 					break;
 				case ComboField comboField:
@@ -104,9 +105,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End);
 					table.Add (comboBox, 1, rowIndex);
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
-
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
-
+					comboBox.Accessible.LabelWidget = label;
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
@@ -136,6 +136,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					rowAdditionCount++;
 					fileSelector.HeightRequest = 20;
 					fileSelector.FileChanged += (sender, args) => fileField.SelectedValue = fileSelector.FileName;
+					fileSelector.Accessible.LabelWidget = label;
 					break;
 				}
 
