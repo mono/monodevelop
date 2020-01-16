@@ -65,10 +65,10 @@ namespace MonoDevelop.PackageManagement
 		ComboBox packageVersionComboBox;
 		HBox packageVersionsHBox;
 		Label packageVersionsLabel;
-		Label browseLabel;
-		Label installedLabel;
-		Label updatesLabel;
-		Label consolidateLabel;
+		CustomButtonLabel browseLabel;
+		CustomButtonLabel installedLabel;
+		CustomButtonLabel updatesLabel;
+		CustomButtonLabel consolidateLabel;
 		HBox tabGroup;
 		VBox projectsListViewVBox;
 		Label projectsListViewLabel;
@@ -114,33 +114,29 @@ namespace MonoDevelop.PackageManagement
 			tabGroup = new HBox ();
 
 			int tabLabelMinWidth = 60;
-			browseLabel = new Label ();
+			browseLabel = new CustomButtonLabel ();
 			browseLabel.Text = GettextCatalog.GetString ("Browse");
 			browseLabel.Tag = browseLabel.Text;
 			browseLabel.MinWidth = tabLabelMinWidth;
 			browseLabel.MarginLeft = 10;
-			browseLabel.CanGetFocus = true;
 			tabGroup.PackStart (browseLabel);
 
-			installedLabel = new Label ();
+			installedLabel = new CustomButtonLabel ();
 			installedLabel.Text = GettextCatalog.GetString ("Installed");
 			installedLabel.Tag = installedLabel.Text;
 			installedLabel.MinWidth = tabLabelMinWidth;
-			installedLabel.CanGetFocus = true;
 			tabGroup.PackStart (installedLabel);
 
-			updatesLabel = new Label ();
+			updatesLabel = new CustomButtonLabel ();
 			updatesLabel.Text = GettextCatalog.GetString ("Updates");
 			updatesLabel.Tag = updatesLabel.Text;
 			updatesLabel.MinWidth = tabLabelMinWidth;
-			updatesLabel.CanGetFocus = true;
 			tabGroup.PackStart (updatesLabel);
 
-			consolidateLabel = new Label ();
+			consolidateLabel = new CustomButtonLabel ();
 			consolidateLabel.Text = GettextCatalog.GetString ("Consolidate");
 			consolidateLabel.Tag = consolidateLabel.Text;
 			consolidateLabel.MinWidth = tabLabelMinWidth;
-			consolidateLabel.CanGetFocus = true;
 			tabGroup.PackStart (consolidateLabel);
 
 			topHBox.PackStart (tabGroup);
@@ -504,6 +500,64 @@ namespace MonoDevelop.PackageManagement
 				currentPackageVersionLabel.WidthRequest = packageVersionsLabelWidth;
 				maxPackageVersionLabelWidth = packageVersionsLabelWidth;
 			}
+		}
+	}
+
+	class CustomButtonLabel : Canvas
+	{
+		readonly TextLayout layout = new TextLayout ();
+		Size preferredSize;
+
+		public string Text {
+			get { return layout.Text; }
+			set {
+				layout.Markup = null;
+				layout.Text = value;
+				Accessible.Title = layout.Text;
+				preferredSize = layout.GetSize ();
+				OnPreferredSizeChanged ();
+			}
+		}
+
+		public string Markup {
+			get { return layout.Markup; }
+			set {
+				layout.Markup = value;
+				Accessible.Title = layout.Text;
+				preferredSize = layout.GetSize ();
+				OnPreferredSizeChanged ();
+			}
+		}
+
+		public CustomButtonLabel ()
+		{
+			CanGetFocus = true;
+			Accessible.Role = Xwt.Accessibility.Role.Button;
+		}
+
+		protected override Size OnGetPreferredSize (SizeConstraint widthConstraint, SizeConstraint heightConstraint)
+		{
+			return preferredSize;
+		}
+
+		protected override void OnDraw (Context ctx, Rectangle dirtyRect)
+		{
+			if (HasFocus) {
+				ctx.SetColor (Ide.Gui.Styles.BaseSelectionBackgroundColor);
+			}
+			var actualSize = Size;
+			var x = Math.Max (0, (actualSize.Width - preferredSize.Width) / 2);
+			var y = Math.Max (0, (actualSize.Height - preferredSize.Height) / 2);
+			x += x % 2; // align pixels
+			ctx.DrawTextLayout (layout, x, y);
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			if (disposing) {
+				layout.Dispose ();
+			}
+			base.Dispose (disposing);
 		}
 	}
 }
