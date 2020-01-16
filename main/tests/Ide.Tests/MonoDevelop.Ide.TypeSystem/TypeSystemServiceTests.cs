@@ -246,19 +246,12 @@ namespace MonoDevelop.Ide.TypeSystem
 		{
 			FilePath solFile = Util.GetSampleProject ("multi-target", "multi-target.sln");
 
-			var csprojectPath = new FilePath(Path.Combine(Path.GetDirectoryName (solFile.FullPath), "multi-target.csproj"));
-
-			ShowFileLockInformation (csprojectPath, "#1");
-
 			CreateNuGetConfigFile (solFile.ParentDirectory);
 			Util.RunMSBuild ($"/t:Restore /p:RestoreDisableParallel=true \"{solFile}\"");
-			ShowFileLockInformation (csprojectPath, "#2");
 
-			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
-			ShowFileLockInformation (csprojectPath, "#3");
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile))
 			using (var ws = await TypeSystemServiceTestExtensions.LoadSolution (sol)) {
 				try {
-					ShowFileLockInformation (csprojectPath, "#4");
 					var project = sol.GetAllProjects ().Single ();
 
 					var projectIds = ws.CurrentSolution.ProjectIds.ToArray ();
@@ -277,7 +270,6 @@ namespace MonoDevelop.Ide.TypeSystem
 					var updatedProjectFileName = project.FileName.ChangeName ("multi-target-reload");
 
 					string xml = File.ReadAllText (updatedProjectFileName);
-					ShowFileLockInformation (csprojectPath, "#5");
 
 					// Handle sharing violations when writing the project file by retrying a few times.
 					int maxRetries = 10;
@@ -287,7 +279,7 @@ namespace MonoDevelop.Ide.TypeSystem
 							break;
 						} catch (Exception ex) {
 							if (i + 1 >= maxRetries) {
-								ShowFileLockInformation (project.FileName, $"Retry: #{i}");
+								ShowFileLockInformation (project.FileName);
 								throw;
 							} else {
 								Console.WriteLine ("MultiTargetFramework_ReloadProject_TargetFrameworksChanged File.WriteAllText error: {0}", ex.Message);
@@ -326,14 +318,13 @@ namespace MonoDevelop.Ide.TypeSystem
 					TypeSystemServiceTestExtensions.UnloadSolution (sol);
 				}
 			}
-			}
 		}
 
-		void ShowFileLockInformation (FilePath fileName, string tag)
+		void ShowFileLockInformation (FilePath fileName)
 		{
 			Console.WriteLine (
-				"{0} ShowFileLockInformation CurrentProcessId={1} lsof output:",
-				tag, Process.GetCurrentProcess ().Id);
+				"ShowFileLockInformation CurrentProcessId={0} lsof output:",
+				Process.GetCurrentProcess ().Id);
 
 			using (var process = new Process ()) {
 				process.StartInfo.UseShellExecute = false;
@@ -343,10 +334,7 @@ namespace MonoDevelop.Ide.TypeSystem
 				process.StartInfo.FileName = "lsof";
 				//process.StartInfo.Arguments = " \"" + fileName.FileName + "\"";
 
-				process.OutputDataReceived += (s, e) => {
-					if (e.Data?.IndexOf (fileName.FullPath) >= 0)
-						Console.WriteLine (e.Data);
-				};
+				process.OutputDataReceived += (s, e) => Console.WriteLine (e.Data);
 
 				process.Start ();
 				process.BeginOutputReadLine ();
