@@ -496,11 +496,11 @@ namespace MonoDevelop.Ide.Gui
 			WarningBoxForegroundColor = Color.FromName ("#000000");
 			WarningForegroundColor = Color.FromName ("#8a5522");
 
-			StatusErrorBackgroundColor = Color.FromName ("#ffb3bc");
-			StatusErrorTextColor = Color.FromName ("#000000");
+			StatusErrorBackgroundColor = Color.FromName ("#c42c3e");
+			StatusErrorTextColor = Color.FromName ("#ffffff");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
-			ErrorBoxForegroundColor = Color.FromName ("#000000");
-			ErrorForegroundColor = Color.FromName ("#c42c3e");
+			ErrorBoxForegroundColor = StatusErrorTextColor;
+			ErrorForegroundColor = StatusErrorTextColor;
 
 			// Tabs
 
@@ -623,8 +623,8 @@ namespace MonoDevelop.Ide.Gui
 			StatusErrorBackgroundColor = Color.FromName ("#ffb3bc");
 			StatusErrorTextColor = Color.FromName ("#000000");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
-			ErrorBoxForegroundColor = Color.FromName ("#000000");
-			ErrorForegroundColor = Color.FromName ("#ffb3bc");
+			ErrorBoxForegroundColor = StatusErrorTextColor;
+			ErrorForegroundColor = StatusErrorTextColor;
 
 			// Tabs
 
