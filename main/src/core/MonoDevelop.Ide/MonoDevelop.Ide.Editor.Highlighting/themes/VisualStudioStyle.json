@@ -6,14 +6,19 @@
 
 "palette": [
 		{ "name": "text-black", "value": "#222222" },
+		{ "name": "background-white", "value": "white" },
 		{ "name": "comment-green", "value": "#008000" },
+		{ "name": "local-blue", "value": "#1f377f" },
+		{ "name": "string-red", "value": "#a31515" },
 		{ "name": "keyword-blue", "value": "#0000ff" },
+		{ "name": "keyword-purple", "value": "#8f08c4" },
 		{ "name": "semantic-type", "value": "#508FAE" },
-    { "name": "selection-bg", "value": "#94CAED" }
-    ],
+		{ "name": "method-yellow", "value": "#74531f" },
+		{ "name": "selection-bg", "value": "#94CAED" }
+	],
 
 	"colors": [
-		{ "name": "Background(Read Only)", "color": "#FFFFFF" },
+		{ "name": "Background(Read Only)", "color": "white" },
 
 		{ "name": "Underline(Error)", "color": "#FF0000" },
 		{ "name": "Underline(Warning)", "color": "comment-green" },
@@ -26,9 +31,8 @@
 
 		{ "name": "Message Bubble Warning IconMargin", "color": "#e68100", "bordercolor": "#e68100" },
 
-    { "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" },
-
-    { "name": "Usages(Rectangle)", "color": "#E2E6E6", "secondcolor": "#E2E6E6", "bordercolor": "#E2E6E6" },
+		{ "name": "Brace Matching(Rectangle)", "color": "#e2e6d6", "secondcolor": "#e2e6d6" }
+    		{ "name": "Usages(Rectangle)", "color": "#E2E6E6", "secondcolor": "#E2E6E6", "bordercolor": "#E2E6E6" },
 		{ "name": "Search result background", "color": "#F6B94D" },
 		
 		{ "name": "Link Color", "color": "keyword-blue" },
@@ -36,15 +40,16 @@
 	],
 
 	"text": [
-		{ "name": "Plain Text", "fore": "text-black", "back": "#FFFFFF" },
+		{ "name": "Plain Text", "fore": "text-black", "back": "background-white" },
 		{ "name": "Selected Text", "back": "selection-bg" },
 		{ "name": "Selected Text(Inactive)", "fore": "white", "back": "selection-bg" },
 
-		{ "name": "Collapsed Text", "fore": "comment-green", "back": "white" },
+		{ "name": "Collapsed Text", "fore": "#808080", "back": "background-white" },
 
-		{ "name": "Line Numbers", "fore": "semantic-type", "back": "#FFFFFF" },
+		{ "name": "Line Numbers", "fore": "#2b91af", "back": "background-white" },
 
-		{ "name": "Punctuation(Brackets)", "fore": "#000000", "back": "#FFFFFF" },
+		{ "name": "Punctuation", "fore": "text-black" },
+		{ "name": "Punctuation(Brackets)", "fore": "text-black" },
 
 		{ "name": "Comment(Line)", "fore": "comment-green" },
 		{ "name": "Comment(Block)", "fore": "comment-green" },
@@ -52,21 +57,23 @@
 		{ "name": "Comment(DocTag)", "fore": "comment-green" },
 		{ "name": "Comment Tag", "fore": "#b901b9" },
 
-		{ "name": "Excluded Code", "fore": "comment-green" },
+		{ "name": "Excluded Code", "fore": "#808080" },
 
-		{ "name": "String", "fore": "#A31515" },
-		{ "name": "String(Escape)", "fore": "#A31515" },
-		{ "name": "String(C# @ Verbatim)", "fore": "#A31515" },
+		{ "name": "String", "fore": "string-red" },
+		{ "name": "String(Escape)", "fore": "#b776fb" },
+		{ "name": "String(C# @ Verbatim)", "fore": "string-red" },
 
-		{ "name": "Preprocessor", "fore": "keyword-blue" },
-		{ "name": "Preprocessor(Region Name)", "fore": "#000000" },
+		{ "name": "Number", "fore": "text-black" },
+
+		{ "name": "Preprocessor", "fore": "#808080" },
+		{ "name": "Preprocessor(Region Name)", "fore": "text-black" },
 
 		{ "name": "Xml Delimiter", "fore": "keyword-blue" },
 		{ "name": "Xml Name", "fore": "#A31515" },
 		{ "name": "Xml Attribute", "fore": "#FF0000" },
-		{ "name": "Xml Attribute Quotes", "fore": "#000000" },
+		{ "name": "Xml Attribute Quotes", "fore": "text-black" },
 		{ "name": "Xml Attribute Value", "fore": "keyword-blue" },
-		{ "name": "Xml Comment", "fore": "#006400" },
+		{ "name": "Xml Comment", "fore": "#008000" },
 		{ "name": "Xml CData Section", "fore": "#808080" },
 
 		{ "name": "Html Attribute Name", "fore": "#FF0000" },
@@ -75,9 +82,9 @@
 		{ "name": "Html Element Name", "fore": "#800000" },
 		{ "name": "Html Entity", "fore": "#FF0000" },
 		{ "name": "Html Operator", "fore": "keyword-blue" },
-		{ "name": "Html Server-Side Script", "fore": "black", "back": "#FFFF33" },
+		{ "name": "Html Server-Side Script", "fore": "text-black", "back": "#FFFF00" },
 		{ "name": "Html Tag Delimiter", "fore": "keyword-blue" },
-		{ "name": "Razor Code", "back": "#E7EFF2" },
+		{ "name": "Razor Code", "back": "#e5e5e5" },
 
 		{ "name": "Keyword(Access)", "fore": "keyword-blue" },
 		{ "name": "Keyword(Type)", "fore": "keyword-blue" },
@@ -102,19 +109,38 @@
 		{ "name": "User Types(Interfaces)", "fore": "semantic-type" },
 		{ "name": "User Types(Delegates)", "fore": "semantic-type" },
 		{ "name": "User Types(Value types)", "fore": "semantic-type" },
+		{ "name": "User Types(Type parameters)", "fore": "semantic-type" },
 
+		{ "name": "User Field Usage", "fore": "text-black" },
+		{ "name": "User Field Declaration", "fore": "text-black" },
+
+		{ "name": "User Property Usage", "fore": "text-black" },
+		{ "name": "User Property Declaration", "fore": "text-black" },
+
+		{ "name": "User Event Usage", "fore": "text-black" },
+		{ "name": "User Event Declaration", "fore": "text-black" },
+
+		{ "name": "User Method Usage", "fore": "method-yellow" },
+		{ "name": "User Method Declaration", "fore": "method-yellow" },
+
+		{ "name": "User Parameter Usage", "fore": "local-blue" },
+		{ "name": "User Parameter Declaration", "fore": "local-blue" },
+
+		{ "name": "User Variable Usage", "fore": "local-blue" },
+		{ "name": "User Variable Declaration", "fore": "local-blue" },
+		
 		{ "name": "Syntax Error", "fore": "#FF0000" },
 
-		{ "name": "Breakpoint Text", "fore": "#000000", "back": "#963945" },
+		{ "name": "Breakpoint Text", "fore": "text-black", "back": "#963945" },
 
-		{ "name": "Debugger Current Statement", "fore": "#000000", "back": "#FFEE61" },
+		{ "name": "Debugger Current Statement", "fore": "text-black", "back": "#FFEE61" },
 
-		{ "name": "Css Comment", "fore": "#006400" },
-		{ "name": "Css Property Name", "fore": "#FF0000" },
-		{ "name": "Css Property Value", "fore": "keyword-blue" },
-		{ "name": "Css Selector", "fore": "#800000" },
-		{ "name": "Css String Value", "fore": "keyword-blue" },
-		{ "name": "Css Keyword", "fore": "keyword-blue" },
+		{ "name": "Css Comment", "fore": "#006400", "weight": "bold" },
+		{ "name": "Css Property Name", "fore": "#FF0000", "weight": "bold" },
+		{ "name": "Css Property Value", "fore": "keyword-blue", "weight": "bold" },
+		{ "name": "Css Selector", "fore": "#800000", "weight": "bold" },
+		{ "name": "Css String Value", "fore": "keyword-blue", "weight": "bold" },
+		{ "name": "Css Keyword", "fore": "keyword-blue", "weight": "bold" },
 
 		{ "name": "Script Comment", "fore": "comment-green" },
 		{ "name": "Script Keyword", "fore": "keyword-blue" },
