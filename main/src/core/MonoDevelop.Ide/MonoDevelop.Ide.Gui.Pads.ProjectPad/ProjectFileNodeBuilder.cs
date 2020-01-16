@@ -326,7 +326,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				}
 
 				var result = MessageService.AskQuestion (question, new [] { AlertButton.Cancel, fileExists ? AlertButton.Delete : AlertButton.Remove });
-				if(result == AlertButton.Cancel)
+				if (result == AlertButton.Cancel)
 					return;
 				else
 					RemoveFilesFromProject (fileExists, files);
@@ -344,7 +344,7 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 				var pf = (ProjectFile)node.DataItem;
 				files.Add (pf);
 			}
-			if(!CheckAnyFileExists(files))
+			if (!CheckAnyFileExists(files))
 				info.Text = GettextCatalog.GetString ("Remove");
 		}
 
