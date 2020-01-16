@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 			packagesList.Spacing = 0;
 
 			scroll = new ScrollView (packagesList);
-			scroll.HorizontalScrollPolicy = ScrollPolicy.Automatic;
+			scroll.HorizontalScrollPolicy = ScrollPolicy.Never;
 			scroll.VerticalScrollPolicy = ScrollPolicy.Automatic;
 			scroll.BorderVisible = false;
 			scroll.BackgroundColor = Ide.Gui.Styles.BackgroundColor;
@@ -105,6 +105,23 @@ namespace MonoDevelop.PackageManagement
 			foreach (PackageLicenseViewModel package in viewModel.Packages) {
 				AddPackage (package);
 			}
+		}
+
+		protected override void OnShown ()
+		{
+			var count = packagesList.Children.Count ();
+			if (count > 0 && count < 4) {
+				scroll.VerticalScrollPolicy = ScrollPolicy.Never;
+				var firstRow = packagesList.Children.First ();
+				var rowHeight = firstRow.Size.Height;
+				Height -= (rowHeight + firstRow.MarginTop + firstRow.MarginBottom) * (4 - count);
+			} else if (count == 4) {
+				scroll.VerticalScrollPolicy = ScrollPolicy.Never;
+			} else if (count > 4) {
+				scroll.VerticalScrollPolicy = ScrollPolicy.Automatic;
+				Height += rowMargin.Top + rowMargin.Bottom;
+			}
+			base.OnShown ();
 		}
 
 		void AddPackage (PackageLicenseViewModel package)
