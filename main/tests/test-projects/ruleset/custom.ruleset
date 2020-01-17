@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="CustomTestRules" ToolsVersion="16.0">
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1000" Action="Error" />
+    <Rule Id="SA1001" Action="Warning" />
+    <Rule Id="SA1002" Action="None" />
+    <!-- Rule SA1003 defined in global ruleset -->
+    <Rule Id="SA1600" Action="Error" />
+  </Rules>
+</RuleSet>
