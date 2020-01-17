@@ -590,8 +590,12 @@ namespace MonoDevelop.Ide.Projects
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
+					// disable all controls on this dialog to prevent users actions
+					VBox.Sensitive = false;
 					await controller.Create ();
 				} catch {
+					// if something goes wrong, we need to enable dialog contols
+					VBox.Sensitive = true;
 					throw;
 				} finally {
 					CanMoveToNextPage = true;
