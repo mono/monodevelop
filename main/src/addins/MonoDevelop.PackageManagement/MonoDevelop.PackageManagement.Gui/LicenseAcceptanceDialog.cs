@@ -210,7 +210,10 @@ namespace MonoDevelop.PackageManagement
 			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
 			licenseLabel.Uri = licenseFileText.CreateLicenseFileUri ();
 			licenseLabel.Tag = licenseFileText;
-			licenseLabel.NavigateToUrl += (sender, e) => ShowFileDialog ((LinkLabel)sender);
+			licenseLabel.NavigateToUrl += (sender, e) => {
+				e.SetHandled ();
+				ShowFileDialog ((LinkLabel)sender);
+			};
 			parentVBox.PackStart (licenseLabel);
 		}
 
