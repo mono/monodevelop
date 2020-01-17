@@ -40,7 +40,7 @@ namespace MonoDevelop.PackageManagement
 		public static ISourceRepositoryProvider CreateSourceRepositoryProvider (ISettings settings)
 		{
 			var packageSourceProvider = new MonoDevelopPackageSourceProvider (settings);
-			return new SourceRepositoryProvider (packageSourceProvider, Repository.Provider.GetMonoDevelop ());
+			return new SourceRepositoryProvider (packageSourceProvider, MonoDevelopNuGetResourceProviderFactory.GetProviders ());
 		}
 	}
 }

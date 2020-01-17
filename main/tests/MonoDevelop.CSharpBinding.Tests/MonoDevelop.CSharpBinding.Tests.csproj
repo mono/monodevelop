@@ -66,6 +66,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\AutoFormatIntegrationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpDocumentOptionsProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Debugging\DebuggerCompletionControllerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CustomProjectRuleSetTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">

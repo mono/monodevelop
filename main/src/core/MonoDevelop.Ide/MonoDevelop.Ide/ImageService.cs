@@ -913,7 +913,7 @@ namespace MonoDevelop.Ide
 	class CustomImageLoader : Xwt.Drawing.IImageLoader
 	{
 		RuntimeAddin addin;
-		Dictionary<System.Reflection.Assembly, string []> resources = new Dictionary<System.Reflection.Assembly, string[]> ();
+		static Dictionary<System.Reflection.Assembly, List<string>> resources = new Dictionary<System.Reflection.Assembly, List<string>> ();
 
 		public CustomImageLoader (RuntimeAddin addin)
 		{
@@ -924,11 +924,12 @@ namespace MonoDevelop.Ide
 		{
 			var r = addin.GetResourceInfo (fileName);
 
-			string [] resourceList;
-			if (!resources.TryGetValue (r.ReferencedAssembly, out resourceList))
-				resourceList = resources [r.ReferencedAssembly] = r.ReferencedAssembly.GetManifestResourceNames ();
+			if (!resources.TryGetValue (r.ReferencedAssembly, out var resourceList)) {
+				resourceList = resources [r.ReferencedAssembly] = r.ReferencedAssembly.GetManifestResourceNames ().ToList ();
+				resourceList.Sort (); // sort resources by name
+			}
 
-			return resourceList;
+			return resourceList.Where (r => r.StartsWith (baseName) && r.EndsWith (ext));
 		}
 
 		public Stream LoadImage (string fileName)

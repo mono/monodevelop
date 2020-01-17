@@ -44,11 +44,11 @@ namespace MonoDevelop.Core.Execution
 			// We need these wrappers, as the alternatives are not good enough.
 			// OutputDataReceived does not persist newlines.
 			if (OutputStreamChanged != null) {
-				Task.Run (CaptureOutput, cs.Token);
+				Task.Run (CaptureOutput, cs.Token).Ignore ();
 			}
 
 			if (ErrorStreamChanged != null) {
-				Task.Run (CaptureError, cs.Token);
+				Task.Run (CaptureError, cs.Token).Ignore ();
 			}
 
 			operation = new ProcessAsyncOperation (Task, cs) {

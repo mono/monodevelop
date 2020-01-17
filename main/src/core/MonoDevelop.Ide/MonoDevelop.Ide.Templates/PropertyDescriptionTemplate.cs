@@ -75,7 +75,7 @@ namespace MonoDevelop.Ide.Templates
 			var fileName = StringParserService.Parse (name, model);
 
 			project.ProjectProperties.SetValue (typeAtt.Value, string.IsNullOrEmpty (fileName) ? propertyInnerText : string.Concat (fileName, extension));
-			return Task.FromResult(true);
+			return Task.FromResult (true);
 		}
 	}
 }

@@ -105,7 +105,7 @@ namespace MonoDevelop.Ide.Gui.Dialogs
 			contentBox.BorderWidth = 4;
 			contentBox.PackStart (buf, false, false, 0);
 
-			var asmButton = new Gtk.Button ("Show loaded assemblies");
+			var asmButton = new Gtk.Button (GettextCatalog.GetString ("Show loaded assemblies"));
 			asmButton.Clicked += (sender, e) => {
 				asmButton.Hide ();
 				contentBox.PackStart (CreateAssembliesTable (), false, false, 0);

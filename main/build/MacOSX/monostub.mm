@@ -227,6 +227,12 @@ load_xammac()
 		XAMARIN_CREATE_CLASSES ();
 	}
 
+	void *ptr = dlsym(libxammac, "xamarin_marshal_objectivec_exception_mode");
+	*(int*)ptr = 2; // MarshalObjectiveCExceptionModeThrowManagedException
+
+	ptr = dlsym(libxammac, "xamarin_marshal_managed_exception_mode");
+	*(int*)ptr = 2; // MarshalManagedExceptionModeThrowObjectiveCException
+
 	return libxammac;
 }
 

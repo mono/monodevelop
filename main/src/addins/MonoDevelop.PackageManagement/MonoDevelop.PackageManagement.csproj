@@ -314,7 +314,6 @@
     <Compile Include="MonoDevelop.PackageManagement\ItemTemplateNuGetPackageInstaller.cs" />
     <Compile Include="Gui\MonoDevelop.PackageManagement.PackageManagementOptionsWidget.cs" />
     <Compile Include="Gui\MonoDevelop.PackageManagement.PackageSourcesWidget.cs" />
-    <Compile Include="MonoDevelop.PackageManagement\RepositoryProviderFactoryExtensions.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopHttpHandlerResourceV3Provider.cs" />
     <Compile Include="MonoDevelop.PackageManagement\MonoDevelopServerWarningLogHandler.cs" />
     <Compile Include="MonoDevelop.PackageManagement\NuGetHttpSourceAuthenticationHandler.cs" />
@@ -368,6 +367,8 @@
     <Compile Include="MonoDevelop.PackageManagement\PackageManagementCanReferenceProjectExtension.cs" />
     <Compile Include="MonoDevelop.PackageManagement\UpdateMultipleNuGetPackagesAction.cs" />
     <Compile Include="MonoDevelop.PackageManagement\ProjectReferenceMaintainerCollection.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopPluginFactory.cs" />
+    <Compile Include="MonoDevelop.PackageManagement\MonoDevelopNuGetResourceProviderFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.PackageManagement.addin.xml" />
@@ -447,11 +448,6 @@
     <ProjectReference Include="..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
       <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
       <Name>MonoDevelop.DesignerSupport</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">

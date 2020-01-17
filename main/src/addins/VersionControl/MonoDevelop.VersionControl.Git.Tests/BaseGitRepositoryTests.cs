@@ -54,7 +54,7 @@ namespace MonoDevelop.VersionControl.Git.Tests
 			// Check out the repository.
 			await CheckoutAsync (LocalPath, RemoteUrl);
 			Repo = GetRepo (LocalPath, RemoteUrl);
-			await ((GitRepository)Repo).RunOperationAsync (() => ((GitRepository)Repo).RootRepository.Config.Set ("core.ignorecase", false));
+			await ((GitRepository)Repo).RunOperationAsync ((token) => ((GitRepository)Repo).RootRepository.Config.Set ("core.ignorecase", false));
 			ModifyPath (Repo, ref LocalPath);
 			DotDir = ".git";
 

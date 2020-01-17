@@ -1397,7 +1397,7 @@ namespace MonoDevelop.Debugger
 
 			pinnedWatches.SetAllLiveUpdateBreakpoints (breakpoints);
 
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		static void OnSolutionClosed (object s, EventArgs args)

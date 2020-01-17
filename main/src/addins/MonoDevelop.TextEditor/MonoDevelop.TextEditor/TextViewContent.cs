@@ -444,7 +444,7 @@ namespace MonoDevelop.TextEditor
 			UpdateOptionsFromPolicy ();
 
 			if (editorConfigContext == null)
-				return Task.FromResult (false);
+				return Task.CompletedTask;
 
 			if (editorConfigContext.CurrentConventions.UniversalConventions.TryGetIndentStyle (out var indentStyle))
 				SetOptionValue (DefaultOptions.ConvertTabsToSpacesOptionName, indentStyle == IndentStyle.Spaces);
@@ -486,7 +486,7 @@ namespace MonoDevelop.TextEditor
 				EditorOptions.SetOptionValue (DefaultTextViewOptions.VerticalRulersName, verticalRulers ?? Array.Empty<int> ());
 #endif
 
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		private void PolicyChanged (object sender, PolicyChangedEventArgs e)

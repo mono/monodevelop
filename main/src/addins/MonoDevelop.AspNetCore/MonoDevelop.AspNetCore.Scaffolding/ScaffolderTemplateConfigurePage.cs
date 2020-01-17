@@ -62,16 +62,21 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (input, 1, rowIndex);
 					input.Changed += (sender, args) => s.SelectedValue = input.Text;
 					input.MinWidth = 300;
+					input.Accessible.LabelWidget = label;
 					input.SetFocus ();
 					break;
 				case ComboField comboField:
 					ComboBox comboBox;
 					if (comboField.IsEditable) {
-						var comboBoxEntry = new ComboBoxEntry ();
+						var comboBoxEntry = new ComboBoxEntry {
+							Completes = true
+						};
+
 						comboBoxEntry.TextEntry.Changed += (sender, args) => {
 							if(!string.IsNullOrWhiteSpace(comboBoxEntry.TextEntry.Text))
 								comboField.SelectedValue = comboBoxEntry.TextEntry.Text;
 						};
+
 						if(comboField.PlaceholderText != null)
 							comboBoxEntry.TextEntry.PlaceholderText = comboField.PlaceholderText;
 						comboBox = comboBoxEntry;
@@ -100,9 +105,8 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					table.Add (label, 0, rowIndex, hpos: WidgetPlacement.End);
 					table.Add (comboBox, 1, rowIndex);
 					comboBox.TextInput += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
-
 					comboBox.SelectionChanged += (sender, args) => comboField.SelectedValue = comboBox.SelectedText;
-
+					comboBox.Accessible.LabelWidget = label;
 					break;
 				case BoolFieldList boolFieldList:
 					label.Text = boolFieldList.DisplayName;
@@ -132,6 +136,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 					rowAdditionCount++;
 					fileSelector.HeightRequest = 20;
 					fileSelector.FileChanged += (sender, args) => fileField.SelectedValue = fileSelector.FileName;
+					fileSelector.Accessible.LabelWidget = label;
 					break;
 				}
 

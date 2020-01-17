@@ -1,8 +1,28 @@
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 //
-// Based on FactoryExtensionsV3 and FactoryExtensionsVS
-// From: https://github.com/NuGet/NuGet.Client/
+// MonoDevelopNuGetResourceProviderFactory.cs
+//
+// Author:
+//       Matt Ward <matt.ward@microsoft.com>
+//
+// Copyright (c) 2019 Microsoft Corporation
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
@@ -12,19 +32,25 @@ using NuGet.Protocol.LocalRepositories;
 
 namespace MonoDevelop.PackageManagement
 {
-	static class RepositoryProviderFactoryExtensions
+	class MonoDevelopNuGetResourceProviderFactory : Repository.ProviderFactory
 	{
-		public static IEnumerable<Lazy<INuGetResourceProvider>> GetMonoDevelop (this Repository.ProviderFactory factory)
+		static MonoDevelopNuGetResourceProviderFactory ()
 		{
-			foreach (Lazy<INuGetResourceProvider> item in Repository.Provider.GetMonoDevelopCoreV3 ()) {
-				yield return item;
-			}
+			// Some parts of NuGet create new SourceRepository instances which bypasses the custom
+			// MonoDevelopHttpHandlerResourceV3Provider used when SourceRepository instances are created by the NuGet
+			// addin itself. To prevent this the default provider factory is replaced with a custom provider factory.
+			Repository.Provider = new MonoDevelopNuGetResourceProviderFactory ();
+		}
+
+		public static IEnumerable<Lazy<INuGetResourceProvider>> GetProviders ()
+		{
+			return Repository.Provider.GetCoreV3 ();
 		}
 
 		/// <summary>
 		/// Includes a custom HttpHandlerResourceV3Provider which can use native HttpMessageHandlers defined by MonoDevelop.
 		/// </summary>
-		public static IEnumerable<Lazy<INuGetResourceProvider>> GetMonoDevelopCoreV3 (this Repository.ProviderFactory factory)
+		public override IEnumerable<Lazy<INuGetResourceProvider>> GetCoreV3 ()
 		{
 			yield return new Lazy<INuGetResourceProvider> (() => new FeedTypeResourceProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new DependencyInfoResourceV3Provider ());
@@ -33,7 +59,9 @@ namespace MonoDevelop.PackageManagement
 			yield return new Lazy<INuGetResourceProvider> (() => new MetadataResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new RawSearchResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new RegistrationResourceV3Provider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new SymbolPackageUpdateResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new ReportAbuseResourceV3Provider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new PackageDetailsUriResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new ServiceIndexResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new ODataServiceDocumentResourceV2Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new MonoDevelopHttpHandlerResourceV3Provider ());
@@ -58,7 +86,8 @@ namespace MonoDevelop.PackageManagement
 			yield return new Lazy<INuGetResourceProvider> (() => new PackageMetadataResourceV3Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new AutoCompleteResourceV2FeedProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new AutoCompleteResourceV3Provider ());
-			yield return new Lazy<INuGetResourceProvider> (() => new PluginResourceProvider ());
+			yield return new Lazy<INuGetResourceProvider> (() => new PluginResourceProvider (PackageManagementServices.PluginManager));
+			yield return new Lazy<INuGetResourceProvider> (() => new RepositorySignatureResourceProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceUnzippedProvider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceV2Provider ());
 			yield return new Lazy<INuGetResourceProvider> (() => new FindLocalPackagesResourceV3Provider ());

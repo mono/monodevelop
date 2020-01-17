@@ -997,7 +997,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		/// Used by tests to validate that project has been saved.
 		/// </summary>
 		/// <value>The task that can be awaited to validate saving has finished.</value>
-		internal Task ProjectSaveTask { get; private set; } = Task.FromResult<object> (null);
+		internal Task ProjectSaveTask { get; private set; } = Task.CompletedTask;
 
 		internal override bool TryApplyChanges (Solution newSolution, IProgressTracker progressTracker)
 		{

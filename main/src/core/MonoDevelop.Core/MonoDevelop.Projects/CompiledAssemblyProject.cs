@@ -201,7 +201,7 @@ namespace MonoDevelop.Projects
 		internal protected override Task OnSave (ProgressMonitor monitor)
 		{
 			// Compiled assemblies can't be saved
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 	}
 	

@@ -399,7 +399,7 @@ namespace MonoDevelop.Projects
 		
 		public Task Execute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (false);
+			return Task.CompletedTask;
 		}
 
 		public bool CanExecute (ExecutionContext context, ConfigurationSelector configuration)
@@ -409,7 +409,7 @@ namespace MonoDevelop.Projects
 
 		public Task PrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (false);
+			return Task.CompletedTask;
 		}
 
 		// note: although executing folders isn't supported, this may still get called when

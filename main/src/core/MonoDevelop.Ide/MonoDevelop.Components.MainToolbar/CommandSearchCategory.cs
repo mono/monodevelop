@@ -64,18 +64,8 @@ namespace MonoDevelop.Components.MainToolbar
 			sortOrder = CommandCategoryOrder;
 		}
 
-		readonly string[] validTags = { "cmd", "command", "c" };
-
-		public override string [] Tags {
-			get {
-				return validTags;
-			}
-		}
-
-		public override bool IsValidTag (string tag)
-		{
-			return validTags.Any (t => t == tag);
-		}
+		public override string [] Tags { get; } = { "cmd", "command", "c" };
+		public override bool IsValidTag (string tag) => Array.IndexOf (Tags, tag) >= 0;
 
 		public override Task GetResults (ISearchResultCallback searchResultCallback, SearchPopupSearchPattern pattern, CancellationToken token)
 		{

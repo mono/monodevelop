@@ -26,7 +26,7 @@
 using System;
 using System.Xml.Serialization;
 using System.IO;
-using ICSharpCode.NRefactory.Utils;
+using Newtonsoft.Json;
 
 namespace MonoDevelop.UnitTesting
 {
@@ -54,7 +54,7 @@ namespace MonoDevelop.UnitTesting
 		const string binaryExtension = ".test-result";
 		const string xmlExtension = ".xml";
 
-		FastSerializer fastSerializer = new FastSerializer();
+		JsonSerializer jsonSerializer = JsonSerializer.CreateDefault ();
 		XmlSerializer xmlSerializer;
 
 		XmlSerializer XmlSerializer {
@@ -72,9 +72,10 @@ namespace MonoDevelop.UnitTesting
 			// no need for xml serialization because next time it will be
 			// deserialized from the binary format
 			string binaryFilePath = GetBinaryFilePath (xmlFilePath);
-			using (var stream = File.OpenWrite(binaryFilePath)) {
-				fastSerializer.Serialize (stream, testRecord);
-			}
+			using var stream = File.OpenWrite (binaryFilePath);
+			using var writer = new StreamWriter (stream);
+
+			jsonSerializer.Serialize (writer, testRecord);
 		}
 
 		public TestRecord Deserialize (string xmlFilePath)
@@ -83,9 +84,9 @@ namespace MonoDevelop.UnitTesting
 
 			// deserialize from the binary format if the file exists
 			if (File.Exists(binaryFilePath)) {
-				using (var stream = File.OpenRead (binaryFilePath)) {
-					return (TestRecord) fastSerializer.Deserialize (stream);
-				}
+				using var stream = File.OpenRead (binaryFilePath);
+				using var reader = new JsonTextReader (new StreamReader (stream));
+				return jsonSerializer.Deserialize<TestRecord> (reader);
 			}
 
 			// deserialize from xml if the file exists

@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Navigation
 		Task FindSymbols (ISymbol sym, CancellationTokenSource cancellationTokenSource)
 		{
 			if (sym == null)
-				return Task.FromResult (0);
+				return Task.CompletedTask;
 			return Task.Run (delegate {
 				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);
 				using (var monitor = searchMonitor.WithCancellationSource (cancellationTokenSource)) {

@@ -230,19 +230,20 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 						break;
 					
 					projects.Add (project);
-					
-					//remove the files and link files in the directory
-					foreach (var f in files)
-						project.Files.Remove (f);
-					
-					// also remove the folder's own ProjectFile, if it exists 
-					// FIXME: it probably was already in the files list
-					if (folderPf != null)
-						project.Files.Remove (folderPf);
 				}
-				
+				// Delete folder before removing it and its files from the project to avoid Remove items being
+				// added to the project if the project is currently being saved in memory or to disk.
 				DeleteFolder (folder);
-				
+
+				//remove the files and link files in the directory
+				foreach (var f in files)
+					project.Files.Remove (f);
+
+				// also remove the folder's own ProjectFile, if it exists
+				// FIXME: it probably was already in the files list
+				if (folderPf != null)
+					project.Files.Remove (folderPf);
+
 				if (isProjectFolder && folder.Path.ParentDirectory != project.BaseDirectory) {
 					// If it's the last item in the parent folder, make sure we keep a reference to the parent 
 					// folder, so it is not deleted from the tree.
