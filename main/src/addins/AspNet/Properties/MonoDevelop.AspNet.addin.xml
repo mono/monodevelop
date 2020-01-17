@@ -198,7 +198,7 @@
 	</Extension>
 	
 	<Extension path="/MonoDevelop/TextEditor/LegacyEditorSupport">
-        <LegacyEditorSupport id="aspx" extensions=".aspx,.ashx,.asmx,.ascx,.master,.asax,.cshtml,.html,.htm" />
+        <LegacyEditorSupport id="aspx" extensions=".aspx,.ashx,.asmx,.ascx,.master,.asax" />
     </Extension>
 	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
