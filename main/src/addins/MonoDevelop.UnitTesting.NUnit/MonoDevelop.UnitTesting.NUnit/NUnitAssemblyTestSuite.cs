@@ -268,16 +268,23 @@ namespace MonoDevelop.UnitTesting.NUnit
 		{
 			if (ti.Tests == null)
 				return;
+
 			foreach (NunitTestInfo test in ti.Tests) {
-				UnitTest newTest;
-				if (test.Tests != null)
-					newTest = new NUnitTestSuite (this, test);
-				else
-					newTest = new NUnitTestCase (this, test, test.PathName);
+				var newTest = new NUnitTestSuite (this, test);
 				newTest.FixtureTypeName = test.FixtureTypeName;
 				newTest.FixtureTypeNamespace = test.FixtureTypeNamespace;
-				Tests.Add (newTest);
 
+				newTest.ChildStatus (test, out bool isNamespace, out bool hasClassAsChild);
+
+				if (!isNamespace || hasClassAsChild) {
+					Tests.Add (newTest);
+				}
+
+				var forceLoad = newTest.Tests;
+				foreach (NUnitTestSuite child in newTest.ChildNamespaces) {
+					child.Title = newTest.Title + "." + child.Title;
+					Tests.Add (child);
+				}
 			}
 			oldList = new UnitTest [Tests.Count];
 			Tests.CopyTo (oldList, 0);
