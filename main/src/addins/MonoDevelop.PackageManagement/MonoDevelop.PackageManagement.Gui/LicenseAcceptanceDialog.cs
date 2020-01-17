@@ -237,8 +237,11 @@ namespace MonoDevelop.PackageManagement
 		static void ShowFileDialog (LinkLabel label)
 		{
 			var licenseFileText = (LicenseFileText)label.Tag;
-			var dialog = new LicenseFileDialog (licenseFileText);
-			dialog.Run (label.ParentWindow);
+			Xwt.Toolkit.NativeEngine.Invoke (delegate {
+				using (var dialog = new LicenseFileDialog (licenseFileText)) {
+					dialog.Run (label.ParentWindow);
+				}
+			});
 		}
 	}
 }

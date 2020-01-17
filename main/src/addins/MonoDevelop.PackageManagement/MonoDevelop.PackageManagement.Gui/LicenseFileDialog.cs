@@ -54,6 +54,7 @@ namespace MonoDevelop.PackageManagement
 			Title = licenseFileText.LicenseHeader;
 
 			var scrollView = new ScrollView ();
+			scrollView.HorizontalScrollPolicy = ScrollPolicy.Never;
 			Content = scrollView;
 
 			textView = new RichTextView ();

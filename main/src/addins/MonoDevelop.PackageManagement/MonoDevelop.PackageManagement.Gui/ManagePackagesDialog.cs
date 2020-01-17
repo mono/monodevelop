@@ -1306,8 +1306,11 @@ namespace MonoDevelop.PackageManagement
 			var licenseFileText = packageLicenseLink.Tag as LicenseFileText;
 			if (licenseFileText != null) {
 				e.SetHandled ();
-				var dialog = new LicenseFileDialog (licenseFileText);
-				dialog.Run (this);
+				Toolkit.NativeEngine.Invoke (delegate {
+					using (var dialog = new LicenseFileDialog (licenseFileText)) {
+						dialog.Run (this);
+					}
+				});
 			}
 		}
 
