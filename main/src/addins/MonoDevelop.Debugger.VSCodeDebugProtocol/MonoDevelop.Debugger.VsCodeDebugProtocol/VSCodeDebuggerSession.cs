@@ -66,12 +66,21 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnContinue ()
 		{
-			protocolClient.SendRequestSync (new ContinueRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new ContinueRequest (currentThreadId));
+			} catch (Exception ex) {
+				if (!HandleException (ex))
+					OnDebuggerOutput (true, ex.ToString ());
+			}
 		}
 
 		protected override void OnDetach ()
 		{
-			protocolClient.SendRequestSync (new DisconnectRequest ());
+			try {
+				protocolClient.SendRequestSync (new DisconnectRequest ());
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] Error detaching debugger session", ex);
+			}
 		}
 
 		protected override void OnEnableBreakEvent (BreakEventInfo eventInfo, bool enable)
@@ -85,13 +94,18 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			try {
 				HasExited = true;
 				protocolClient.SendRequestSync (new DisconnectRequest ());
-			} catch {
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] Error closing debugger session", ex);
 			}
 		}
 
 		protected override void OnFinish ()
 		{
-			protocolClient.SendRequestSync (new StepOutRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new StepOutRequest (currentThreadId));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepOut request failed", ex);
+			}
 		}
 
 		List<ProcessInfo> processInfo = new List<ProcessInfo>();
@@ -107,14 +121,22 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override ThreadInfo [] OnGetThreads (long processId)
 		{
-			var threadsResponse = protocolClient.SendRequestSync (new ThreadsRequest ());
-			var threads = new ThreadInfo [threadsResponse.Threads.Count];
-			for (int i = 0; i < threads.Length; i++) {
-				threads [i] = new ThreadInfo (processId,
-											  threadsResponse.Threads [i].Id,
-											  threadsResponse.Threads [i].Name,
-											  null);
+			ThreadsResponse response;
+
+			try {
+				response = protocolClient.SendRequestSync (new ThreadsRequest ());
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] Error getting threads", ex);
+				return new ThreadInfo[0];
 			}
+
+			var threads = new ThreadInfo[response.Threads.Count];
+			for (int i = 0; i < threads.Length; i++) {
+				var thread = response.Threads[i];
+
+				threads[i] = new ThreadInfo (processId, thread.Id, thread.Name, null);
+			}
+
 			return threads;
 		}
 
@@ -126,8 +148,15 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 		{
 			var source = new Source { Name = Path.GetFileName (fileName), Path = fileName };
 			var request = new GotoTargetsRequest (source, line) { Column = column };
-			var response = protocolClient.SendRequestSync (request);
+			GotoTargetsResponse response;
 			GotoTarget target = null;
+
+			try {
+				response = protocolClient.SendRequestSync (request);
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] Requesting target locations failed", ex);
+				throw new NotSupportedException (ex.Message);
+			}
 
 			foreach (var location in response.Targets) {
 				if (location.Line <= line && location.EndLine >= line && location.Column <= column && location.EndColumn >= column) {
@@ -143,9 +172,15 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			}
 
 			if (target == null)
-				throw new NotImplementedException ();
+				throw new NotSupportedException ();
 
-			protocolClient.SendRequestSync (new GotoRequest ((int) threadId, target.Id));
+			try {
+				protocolClient.SendRequestSync (new GotoRequest ((int) threadId, target.Id));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogMessage ("[VSCodeDebugger] Setting next statement failed", ex);
+				throw new NotSupportedException (ex.Message);
+			}
+
 			RaiseStopEvent ();
 		}
 
@@ -194,12 +229,20 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnNextInstruction ()
 		{
-			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] NextInstruction request failed", ex);
+			}
 		}
 
 		protected override void OnNextLine ()
 		{
-			protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new NextRequest (currentThreadId));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepOver request failed", ex);
+			}
 		}
 
 		protected override void OnRemoveBreakEvent (BreakEventInfo eventInfo)
@@ -216,7 +259,8 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 					HasExited = true;
 					protocolClient.RequestReceived -= OnDebugAdaptorRequestReceived;
 					protocolClient.Stop ();
-				} catch {
+				} catch (Exception ex) {
+					DebuggerLoggingService.LogError ("[VSCodeDebugger] Stop request failed", ex);
 				}
 				protocolClient = null;
 			}
@@ -575,12 +619,20 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 
 		protected override void OnStepInstruction ()
 		{
-			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepInstruction request failed", ex);
+			}
 		}
 
 		protected override void OnStepLine ()
 		{
-			protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
+			try {
+				protocolClient.SendRequestSync (new StepInRequest (currentThreadId));
+			} catch (Exception ex) {
+				DebuggerLoggingService.LogError ("[VSCodeDebugger] StepIn request failed", ex);
+			}
 		}
 
 		protected override void OnStop ()
