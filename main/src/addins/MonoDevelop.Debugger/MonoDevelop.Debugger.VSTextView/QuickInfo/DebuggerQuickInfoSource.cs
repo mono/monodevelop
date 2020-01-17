@@ -135,7 +135,7 @@ namespace MonoDevelop.Debugger.VSTextView.QuickInfo
 				if (cancellationToken.IsCancellationRequested)
 					return;
 
-				if (val == null || val.IsUnknown || val.IsNotSupported)
+				if (val == null || val.IsUnknown || val.IsNotSupported || val.IsError)
 					return;
 
 				timer.Success = true;
