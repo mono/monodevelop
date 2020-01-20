@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop 2.4.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-26 12:38:03+0100\n"
+"POT-Creation-Date: 2020-01-20 11:44:29+0100\n"
 "PO-Revision-Date: 2016-04-17 10:43+0300\n"
 "Last-Translator: Olexandr Pylypchuk <pilipchukap@rambler.ru>\n"
 "Language-Team: Ukrainian <kde-i18n-doc@kde.org>\n"
@@ -329,7 +329,7 @@ msgstr "встановлення"
 msgid "(keyword)"
 msgstr "helpKeyword"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1038
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1088
 msgid "(latest stable)"
 msgstr ""
 
@@ -468,7 +468,7 @@ msgstr "Портативна підмножина .NET"
 msgid ".NET Core is not installed"
 msgstr "Фреймворк '{0}' не установлено"
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:201
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:202
 msgid ""
 ".NET Core {0} SDK is required to build this application, and is not "
 "installed. Install the latest update to the .NET Core {0} SDK by visiting {1}"
@@ -481,7 +481,7 @@ msgid ""
 "visiting {1}"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:188
 msgid ""
 ".NET Core {0}.{1} SDK version {2} is not compatible with this version of "
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
@@ -569,7 +569,7 @@ msgstr "Двійковий ресурс .NET"
 msgid ".NET program"
 msgstr "Програма .NET"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:235
 msgid ".Net A_ssembly"
 msgstr "З_бірка .NET"
 
@@ -1019,8 +1019,8 @@ msgstr "<b>_Замінити джерельним файлом</b>"
 msgid "<b>{0}</b>"
 msgstr "<b>Id</b>"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1102
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:304
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1117
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:333
 msgid "<b>{0}</b> has been thrown"
 msgstr "Було кинуто <b>{0}</b>"
 
@@ -1117,7 +1117,7 @@ msgstr "Застостунок для створення користуваць�
 msgid "A P2P program"
 msgstr "Клієнт для пірингових мереж"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
 msgid "A Project with that name is already in your Project Space"
 msgstr "Проект з такою назвою проекту вже є у вашому просторі проектів"
 
@@ -1490,7 +1490,7 @@ msgstr "Розваги"
 msgid "A simulation game"
 msgstr "Гра-симулятор"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:756
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:786
 msgid "A solution with that filename is already in your workspace"
 msgstr "Рішення з такою назвою файлу вже є у вашому робочому просторі"
 
@@ -1829,7 +1829,7 @@ msgid "Abort Update"
 msgstr "Припинити оновлення"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:639
+#: ../src/addins/MacPlatform/MacPlatform.cs:652
 msgid "About {0}"
 msgstr "Про {0}"
 
@@ -2123,7 +2123,7 @@ msgstr "Додати елементи..."
 msgid "Add New Repository"
 msgstr "Додати нове сховище"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:54
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:53
 #, fuzzy
 msgid "Add New Scaffolding"
 msgstr "Додати нове _рішення..."
@@ -2141,9 +2141,9 @@ msgstr "Додати до проекту пакунки NuGet"
 msgid "Add Open"
 msgstr "Додати джерело"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:198
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:927
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:225
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:977
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:472
 #, fuzzy
 msgid "Add Package"
 msgstr "Додати пакунок"
@@ -2203,7 +2203,7 @@ msgstr "_Додати файли з теки..."
 msgid "Add View..."
 msgstr "Додати представлення..."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:964
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:972
 #, fuzzy
 msgid "Add Watch"
 msgstr "Додати спостереження"
@@ -2314,8 +2314,8 @@ msgid "Add files"
 msgstr "Додати файли"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:304
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:68
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:128
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:86
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:224
 #, fuzzy
 msgid "Add item to watch"
 msgstr "Додати компоненти на палітру елементів керування"
@@ -2329,7 +2329,7 @@ msgstr "Додати компоненти на палітру елементів
 msgid "Add method not found in {0}"
 msgstr "Файл не знайдено {0}"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:229
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:355
 #, fuzzy
 msgid "Add new expression"
 msgstr "Трасувати вираз"
@@ -3045,7 +3045,7 @@ msgid "Application to record audio/video files"
 msgstr "Застосунок для запису аудіо- або відеофайлів"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:803
+#: ../src/addins/MacPlatform/MacPlatform.cs:816
 msgid "ApplicationIcon"
 msgstr "ПіктограмаЗастосунку"
 
@@ -3364,7 +3364,7 @@ msgid "Assemblies"
 msgstr "Збірки"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:98
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:85
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:64
 msgid "Assembly"
@@ -3446,7 +3446,7 @@ msgstr "Не знайдена збірка для фреймворку {0} (в {
 msgid "Assembly:\t{0}"
 msgstr "Збірка:\t{0}"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:402
 msgid "Assistive Technology Detected"
 msgstr ""
 
@@ -3506,7 +3506,7 @@ msgstr "Область аутентифікації:"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:190
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:126
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:295
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:306
 msgid "Author"
 msgstr "Автор"
 
@@ -3732,7 +3732,7 @@ msgstr ""
 msgid "Baltic"
 msgstr "Прибалтійське"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:195
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:204
 msgid "Base"
 msgstr ""
 
@@ -3897,7 +3897,7 @@ msgid "Breakpoints"
 msgstr "Контрольні точки"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/BaseFileEntry.cs:54
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:104
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:118
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Gui/DotNetCoreSdkLocationWidget.UI.cs:90
 #: ../external/xwt/Xwt/Xwt/FileSelector.cs:181
 #: ../external/xwt/Xwt/Xwt/FolderSelector.cs:151
@@ -3980,7 +3980,7 @@ msgstr "Побудувати всі проекти у всіх рішеннях"
 msgid "Build canceled."
 msgstr "Побудову скасовано."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2035
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2045
 msgid "Build complete -- "
 msgstr "Побудову завершено -- "
 
@@ -4344,8 +4344,8 @@ msgstr "Неможливо зберегти файл з поточною код�
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:159
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:67
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:123
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:465
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:458
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:466
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugApplicationDialog.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/NoSourceView.cs:132
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:192
@@ -4359,7 +4359,7 @@ msgstr "Скасувати"
 msgid "Cancel closing the workspace"
 msgstr "Закрити робочий простір"
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1213
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1219
 #, fuzzy
 msgid "Cancel operation"
 msgstr "Операції рефакторингу"
@@ -4373,7 +4373,7 @@ msgstr "Програми для налаштувань"
 msgid "Cancel running test"
 msgstr "Скасувати тест, що виконується"
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:456
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
 #, fuzzy
 msgid "Cancel the current operation"
 msgstr "Операції рефакторингу"
@@ -4401,7 +4401,7 @@ msgstr "Скасовано, оскільки генератор запущено
 msgid "Cancelling operation..."
 msgstr "Операції рефакторингу"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1969
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1979
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Не вдалось створити теку {0}, оскільки вже існує файл з такою ж назвою."
@@ -4577,7 +4577,7 @@ msgstr ""
 msgid "Changes made in those files will be overwritten by {0}."
 msgstr "Зміни, зроблені у цих файлах, будуть перезаписані {0}."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:166
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:163
 msgid "Changes successfully stashed"
 msgstr "Зміни успішно сховано"
 
@@ -5111,6 +5111,10 @@ msgstr "Вилучити елемент з проекту"
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr "Копіювати збірку за посиланням у вихідну теку."
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:976
+msgid "Class"
+msgstr "Клас"
+
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:715
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:730
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:743
@@ -5167,7 +5171,7 @@ msgstr "Очистити всі проекти всіх рішень"
 msgid "Clean canceled."
 msgstr "Очищення не вдалося."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2411
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2421
 msgid "Clean complete"
 msgstr "Очищення завершено."
 
@@ -5407,7 +5411,7 @@ msgstr "Завантаження..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:459
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:479
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 msgid "Close"
 msgstr "Закрити"
@@ -5422,7 +5426,7 @@ msgstr "Закрити всі файли"
 msgid "Close All Files"
 msgstr "Закрити всі файли"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:655
 msgid "Close MonoDevelop"
 msgstr "Закрити MonoDevelop"
 
@@ -5773,6 +5777,16 @@ msgstr "Подавання {0}..."
 msgid "Compact Layout"
 msgstr "_Створити конфігурацію"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:133
+#, fuzzy
+msgid "Compared Revision"
+msgstr "_Скопіювати ревізію"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#, fuzzy
+msgid "Comparing Revision Editor"
+msgstr "_Скопіювати ревізію"
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:466
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:472
 msgid "Compatibility"
@@ -5858,9 +5872,9 @@ msgstr "Вираз умови:"
 msgid "Configuration"
 msgstr "Конфігурація"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1991
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2375
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2425
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2385
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2435
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2009
 msgid "Configuration '{0}' not found in project '{1}'"
 msgstr "Конфігурацію {0} не знайдено у проекті {1}"
@@ -5898,7 +5912,7 @@ msgstr "Конфігурації"
 msgid "Configure"
 msgstr "Конфігурувати"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:56
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:57
 msgid "Configure Sources..."
 msgstr "Конфігурувати джерела..."
 
@@ -6022,12 +6036,12 @@ msgstr ""
 msgid "Console input not supported"
 msgstr "Консольне введення не підтримується"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:130
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:137
 #, fuzzy
 msgid "Consolidate"
 msgstr "Консольна програма"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:937
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:987
 #, fuzzy
 msgid "Consolidate Package"
 msgid_plural "Consolidate Packages"
@@ -6051,12 +6065,12 @@ msgstr[0] "Створити нові пакети для проекту"
 msgstr[1] "Створити нові пакети для проекту"
 msgstr[2] "Створити нові пакети для проекту"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:832
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:880
 #, fuzzy
 msgid "Consolidating {0} packages..."
 msgstr "Додавання {0} пакунків..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:824
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:872
 #, fuzzy
 msgid "Consolidating {0}..."
 msgstr "Перевірка XML..."
@@ -6095,7 +6109,7 @@ msgstr ""
 msgid "Continue"
 msgstr "Продовжити"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:659
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
 msgid "Continue Anyway"
 msgstr "Все одно продовжити"
 
@@ -6164,7 +6178,7 @@ msgstr "Завжди заміняти кінці рядків"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:690
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:279
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:357
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:970
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:978
 #: ../external/xwt/Xwt/Xwt/Command.cs:69
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:138
 msgid "Copy"
@@ -6247,12 +6261,12 @@ msgstr "Не вдалось перевірити сумісність пакун
 msgid "Could not close solution '{0}'."
 msgstr "Не вдалось закрити рішення {0}."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:834
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:882
 #, fuzzy
 msgid "Could not consolidate packages."
 msgstr "Не вдалось оновити пакунки."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:826
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:874
 #, fuzzy
 msgid "Could not consolidate {0}."
 msgstr "Не вдалось оновити {0}."
@@ -6261,7 +6275,7 @@ msgstr "Не вдалось оновити {0}."
 msgid "Could not create directory '{0}'."
 msgstr "Не вдалось створити теку '{0}'."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:778
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:808
 msgid "Could not create directory {0}. File already exists."
 msgstr "Не вдалось створити теку {0}. Файл вже існує."
 
@@ -6269,7 +6283,7 @@ msgstr "Не вдалось створити теку {0}. Файл вже іс�
 msgid "Could not create temporary directory."
 msgstr "Не вдалось створити тимчасову теку."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2182
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2192
 msgid "Could not find support file '{0}'."
 msgstr "Не знайдено файлу підтримки '{0}'."
 
@@ -6334,7 +6348,7 @@ msgid "Could not load solution item: {0}"
 msgstr "Не вдалось завантажити компонент рішення: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:377
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:375
 msgid "Could not load solution: {0}"
 msgstr "Не вдалось завантажити рішення: {0}"
 
@@ -6374,7 +6388,7 @@ msgstr "Не знайдено файлу підтримки '{0}'."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:837
 #, fuzzy
 msgid "Could not remove packages."
 msgstr "Не вдалось відновити пакунки."
@@ -6426,7 +6440,7 @@ msgstr "Не вдалось оновити файл '{0}'"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:813
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:861
 msgid "Could not update packages."
 msgstr "Не вдалось оновити пакунки."
 
@@ -7141,6 +7155,11 @@ msgstr "Створюється сценарій конфігурації"
 msgid "Creating configure.ac"
 msgstr "Створюється configure.ac"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:729
+#, fuzzy
+msgid "Creating project {0}"
+msgstr "Очищення проекту"
+
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
 msgid "Creating rules.make"
 msgstr "Створюється rules.make"
@@ -7202,7 +7221,7 @@ msgstr "Поточний проект"
 msgid "Current Project"
 msgstr "Поточний проект"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:393
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:410
 #, fuzzy
 msgid "Current Version:"
 msgstr "Поточне рішення"
@@ -7291,8 +7310,8 @@ msgstr "Власний засіб"
 msgid "Custom Tool Namespace"
 msgstr "Простір назв власного засобу"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1438
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1451
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1448
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1461
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:676
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:690
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:763
@@ -7338,11 +7357,11 @@ msgstr "Поточний проект"
 msgid "Custom project started building"
 msgstr "Не вдалось побудувати джерельний проект."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:770
 msgid "CustomizerAssemblyPath"
 msgstr "CustomizerAssemblyPath"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:777
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:775
 msgid "CustomizerType"
 msgstr "CustomizerType"
 
@@ -7681,7 +7700,7 @@ msgstr "делегат ({0})"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:791
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:31
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:528
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:979
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:987
 #: ../external/xwt/Xwt/Xwt/Command.cs:65
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:153
 msgid "Delete"
@@ -7811,7 +7830,7 @@ msgstr "Видалення       {0}"
 msgid "Deleting Files..."
 msgstr "Видалення файлів..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:379
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:39
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:66
@@ -8056,7 +8075,7 @@ msgstr "Префікс теки:"
 msgid "Directory structure:"
 msgstr "Структура тек:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:800
 msgid ""
 "Directory {0} already exists.\n"
 "Do you want to continue creating the project?"
@@ -8433,8 +8452,8 @@ msgstr "Обсяг звантаження"
 msgid "Downloading {0}"
 msgstr "Побудова {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:622
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:665
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
 #, fuzzy
 msgid "Downloads"
 msgstr "Обсяг звантаження"
@@ -9475,7 +9494,7 @@ msgstr "_Лише помилки"
 msgid "Error Message"
 msgstr "Повідомлення"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2195
 msgid "Error copying support file '{0}'."
 msgstr "Помилка при копіюванні файлу підтримки '{0}'."
 
@@ -9488,7 +9507,7 @@ msgstr "Помилка створення схеми XML."
 msgid "Error creating file"
 msgstr "Помилка читання файлу '{0}'."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2228
 msgid "Error deleting support file '{0}'."
 msgstr "Помилка при видаленні файлу підтримки '{0}'."
 
@@ -9571,7 +9590,7 @@ msgstr ""
 "Помилка при отриманні тексту ревізії {0}:\n"
 "{1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:171
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
@@ -9579,7 +9598,7 @@ msgstr ""
 "Помилка при отриманні основного тексту {0}:\n"
 "{1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:291
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:300
 msgid ""
 "Error while getting the text of revision {0}:\n"
 "{1}"
@@ -9693,8 +9712,8 @@ msgid "Evaluating..."
 msgstr "Обчислення..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:845
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:152
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:351
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:153
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:354
 #, fuzzy
 msgid "Evaluating…"
 msgstr "Розрахунок"
@@ -9733,7 +9752,7 @@ msgstr "Щогодини"
 msgid "Every month"
 msgstr "Щомісяця"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:363
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:371
 msgid "Exception Caught"
 msgstr "Трапився виняток"
 
@@ -10058,7 +10077,7 @@ msgstr "Керування сховищем додатків"
 msgid "Extension packages"
 msgstr "Редагувати пакети"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:560
+#: ../src/addins/MacPlatform/MacPlatform.cs:573
 #, fuzzy
 msgid "Extensions..."
 msgstr "Винятки..."
@@ -10293,6 +10312,10 @@ msgstr "Пошук члена.."
 #, fuzzy
 msgid "Fetching remote..."
 msgstr "Пошук члена.."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:981
+msgid "Field"
+msgstr "Поле"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:72
 msgid "Field name"
@@ -10549,7 +10572,7 @@ msgid ""
 msgstr "Файл {0} вже існує. Перезаписати наявний файл?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:519
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:672
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:674
 msgid "File {0} already exists. Overwrite?"
 msgstr "Файл {0} вже існує. Перезаписати?"
 
@@ -11877,7 +11900,7 @@ msgstr "Приховати подробиці"
 msgid "Hide other applications' windows"
 msgstr "Приховати вікна інших застосунків"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:644
+#: ../src/addins/MacPlatform/MacPlatform.cs:657
 msgid "Hide {0}"
 msgstr "Приховати {0}"
 
@@ -11947,6 +11970,11 @@ msgstr "Html"
 msgid "Hue"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:285
+msgid "ID"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:190
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:188
 msgid "ID:"
@@ -12003,8 +12031,6 @@ msgid "Icon:"
 msgstr "Піктограма:"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:108
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:276
 msgid "Id"
 msgstr "Ід"
 
@@ -12169,7 +12195,7 @@ msgstr "В розташуванні використано недопустим�
 msgid "Illegal characters used in project location."
 msgstr "В розташуванні проекту використано недопустимі символи."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:762
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:792
 msgid ""
 "Illegal project name.\n"
 "Name cannot contain a language keyword."
@@ -12538,7 +12564,7 @@ msgstr "Копіювати інформацію"
 msgid "Information Message"
 msgstr "Повідомлення"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:609
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
 msgid "Information about the Instrumentation Service"
 msgstr ""
 
@@ -12575,6 +12601,11 @@ msgid ""
 msgstr ""
 "Лінійний коментар, вставлений у регулярний вираз. \n"
 "Коментар завершується першою закритою дужкою."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:530
+#, fuzzy
+msgid "Inner Exceptions"
+msgstr "Винятки"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/Gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:223
 msgid "Input:"
@@ -12823,7 +12854,7 @@ msgstr "Встановлення скасовано"
 msgid "Installation failed"
 msgstr "Встановлення не вдалось"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:125
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:136
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:117
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:259
@@ -12849,7 +12880,7 @@ msgstr "Встановити додатки"
 msgid "Installing…"
 msgstr "встановлення"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:605
 #, fuzzy
 msgid "Instrumentation"
 msgstr "Моніторинг інструментарію"
@@ -12858,7 +12889,7 @@ msgstr "Моніторинг інструментарію"
 msgid "Instrumentation Monitor"
 msgstr "Моніторинг інструментарію"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:608
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:606
 #, fuzzy
 msgid "Instrumentation service enabled"
 msgstr "Моніторинг інструментарію"
@@ -12885,6 +12916,7 @@ msgid "Interface {0}. {1}"
 msgstr "інтерфейс ({0})"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:98
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:989
 msgid "Internal"
 msgstr "Внутрішні"
 
@@ -13411,7 +13443,7 @@ msgid "Library name must not exceed 100 characters."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:80
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
 msgid "License"
 msgstr "Ліцензія"
 
@@ -13479,6 +13511,11 @@ msgstr "Список змін цього рефакторингу:"
 msgid "List of programs to open with"
 msgstr "Список програм, за допомогою яких можна відкрити файл"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:969
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:978
+msgid "Literal"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:103
 msgid "Literature software"
 msgstr "Література"
@@ -13532,8 +13569,8 @@ msgstr "Завантаження даних..."
 msgid "Loading data…"
 msgstr "Завантаження даних..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:296
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:193
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:202
 msgid "Loading package list..."
 msgstr "Завантаження списку пакунків..."
 
@@ -13568,20 +13605,20 @@ msgstr "Завантаження додатку {0}"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:287
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:73
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixMenuHandler.cs:48
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:639
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:653
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1272
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:767
 msgid "Loading..."
 msgstr "Завантаження..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:100
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:909
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/LoadingObjectValueNode.cs:33
 #, fuzzy
 msgid "Loading…"
 msgstr "Завантаження..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:194
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:203
 #, fuzzy
 msgid "Local"
 msgstr "Локальні змінні"
@@ -13911,12 +13948,12 @@ msgstr ""
 msgid "Manage Branches and Remotes"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:83
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:85
 #, fuzzy
 msgid "Manage NuGet Packages – Solution"
 msgstr "Оновити всі пакунки NuGet у рішенні"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:160
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:187
 #, fuzzy
 msgid "Manage NuGet Packages – {0}"
 msgstr "Керування пакунками"
@@ -14238,6 +14275,10 @@ msgstr "Регулярний вираз для повідомлень:"
 msgid "Metadata"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:977
+msgid "Method"
+msgstr "Метод"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:60
 #, fuzzy
 msgid "Method {0}. {1}"
@@ -14482,7 +14523,7 @@ msgstr ""
 "замість загальних операцій для проекту. Також ви можете зробити свої власні "
 "команди доступними у меню проекту або рішення."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:348
 msgid "MonoDevelop failed to start"
 msgstr "MonoDevelop не вдалось запуститися."
 
@@ -14501,11 +14542,11 @@ msgstr "Рішення MonoDevelop/MSBuild"
 msgid "More"
 msgstr "Більше"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:658
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:656
 msgid "More Information"
 msgstr "Більше інформації"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:667
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:681
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:170
 msgid "More information"
 msgstr "Більше інформації"
@@ -14808,6 +14849,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:510
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:979
 msgid "Namespace"
 msgstr "Простір назв"
 
@@ -14980,7 +15022,7 @@ msgstr "Нова група"
 msgid "New Group..."
 msgstr "Нова група..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:368
+#: ../src/addins/MacPlatform/MacPlatform.cs:373
 #, fuzzy
 msgid "New Instance"
 msgstr "Нова назва:"
@@ -15029,7 +15071,7 @@ msgstr "Нове завдання"
 msgid "New Tool"
 msgstr "Додати засіб"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:419
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:438
 #, fuzzy
 msgid "New Version:"
 msgstr "Версія:"
@@ -15165,7 +15207,7 @@ msgstr "_Наступний документ"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:400
+#: ../src/addins/MacPlatform/MacPlatform.cs:405
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 msgid "No"
@@ -15199,7 +15241,7 @@ msgstr "Нічого не вибрано"
 msgid "No applicable frameworks for this selection!"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:168
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:165
 msgid "No changes were available to stash"
 msgstr "Немає змін, доступних для ховання"
 
@@ -15265,7 +15307,7 @@ msgstr ""
 msgid "No matches"
 msgstr "Збігів немає"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:208
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:217
 msgid "No matching packages found."
 msgstr "Підхожих пакунків не знайдено."
 
@@ -15382,7 +15424,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:384
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -15523,6 +15565,16 @@ msgstr "Гаразд"
 msgid "O_pen Containing Folder"
 msgstr "Від_крити теку, що містить файл"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:270
+#, fuzzy
+msgid "Object Name"
+msgstr "Назва проекту:"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:194
+#, fuzzy
+msgid "Object Value"
+msgstr "Об'єкт для блокування"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:834
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:472
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:493
@@ -15637,6 +15689,16 @@ msgstr "Відкрити теку журналів"
 msgid "Open NuGet.Config file..."
 msgstr "Відкрити файл..."
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:95
+#, fuzzy
+msgid "Open Preview Visualizer"
+msgstr "Спостереження значень"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:980
+#, fuzzy
+msgid "Open Resource Folder"
+msgstr "Відкрити теку"
+
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
 #, fuzzy
 msgid "Open Service Details"
@@ -15654,6 +15716,11 @@ msgstr "Відкрити теку"
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:85
+#, fuzzy
+msgid "Open Value Visualizer"
+msgstr "Спостереження значень"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:197
@@ -15824,6 +15891,16 @@ msgstr ""
 msgid "Original (msgid):"
 msgstr "Оригінал (msgid):"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:119
+#, fuzzy
+msgid "Original Revision"
+msgstr "Оригінальний рядок"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:96
+#, fuzzy
+msgid "Original Revision Editor"
+msgstr "Оригінальний рядок"
+
 #: ../src/addins/MonoDevelop.Gettext/Gui/MonoDevelop.Gettext.POEditorWidget.cs:404
 msgid "Original plural (msgid_plural):"
 msgstr "Множина в оригіналі (msgid_plural):"
@@ -15991,7 +16068,7 @@ msgstr "Версія п_роекту:"
 msgid "Pack"
 msgstr "Пакет"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:300
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:97
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/PackageBuilder.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:43
@@ -16030,14 +16107,15 @@ msgid "Package Console"
 msgstr "Консоль пакунка"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:45
-msgid "Package Id."
+#, fuzzy
+msgid "Package ID."
 msgstr "Ідентифікатор пакунка."
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:818
 msgid "Package References"
 msgstr "Посилання на пакети"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:140
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:148
 #, fuzzy
 msgid "Package Search"
 msgstr "Подробиці пакета"
@@ -16082,6 +16160,11 @@ msgstr "Пакунки відновлено з попередженнями."
 msgid "Package retargeting required."
 msgstr "Необхідне перенацілення пакунка."
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:102
+#, fuzzy
+msgid "Package source"
+msgstr "Додати джерело пакунків"
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:149
 msgid "Package that provides this reference."
 msgstr "Пакунок, що надає це посилання."
@@ -16092,6 +16175,7 @@ msgstr "Версія пакунка."
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:453
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:117
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:190
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:25
 msgid "Packages"
 msgstr "Пакети"
@@ -16115,6 +16199,11 @@ msgid ""
 "installed in projects targeting multiple frameworks. The MSBuild targets and "
 "props files have been ignored."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:642
+#, fuzzy
+msgid "Packages loaded"
+msgstr "Пакети"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:160
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:170
@@ -16312,7 +16401,7 @@ msgstr "Призупинити програму"
 msgid "Performance Diagnostics"
 msgstr "Діагностичний"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2027
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2037
 msgid "Performing main compilation…"
 msgstr ""
 
@@ -16339,7 +16428,7 @@ msgstr "Закріпити панель виведення"
 msgid "Pin results pad"
 msgstr "Закріпити панель результатів"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:59
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:57
 #, fuzzy
 msgid "Pin to the editor"
 msgstr "Текстовий редактор"
@@ -16532,7 +16621,7 @@ msgstr "Політики для експорту:"
 msgid "Policies to set or replace:"
 msgstr "Політики для вмикання або заміни:"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:557
+#: ../src/addins/MacPlatform/MacPlatform.cs:570
 msgid "Policies..."
 msgstr "Власні політики..."
 
@@ -16730,7 +16819,7 @@ msgstr "Трасувати вираз"
 msgid "Preferences"
 msgstr "Уподобання"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:569
 msgid "Preferences..."
 msgstr "Уподобання..."
 
@@ -16783,7 +16872,7 @@ msgstr "Натисніть клавішу..."
 msgid "Press the key combination you want to assign to the accelerator..."
 msgstr "Натисніть сполучення клавіш, яке потрібно зв'язати з дією..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:644
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:654
 msgid "Press ‘{0}’ to search"
 msgstr "Для пошуку натисніть ‘{0}’"
 
@@ -16864,6 +16953,11 @@ msgstr "Пріоритет:"
 msgid "Privacy Statement"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:988
+#, fuzzy
+msgid "Private"
+msgstr "Приватний"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:300
 #, fuzzy
 msgid "Private Key Files"
@@ -16884,7 +16978,7 @@ msgstr "Приватний"
 msgid "Private sources only"
 msgstr "Лише приватні джерела"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:228
 msgid "Pro_jects"
 msgstr "П_роекти"
 
@@ -16948,10 +17042,10 @@ msgstr "Поступ"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:680
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:307
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:173
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:257
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:279
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:68
 msgid "Project"
@@ -17046,7 +17140,7 @@ msgstr "Назва проекту:"
 msgid "Project Options"
 msgstr "Властивості проекту"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
 #, fuzzy
 msgid "Project Page"
 msgstr "Пакети проекту"
@@ -17207,13 +17301,14 @@ msgstr "Проекти/Рішення"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:57
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:50
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:65
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:221
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:258
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:51
 msgid "Properties"
 msgstr "Властивості"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:975
 msgid "Property"
 msgstr "Властивість"
 
@@ -17236,6 +17331,10 @@ msgstr "властивість ({0})"
 #: ../src/addins/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.addin.xml:75
 msgid "Proportional time scale"
 msgstr "Пропорційне вимірювання часу"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:991
+msgid "Protected"
+msgstr "Захищені"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:116
 msgid "Protocol:"
@@ -17307,7 +17406,7 @@ msgstr ""
 msgid "Publish your app to a folder or a file share"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:310
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:322
 #, fuzzy
 msgid "Published"
 msgstr "Опу_блікувати..."
@@ -17455,7 +17554,7 @@ msgstr ""
 msgid "Quiet"
 msgstr "Тихий"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:251
 #, fuzzy
 msgid "Quit"
 msgstr "Ви_хід"
@@ -17637,7 +17736,7 @@ msgstr ""
 msgid "React.js and Redux"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:647
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:661
 msgid "Read More…"
 msgstr ""
 
@@ -17719,12 +17818,12 @@ msgstr "Останні шаблони"
 msgid "Recent _Files"
 msgstr "Останні _файли"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:302
 #, fuzzy
 msgid "Recently used"
 msgstr "Центрувати редактор"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:433
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:412
 #, fuzzy
 msgid "Recently used templates"
 msgstr "Останні шаблони"
@@ -17761,7 +17860,7 @@ msgstr "Перегляд рефакторингу"
 msgid "Refactory Operations"
 msgstr "Операції рефакторингу"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:180
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:186
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:985
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:45
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:57
@@ -17849,7 +17948,7 @@ msgstr "Оновити"
 msgid "Refresh the tree"
 msgstr "Оновити дерево"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:69
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:67
 #, fuzzy
 msgid "Refresh value"
 msgstr "Оновити"
@@ -18129,7 +18228,7 @@ msgstr "Видаляються всі файли .mo."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
 #, fuzzy
 msgid "Removing {0} packages..."
 msgstr "Додавання {0} пакунків..."
@@ -18152,7 +18251,7 @@ msgstr "Вилучення..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:196
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:262
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:81
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:973
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:981
 msgid "Rename"
 msgstr "Перейменувати"
 
@@ -18463,7 +18562,7 @@ msgstr "Використовуваний ресурс"
 msgid "Resources"
 msgstr "Ресурси"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:252
 #, fuzzy
 msgid "Restart"
 msgstr "Відновлено '{0}'"
@@ -18483,7 +18582,7 @@ msgstr "Перезапустити без зневадження"
 msgid "Restart Without Debugging"
 msgstr "Перезапустити без зневадження"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:399
+#: ../src/addins/MacPlatform/MacPlatform.cs:404
 #, fuzzy
 msgid "Restart and enable"
 msgstr "Перейменувати інтерфейс"
@@ -18622,7 +18721,7 @@ msgstr "Отримання історії"
 msgid "Retrieving history…"
 msgstr "Отримання історії"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:274
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:283
 msgid "Retrieving revision {0}..."
 msgstr "Отримання ревізії {0}..."
 
@@ -18676,20 +18775,10 @@ msgstr "Відкотити зміни до цієї ревізії"
 msgid "Revert changes margin"
 msgstr "Відкотити зміни до цієї ревізії"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert left changes button"
-msgstr "Відкотити цю зміну"
-
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 msgid "Revert operation completed."
 msgstr "Операцію відкоту завершено."
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert right changes button"
-msgstr "Відкотити цю зміну"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:121
 msgid "Revert this change"
@@ -18707,17 +18796,26 @@ msgstr "Повернутись до цієї ревізії"
 msgid "Revert unsaved changes to document '{0}'?"
 msgstr "Скасувати незбережені зміни у документі '{0}'?"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:486
-msgid "Revert {0} inserted lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:485
+msgid "Revert {0} inserted line starting at {1}"
+msgid_plural "Revert {0} inserted lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:488
-msgid "Revert {0} removed lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:487
+msgid "Revert {0} removed line starting at {1}"
+msgid_plural "Revert {0} removed lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:490
-msgid "Revert {0} replaced lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:489
+msgid "Revert {0} replaced line starting at {1}"
+msgid_plural "Revert {0} replaced lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1362
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:767
@@ -19428,10 +19526,11 @@ msgstr "_Зробити початковим проектом"
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:168
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:193
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:147
 msgid "Search"
 msgstr "Пошук"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:520
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:515
 msgid "Search ({0})"
 msgstr "Пошук ({0})"
 
@@ -19494,6 +19593,7 @@ msgid "Search cancelled"
 msgstr "Пошук скасовано."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:132
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:643
 msgid "Search completed"
 msgstr "Пошук завершено"
 
@@ -19574,7 +19674,7 @@ msgstr "Некоректний шаблон пошуку"
 msgid "Search pattern not found"
 msgstr "Зразок пошуку не знайдено"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:645
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:655
 msgid "Search solution"
 msgstr "Шукати рішення"
 
@@ -19600,7 +19700,7 @@ msgstr "Пошук:"
 msgid "Searching member..."
 msgstr "Пошук члена.."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:298
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:325
 msgid "Searching packages..."
 msgstr "Пошук пакунків..."
 
@@ -19955,7 +20055,7 @@ msgstr "Виберіть пакети для нового проекту упа�
 msgid "Select policy, current: {0}"
 msgstr "Виберіть файл політики"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:481
 #, fuzzy
 msgid "Select projects and a version for a consolidation."
 msgstr "Виберіть проект або рішення:"
@@ -20606,8 +20706,8 @@ msgstr "Показувати рядок, що виконується"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1050
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:238
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1065
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:267
 msgid "Show Details"
 msgstr "Показати подробиці"
 
@@ -20673,8 +20773,8 @@ msgstr "Показати вікно уподобань MonoDevelop"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1214
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:856
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:76
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:158
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:355
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:159
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:358
 msgid "Show More"
 msgstr "Показати більше"
 
@@ -20757,15 +20857,15 @@ msgstr "Показати час тестування"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1199
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:843
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:150
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:349
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:151
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:352
 msgid "Show Value"
 msgstr "Показати значення"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1216
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:858
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:160
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:357
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:161
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:360
 msgid "Show Values"
 msgstr "Показати значення"
 
@@ -20889,7 +20989,7 @@ msgstr "Показувати виведення"
 msgid "Show page setup"
 msgstr "Показати налаштування сторінки"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:445
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:465
 msgid "Show pre-release packages"
 msgstr ""
 
@@ -21646,7 +21746,7 @@ msgstr "Вміст стека"
 msgid "Stack trace:"
 msgstr "Вміст стека"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:320
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:322
 #, fuzzy
 msgid "Stacktrace"
 msgstr "Вміст стека"
@@ -21784,7 +21884,7 @@ msgstr "Неможливо створити проект з типом: {0}"
 msgid "Start tool {0}"
 msgstr "Запустити засіб"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:271
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:269
 msgid "Starting {0}"
 msgstr "Запуск {0}"
 
@@ -21826,8 +21926,8 @@ msgstr "Зберегти і в_ийти"
 msgid "Stash not applied."
 msgstr "Сховати не вдалося."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:177
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:211
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:174
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 msgid "Stash operation failed"
 msgstr "Сховати не вдалося."
 
@@ -21861,6 +21961,11 @@ msgstr "Надсилання змін..."
 msgid "State"
 msgstr "Стан"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:971
+#, fuzzy
+msgid "Static"
+msgstr "Стан"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:191
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:67
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:91
@@ -21873,7 +21978,7 @@ msgstr "Статус"
 msgid "Status against revision: '{0}'"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:567
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:568
 #, fuzzy
 msgid "Status of the current operation"
 msgstr "Припинити поточну операцію"
@@ -23354,8 +23459,8 @@ msgstr "Найнижча версія GTK#, необхідна для викор
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1179
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:826
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:132
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:335
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:133
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:338
 msgid "The name '{0}' does not exist in the current context."
 msgstr "Назва '{0}' відсутня у поточному контексті."
 
@@ -23523,7 +23628,7 @@ msgid ""
 "project directory."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:796
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:826
 msgid "The project could not be created"
 msgstr "Не вдалось створити проект"
 
@@ -24288,7 +24393,7 @@ msgstr "У цільовій теці вже є посилання з назво�
 msgid "There must be at least one configuration."
 msgstr "Слід вказати принаймні одну конфігурацію."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:273
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:267
 msgid ""
 "There was a problem loading one or more extensions and {0} needs to be "
 "restarted."
@@ -25109,7 +25214,7 @@ msgstr "_Прибрати відступи вибраних рядків"
 msgid "Uninstall"
 msgstr "Видалити"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:933
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:983
 #, fuzzy
 msgid "Uninstall Package"
 msgid_plural "Uninstall Packages"
@@ -25287,8 +25392,8 @@ msgstr "Оновити всі пакунки NuGet у рішенні"
 msgid "Update Identifiers"
 msgstr "Ідентифікатор"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:929
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:935
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:979
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:985
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:57
 msgid "Update Package"
 msgstr "Оновити пакунок"
@@ -25362,7 +25467,7 @@ msgstr[2] "Оновлено веб-посилань {0}"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:122
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:125
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:373
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
@@ -25425,7 +25530,7 @@ msgstr[2] "Оновлення веб-посилань"
 msgid "Updating {0}"
 msgstr "Оновлення {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:811
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:859
 #, fuzzy
 msgid "Updating {0} packages..."
 msgstr "Додавання {0} пакунків..."
@@ -25738,6 +25843,7 @@ msgstr "Значення:"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/EnvVarList.cs:53
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:54
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:982
 msgid "Variable"
 msgstr "Змінна"
 
@@ -25785,7 +25891,8 @@ msgstr "К_ерування версіями"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:266
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:293
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:659
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
@@ -25931,7 +26038,7 @@ msgid "View ChangeLog..."
 msgstr "Перегляд журналу змін..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:135
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:341
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
 msgid "View License"
 msgstr "Показати ліцензію"
 
@@ -25959,9 +26066,14 @@ msgstr "Перегляд..."
 msgid "Visibility"
 msgstr "Видимість"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
 msgid "Visit Page"
 msgstr "Відвідати сторінку"
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:371
+#, fuzzy
+msgid "Visit Project Page"
+msgstr "Пакети проекту"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:54
 msgid "Visual Basic source code"
@@ -26040,6 +26152,7 @@ msgstr "Очікування на з'єднання зі зневаджувач�
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:95
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:101
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:1002
 #: ../external/xwt/Xwt/Xwt/MessageDialog.cs:90
 msgid "Warning"
 msgstr "Попередження"
@@ -26415,8 +26528,8 @@ msgstr "_Режим переносу рядків:"
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:139
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
 #, fuzzy
-msgid "Worker"
-msgstr "Робочий простір"
+msgid "Worker Service"
+msgstr "Веб-сервіс"
 
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:111
 msgid "Working Directory"
@@ -26667,7 +26780,7 @@ msgstr ""
 "Можна запустити {0} без цих додатків, але функції, які вони надають, будуть "
 "недоступні. Продовжити?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:811
 msgid "You do not have permission to create to {0}"
 msgstr "Ви не маєте прав на створення в {0}"
 
@@ -26752,7 +26865,7 @@ msgid "Zooms view out"
 msgstr "Зменшити масштаб перегляду"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:269
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:604
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:618
 #, fuzzy
 msgid "[External Code]"
 msgstr "<b>[Зовнішній код]</b>"
@@ -26999,7 +27112,7 @@ msgstr "Додати переклад..."
 msgid "_Add to project:"
 msgstr "Додати до _проекту:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:214
 msgid "_All"
 msgstr "_Всі"
 
@@ -27654,7 +27767,7 @@ msgstr "Немає"
 msgid "_Normal Size"
 msgstr "Зви_чайний розмір"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:404
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:413
 msgid "_Only show my code."
 msgstr "_Показати лише мій код."
 
@@ -27718,7 +27831,7 @@ msgstr "_Перезаписати файл"
 msgid "_Package name:"
 msgstr "Назва _пакету:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:221
 msgid "_Packages"
 msgstr "_Пакунки"
 
@@ -28926,7 +29039,7 @@ msgstr[2] "{0} змін"
 msgid "{0} condition"
 msgstr "Умова"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:827
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:875
 #, fuzzy
 msgid "{0} consolidated with warnings."
 msgstr "{0} оновлено з попередженнями."
@@ -28965,11 +29078,11 @@ msgstr[2] "{0} днів тому"
 msgid "{0} declaration"
 msgstr "Отримати оголошення"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2032
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2042
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1318
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1849
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:253
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:254
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] "{0} помилка"
@@ -28985,7 +29098,7 @@ msgstr "{0} помилка"
 msgid "{0} errors and {1} warnings"
 msgstr "{0} помилок і {1} попереджень"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:739
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Не вдалось згенерувати код для файлу '{0}'."
@@ -29006,7 +29119,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:403
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -29130,14 +29243,14 @@ msgstr ""
 msgid "{0} packages added with warnings."
 msgstr "{0} пакунків додано з попередженнями."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:883
 #, fuzzy
 msgid "{0} packages consolidated with warnings."
 msgstr "{0} пакунків оновлено з попередженнями."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:150
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:790
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:838
 #, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "{0} пакунків додано з попередженнями."
@@ -29150,14 +29263,14 @@ msgstr "{0} пакунків перенацілено з попередженн�
 msgid "{0} packages successfully added."
 msgstr "{0} пакунків успішно додано."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:833
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:881
 #, fuzzy
 msgid "{0} packages successfully consolidated."
 msgstr "{0} пакунків успішно оновлено."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:836
 #, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "{0} пакунків успішно додано."
@@ -29166,11 +29279,11 @@ msgstr "{0} пакунків успішно додано."
 msgid "{0} packages successfully retargeted."
 msgstr "{0} пакунків успішно перенацілено."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:812
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:860
 msgid "{0} packages successfully updated."
 msgstr "{0} пакунків успішно оновлено."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:814
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:862
 msgid "{0} packages updated with warnings."
 msgstr "{0} пакунків оновлено з попередженнями."
 
@@ -29264,12 +29377,12 @@ msgstr ""
 msgid "{0} successfully added."
 msgstr "{0} успішно додано."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:825
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:873
 #, fuzzy
 msgid "{0} successfully consolidated."
 msgstr "{0} успішно оновлено."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:749
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} перенацілено успішно."
@@ -29319,11 +29432,11 @@ msgstr[2] "Доступні {0} оновлень"
 msgid "{0} updated with warnings."
 msgstr "{0} оновлено з попередженнями."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2033
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2043
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1319
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1850
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:251
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:252
 msgid "{0} warning"
 msgid_plural "{0} warnings"
 msgstr[0] "{0} попередження"
@@ -30557,9 +30670,6 @@ msgstr ""
 #~ msgid "Chinese - Taiwan"
 #~ msgstr "Традиційне китайське"
 
-#~ msgid "Class"
-#~ msgstr "Клас"
-
 #~ msgid "Class can be converted to static"
 #~ msgstr "Клас можна перетворити на статичний"
 
@@ -31576,9 +31686,6 @@ msgstr ""
 #~ msgid "Exception not identified"
 #~ msgstr "Виняток не розпізнано"
 
-#~ msgid "Exceptions"
-#~ msgstr "Винятки"
-
 #~ msgid "Exclude the following categories"
 #~ msgstr "Виключити такі категорії"
 
@@ -31684,9 +31791,6 @@ msgstr ""
 
 #~ msgid "Feedbacks sent: {0}"
 #~ msgstr "Повідомлення надіслано: {0}"
-
-#~ msgid "Field"
-#~ msgstr "Поле"
 
 #~ msgid "File '{0}' can't be modified"
 #~ msgstr "Файл {0} неможливо змінити"
@@ -32428,9 +32532,6 @@ msgstr ""
 #~ msgid "MessageManagerHandlerNotRegistered"
 #~ msgstr "MessageManagerHandlerNotRegistered"
 
-#~ msgid "Method"
-#~ msgstr "Метод"
-
 #~ msgid "Method '{0}' can be made static."
 #~ msgstr "Метод '{0}' можна зробити статичним."
 
@@ -32674,10 +32775,6 @@ msgstr ""
 
 #~ msgid "OVR"
 #~ msgstr "ЗАМ"
-
-#, fuzzy
-#~ msgid "Object allocation"
-#~ msgstr "Об'єкт для блокування"
 
 #~ msgid "Objective C Files"
 #~ msgstr "Файли Objective-C"
@@ -33098,9 +33195,6 @@ msgstr ""
 
 #~ msgid "PropertyKeyFormatString"
 #~ msgstr "PropertyKeyFormatString"
-
-#~ msgid "Protected"
-#~ msgstr "Захищені"
 
 #~ msgid "Qualifier is redundant"
 #~ msgstr "Кваліфікатор є зайвим"
@@ -34068,6 +34162,14 @@ msgstr ""
 
 #~ msgid "Reverse the direction of a for loop"
 #~ msgstr "Змінити напрямок циклу for"
+
+#, fuzzy
+#~ msgid "Revert left changes button"
+#~ msgstr "Відкотити цю зміну"
+
+#, fuzzy
+#~ msgid "Revert right changes button"
+#~ msgstr "Відкотити цю зміну"
 
 #~ msgid "Revision {0}\t{1}\t{2}"
 #~ msgstr "Ревізія {0}\t{1}\t{2}"
@@ -35381,6 +35483,10 @@ msgstr ""
 #, fuzzy
 #~ msgid "Win32 Icon"
 #~ msgstr "Піктограма Win32:"
+
+#, fuzzy
+#~ msgid "Worker"
+#~ msgstr "Робочий простір"
 
 #~ msgid "Write expression to the output"
 #~ msgstr "Записати вираз у виведення"
