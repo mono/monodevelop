@@ -1891,6 +1891,11 @@ namespace MonoDevelop.Projects
 			set => SetProperty (value);
 		}
 
+		public string TargetSdkVersion {
+			get => GetProperty<string> ();
+			set => SetProperty (value);
+		}
+
 		Dictionary<string, int> errors;
 
 		public void RegisterError(string errorCode)

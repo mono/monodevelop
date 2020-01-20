@@ -83,6 +83,18 @@ namespace MonoDevelop.DotNetCore
 			return base.SupportsObject (item) && HasSupportedFramework ((DotNetProject)item);
 		}
 
+		protected override ProjectEventMetadata OnGetProjectEventMetadata (ConfigurationSelector configurationSelector)
+		{
+			var metadata = base.OnGetProjectEventMetadata (configurationSelector);
+
+			var projectSdkVersion = sdkPaths.TargetSdkVersion ?? sdkPaths.GetLatestSdk ();
+			var projectSdkVersionString = projectSdkVersion?.ToString ();
+
+			metadata.TargetSdkVersion = projectSdkVersionString;
+
+			return metadata;
+		}
+
 		/// <summary>
 		/// Cannot check TargetFramework property since it may not be set.
 		/// Currently support .NET Core and .NET Standard.
