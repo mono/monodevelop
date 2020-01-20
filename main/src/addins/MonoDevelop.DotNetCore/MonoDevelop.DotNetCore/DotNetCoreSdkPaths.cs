@@ -40,6 +40,7 @@ namespace MonoDevelop.DotNetCore
 		static readonly object locker = new object ();
 
 		public DotNetCoreVersion [] SdkVersions { get; internal set; } = Array.Empty<DotNetCoreVersion> ();
+		public DotNetCoreVersion TargetSdkVersion { get; private set; }
 		public string SdkRootPath { get; internal set; }
 		public string GlobalJsonPath { get; set; }
 
@@ -68,8 +69,7 @@ namespace MonoDevelop.DotNetCore
 		{
 			if (!SdkVersions.Any ())
 				return;
-					
-			DotNetCoreVersion targetVersion = null;
+
 			if (forceLookUpGlobalJson) {
 				GlobalJsonPath = LookUpGlobalJson (workingDir);
 			}
@@ -93,22 +93,22 @@ namespace MonoDevelop.DotNetCore
 			}
 
 			//if global.json exists and matches returns it
-			targetVersion = SdkVersions.FirstOrDefault (x => x.OriginalString.IndexOf (specificVersion, StringComparison.InvariantCulture) == 0);
-			if (targetVersion == null) {
+			TargetSdkVersion = SdkVersions.FirstOrDefault (x => x.OriginalString.IndexOf (specificVersion, StringComparison.InvariantCulture) == 0);
+			if (TargetSdkVersion == null) {
 				//if global.json exists and !matches then:
 				if (requiredVersion >= DotNetCoreVersion.Parse ("2.1")) {
-					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major
+					TargetSdkVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major
 																	&& version.Minor == requiredVersion.Minor)
 												.OrderByDescending (version => version.Patch).FirstOrDefault (x => {
 												return (x.Patch / 100 == requiredVersion.Patch / 100) &&
 														(x.Patch % 100 >= requiredVersion.Patch % 100);
 												});
 				} else {
-					targetVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major && version.Minor == requiredVersion.Minor)
+					TargetSdkVersion = SdkVersions.Where (version => version.Major == requiredVersion.Major && version.Minor == requiredVersion.Minor)
 												.OrderByDescending (version => version.Patch).FirstOrDefault ();
 				}
 
-				if (targetVersion == null) {
+				if (TargetSdkVersion == null) {
 					msbuildSDKsPath = string.Empty;
 					IsUnsupportedSdkVersion = true;
 					Exist = false;
@@ -116,7 +116,7 @@ namespace MonoDevelop.DotNetCore
 				}
 			}
 
-			msbuildSDKsPath = GetSdksParentDirectory (targetVersion);
+			msbuildSDKsPath = GetSdksParentDirectory (TargetSdkVersion);
 			Exist = true;
 			IsUnsupportedSdkVersion = false;
 		}
