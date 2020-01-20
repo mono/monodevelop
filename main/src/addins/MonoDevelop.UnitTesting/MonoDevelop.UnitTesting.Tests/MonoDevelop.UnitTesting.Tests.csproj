@@ -59,6 +59,11 @@
       <Name>MonoDevelop.DotNetCore</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\MonoDevelop.UnitTesting.NUnit\MonoDevelop.UnitTesting.NUnit.csproj">
+      <Project>{6224D87E-2AC1-4D9F-91ED-714F797297BF}</Project>
+      <Name>MonoDevelop.UnitTesting.NUnit</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
