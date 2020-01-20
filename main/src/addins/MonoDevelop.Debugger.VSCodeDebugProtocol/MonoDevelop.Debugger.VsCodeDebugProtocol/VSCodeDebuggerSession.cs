@@ -537,12 +537,16 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							Condition = b.ConditionExpression,
 							HitCondition = GetHitCondition(b)
 						}).ToList ()
-					}, (obj) => {
+					}, (args) => {
 						Task.Run (() => {
-							for (int i = 0; i < obj.Breakpoints.Count; i++) {
-								breakpoints [sourceFile.ElementAt (i)].SetStatus (obj.Breakpoints [i].Line != -1 ? BreakEventStatus.Bound : BreakEventStatus.NotBound, "");
-								if (obj.Breakpoints [i].Line != sourceFile.ElementAt (i).OriginalLine)
-									breakpoints [sourceFile.ElementAt (i)].AdjustBreakpointLocation (obj.Breakpoints [i].Line, obj.Breakpoints [i].Column ?? 1);
+							for (int i = 0; i < args.Breakpoints.Count; i++) {
+								var breakpoint = sourceFile.ElementAt (i);
+
+								if (breakpoints.TryGetValue (breakpoint, out var breakInfo)) {
+									breakInfo.SetStatus (args.Breakpoints[i].Line != -1 ? BreakEventStatus.Bound : BreakEventStatus.NotBound, "");
+									if (args.Breakpoints[i].Line != breakpoint.OriginalLine)
+										breakInfo.AdjustBreakpointLocation (args.Breakpoints[i].Line, args.Breakpoints[i].Column ?? 1);
+								}
 							}
 						}).Ignore ();
 					});
