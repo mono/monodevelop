@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Timers;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
 using MonoDevelop.Ide.Tasks;
@@ -158,9 +159,10 @@ namespace MonoDevelop.Components
 
 		void ShowPopover ()
 		{
-			if (popover != null)
-				popover.Destroy ();
-			popover = TooltipPopoverWindow.Create (!WorkaroundNestedDialogFlickering ());
+			if (hideTooltipTimer?.Enabled == true)
+				hideTooltipTimer.Stop ();
+			if (popover == null)
+				popover = TooltipPopoverWindow.Create (!WorkaroundNestedDialogFlickering ());
 			popover.ShowArrow = true;
 			if (markup)
 				popover.Markup = message;
@@ -172,41 +174,65 @@ namespace MonoDevelop.Components
 
 		void UpdatePopover ()
 		{
-			if (popover != null)
+			if (popover?.Visible == true)
 				ShowPopover ();
 		}
 
 		protected override void OnLostFocus (EventArgs args)
 		{
 			base.OnLostFocus (args);
-			DestroyPopover ();
+			HidePopover ();
 		}
 
 		protected override void OnMouseExited (EventArgs args)
 		{
 			base.OnMouseExited (args);
-			DestroyPopover ();
+			HidePopover (true);
 		}
 
 		protected override void OnPreferredSizeChanged ()
 		{
 			base.OnPreferredSizeChanged ();
 			if (!Visible)
-				DestroyPopover ();
+				HidePopover ();
 		}
 
-		void DestroyPopover ()
+		Timer hideTooltipTimer;
+
+		void HidePopover (bool delayed = false)
 		{
-			if (popover != null) {
-				popover.Destroy ();
-				popover = null;
+			if (delayed) {
+				// we delay hiding using a timer to avoid tooltip flickering in case of focus stealing
+				// due to weird toolkit behaviour.
+				if (hideTooltipTimer == null) {
+					hideTooltipTimer = new Timer (50) {
+						AutoReset = false,
+						SynchronizingObject = this,
+					};
+					hideTooltipTimer.Elapsed += (sender, e) => {
+						if (popover?.Visible == true)
+							popover.Hide ();
+					};
+				}
+				hideTooltipTimer.Start ();
+			} else {
+				if (hideTooltipTimer?.Enabled == true)
+					hideTooltipTimer.Stop ();
+				if (popover?.Visible == true)
+					popover.Hide ();
 			}
 		}
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing)
-				DestroyPopover ();
+			if (disposing) {
+				hideTooltipTimer?.Dispose ();
+				if (popover?.Visible == true)
+					popover.Hide ();
+				popover?.Dispose ();
+			}
+			hideTooltipTimer = null;
+			popover = null;
 			base.Dispose (disposing);
 		}
 	}
