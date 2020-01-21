@@ -48,18 +48,24 @@
     <EmbeddedResource Include="templates\NUnitProject.xpt.xml" />
     <EmbeddedResource Include="templates\NUnitProjectVBNet.xpt.xml" />
     <EmbeddedResource Include="templates\NUnitTestClass.xft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="templates\images\project-test-32.png" />
+    <EmbeddedResource Include="templates\images\project-test-32%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast~dark.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~contrast~dark%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark~sel.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~dark~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~sel.png" />
+    <EmbeddedResource Include="templates\images\project-test-32~sel%402x.png" />
     <EmbeddedResource Include="templates\images\project-test-template.png" />
     <EmbeddedResource Include="templates\images\project-test-template%402x.png" />
     <EmbeddedResource Include="templates\images\project-test-template~dark.png" />
     <EmbeddedResource Include="templates\images\project-test-template~dark%402x.png" />
-    <EmbeddedResource Include="templates\images\project-test-32.png" />
-    <EmbeddedResource Include="templates\images\project-test-32%402x.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~dark.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~dark%402x.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~sel.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~sel%402x.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~dark~sel.png" />
-    <EmbeddedResource Include="templates\images\project-test-32~dark~sel%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.UnitTesting.NUnit\ExternalTestRunner.cs" />
