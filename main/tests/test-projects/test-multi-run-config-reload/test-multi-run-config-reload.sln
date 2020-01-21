@@ -1,0 +1,23 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectA", "ProjectA\ProjectA.csproj", "{1217D2CD-2C77-4AEF-AC43-418FC5DD7CE9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectB", "ProjectB\ProjectB.csproj", "{2D669FEF-FBF4-4183-87E6-A3A4D6C8C97F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1217D2CD-2C77-4AEF-AC43-418FC5DD7CE9}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{1217D2CD-2C77-4AEF-AC43-418FC5DD7CE9}.Debug|anycpu.Build.0 = Debug|anycpu
+		{1217D2CD-2C77-4AEF-AC43-418FC5DD7CE9}.Release|anycpu.ActiveCfg = Release|anycpu
+		{1217D2CD-2C77-4AEF-AC43-418FC5DD7CE9}.Release|anycpu.Build.0 = Release|anycpu
+		{2D669FEF-FBF4-4183-87E6-A3A4D6C8C97F}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{2D669FEF-FBF4-4183-87E6-A3A4D6C8C97F}.Debug|anycpu.Build.0 = Debug|anycpu
+		{2D669FEF-FBF4-4183-87E6-A3A4D6C8C97F}.Release|anycpu.ActiveCfg = Release|anycpu
+		{2D669FEF-FBF4-4183-87E6-A3A4D6C8C97F}.Release|anycpu.Build.0 = Release|anycpu
+	EndGlobalSection
+EndGlobal
