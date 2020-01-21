@@ -438,6 +438,7 @@ namespace MonoDevelop.Ide.Gui.Documents
 				disposedTokenSource.Cancel ();
 				disposedTokenSource.Dispose ();
 				disposedTokenSource = null;
+				extensionChain = null;
 				disposed = true;
 			}
 		}
@@ -574,8 +575,10 @@ namespace MonoDevelop.Ide.Gui.Documents
 				yield return AssertValid (c, type);
 
 			if (extensionChain != null) {
-				foreach (var ext in extensionChain.GetAllExtensions ().OfType<DocumentControllerExtension> ()) {
-					foreach (var c in ext.GetContents (type))
+				foreach (var ext in extensionChain.GetAllExtensions ()) {
+					if (!(ext is DocumentControllerExtension documentControllerExtension))
+						continue;
+					foreach (var c in documentControllerExtension.GetContents (type))
 						yield return AssertValid (c, type);
 				}
 			}
