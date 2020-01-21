@@ -196,7 +196,11 @@
 		            _label = "HTML Files"
 		            extensions = "*.htm,*.html"/>
 	</Extension>
-
+	
+	<Extension path="/MonoDevelop/TextEditor/LegacyEditorSupport">
+        <LegacyEditorSupport id="aspx" extensions=".aspx,.ashx,.asmx,.ascx,.master,.asax" />
+    </Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<ProjectFlavor
 			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
