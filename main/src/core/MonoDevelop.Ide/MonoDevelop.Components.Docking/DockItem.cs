@@ -332,6 +332,9 @@ namespace MonoDevelop.Components.Docking
 		
 		public void Present (bool giveFocus)
 		{
+			//HACK: every dock item on present backs focus to Gtk in case focus is in native view
+			Gtk.GtkNSViewHost.ReturnFocusToGtk ();
+
 			if (dockBarItem != null)
 				dockBarItem.Present (Status == DockItemStatus.AutoHide || giveFocus);
 			else if (floatingWindow != null) {
