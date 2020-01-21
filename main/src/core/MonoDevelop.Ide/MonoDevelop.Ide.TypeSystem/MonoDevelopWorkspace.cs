@@ -486,7 +486,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			return await TryLoadSolution (cancellationToken).ConfigureAwait (false);
 		}
 
-		async Task ReloadProjects (CancellationToken cancellationToken)
+		internal async Task ReloadProjects (CancellationToken cancellationToken)
 		{
 			try {
 				using var cts = CancellationTokenSource.CreateLinkedTokenSource (cancellationToken, src.Token);
@@ -731,9 +731,9 @@ namespace MonoDevelop.Ide.TypeSystem
 				tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text));
 		}
 
-		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text)
+		async Task ApplyDocumentTextChangedCore (DocumentId id, SourceText text, bool isAnalyzerConfigFile = false)
 		{
-			var document = GetDocument (id);
+			TextDocument document = isAnalyzerConfigFile ? GetAnalyzerConfigDocument (id) : GetDocument (id);
 			if (document == null)
 				return;
 
@@ -750,12 +750,21 @@ namespace MonoDevelop.Ide.TypeSystem
 					return;
 				}
 			}
-			var (projection, filePath) = Projections.Get (document.FilePath);
-			var data = TextFileProvider.Instance.GetTextEditorData (filePath, out bool isOpen);
-			// Guard against already done changes in linked files.
-			// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
-			if (document.GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
-				return;
+			Projection projection = null;
+			FilePath filePath;
+			ITextDocument data = null;
+			bool isOpen;
+			if (isAnalyzerConfigFile) {
+				filePath = document.FilePath;
+				data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+			} else {
+				(projection, filePath) = Projections.Get (document.FilePath);
+				data = TextFileProvider.Instance.GetTextEditorData (filePath, out isOpen);
+				// Guard against already done changes in linked files.
+				// This shouldn't happen but the roslyn merging seems not to be working correctly in all cases :/
+				if (((Document)document).GetLinkedDocumentIds ().Length > 0 && isOpen && !(text.GetType ().FullName == "Microsoft.CodeAnalysis.Text.ChangedText")) {
+					return;
+				}
 			}
 
 			lock (tryApplyState_documentTextChangedContents) {
@@ -799,20 +808,29 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 				data.Save ();
 				if (projection != null) {
-					await UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments ((Document)document, data);
+				} else if (isAnalyzerConfigFile) {
+					OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
 			} else {
 				var formatter = CodeFormatterService.GetFormatter (data.MimeType);
 				var documentContext = documentManager.Documents.FirstOrDefault (d => FilePath.PathComparer.Compare (d.FileName, filePath) == 0)?.DocumentContext;
-				var root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
-				var annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (typeSystemService.InsertionModeAnnotation));
-				SyntaxToken? renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
-												  .Where (s => s.IsToken)
-												  .Select (s => s.AsToken ())
-												  .Cast<SyntaxToken?> ()
-												  .FirstOrDefault ();
+
+				SyntaxNode root = null;
+				SyntaxNode annotatedNode = null;
+				SyntaxToken? renameTokenOpt = null;
+
+				if (!isAnalyzerConfigFile) {
+					root = await projectChanges.NewProject.GetDocument (id).GetSyntaxRootAsync ();
+					annotatedNode = root.DescendantNodesAndSelf ().FirstOrDefault (n => n.HasAnnotation (typeSystemService.InsertionModeAnnotation));
+					renameTokenOpt = root.GetAnnotatedNodesAndTokens (Microsoft.CodeAnalysis.CodeActions.RenameAnnotation.Kind)
+						.Where (s => s.IsToken)
+						.Select (s => s.AsToken ())
+						.Cast<SyntaxToken?> ()
+						.FirstOrDefault ();
+				}
 
 				if (documentContext != null) {
 					var editor = (TextEditor)data;
@@ -936,12 +954,21 @@ namespace MonoDevelop.Ide.TypeSystem
 				}
 
 				if (projection != null) {
-					await UpdateProjectionsDocuments (document, data);
+					await UpdateProjectionsDocuments ((Document)document, data);
+				} else if (isAnalyzerConfigFile) {
+					OnAnalyzerConfigDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				} else {
 					OnDocumentTextChanged (id, new MonoDevelopSourceText (data), PreservationMode.PreserveValue);
 				}
 			}
 		}
+
+		protected override void ApplyAnalyzerConfigDocumentTextChanged (DocumentId id, SourceText text)
+		{
+			lock (projectModifyLock)
+				tryApplyState_documentTextChangedTasks.Add (ApplyDocumentTextChangedCore (id, text, isAnalyzerConfigFile: true));
+		}
+
 		internal static Func<TextEditor, int, Task<List<InsertionPoint>>> GetInsertionPoints;
 		internal static Action<TextEditor, DocumentContext, ITextSourceVersion, SyntaxToken?> StartRenameSession;
 
@@ -992,6 +1019,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		HashSet<MonoDevelop.Projects.Project> tryApplyState_changedProjects = new HashSet<MonoDevelop.Projects.Project> ();
 		List<Task> tryApplyState_documentTextChangedTasks = new List<Task> ();
 		Dictionary<string, SourceText> tryApplyState_documentTextChangedContents =  new Dictionary<string, SourceText> ();
+		HashSet<MonoDevelop.Projects.Project> tryApplyState_modifiedProjects = new HashSet<MonoDevelop.Projects.Project> ();
 
 		/// <summary>
 		/// Used by tests to validate that project has been saved.
@@ -1036,8 +1064,24 @@ namespace MonoDevelop.Ide.TypeSystem
 					tryApplyState_documentTextChangedTasks.Clear ();
 					tryApplyState_changedProjects.Clear ();
 					freezeProjectModify = false;
+					if (tryApplyState_modifiedProjects.Count > 0)
+						NotifyProjectsModified ();
 					FileService.ThawEvents ();
 				}
+			}
+		}
+
+		void NotifyProjectsModified ()
+		{
+			try {
+				foreach (var project in tryApplyState_modifiedProjects) {
+					// New .editorconfig file added so we need to update the project info.
+					project.NotifyModified ("CoreCompileFiles");
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("tryApplyState_modifiedProjects NotifyModifed error", ex);
+			} finally {
+				tryApplyState_modifiedProjects.Clear ();
 			}
 		}
 
@@ -1047,6 +1091,9 @@ namespace MonoDevelop.Ide.TypeSystem
 			case ApplyChangesKind.AddDocument:
 			case ApplyChangesKind.RemoveDocument:
 			case ApplyChangesKind.ChangeDocument:
+			case ApplyChangesKind.AddAnalyzerConfigDocument:
+			case ApplyChangesKind.RemoveAnalyzerConfigDocument:
+			case ApplyChangesKind.ChangeAnalyzerConfigDocument:
 			//HACK: we don't actually support adding and removing metadata references from project
 			//however, our MetadataReferenceCache currently depends on (incorrectly) using TryApplyChanges
 			case ApplyChangesKind.AddMetadataReference:
@@ -1068,17 +1115,9 @@ namespace MonoDevelop.Ide.TypeSystem
 
 		protected override void ApplyDocumentAdded (DocumentInfo info, SourceText text)
 		{
-			var id = info.Id;
-			MonoDevelop.Projects.Project mdProject = null;
+			var mdProject = GetMonoProject (info);
 
-			if (id.ProjectId != null) {
-				var project = CurrentSolution.GetProject (id.ProjectId);
-				mdProject = GetMonoProject (project);
-				if (mdProject == null)
-					LoggingService.LogWarning ("Couldn't find project for newly generated file {0} (Project {1}).", info.Name, info.Id.ProjectId);
-			}
-
-			var path = DetermineFilePath (info.Id, info.Name, info.FilePath, info.Folders, mdProject?.FileName.ParentDirectory, true);
+			var path = DetermineFilePath (info, mdProject, true);
 			// If file is already part of project don't re-add it, example of this is .cshtml
 			if (mdProject?.IsFileInProject (path) == true) {
 				this.OnDocumentAdded (info);
@@ -1086,6 +1125,78 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
 
+			FormatFile (text, mdProject, path);
+
+			if (mdProject != null) {
+				var data = ProjectMap.GetData (info.Id.ProjectId);
+				data.DocumentData.Add (info.Id, path);
+				var file = new MonoDevelop.Projects.ProjectFile (path);
+				mdProject.Files.Add (file);
+				tryApplyState_changedProjects.Add (mdProject);
+			}
+
+			this.OnDocumentAdded (info);
+		}
+
+		MonoDevelop.Projects.Project GetMonoProject (DocumentInfo info)
+		{
+			var id = info.Id;
+			if (id.ProjectId != null) {
+				var project = CurrentSolution.GetProject (id.ProjectId);
+				var mdProject = GetMonoProject (project);
+				if (mdProject == null)
+					LoggingService.LogWarning ("Couldn't find project for document {0} (Project {1}).", info.Name, id.ProjectId);
+				return mdProject;
+			}
+			return null;
+		}
+
+		protected override void ApplyAnalyzerConfigDocumentAdded (DocumentInfo info, SourceText text)
+		{
+			var mdProject = GetMonoProject (info);
+
+			var path = DetermineFilePath (info, mdProject, true);
+			// If file is already part of project don't re-add it unless it does not exist.
+			if (mdProject?.IsFileInProject (path) == true && File.Exists (path)) {
+				OnAnalyzerConfigDocumentAdded (info);
+				return;
+			}
+			info = info.WithFilePath (path).WithTextLoader (new MonoDevelopTextLoader (path));
+
+			FormatFile (text, mdProject, path);
+
+			if (mdProject != null) {
+				var data = ProjectMap.GetData (info.Id.ProjectId);
+				data.DocumentData.Add (info.Id, path);
+
+				var file = new MonoDevelop.Projects.ProjectFile (path, MonoDevelop.Projects.BuildAction.None);
+				if (!file.FilePath.IsChildPathOf (mdProject.BaseDirectory)) {
+					// Outside project directory - add it as a solution folder item.
+					var solutionFolder = GetSolutionItemsFolder (mdProject);
+					if (!solutionFolder.Files.Contains (path)) {
+						solutionFolder.Files.Add (path);
+						mdProject.ParentSolution.SaveAsync (new ProgressMonitor ()).Ignore ();
+					}
+				}
+				if (!mdProject.IsFileInProject (file.FilePath)) {
+					mdProject.Files.Add (file);
+				}
+				// Need to trigger Project.Modified event after TryApp is run so project is reloaded by the type system
+				// service. Adding the file to the Files collection will not trigger the modified event since
+				// the build action is not EditorConfigFiles. Also this event would be ignored anyway during TryApply.
+				// Also handles if the link already existed. Need to refresh all projects since the document added
+				// method will only be called once.
+				foreach (var affectedProject in mdProject.ParentSolution.GetAllProjects ()) {
+					tryApplyState_modifiedProjects.Add (affectedProject);
+				}
+				tryApplyState_changedProjects.Add (mdProject);
+			}
+
+			OnAnalyzerConfigDocumentAdded (info);
+		}
+
+		void FormatFile (SourceText text, MonoDevelop.Projects.Project mdProject, string path)
+		{
 			string formattedText;
 			var formatter = CodeFormatterService.GetFormatter (desktopService.GetMimeTypeForUri (path));
 			if (formatter != null && mdProject != null) {
@@ -1100,16 +1211,22 @@ namespace MonoDevelop.Ide.TypeSystem
 			} catch (Exception e) {
 				LoggingService.LogError ("Exception while saving file to " + path, e);
 			}
+		}
 
-			if (mdProject != null) {
-				var data = ProjectMap.GetData (id.ProjectId);
-				data.DocumentData.Add (info.Id, path);
-				var file = new MonoDevelop.Projects.ProjectFile (path);
-				mdProject.Files.Add (file);
-				tryApplyState_changedProjects.Add (mdProject);
+		MonoDevelop.Projects.SolutionFolder GetSolutionItemsFolder (MonoDevelop.Projects.Project project)
+		{
+			string name = GettextCatalog.GetString ("Solution Items");
+			var folder = project.ParentSolution.RootFolder.Items
+				.OfType <MonoDevelop.Projects.SolutionFolder> ()
+				.FirstOrDefault (item => StringComparer.CurrentCultureIgnoreCase.Equals (item.Name, name));
+			if (folder != null) {
+				return folder;
 			}
 
-			this.OnDocumentAdded (info);
+			folder = new MonoDevelop.Projects.SolutionFolder ();
+			folder.Name = name;
+			project.ParentSolution.RootFolder.Items.Add (folder);
+			return folder;
 		}
 
 		protected override void ApplyDocumentRemoved (DocumentId documentId)
@@ -1139,16 +1256,23 @@ namespace MonoDevelop.Ide.TypeSystem
 			tryApplyState_changedProjects.Add (mdProject);
 		}
 
-		string DetermineFilePath (DocumentId id, string name, string filePath, IReadOnlyList<string> docFolders, string defaultFolder, bool createDirectory = false)
+		protected override void ApplyAnalyzerConfigDocumentRemoved (DocumentId documentId)
 		{
-			var path = filePath;
+			LoggingService.LogInfo ("ApplyAnalyzerConfigDocumentRemoved {0}", documentId);
+			base.ApplyAnalyzerConfigDocumentRemoved (documentId);
+		}
+
+		string DetermineFilePath (DocumentInfo info, MonoDevelop.Projects.Project mdProject, bool createDirectory = false)
+		{
+			var path = info.FilePath;
 
 			if (string.IsNullOrEmpty (path)) {
-				var monoProject = GetMonoProject (id.ProjectId);
+				var monoProject = GetMonoProject (info.Id.ProjectId);
 
 				// If the first namespace name matches the name of the project, then we don't want to
 				// generate a folder for that.  The project is implicitly a folder with that name.
 				IEnumerable<string> folders;
+				var docFolders = info.Folders;
 				if (docFolders != null && monoProject != null && docFolders.FirstOrDefault () == monoProject.Name) {
 					folders = docFolders.Skip (1);
 				} else {
@@ -1163,9 +1287,9 @@ namespace MonoDevelop.Ide.TypeSystem
 					} catch (Exception e) {
 						LoggingService.LogError ("Error while creating directory for a new file : " + baseDirectory, e);
 					}
-					path = Path.Combine (baseDirectory, name);
+					path = Path.Combine (baseDirectory, info.Name);
 				} else {
-					path = Path.Combine (defaultFolder, name);
+					path = Path.Combine (mdProject?.FileName.ParentDirectory, info.Name);
 				}
 			}
 			return path;
