@@ -337,10 +337,10 @@ namespace Gtk
 					}
 				}
 
-				if (nativeViewToFocus != null) {
-					acceptsFirstResponderView.Window?.MakeFirstResponder (nativeViewToFocus);
+				if (nativeViewToFocus == null) {
+					nativeViewToFocus = acceptsFirstResponderView;
 				}
-				
+				acceptsFirstResponderView.Window?.MakeFirstResponder (nativeViewToFocus);
 
 				UpdateViewFrame ();
 
