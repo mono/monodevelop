@@ -1,4 +1,4 @@
-﻿//
+//
 // GtkDotNetCoreProjectTemplateWizardPageWidget.cs
 //
 // Author:
@@ -52,7 +52,7 @@ namespace MonoDevelop.DotNetCore.Gui
 			configurationVBox.WidthRequest = -1;
 			targetFrameworkLabel.WidthRequest = -1;
 
-			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-netcore.png");
+			backgroundImage = Xwt.Drawing.Image.FromResource ("netcore-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage);
 			backgroundImageView.Xalign = 1.0f;
 			backgroundImageView.Yalign = 0.5f;
