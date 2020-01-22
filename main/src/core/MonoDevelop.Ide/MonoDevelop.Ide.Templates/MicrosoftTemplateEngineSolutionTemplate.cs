@@ -33,7 +33,7 @@ using MonoDevelop.Ide.Codons;
 
 namespace MonoDevelop.Ide.Templates
 {
-	class MicrosoftTemplateEngineSolutionTemplate : SolutionTemplate
+	public class MicrosoftTemplateEngineSolutionTemplate : SolutionTemplate
 	{
 		internal readonly ITemplateInfo templateInfo;
 
@@ -63,28 +63,6 @@ namespace MonoDevelop.Ide.Templates
 			: base (id, name, iconId)
 		{
 			this.templateInfo = templateInfo;
-		}
-
-		string MergeDefaultParameters (string defaultParameters)
-		{
-			List<TemplateParameter> priorityParameters = null;
-			var parameters = new List<string> ();
-			var cacheParameters = templateInfo.CacheParameters.Where (m => !string.IsNullOrEmpty (m.Value.DefaultValue));
-
-			if (!cacheParameters.Any ())
-				return defaultParameters;
-
-			if (!string.IsNullOrEmpty (defaultParameters)) {
-				priorityParameters = TemplateParameter.CreateParameters (defaultParameters).ToList ();
-				defaultParameters += ",";
-			}
-
-			foreach (var p in cacheParameters) {
-				if (priorityParameters != null && !priorityParameters.Exists (t => t.Name == p.Key))
-					parameters.Add ($"{p.Key}={p.Value.DefaultValue}");
-			}
-
-			return defaultParameters += string.Join (",", parameters);
 		}
 
 		internal string FileFormattingExclude { get; set; }
@@ -165,6 +143,16 @@ namespace MonoDevelop.Ide.Templates
 			}
 
 			return textBuilder.ToString ();
+		}
+
+		public IReadOnlyDictionary<string, string> GetParameterChoices (string parameterName)
+		{
+			return templateInfo.Parameters.FirstOrDefault (parameter => parameter.Name == parameterName)?.Choices;
+		}
+
+		public bool IsSupportedParameter(string parameterName)
+		{
+			return templateInfo.Parameters.FirstOrDefault (parameter => parameter.Name == parameterName) != null;
 		}
 	}
 }

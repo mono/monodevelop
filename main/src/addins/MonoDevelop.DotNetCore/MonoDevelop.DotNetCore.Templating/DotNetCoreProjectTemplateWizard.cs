@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
@@ -42,7 +41,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		public override WizardPage GetPage (int pageNumber)
 		{
-			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks);
+			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks, SupportedAuthentications);
 			targetFrameworks = null;
 			return page;
 		}
@@ -53,23 +52,32 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		internal IList<TargetFramework> TargetFrameworks => targetFrameworks;
 
-		/// <summary>
-		/// When only .NET Core 2.0 is installed there is only one option in the drop down
-		/// list for the target framework for .NET Core projects so there is no point in displaying
-		/// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
-		/// least two options available. If the .NET Standard project template is selected then there
-		/// are multiple options available. So here a check is made to see if more than one target
-		/// framework is available. If not then the wizard will not be displayed.
-		/// </summary>
-		int GetTotalPages ()
+        internal IList<AuthenticationParameter> SupportedAuthentications { get; private set; }
+
+        /// <summary>
+        /// When only .NET Core 2.0 is installed there is only one option in the drop down
+        /// list for the target framework for .NET Core projects so there is no point in displaying
+        /// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
+        /// least two options available. If the .NET Standard project template is selected then there
+        /// are multiple options available. So here a check is made to see if more than one target
+        /// framework is available. If not then the wizard will not be displayed.
+        /// </summary>
+        int GetTotalPages ()
 		{
+			GetSupportedAuthentifications ();
 			GetTargetFrameworks ();
-			if (targetFrameworks.Count > 1)
+			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any())
 				return 1;
 
 			ConfigureDefaultParameters ();
 
 			return 0;
+		}
+
+		void GetSupportedAuthentifications ()
+		{
+			var templateId = Parameters ["TemplateId"];
+			SupportedAuthentications = DotNetCoreProjectTemplateParameters.GetAuthenticationParameters (templateId);
 		}
 
 		void GetTargetFrameworks ()

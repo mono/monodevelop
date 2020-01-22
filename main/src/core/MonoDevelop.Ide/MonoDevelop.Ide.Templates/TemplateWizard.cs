@@ -72,6 +72,7 @@ namespace MonoDevelop.Ide.Templates
 
 		internal void UpdateParameters (SolutionTemplate template)
 		{
+			Parameters ["TemplateId"] = template.Id;
 			Parameters ["TemplateName"] = template.Name;
 			UpdateSupportedParameters (template.SupportedParameters);
 			UpdateDefaultParameters (template.DefaultParameters);
