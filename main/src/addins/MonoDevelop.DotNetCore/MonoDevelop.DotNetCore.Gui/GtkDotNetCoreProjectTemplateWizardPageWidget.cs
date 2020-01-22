@@ -1,4 +1,4 @@
-﻿//
+//
 // GtkDotNetCoreProjectTemplateWizardPageWidget.cs
 //
 // Author:
@@ -72,7 +72,7 @@ namespace MonoDevelop.DotNetCore.Gui
 			// wizard page can expand to fit its contents.
 			configurationVBox.WidthRequest = -1;
 
-			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-netcore.png");
+			backgroundImage = Xwt.Drawing.Image.FromResource ("netcore-wizard-page.png");
 			backgroundImageView = new ImageView (backgroundImage) {
 				Xalign = 1.0f,
 				Yalign = 0.5f
