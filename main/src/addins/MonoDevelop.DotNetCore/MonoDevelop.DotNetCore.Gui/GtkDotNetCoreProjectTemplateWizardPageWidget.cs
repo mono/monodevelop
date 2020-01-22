@@ -276,7 +276,7 @@ namespace MonoDevelop.DotNetCore.Gui
 			authenticationInformationLabel.Name = "authenticationInformationLabel";
 			authenticationInformationLabel.Xpad = 5;
 			authenticationInformationLabel.Xalign = 0F;
-			authenticationInformationLabel.LabelProp = GettextCatalog.GetString ("TODO: Make this dynamic.");
+			authenticationInformationLabel.LabelProp = GettextCatalog.GetString ("Select authentication options for your project.");
 			authenticationInformationLabel.Justify = (Justification)1;
 			configurationTable.Add (authenticationInformationLabel);
 
