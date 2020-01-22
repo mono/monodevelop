@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: MonoDevelop\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-26 12:38:03+0100\n"
+"POT-Creation-Date: 2020-01-20 11:44:29+0100\n"
 "PO-Revision-Date: 2009-03-03 21:27:26+0100\n"
 "Last-Translator: Bálint Kriván <balint@krivan.info>\n"
 "Language-Team: \n"
@@ -346,7 +346,7 @@ msgstr "_Eltávolítás..."
 msgid "(keyword)"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1038
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1088
 #, fuzzy
 msgid "(latest stable)"
 msgstr "Tábla módosítása"
@@ -488,7 +488,7 @@ msgstr ".NET program"
 msgid ".NET Core is not installed"
 msgstr "A szükséges bővítmény ({0}) nincs telepítve."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:201
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:202
 msgid ""
 ".NET Core {0} SDK is required to build this application, and is not "
 "installed. Install the latest update to the .NET Core {0} SDK by visiting {1}"
@@ -501,7 +501,7 @@ msgid ""
 "visiting {1}"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:188
 msgid ""
 ".NET Core {0}.{1} SDK version {2} is not compatible with this version of "
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
@@ -593,7 +593,7 @@ msgstr ".NET erőforrás"
 msgid ".NET program"
 msgstr ".NET program"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:235
 #, fuzzy
 msgid ".Net A_ssembly"
 msgstr ".NET assembly"
@@ -1064,8 +1064,8 @@ msgstr "<b>Cse_re a forrásfájllal</b>"
 msgid "<b>{0}</b>"
 msgstr "Enum <b>{0}</b>"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1102
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:304
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1117
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:333
 msgid "<b>{0}</b> has been thrown"
 msgstr ""
 
@@ -1160,7 +1160,7 @@ msgstr "GUI-tervező alkalmazás"
 msgid "A P2P program"
 msgstr "P2P program"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
 msgid "A Project with that name is already in your Project Space"
 msgstr "A megadott néven már létezik projekt."
 
@@ -1530,7 +1530,7 @@ msgstr "Egyszerű szórakoztató alkalmazás"
 msgid "A simulation game"
 msgstr "Szimulátor"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:756
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:786
 #, fuzzy
 msgid "A solution with that filename is already in your workspace"
 msgstr "A megadott néven már létezik projekt."
@@ -1891,7 +1891,7 @@ msgid "Abort Update"
 msgstr "_A MonoDevelopról"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:639
+#: ../src/addins/MacPlatform/MacPlatform.cs:652
 #, fuzzy
 msgid "About {0}"
 msgstr "_A MonoDevelopról"
@@ -2196,7 +2196,7 @@ msgstr "Elemek hozzáadása..."
 msgid "Add New Repository"
 msgstr "Új tároló hozzáadása"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:54
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:53
 #, fuzzy
 msgid "Add New Scaffolding"
 msgstr "Új _megoldás hozzáadása..."
@@ -2216,9 +2216,9 @@ msgstr "Új csomagok létrehozása a projekthez"
 msgid "Add Open"
 msgstr "Forrás"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:198
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:927
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:225
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:977
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:472
 #, fuzzy
 msgid "Add Package"
 msgstr "Csomag hozzáadása..."
@@ -2282,7 +2282,7 @@ msgstr "Fájlok hozzá_adása..."
 msgid "Add View..."
 msgstr "Fájlok hozzáadása"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:964
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:972
 #, fuzzy
 msgid "Add Watch"
 msgstr "Útvonal hozzáadása"
@@ -2396,8 +2396,8 @@ msgid "Add files"
 msgstr "Fájlok hozzáadása"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:304
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:68
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:128
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:86
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:224
 #, fuzzy
 msgid "Add item to watch"
 msgstr "Elemek hozzáadása az eszköztárhoz"
@@ -2411,7 +2411,7 @@ msgstr "Elemek hozzáadása az eszköztárhoz"
 msgid "Add method not found in {0}"
 msgstr "A fájl nem található ({0})."
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:229
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:355
 #, fuzzy
 msgid "Add new expression"
 msgstr "Feltétel-kifejezés:"
@@ -3154,7 +3154,7 @@ msgid "Application to record audio/video files"
 msgstr "Hang vagy videófelvevő alkalmazás"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:803
+#: ../src/addins/MacPlatform/MacPlatform.cs:816
 #, fuzzy
 msgid "ApplicationIcon"
 msgstr "Alkalmazás"
@@ -3504,7 +3504,7 @@ msgid "Assemblies"
 msgstr "Assembly függvénykönyvtárak"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:98
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:85
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:64
 msgid "Assembly"
@@ -3588,7 +3588,7 @@ msgstr ""
 msgid "Assembly:\t{0}"
 msgstr "Assembly fájl"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:402
 msgid "Assistive Technology Detected"
 msgstr ""
 
@@ -3650,7 +3650,7 @@ msgstr "Hitelesítési tartomány: "
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:190
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:126
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:295
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:306
 msgid "Author"
 msgstr "Szerző"
 
@@ -3882,7 +3882,7 @@ msgstr ""
 msgid "Baltic"
 msgstr "Baltikumi"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:195
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:204
 msgid "Base"
 msgstr ""
 
@@ -4051,7 +4051,7 @@ msgid "Breakpoints"
 msgstr "Töréspontok"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/BaseFileEntry.cs:54
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:104
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:118
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Gui/DotNetCoreSdkLocationWidget.UI.cs:90
 #: ../external/xwt/Xwt/Xwt/FileSelector.cs:181
 #: ../external/xwt/Xwt/Xwt/FolderSelector.cs:151
@@ -4137,7 +4137,7 @@ msgstr "Megoldáshoz tartozó projektek fordítása"
 msgid "Build canceled."
 msgstr "A fordítás le lett állítva"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2035
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2045
 msgid "Build complete -- "
 msgstr "A fordítás befejeződött -- "
 
@@ -4518,8 +4518,8 @@ msgstr "Ugrás egy fájlhoz a jelenlegi munkaterületen"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:159
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:67
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:123
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:465
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:458
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:466
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugApplicationDialog.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/NoSourceView.cs:132
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:192
@@ -4534,7 +4534,7 @@ msgstr "A fordítás le lett állítva"
 msgid "Cancel closing the workspace"
 msgstr "Munkaterület bezárása"
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1213
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1219
 #, fuzzy
 msgid "Cancel operation"
 msgstr "Újragyártási műveletek"
@@ -4548,7 +4548,7 @@ msgstr "Beállításkezelő alkalmazás"
 msgid "Cancel running test"
 msgstr "Futó teszt leállítása"
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:456
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
 #, fuzzy
 msgid "Cancel the current operation"
 msgstr "Újragyártási műveletek"
@@ -4578,7 +4578,7 @@ msgstr ""
 msgid "Cancelling operation..."
 msgstr "Újragyártási műveletek"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1969
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1979
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr ""
 "Nem sikerült a könyvtár ({0}) létrehozása. Már létezik ilyen nevű könyvtár."
@@ -4758,7 +4758,7 @@ msgstr ""
 msgid "Changes made in those files will be overwritten by {0}."
 msgstr "Minden változtatás véglegesen elveszik."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:166
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:163
 #, fuzzy
 msgid "Changes successfully stashed"
 msgstr "A megoldást sikerült telepíteni."
@@ -5298,6 +5298,11 @@ msgstr "Egy elem eltávolítása a projektből"
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr "Fordításkor az assembly másolása a kimeneti könyvárba."
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:976
+#, fuzzy
+msgid "Class"
+msgstr "Osztályok"
+
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:715
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:730
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:743
@@ -5357,7 +5362,7 @@ msgstr "Megoldáshoz tartozó projektek tisztítása"
 msgid "Clean canceled."
 msgstr "Sikertelen fordítás."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2411
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2421
 #, fuzzy
 msgid "Clean complete"
 msgstr "A keresés befejezve. "
@@ -5604,7 +5609,7 @@ msgstr "Betöltés..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:459
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:479
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 #, fuzzy
 msgid "Close"
@@ -5620,7 +5625,7 @@ msgstr "Összes fájl bezárása"
 msgid "Close All Files"
 msgstr "Összes fájl bezárása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:655
 #, fuzzy
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
@@ -5990,6 +5995,16 @@ msgstr "{0} véglegesítése..."
 msgid "Compact Layout"
 msgstr "Új nézet létrehozása"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:133
+#, fuzzy
+msgid "Compared Revision"
+msgstr "Revízió"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#, fuzzy
+msgid "Comparing Revision Editor"
+msgstr "Revízió"
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:466
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:472
 #, fuzzy
@@ -6077,9 +6092,9 @@ msgstr "Feltétel-kifejezés:"
 msgid "Configuration"
 msgstr "Konfiguráció"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1991
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2375
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2425
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2385
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2435
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2009
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
@@ -6120,7 +6135,7 @@ msgstr "Konfigurációk"
 msgid "Configure"
 msgstr "Konfiguráció"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:56
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:57
 #, fuzzy
 msgid "Configure Sources..."
 msgstr "Konfiguráció"
@@ -6243,12 +6258,12 @@ msgstr ""
 msgid "Console input not supported"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:130
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:137
 #, fuzzy
 msgid "Consolidate"
 msgstr "Konzolos alkalmazás"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:937
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:987
 #, fuzzy
 msgid "Consolidate Package"
 msgid_plural "Consolidate Packages"
@@ -6269,12 +6284,12 @@ msgid_plural "Consolidate the packages in the projects:"
 msgstr[0] "Új csomagok létrehozása a projekthez"
 msgstr[1] "Új csomagok létrehozása a projekthez"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:832
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:880
 #, fuzzy
 msgid "Consolidating {0} packages..."
 msgstr "Csomagok szerkesztése"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:824
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:872
 #, fuzzy
 msgid "Consolidating {0}..."
 msgstr "XML érvényesítése..."
@@ -6315,7 +6330,7 @@ msgstr ""
 msgid "Continue"
 msgstr "Folytatás"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:659
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
 #, fuzzy
 msgid "Continue Anyway"
 msgstr "Folytatás"
@@ -6390,7 +6405,7 @@ msgstr "Ugrás a következő sorra"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:690
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:279
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:357
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:970
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:978
 #: ../external/xwt/Xwt/Xwt/Command.cs:69
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:138
 #, fuzzy
@@ -6481,12 +6496,12 @@ msgstr ""
 msgid "Could not close solution '{0}'."
 msgstr "Nem sikerült bezárni a(z) {0} megoldást."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:834
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:882
 #, fuzzy
 msgid "Could not consolidate packages."
 msgstr "Nem sikerült frissíteni a fájlt ({0})"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:826
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:874
 #, fuzzy
 msgid "Could not consolidate {0}."
 msgstr "Nem sikerült frissíteni a fájlt ({0})"
@@ -6495,7 +6510,7 @@ msgstr "Nem sikerült frissíteni a fájlt ({0})"
 msgid "Could not create directory '{0}'."
 msgstr "Nem sikerült a könyvtárat létrehozni ({0})."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:778
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:808
 msgid "Could not create directory {0}. File already exists."
 msgstr "A könyvtár '{0}' nem hozható létre. A fájl már létezik."
 
@@ -6503,7 +6518,7 @@ msgstr "A könyvtár '{0}' nem hozható létre. A fájl már létezik."
 msgid "Could not create temporary directory."
 msgstr "Nem sikerült létrehozni az ideiglenes könyvtárat."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2182
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2192
 #, fuzzy
 msgid "Could not find support file '{0}'."
 msgstr "A típus ('{0}') nem található."
@@ -6568,7 +6583,7 @@ msgid "Could not load solution item: {0}"
 msgstr "Az elem nem tölthető be: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:377
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:375
 msgid "Could not load solution: {0}"
 msgstr "Nem sikerült betölteni a megoldást: {0}"
 
@@ -6610,7 +6625,7 @@ msgstr "Nem sikerült létrehozni a könyvtárat ('{0}')"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:837
 #, fuzzy
 msgid "Could not remove packages."
 msgstr "Nem sikerült transzformálni."
@@ -6666,7 +6681,7 @@ msgstr "Nem sikerült frissíteni a fájlt ({0})"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:813
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:861
 #, fuzzy
 msgid "Could not update packages."
 msgstr "Nem sikerült frissíteni a fájlt ({0})"
@@ -7407,6 +7422,11 @@ msgstr "Konfiguráló szkript létrehozása"
 msgid "Creating configure.ac"
 msgstr "configure.ac létrehozása"
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:729
+#, fuzzy
+msgid "Creating project {0}"
+msgstr "Projekt újragyártása ({0})"
+
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
 msgid "Creating rules.make"
 msgstr "rules.make fájl létrehozása"
@@ -7471,7 +7491,7 @@ msgstr "Aktuális fájl"
 msgid "Current Project"
 msgstr "Jelenlegi projekt"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:393
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:410
 #, fuzzy
 msgid "Current Version:"
 msgstr "Aktuális oszlop"
@@ -7567,8 +7587,8 @@ msgstr "Egyéni szabályok"
 msgid "Custom Tool Namespace"
 msgstr "Modul neve:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1438
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1451
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1448
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1461
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:676
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:690
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:763
@@ -7613,11 +7633,11 @@ msgstr "Jelenlegi projekt"
 msgid "Custom project started building"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:770
 msgid "CustomizerAssemblyPath"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:777
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:775
 #, fuzzy
 msgid "CustomizerType"
 msgstr "Saját"
@@ -7969,7 +7989,7 @@ msgstr "Delegate <b>{0}</b>"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:791
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:31
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:528
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:979
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:987
 #: ../external/xwt/Xwt/Xwt/Command.cs:65
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:153
 msgid "Delete"
@@ -8107,7 +8127,7 @@ msgstr ""
 msgid "Deleting Files..."
 msgstr "Cs_ere a fájlokban..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:379
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:39
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:66
@@ -8352,7 +8372,7 @@ msgstr "Könyvtár előtag:"
 msgid "Directory structure:"
 msgstr "Könyvtár struktúra:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:800
 #, fuzzy
 msgid ""
 "Directory {0} already exists.\n"
@@ -8740,8 +8760,8 @@ msgstr ""
 msgid "Downloading {0}"
 msgstr "{0} fordítása"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:622
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:665
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
 #, fuzzy
 msgid "Downloads"
 msgstr "<b>Betűtípus</b>"
@@ -9811,7 +9831,7 @@ msgstr "Csak teljes szóra"
 msgid "Error Message"
 msgstr "Üzenet"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2195
 #, fuzzy
 msgid "Error copying support file '{0}'."
 msgstr "Hiba történt a fájl olvasása közben ({0}): "
@@ -9825,7 +9845,7 @@ msgstr "Hiba az XML séma létrehozásában."
 msgid "Error creating file"
 msgstr "Hiba történt a(z) „{0}” fájl olvasása közben."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2228
 #, fuzzy
 msgid "Error deleting support file '{0}'."
 msgstr "Hiba történt a fájl olvasása közben ({0}): "
@@ -9913,14 +9933,14 @@ msgstr "Hiba történt a(z) „{0}” projekt betöltése közben. Hibaüzenet: 
 msgid "Error while getting revision text."
 msgstr "Hiba történt a(z) „{0}” projekt betöltése közben. Hibaüzenet: {1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:171
 #, fuzzy
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
 msgstr "Hiba történt a(z) „{0}” projekt betöltése közben. Hibaüzenet: {1}"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:291
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:300
 #, fuzzy
 msgid ""
 "Error while getting the text of revision {0}:\n"
@@ -10039,8 +10059,8 @@ msgid "Evaluating..."
 msgstr "Kiértékelés..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:845
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:152
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:351
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:153
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:354
 #, fuzzy
 msgid "Evaluating…"
 msgstr "Kiértékelés..."
@@ -10084,7 +10104,7 @@ msgstr " "
 msgid "Every month"
 msgstr " "
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:363
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:371
 #, fuzzy
 msgid "Exception Caught"
 msgstr "Kivételek"
@@ -10439,7 +10459,7 @@ msgstr "Bővítménytár kezelése"
 msgid "Extension packages"
 msgstr "Csomagok szerkesztése"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:560
+#: ../src/addins/MacPlatform/MacPlatform.cs:573
 #, fuzzy
 msgid "Extensions..."
 msgstr "Kiterjesztés:"
@@ -10682,6 +10702,10 @@ msgstr "Tag keresése..."
 #, fuzzy
 msgid "Fetching remote..."
 msgstr "Tag keresése..."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:981
+msgid "Field"
+msgstr "Mező"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:72
 #, fuzzy
@@ -10950,7 +10974,7 @@ msgid ""
 msgstr "A fájl ({0}) már létezik. Felül kívánja írni?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:519
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:672
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:674
 msgid "File {0} already exists. Overwrite?"
 msgstr "A(z) „{0}” nevű fájl már létezik. Le akarja cserélni?"
 
@@ -12356,7 +12380,7 @@ msgstr "Részletek"
 msgid "Hide other applications' windows"
 msgstr "Többi ablak"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:644
+#: ../src/addins/MacPlatform/MacPlatform.cs:657
 #, fuzzy
 msgid "Hide {0}"
 msgstr "{0} fordítása"
@@ -12435,6 +12459,11 @@ msgstr ""
 msgid "Hue"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:285
+msgid "ID"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:190
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:188
 msgid "ID:"
@@ -12493,8 +12522,6 @@ msgid "Icon:"
 msgstr "Ikon:"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:108
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:276
 msgid "Id"
 msgstr "Id"
 
@@ -12659,7 +12686,7 @@ msgstr "Optikai karakterfelismerő alkalmazás"
 msgid "Illegal characters used in project location."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:762
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:792
 msgid ""
 "Illegal project name.\n"
 "Name cannot contain a language keyword."
@@ -13045,7 +13072,7 @@ msgstr "Információk a szerzőről"
 msgid "Information Message"
 msgstr "Üzenet"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:609
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
 msgid "Information about the Instrumentation Service"
 msgstr ""
 
@@ -13082,6 +13109,11 @@ msgid ""
 "Inline comment inserted within a regular expression. \n"
 "The comment terminates at the first closing parenthesis character."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:530
+#, fuzzy
+msgid "Inner Exceptions"
+msgstr "Kivételek"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/Gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:223
 #, fuzzy
@@ -13341,7 +13373,7 @@ msgstr "A művelet meg lett szakítva."
 msgid "Installation failed"
 msgstr "Nem sikerült a csomagokat telepíteni!"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:125
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:136
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:117
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:259
@@ -13370,7 +13402,7 @@ msgstr "_Bővítmények telepítése..."
 msgid "Installing…"
 msgstr "_Eltávolítás..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:605
 #, fuzzy
 msgid "Instrumentation"
 msgstr "<b>Behúzás</b>"
@@ -13379,7 +13411,7 @@ msgstr "<b>Behúzás</b>"
 msgid "Instrumentation Monitor"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:608
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:606
 msgid "Instrumentation service enabled"
 msgstr ""
 
@@ -13407,6 +13439,7 @@ msgid "Interface {0}. {1}"
 msgstr "Interfész <b>{0}</b>"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:98
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:989
 #, fuzzy
 msgid "Internal"
 msgstr "Belső hiba"
@@ -13950,7 +13983,7 @@ msgid "Library name must not exceed 100 characters."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:80
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
 #, fuzzy
 msgid "License"
 msgstr "GPL 2 licensz"
@@ -14020,6 +14053,11 @@ msgstr ""
 msgid "List of programs to open with"
 msgstr "A megnyitáshoz használható programok listája"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:969
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:978
+msgid "Literal"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:103
 msgid "Literature software"
 msgstr "Irodalmi szoftver"
@@ -14074,8 +14112,8 @@ msgstr "Adatok betöltése..."
 msgid "Loading data…"
 msgstr "Adatok betöltése..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:296
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:193
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:202
 #, fuzzy
 msgid "Loading package list..."
 msgstr "Adatok betöltése..."
@@ -14112,20 +14150,20 @@ msgstr "Bővítmény betöltése ({0})..."
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:287
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:73
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixMenuHandler.cs:48
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:639
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:653
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1272
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:767
 msgid "Loading..."
 msgstr "Betöltés..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:100
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:909
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/LoadingObjectValueNode.cs:33
 #, fuzzy
 msgid "Loading…"
 msgstr "Betöltés..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:194
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:203
 #, fuzzy
 msgid "Local"
 msgstr "Helyi változók"
@@ -14464,12 +14502,12 @@ msgstr ""
 msgid "Manage Branches and Remotes"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:83
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:85
 #, fuzzy
 msgid "Manage NuGet Packages – Solution"
 msgstr "Csomagkonfiguráció mentése a megoldásban"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:160
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:187
 #, fuzzy
 msgid "Manage NuGet Packages – {0}"
 msgstr "Csomagok"
@@ -14789,6 +14827,10 @@ msgstr "Üzeneteket jelölő szabályos kifejezés"
 msgid "Metadata"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:977
+msgid "Method"
+msgstr "Metódus"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:60
 #, fuzzy
 msgid "Method {0}. {1}"
@@ -15042,7 +15084,7 @@ msgstr ""
 "futtathatók le. Megadhat projektekre és megoldásokra végrehajtható "
 "parancsokat is. Ezek a projektek és a megoldások menüiben fognak megjelenni."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:348
 #, fuzzy
 msgid "MonoDevelop failed to start"
 msgstr "MonoDevelop megoldások"
@@ -15064,12 +15106,12 @@ msgstr "MonoDevelop/MSBuild Megoldás"
 msgid "More"
 msgstr "Összes ikon megjelenítése..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:658
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:656
 #, fuzzy
 msgid "More Information"
 msgstr "Információk a szerzőről"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:667
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:681
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:170
 #, fuzzy
 msgid "More information"
@@ -15377,6 +15419,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:510
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:979
 msgid "Namespace"
 msgstr "Névtér"
 
@@ -15554,7 +15597,7 @@ msgstr "Új csoport"
 msgid "New Group..."
 msgstr "Új csoport..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:368
+#: ../src/addins/MacPlatform/MacPlatform.cs:373
 #, fuzzy
 msgid "New Instance"
 msgstr "Új név:"
@@ -15606,7 +15649,7 @@ msgstr "Új feladat"
 msgid "New Tool"
 msgstr "Új eszköz"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:419
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:438
 #, fuzzy
 msgid "New Version:"
 msgstr "Verzió:"
@@ -15753,7 +15796,7 @@ msgstr "Dokumentumok"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:400
+#: ../src/addins/MacPlatform/MacPlatform.cs:405
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 #, fuzzy
@@ -15790,7 +15833,7 @@ msgstr "Nincs kiválasztott elem"
 msgid "No applicable frameworks for this selection!"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:168
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:165
 msgid "No changes were available to stash"
 msgstr ""
 
@@ -15857,7 +15900,7 @@ msgstr ""
 msgid "No matches"
 msgstr "Egyezések"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:208
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:217
 #, fuzzy
 msgid "No matching packages found."
 msgstr "Nincsenek hírek"
@@ -15978,7 +16021,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:384
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -16123,6 +16166,16 @@ msgstr ""
 msgid "O_pen Containing Folder"
 msgstr "A fájlt tartalmazó kö_nyvtár megnyitása"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:270
+#, fuzzy
+msgid "Object Name"
+msgstr "Projekt neve:"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:194
+#, fuzzy
+msgid "Object Value"
+msgstr "Kulcs helye:"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:834
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:472
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:493
@@ -16243,6 +16296,16 @@ msgstr "Gyökérkönyvtár"
 msgid "Open NuGet.Config file..."
 msgstr "Fájl megnyitása..."
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:95
+#, fuzzy
+msgid "Open Preview Visualizer"
+msgstr "Stetic fájl megnyitása"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:980
+#, fuzzy
+msgid "Open Resource Folder"
+msgstr "_Könyvtár megnyitása"
+
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
 #, fuzzy
 msgid "Open Service Details"
@@ -16261,6 +16324,11 @@ msgstr "_Könyvtár megnyitása"
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:85
+#, fuzzy
+msgid "Open Value Visualizer"
+msgstr "_Fájl újratöltése"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:197
@@ -16441,6 +16509,16 @@ msgstr ""
 msgid "Original (msgid):"
 msgstr "Eredeti (msgid):"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:119
+#, fuzzy
+msgid "Original Revision"
+msgstr "Eredeti karakterlánc"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:96
+#, fuzzy
+msgid "Original Revision Editor"
+msgstr "Eredeti karakterlánc"
+
 #: ../src/addins/MonoDevelop.Gettext/Gui/MonoDevelop.Gettext.POEditorWidget.cs:404
 msgid "Original plural (msgid_plural):"
 msgstr "Eredeti többesszám (msgid_plural):"
@@ -16613,7 +16691,7 @@ msgstr "P_rojekt verziója:"
 msgid "Pack"
 msgstr "Csomag"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:300
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:97
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/PackageBuilder.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:43
@@ -16654,14 +16732,14 @@ msgstr "Csomagok"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:45
 #, fuzzy
-msgid "Package Id."
+msgid "Package ID."
 msgstr "Csomag"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:818
 msgid "Package References"
 msgstr "Csomagreferenciák"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:140
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:148
 #, fuzzy
 msgid "Package Search"
 msgstr "Csomag részletek"
@@ -16709,6 +16787,11 @@ msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 msgid "Package retargeting required."
 msgstr "Csomagbeállítások"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:102
+#, fuzzy
+msgid "Package source"
+msgstr "Csomag hozzáadása..."
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:149
 msgid "Package that provides this reference."
 msgstr "A referenciát lehetővé tévő csomag."
@@ -16720,6 +16803,7 @@ msgstr "Csomagbeállítások"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:453
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:117
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:190
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:25
 msgid "Packages"
 msgstr "Csomagok"
@@ -16746,6 +16830,11 @@ msgid ""
 "installed in projects targeting multiple frameworks. The MSBuild targets and "
 "props files have been ignored."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:642
+#, fuzzy
+msgid "Packages loaded"
+msgstr "Csomagok"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:160
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:170
@@ -16954,7 +17043,7 @@ msgstr "Beillesztés a vágólapról"
 msgid "Performance Diagnostics"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2027
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2037
 msgid "Performing main compilation…"
 msgstr ""
 
@@ -16981,7 +17070,7 @@ msgstr "A kimeneti panel rögzítése"
 msgid "Pin results pad"
 msgstr "Az eredmények panel rögzítése"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:59
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:57
 #, fuzzy
 msgid "Pin to the editor"
 msgstr "Szövegszerkesztő"
@@ -17187,7 +17276,7 @@ msgstr ""
 msgid "Policies to set or replace:"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:557
+#: ../src/addins/MacPlatform/MacPlatform.cs:570
 #, fuzzy
 msgid "Policies..."
 msgstr "Alapértelmezett irányelvek"
@@ -17391,7 +17480,7 @@ msgstr "ASP.NET beállítások"
 msgid "Preferences"
 msgstr "Tulajdonságok"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:569
 #, fuzzy
 msgid "Preferences..."
 msgstr "Tulajdonságok"
@@ -17450,7 +17539,7 @@ msgstr ""
 "Nyomja le azt a billentyűkombinációt, amelyet hozzá szeretne rendelni a "
 "gyorsítóhoz..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:644
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:654
 msgid "Press ‘{0}’ to search"
 msgstr ""
 
@@ -17536,6 +17625,11 @@ msgstr "Prioritás:"
 msgid "Privacy Statement"
 msgstr "Állítás"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:988
+#, fuzzy
+msgid "Private"
+msgstr "Elsődleges kulcs"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:300
 #, fuzzy
 msgid "Private Key Files"
@@ -17556,7 +17650,7 @@ msgstr "Elsődleges kulcs"
 msgid "Private sources only"
 msgstr "Forráskód nyomtatása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:228
 #, fuzzy
 msgid "Pro_jects"
 msgstr "Projektek"
@@ -17627,10 +17721,10 @@ msgstr "Folyamat"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:680
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:307
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:173
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:257
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:279
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:68
 msgid "Project"
@@ -17729,7 +17823,7 @@ msgstr "Projekt neve:"
 msgid "Project Options"
 msgstr "Projektbeállítások"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
 #, fuzzy
 msgid "Project Page"
 msgstr "A projekt csomagjai"
@@ -17891,13 +17985,14 @@ msgstr "Projektek/megoldások"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:57
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:50
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:65
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:221
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:258
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:51
 msgid "Properties"
 msgstr "Tulajdonságok"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:975
 msgid "Property"
 msgstr "Tulajdonság"
 
@@ -17921,6 +18016,11 @@ msgstr "Tulajdonság <b>{0}</b>"
 #: ../src/addins/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.addin.xml:75
 msgid "Proportional time scale"
 msgstr "Arányos időskála"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:991
+#, fuzzy
+msgid "Protected"
+msgstr "Automatikus meghatározás"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:116
 msgid "Protocol:"
@@ -17994,7 +18094,7 @@ msgstr ""
 msgid "Publish your app to a folder or a file share"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:310
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:322
 #, fuzzy
 msgid "Published"
 msgstr "Publikálás..."
@@ -18150,7 +18250,7 @@ msgstr ""
 msgid "Quiet"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:251
 msgid "Quit"
 msgstr "Kilépés"
 
@@ -18337,7 +18437,7 @@ msgstr ""
 msgid "React.js and Redux"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:647
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:661
 msgid "Read More…"
 msgstr ""
 
@@ -18426,12 +18526,12 @@ msgstr "Kódsablonok"
 msgid "Recent _Files"
 msgstr "Legutóbb megnyitott _fájlok"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:302
 #, fuzzy
 msgid "Recently used"
 msgstr "Szövegszerkesztő"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:433
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:412
 #, fuzzy
 msgid "Recently used templates"
 msgstr "Kódsablonok"
@@ -18471,7 +18571,7 @@ msgstr "Nyomtatási ké_p"
 msgid "Refactory Operations"
 msgstr "Újragyártási műveletek"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:180
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:186
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:985
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:45
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:57
@@ -18562,7 +18662,7 @@ msgstr "Frissítés"
 msgid "Refresh the tree"
 msgstr "Fa frissítése"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:69
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:67
 #, fuzzy
 msgid "Refresh value"
 msgstr "Frissítés"
@@ -18851,7 +18951,7 @@ msgstr ".mo fájlok törlése"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
 #, fuzzy
 msgid "Removing {0} packages..."
 msgstr "Csomagok szerkesztése"
@@ -18875,7 +18975,7 @@ msgstr "Fájlok eltávolítása..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:196
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:262
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:81
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:973
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:981
 msgid "Rename"
 msgstr "Átnevezés"
 
@@ -19209,7 +19309,7 @@ msgstr "Források"
 msgid "Resources"
 msgstr "Források"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:252
 #, fuzzy
 msgid "Restart"
 msgstr "Beágyazás: '{0}'"
@@ -19229,7 +19329,7 @@ msgstr "Hibakereső"
 msgid "Restart Without Debugging"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:399
+#: ../src/addins/MacPlatform/MacPlatform.cs:404
 #, fuzzy
 msgid "Restart and enable"
 msgstr "Interfész átnevezése"
@@ -19376,7 +19476,7 @@ msgstr "Előzmények lekérdezése a következőhöz: {0}..."
 msgid "Retrieving history…"
 msgstr "Előzmények lekérdezése a következőhöz: {0}..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:274
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:283
 #, fuzzy
 msgid "Retrieving revision {0}..."
 msgstr "{0} szövegének lekérdezése (revízió: {1})..."
@@ -19435,21 +19535,11 @@ msgstr ""
 msgid "Revert changes margin"
 msgstr "Változások át_tekintése"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert left changes button"
-msgstr "Változások át_tekintése"
-
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 #, fuzzy
 msgid "Revert operation completed."
 msgstr "Sikertelen mentés!"
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert right changes button"
-msgstr "Változások át_tekintése"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:121
 #, fuzzy
@@ -19469,17 +19559,23 @@ msgstr ""
 msgid "Revert unsaved changes to document '{0}'?"
 msgstr "A változtatások _figyelmen kívül hagyása"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:486
-msgid "Revert {0} inserted lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:485
+msgid "Revert {0} inserted line starting at {1}"
+msgid_plural "Revert {0} inserted lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:488
-msgid "Revert {0} removed lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:487
+msgid "Revert {0} removed line starting at {1}"
+msgid_plural "Revert {0} removed lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:490
-msgid "Revert {0} replaced lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:489
+msgid "Revert {0} replaced line starting at {1}"
+msgid_plural "Revert {0} replaced lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1362
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:767
@@ -20216,10 +20312,11 @@ msgstr "Beállítá_s alapértelmezett projektnek"
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:168
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:193
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:147
 msgid "Search"
 msgstr "Keresés"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:520
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:515
 #, fuzzy
 msgid "Search ({0})"
 msgstr "Következő mutatása ({0})"
@@ -20287,6 +20384,7 @@ msgid "Search cancelled"
 msgstr "A keresés meg lett állítva."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:132
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:643
 msgid "Search completed"
 msgstr "A keresés befejezve."
 
@@ -20372,7 +20470,7 @@ msgstr "A keresési minta érvénytelen"
 msgid "Search pattern not found"
 msgstr "A keresési minta nem található"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:645
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:655
 #, fuzzy
 msgid "Search solution"
 msgstr "Keresés a következőben:"
@@ -20399,7 +20497,7 @@ msgstr "Keresés:"
 msgid "Searching member..."
 msgstr "Tag keresése..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:298
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:325
 #, fuzzy
 msgid "Searching packages..."
 msgstr "Típus keresése..."
@@ -20771,7 +20869,7 @@ msgstr ""
 msgid "Select policy, current: {0}"
 msgstr "Fájl kijelölése"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:481
 #, fuzzy
 msgid "Select projects and a version for a consolidation."
 msgstr "Kérem, jelöljön ki egy projektet vagy megoldást."
@@ -21470,8 +21568,8 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1050
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:238
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1065
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:267
 #, fuzzy
 msgid "Show Details"
 msgstr "Részletek"
@@ -21539,8 +21637,8 @@ msgstr "MonoDevelop beállítása"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1214
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:856
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:76
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:158
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:355
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:159
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:358
 #, fuzzy
 msgid "Show More"
 msgstr "Hibák megjelenítése"
@@ -21629,16 +21727,16 @@ msgstr "Tesztidők megjelenítése"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1199
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:843
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:150
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:349
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:151
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:352
 #, fuzzy
 msgid "Show Value"
 msgstr "Érték"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1216
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:858
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:160
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:357
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:161
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:360
 #, fuzzy
 msgid "Show Values"
 msgstr "Új fájlok:"
@@ -21769,7 +21867,7 @@ msgstr "Kimenet mutatása"
 msgid "Show page setup"
 msgstr "Indítá_skor jelenjen meg a nap tippje"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:445
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:465
 #, fuzzy
 msgid "Show pre-release packages"
 msgstr "Minden csomag megjelenítése"
@@ -22513,7 +22611,7 @@ msgstr "Verem nyomonkövetése"
 msgid "Stack trace:"
 msgstr "Verem nyomonkövetése"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:320
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:322
 #, fuzzy
 msgid "Stacktrace"
 msgstr "Verem nyomonkövetése"
@@ -22652,7 +22750,7 @@ msgstr "Nem sikerült a következő típusú projektet létrehozni: {0}"
 msgid "Start tool {0}"
 msgstr "Eszköz elindítása"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:271
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:269
 #, fuzzy
 msgid "Starting {0}"
 msgstr "{0} frissítése"
@@ -22695,8 +22793,8 @@ msgstr "Menté_s és kilépés"
 msgid "Stash not applied."
 msgstr "Sikertelen mentés!"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:177
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:211
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:174
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 #, fuzzy
 msgid "Stash operation failed"
 msgstr "Sikertelen mentés!"
@@ -22732,6 +22830,11 @@ msgstr "Változások keresése..."
 msgid "State"
 msgstr "Állapot"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:971
+#, fuzzy
+msgid "Static"
+msgstr "Állapot"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:191
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:67
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:91
@@ -22744,7 +22847,7 @@ msgstr "Állapot"
 msgid "Status against revision: '{0}'"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:567
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:568
 #, fuzzy
 msgid "Status of the current operation"
 msgstr "Folyamatban lévő fordítás vagy futó alkalmazás leállítása"
@@ -24275,8 +24378,8 @@ msgstr "A minimum GTK# verzió, amely szükséges a komponens használatához."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1179
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:826
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:132
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:335
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:133
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:338
 #, fuzzy
 msgid "The name '{0}' does not exist in the current context."
 msgstr "A fájl ({0}) nem tartalmaz komponenseket."
@@ -24453,7 +24556,7 @@ msgid ""
 "project directory."
 msgstr "A projekt ({0}) nem található. A hivatkozás helye: {1}."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:796
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:826
 msgid "The project could not be created"
 msgstr "A projekt nem hozható létre."
 
@@ -25227,7 +25330,7 @@ msgstr ""
 msgid "There must be at least one configuration."
 msgstr "Legalább egy konfigurációs fájlt létre kell hozni."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:273
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:267
 msgid ""
 "There was a problem loading one or more extensions and {0} needs to be "
 "restarted."
@@ -26080,7 +26183,7 @@ msgstr "Kijelölt rész behúzásának csökkentése"
 msgid "Uninstall"
 msgstr "_Eltávolítás..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:933
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:983
 #, fuzzy
 msgid "Uninstall Package"
 msgid_plural "Uninstall Packages"
@@ -26272,8 +26375,8 @@ msgstr "Csomagkonfiguráció mentése a megoldásban"
 msgid "Update Identifiers"
 msgstr "Egyedi azonosító.\n"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:929
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:935
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:979
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:985
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:57
 #, fuzzy
 msgid "Update Package"
@@ -26349,7 +26452,7 @@ msgstr[1] "Webes referencia frissítése"
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:122
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:125
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:373
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
@@ -26416,7 +26519,7 @@ msgstr[1] "Webes referencia frissítése"
 msgid "Updating {0}"
 msgstr "{0} frissítése"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:811
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:859
 #, fuzzy
 msgid "Updating {0} packages..."
 msgstr "Csomagok szerkesztése"
@@ -26743,6 +26846,7 @@ msgstr "Érték"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/EnvVarList.cs:53
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:54
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:982
 msgid "Variable"
 msgstr "Változó"
 
@@ -26793,7 +26897,8 @@ msgstr "Verziószabályzás"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:266
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:293
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:659
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
@@ -26946,7 +27051,7 @@ msgid "View ChangeLog..."
 msgstr "ChangeLog megtekintése..."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:135
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:341
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
 #, fuzzy
 msgid "View License"
 msgstr "Nézet lista"
@@ -26978,9 +27083,14 @@ msgstr "Nézet"
 msgid "Visibility"
 msgstr "Láthatóság"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
 msgid "Visit Page"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:371
+#, fuzzy
+msgid "Visit Project Page"
+msgstr "A projekt csomagjai"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:54
 msgid "Visual Basic source code"
@@ -27053,6 +27163,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:95
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:101
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:1002
 #: ../external/xwt/Xwt/Xwt/MessageDialog.cs:90
 #, fuzzy
 msgid "Warning"
@@ -27438,8 +27549,8 @@ msgstr "Törde_lés módja:"
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:139
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
 #, fuzzy
-msgid "Worker"
-msgstr "Munkaterület"
+msgid "Worker Service"
+msgstr "Webes szolgáltatás"
 
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:111
 #, fuzzy
@@ -27692,7 +27803,7 @@ msgstr ""
 "A MonoDevelop elindítható a bővítmények nélkül is, de az általuk nyújtott "
 "funkciókat nem lehet majd használni. Folytatja a betöltést?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:811
 msgid "You do not have permission to create to {0}"
 msgstr "Nincs írási jogosultsága a '{0}' könyvtárhoz."
 
@@ -27779,7 +27890,7 @@ msgid "Zooms view out"
 msgstr "Kicsinyítés (betűméret csökkentése)"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:269
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:604
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:618
 #, fuzzy
 msgid "[External Code]"
 msgstr "<b>Tördelés</b>"
@@ -28028,7 +28139,7 @@ msgstr "Új fordítás..."
 msgid "_Add to project:"
 msgstr "_Hozzáadás a projekthez:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:214
 msgid "_All"
 msgstr "_Összes"
 
@@ -28722,7 +28833,7 @@ msgstr "Nincs"
 msgid "_Normal Size"
 msgstr "_Normál méret"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:404
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:413
 msgid "_Only show my code."
 msgstr ""
 
@@ -28788,7 +28899,7 @@ msgstr "_Csere"
 msgid "_Package name:"
 msgstr "_Csomag neve:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:221
 #, fuzzy
 msgid "_Packages"
 msgstr "Csomagok"
@@ -30066,7 +30177,7 @@ msgstr[1] "{0} figyelmeztetés"
 msgid "{0} condition"
 msgstr "Feltétel"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:827
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:875
 #, fuzzy
 msgid "{0} consolidated with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
@@ -30104,11 +30215,11 @@ msgstr[1] "{0} napja"
 msgid "{0} declaration"
 msgstr "_Deklaráció megkeresése"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2032
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2042
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1318
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1849
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:253
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:254
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] "{0} hiba"
@@ -30124,7 +30235,7 @@ msgstr "{0} hiba"
 msgid "{0} errors and {1} warnings"
 msgstr "F_igyelmeztetések mellőzése:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:739
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Nem sikerült legenerálni a forráskódot a(z) „{0}” fájlhoz."
@@ -30144,7 +30255,7 @@ msgid_plural ""
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:403
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -30269,14 +30380,14 @@ msgstr ""
 msgid "{0} packages added with warnings."
 msgstr "F_igyelmeztetések mellőzése:"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:883
 #, fuzzy
 msgid "{0} packages consolidated with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:150
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:790
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:838
 #, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "F_igyelmeztetések mellőzése:"
@@ -30291,14 +30402,14 @@ msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 msgid "{0} packages successfully added."
 msgstr "A nyelv ('{0}') sikeresen létre lett hozva."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:833
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:881
 #, fuzzy
 msgid "{0} packages successfully consolidated."
 msgstr "{0} sikeresen elő lett állítva."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:836
 #, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "A nyelv ('{0}') sikeresen létre lett hozva."
@@ -30308,12 +30419,12 @@ msgstr "A nyelv ('{0}') sikeresen létre lett hozva."
 msgid "{0} packages successfully retargeted."
 msgstr "{0} sikeresen elő lett állítva."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:812
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:860
 #, fuzzy
 msgid "{0} packages successfully updated."
 msgstr "{0} sikeresen elő lett állítva."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:814
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:862
 #, fuzzy
 msgid "{0} packages updated with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
@@ -30408,12 +30519,12 @@ msgstr ""
 msgid "{0} successfully added."
 msgstr "A nyelv ('{0}') sikeresen létre lett hozva."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:825
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:873
 #, fuzzy
 msgid "{0} successfully consolidated."
 msgstr "{0} sikeresen elő lett állítva."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:749
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "{0} sikeresen elő lett állítva."
@@ -30467,11 +30578,11 @@ msgstr[1] "Új bővítmények érhetők el:"
 msgid "{0} updated with warnings."
 msgstr "A művelet végrehajtása során figyelmeztetések generálódtak."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2033
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2043
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1319
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1850
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:251
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:252
 msgid "{0} warning"
 msgid_plural "{0} warnings"
 msgstr[0] "{0} figyelmeztetés"
@@ -31726,10 +31837,6 @@ msgstr ""
 
 #~ msgid "Choose _encoding"
 #~ msgstr "_Kódolás kiválasztása"
-
-#, fuzzy
-#~ msgid "Class"
-#~ msgstr "Osztályok"
 
 #~ msgid "Class <b>{0}</b>"
 #~ msgstr "Osztály <b>{0}</b>"
@@ -33082,9 +33189,6 @@ msgstr ""
 #~ msgid "Exception not identified"
 #~ msgstr "Nincs név megadva."
 
-#~ msgid "Exceptions"
-#~ msgstr "Kivételek"
-
 #~ msgid "Exceptions..."
 #~ msgstr "Kivételek..."
 
@@ -33176,9 +33280,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Failed to start debug tests."
 #~ msgstr "Sikertelen ellenőrzések"
-
-#~ msgid "Field"
-#~ msgstr "Mező"
 
 #~ msgid "Field <b>{0}</b>"
 #~ msgstr "Mező <b>{0}</b>"
@@ -34002,9 +34103,6 @@ msgstr ""
 #~ msgid "Message bubbles tooltip"
 #~ msgstr "Üzenet stílusa"
 
-#~ msgid "Method"
-#~ msgstr "Metódus"
-
 #, fuzzy
 #~ msgid "Method Signatures"
 #~ msgstr "_Deklaráció megkeresése"
@@ -34346,10 +34444,6 @@ msgstr ""
 #~ msgstr "Megnyitás _terminálban"
 
 #, fuzzy
-#~ msgid "Object allocation"
-#~ msgstr "Kulcs helye:"
-
-#, fuzzy
 #~ msgid "Objective C Files"
 #~ msgstr "Egyéb fájlok"
 
@@ -34652,10 +34746,6 @@ msgstr ""
 #~ msgid "PropertyKeyFormatString"
 #~ msgstr "_Deklaráció megkeresése"
 
-#, fuzzy
-#~ msgid "Protected"
-#~ msgstr "Automatikus meghatározás"
-
 #~ msgid "Python Console Project"
 #~ msgstr "Python nyelvet használó konzolos projekt"
 
@@ -34814,9 +34904,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Redundant using directive"
 #~ msgstr "Töréspont törlése"
-
-#~ msgid "Refactoring project {0}"
-#~ msgstr "Projekt újragyártása ({0})"
 
 #~ msgid "Refactory"
 #~ msgstr "Újragyártás"
@@ -35635,6 +35722,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Reverse 'for' loop'"
 #~ msgstr "MonoDevelop-ba konvertálás"
+
+#, fuzzy
+#~ msgid "Revert left changes button"
+#~ msgstr "Változások át_tekintése"
+
+#, fuzzy
+#~ msgid "Revert right changes button"
+#~ msgstr "Változások át_tekintése"
 
 #, fuzzy
 #~ msgid "Revision {0}\t{1}\t{2}"
@@ -36842,6 +36937,10 @@ msgstr ""
 
 #~ msgid "Words"
 #~ msgstr "Szavak"
+
+#, fuzzy
+#~ msgid "Worker"
+#~ msgstr "Munkaterület"
 
 #~ msgid "Workspace name may not contain any of the following characters: {0}"
 #~ msgstr ""

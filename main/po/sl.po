@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-26 12:38:03+0100\n"
+"POT-Creation-Date: 2020-01-20 11:44:29+0100\n"
 "PO-Revision-Date: 2006-11-18 01:38+0100\n"
 "Last-Translator: Matej Urbas <matej.urbas@gmail.com>\n"
 "Language-Team: Slovene\n"
@@ -337,7 +337,7 @@ msgstr "_Odstrani..."
 msgid "(keyword)"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1038
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:1088
 msgid "(latest stable)"
 msgstr ""
 
@@ -478,7 +478,7 @@ msgstr "Dodaj sredstva"
 msgid ".NET Core is not installed"
 msgstr "E-Dodatek '{0}' ni nameščen."
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:201
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:202
 msgid ""
 ".NET Core {0} SDK is required to build this application, and is not "
 "installed. Install the latest update to the .NET Core {0} SDK by visiting {1}"
@@ -491,7 +491,7 @@ msgid ""
 "visiting {1}"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:187
+#: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore/DotNetCoreSdk.cs:188
 msgid ""
 ".NET Core {0}.{1} SDK version {2} is not compatible with this version of "
 "Visual Studio for Mac. Install the latest update to the .NET Core {0}.{1} "
@@ -584,7 +584,7 @@ msgstr "Dodaj sredstva"
 msgid ".NET program"
 msgstr "Dodaj sredstva"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:229
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:235
 #, fuzzy
 msgid ".Net A_ssembly"
 msgstr ".Net zbirka"
@@ -1044,8 +1044,8 @@ msgstr ""
 msgid "<b>{0}</b>"
 msgstr "Razred {0}"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1102
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:304
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1117
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:333
 msgid "<b>{0}</b> has been thrown"
 msgstr ""
 
@@ -1141,7 +1141,7 @@ msgstr ""
 msgid "A P2P program"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:751
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
 msgid "A Project with that name is already in your Project Space"
 msgstr "Projekt s tem imenom je že v seznamu projektov."
 
@@ -1514,7 +1514,7 @@ msgstr ""
 msgid "A simulation game"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:756
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:786
 #, fuzzy
 msgid "A solution with that filename is already in your workspace"
 msgstr "Projekt s tem imenom je že v seznamu projektov."
@@ -1887,7 +1887,7 @@ msgid "Abort Update"
 msgstr "_O programu..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:61
-#: ../src/addins/MacPlatform/MacPlatform.cs:639
+#: ../src/addins/MacPlatform/MacPlatform.cs:652
 #, fuzzy
 msgid "About {0}"
 msgstr "_O programu..."
@@ -2199,7 +2199,7 @@ msgstr "Dodaj datoteke..."
 msgid "Add New Repository"
 msgstr "Dodaj nov repozitorij"
 
-#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:54
+#: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore.Scaffolding/ScaffolderWizard.cs:53
 #, fuzzy
 msgid "Add New Scaffolding"
 msgstr "Dodaj novo rešitev..."
@@ -2219,9 +2219,9 @@ msgstr "Ustvari nov C# konzolni projekt."
 msgid "Add Open"
 msgstr "Izvorna koda"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:198
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:927
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:225
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:977
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:472
 #, fuzzy
 msgid "Add Package"
 msgstr "Upravitelj E-_Dodatkov..."
@@ -2286,7 +2286,7 @@ msgstr "Dodaj datoteke..."
 msgid "Add View..."
 msgstr "Dodaj datoteke"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:964
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:972
 #, fuzzy
 msgid "Add Watch"
 msgstr "Pot"
@@ -2404,8 +2404,8 @@ msgid "Add files"
 msgstr "Dodaj datoteke"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:304
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:68
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:128
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:86
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:224
 #, fuzzy
 msgid "Add item to watch"
 msgstr "Pot"
@@ -2419,7 +2419,7 @@ msgstr ""
 msgid "Add method not found in {0}"
 msgstr "Nisem našel datoteke '{0}'"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:229
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:355
 #, fuzzy
 msgid "Add new expression"
 msgstr "Regularni izrazi"
@@ -3182,7 +3182,7 @@ msgid "Application to record audio/video files"
 msgstr "Nastavitvena datoteka programa"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.WelcomePage/WelcomePageFirstRun.cs:83
-#: ../src/addins/MacPlatform/MacPlatform.cs:803
+#: ../src/addins/MacPlatform/MacPlatform.cs:816
 #, fuzzy
 msgid "ApplicationIcon"
 msgstr "AWT program"
@@ -3533,7 +3533,7 @@ msgid "Assemblies"
 msgstr "Zbirke"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:98
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:306
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:301
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:85
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:64
 msgid "Assembly"
@@ -3623,7 +3623,7 @@ msgstr ""
 msgid "Assembly:\t{0}"
 msgstr "Zbirka"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:397
+#: ../src/addins/MacPlatform/MacPlatform.cs:402
 msgid "Assistive Technology Detected"
 msgstr ""
 
@@ -3684,7 +3684,7 @@ msgstr ""
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:190
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:126
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/GitSelectRevisionDialog.cs:97
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:295
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:306
 #, fuzzy
 msgid "Author"
 msgstr "Avtor:"
@@ -3922,7 +3922,7 @@ msgstr ""
 msgid "Baltic"
 msgstr "Na_zaj"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:195
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:204
 msgid "Base"
 msgstr ""
 
@@ -4097,7 +4097,7 @@ msgid "Breakpoints"
 msgstr "Preklopi prelomno točko"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/BaseFileEntry.cs:54
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:104
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:118
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.Gui/DotNetCoreSdkLocationWidget.UI.cs:90
 #: ../external/xwt/Xwt/Xwt/FileSelector.cs:181
 #: ../external/xwt/Xwt/Xwt/FolderSelector.cs:151
@@ -4187,7 +4187,7 @@ msgstr "Izgradi rešitev"
 msgid "Build canceled."
 msgstr "Izgradnja ni uspela-"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2035
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2045
 msgid "Build complete -- "
 msgstr "Izgradnja končana -- "
 
@@ -4580,8 +4580,8 @@ msgstr "Odpri datoteko ali rešitev"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Wizard/WizardDialog.cs:159
 #: ../src/addins/MacPlatform/Dialogs/SelectEncodingPanel.cs:67
 #: ../src/addins/MacPlatform/MacProxyCredentialProvider.cs:123
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:465
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:458
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:466
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/DebugApplicationDialog.cs:66
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/NoSourceView.cs:132
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ServiceWidget.cs:192
@@ -4596,7 +4596,7 @@ msgstr "Izgradnja ni uspela-"
 msgid "Cancel closing the workspace"
 msgstr "Dodaj nov projekt..."
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1213
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:1219
 #, fuzzy
 msgid "Cancel operation"
 msgstr "Operacije 'Refactory'"
@@ -4610,7 +4610,7 @@ msgstr "Razhroščevanje programa..."
 msgid "Cancel running test"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:456
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:457
 #, fuzzy
 msgid "Cancel the current operation"
 msgstr "Operacije 'Refactory'"
@@ -4640,7 +4640,7 @@ msgstr ""
 msgid "Cancelling operation..."
 msgstr "Operacije 'Refactory'"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1969
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1979
 #, fuzzy
 msgid "Cannot create directory {0}, as a file with that name exists."
 msgstr "Ni bilo mogoče ustvariti imenika '{0}'. Imenik že obstaja."
@@ -4822,7 +4822,7 @@ msgstr ""
 msgid "Changes made in those files will be overwritten by {0}."
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:166
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:163
 #, fuzzy
 msgid "Changes successfully stashed"
 msgstr "Operacija se je uspešno izvedla."
@@ -5350,6 +5350,11 @@ msgstr "_Odstrani iz projekta"
 msgid "Choose the reference assemblies for your NuGet package."
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:976
+#, fuzzy
+msgid "Class"
+msgstr "Razredi"
+
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:715
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:730
 #: ../src/addins/MonoDevelop.DotNetCore/Properties/MonoDevelop.DotNetCore.addin.xml:743
@@ -5409,7 +5414,7 @@ msgstr "Izberite ciljno lokacijo"
 msgid "Clean canceled."
 msgstr "_Cilj prevajanja"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2411
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2421
 #, fuzzy
 msgid "Clean complete"
 msgstr "Iskanje zaključeno."
@@ -5655,7 +5660,7 @@ msgstr "Nalagam..."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.Docking/DockItemTitleTab.cs:255
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.PreviewVisualizers/PreviewVisualizerWindow.cs:63
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:459
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:479
 #: ../external/xwt/Xwt/Xwt/Command.cs:64
 #, fuzzy
 msgid "Close"
@@ -5672,7 +5677,7 @@ msgstr "_Zapri datoteko"
 msgid "Close All Files"
 msgstr "_Zapri datoteko"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:655
 #, fuzzy
 msgid "Close MonoDevelop"
 msgstr "MonoDevelop"
@@ -6050,6 +6055,16 @@ msgstr ""
 msgid "Compact Layout"
 msgstr "Ustvari nov razred"
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:133
+#, fuzzy
+msgid "Compared Revision"
+msgstr "Različica"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#, fuzzy
+msgid "Comparing Revision Editor"
+msgstr "Različica"
+
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:466
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/MonoExecutionParameters.cs:472
 #, fuzzy
@@ -6143,9 +6158,9 @@ msgstr "Regresije"
 msgid "Configuration"
 msgstr "Nastavitve"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1991
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2375
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2425
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2001
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2385
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2435
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/DotNetProject.cs:2009
 #, fuzzy
 msgid "Configuration '{0}' not found in project '{1}'"
@@ -6189,7 +6204,7 @@ msgstr "Nastavitve"
 msgid "Configure"
 msgstr "Nastavitve"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:56
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:57
 #, fuzzy
 msgid "Configure Sources..."
 msgstr "Nastavi namestitvene objekte..."
@@ -6312,12 +6327,12 @@ msgstr ""
 msgid "Console input not supported"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:130
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:137
 #, fuzzy
 msgid "Consolidate"
 msgstr "AWT program"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:937
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:987
 #, fuzzy
 msgid "Consolidate Package"
 msgid_plural "Consolidate Packages"
@@ -6344,12 +6359,12 @@ msgstr[1] "Ustvari nov C# konzolni projekt."
 msgstr[2] "Ustvari nov C# konzolni projekt."
 msgstr[3] "Ustvari nov C# konzolni projekt."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:832
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:880
 #, fuzzy
 msgid "Consolidating {0} packages..."
 msgstr "Paketi"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:824
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:872
 #, fuzzy
 msgid "Consolidating {0}..."
 msgstr "Odpiram '{0}'"
@@ -6392,7 +6407,7 @@ msgstr ""
 msgid "Continue"
 msgstr "Omejitve"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:659
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:657
 #, fuzzy
 msgid "Continue Anyway"
 msgstr "Omejitve"
@@ -6466,7 +6481,7 @@ msgstr "Pojdi v vrstico"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/GtkUtil.cs:690
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:279
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:357
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:970
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:978
 #: ../external/xwt/Xwt/Xwt/Command.cs:69
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:138
 #, fuzzy
@@ -6559,12 +6574,12 @@ msgstr ""
 msgid "Could not close solution '{0}'."
 msgstr "Nisem mogel shraniti rešitve: {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:834
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:882
 #, fuzzy
 msgid "Could not consolidate packages."
 msgstr "Ne morem izbrisati imenika '{0}'"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:826
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:874
 #, fuzzy
 msgid "Could not consolidate {0}."
 msgstr "Ne morem izbrisati imenika '{0}'"
@@ -6573,7 +6588,7 @@ msgstr "Ne morem izbrisati imenika '{0}'"
 msgid "Could not create directory '{0}'."
 msgstr "Imenika '{0}' ni bilo možno ustvariti."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:778
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:808
 msgid "Could not create directory {0}. File already exists."
 msgstr "Ni bilo mogoče ustvariti imenika '{0}'. Imenik že obstaja."
 
@@ -6582,7 +6597,7 @@ msgstr "Ni bilo mogoče ustvariti imenika '{0}'. Imenik že obstaja."
 msgid "Could not create temporary directory."
 msgstr "Imenika '{0}' ni bilo možno ustvariti."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2182
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2192
 #, fuzzy
 msgid "Could not find support file '{0}'."
 msgstr "Ni bilo možno odpreti URL naslova '{0}'"
@@ -6650,7 +6665,7 @@ msgid "Could not load solution item: {0}"
 msgstr "Nisem mogel naložiti rešitve: {0}"
 
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects.MSBuild/SlnFileFormat.cs:384
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:377
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:375
 msgid "Could not load solution: {0}"
 msgstr "Nisem mogel naložiti rešitve: {0}"
 
@@ -6695,7 +6710,7 @@ msgstr "Ne morem ustvariti imenika '{0}'"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:69
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:789
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:837
 #, fuzzy
 msgid "Could not remove packages."
 msgstr "Ni bilo možno pridobiti informacij o repozitoriju"
@@ -6755,7 +6770,7 @@ msgstr "Ne morem izbrisati imenika '{0}'"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:99
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:813
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:861
 #, fuzzy
 msgid "Could not update packages."
 msgstr "Ne morem izbrisati imenika '{0}'"
@@ -7517,6 +7532,11 @@ msgstr ""
 msgid "Creating configure.ac"
 msgstr ""
 
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:729
+#, fuzzy
+msgid "Creating project {0}"
+msgstr "Preoblikujem projekt '{0}'"
+
 #: ../src/addins/MonoDevelop.Autotools/SolutionDeployer.cs:122
 msgid "Creating rules.make"
 msgstr ""
@@ -7585,7 +7605,7 @@ msgstr "Trenutna datoteka"
 msgid "Current Project"
 msgstr "Počisti pretekle projekte"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:393
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:410
 #, fuzzy
 msgid "Current Version:"
 msgstr "Trenutni stolpec"
@@ -7686,8 +7706,8 @@ msgstr "_Izreži"
 msgid "Custom Tool Namespace"
 msgstr "Ime postavitve:"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1438
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1451
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1448
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:1461
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:676
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:690
 #: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/SolutionItem.cs:763
@@ -7732,11 +7752,11 @@ msgstr "Počisti pretekle projekte"
 msgid "Custom project started building"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:772
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:770
 msgid "CustomizerAssemblyPath"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:777
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:775
 #, fuzzy
 msgid "CustomizerType"
 msgstr "_Izreži"
@@ -8095,7 +8115,7 @@ msgstr "Razred {0}"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/LogWidget.cs:791
 #: ../src/addins/MonoDevelop.WebReferences/MonoDevelop.WebReferences.addin.xml:31
 #: ../src/addins/MonoDevelop.Gettext/MonoDevelop.Gettext.Editor/POEditorWidget.cs:528
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:979
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:987
 #: ../external/xwt/Xwt/Xwt/Command.cs:65
 #: ../src/tools/mdmonitor/gtk-gui/Mono.Instrumentation.Monitor.InstrumentationViewerDialog.cs:153
 msgid "Delete"
@@ -8237,7 +8257,7 @@ msgstr ""
 msgid "Deleting Files..."
 msgstr "Nadomesti v _datotekah"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:379
 #: ../src/addins/MonoDevelop.ConnectedServices/DependenciesSection.cs:25
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/DependenciesSectionWidget.cs:39
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/DependenciesNode.cs:66
@@ -8497,7 +8517,7 @@ msgstr "Imenik:"
 msgid "Directory structure:"
 msgstr "Imenik:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:770
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:800
 #, fuzzy
 msgid ""
 "Directory {0} already exists.\n"
@@ -8906,8 +8926,8 @@ msgstr "Nalagam "
 msgid "Downloading {0}"
 msgstr "Izgradi {0}"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:622
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:665
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
 #, fuzzy
 msgid "Downloads"
 msgstr "Nalagam "
@@ -9972,7 +9992,7 @@ msgstr "Samo celotne besede"
 msgid "Error Message"
 msgstr "{0} Obvestilo"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2185
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2195
 #, fuzzy
 msgid "Error copying support file '{0}'."
 msgstr "Napaka ob nalaganju šablone iz sredstva '{0}'"
@@ -9986,7 +10006,7 @@ msgstr ""
 msgid "Error creating file"
 msgstr "Napaka ob nalaganju šablone iz sredstva '{0}'"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2218
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2228
 #, fuzzy
 msgid "Error deleting support file '{0}'."
 msgstr "Nalagam rešitev: {0}"
@@ -10071,14 +10091,14 @@ msgstr "Nadomeščam '{0}' z '{1}'."
 msgid "Error while getting revision text."
 msgstr "Nadomeščam '{0}' z '{1}'."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:162
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:171
 #, fuzzy
 msgid ""
 "Error while getting the base text of {0}:\n"
 "{1}"
 msgstr "Nadomeščam '{0}' z '{1}'."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:291
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:300
 #, fuzzy
 msgid ""
 "Error while getting the text of revision {0}:\n"
@@ -10191,8 +10211,8 @@ msgid "Evaluating..."
 msgstr "Shranjujem..."
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:845
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:152
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:351
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:153
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:354
 #, fuzzy
 msgid "Evaluating…"
 msgstr "Shranjujem..."
@@ -10237,7 +10257,7 @@ msgstr "Vsak"
 msgid "Every month"
 msgstr "Vsak"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:363
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:371
 #, fuzzy
 msgid "Exception Caught"
 msgstr "Nastavitve"
@@ -10589,7 +10609,7 @@ msgstr "Upravitelj repozitorija E-Dodatkov"
 msgid "Extension packages"
 msgstr "Paketi"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:560
+#: ../src/addins/MacPlatform/MacPlatform.cs:573
 #, fuzzy
 msgid "Extensions..."
 msgstr "Končnica"
@@ -10836,6 +10856,11 @@ msgstr "Shranjujem..."
 #, fuzzy
 msgid "Fetching remote..."
 msgstr "Shranjujem..."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:981
+#, fuzzy
+msgid "Field"
+msgstr "Najdi"
 
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeRefactorings/ConvertToEnum/ConvertToEnumDialog.cs:72
 #, fuzzy
@@ -11110,7 +11135,7 @@ msgid ""
 msgstr "Datoteka '{0}' že obstaja, ali jo želite prepisati?"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui/Document.cs:519
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:672
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:674
 #, fuzzy
 msgid "File {0} already exists. Overwrite?"
 msgstr "Datoteka {0} že obstaja. Prepišem?"
@@ -12549,7 +12574,7 @@ msgstr "Podrobnosti"
 msgid "Hide other applications' windows"
 msgstr "_Okno"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:644
+#: ../src/addins/MacPlatform/MacPlatform.cs:657
 #, fuzzy
 msgid "Hide {0}"
 msgstr "Izgradi {0}"
@@ -12624,6 +12649,11 @@ msgstr ""
 msgid "Hue"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:285
+msgid "ID"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkNuGetPackageMetadataOptionsPanelWidget.cs:190
 #: ../src/addins/MonoDevelop.Packaging/Gui/MonoDevelop.Packaging.Gui.GtkPackagingProjectTemplateWizardPageWidget.cs:188
 msgid "ID:"
@@ -12687,8 +12717,6 @@ msgid "Icon:"
 msgstr "Minimiziraj"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ThreadsPad.cs:108
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:44
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:276
 msgid "Id"
 msgstr ""
 
@@ -12849,7 +12877,7 @@ msgstr ""
 msgid "Illegal characters used in project location."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:762
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:792
 msgid ""
 "Illegal project name.\n"
 "Name cannot contain a language keyword."
@@ -13239,7 +13267,7 @@ msgstr "Informacije o rešitvi"
 msgid "Information Message"
 msgstr "{0} Obvestilo"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:609
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
 msgid "Information about the Instrumentation Service"
 msgstr ""
 
@@ -13275,6 +13303,11 @@ msgid ""
 "Inline comment inserted within a regular expression. \n"
 "The comment terminates at the first closing parenthesis character."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:530
+#, fuzzy
+msgid "Inner Exceptions"
+msgstr "Nastavitve"
 
 #: ../src/addins/MonoDevelop.RegexToolkit/Gui/MonoDevelop.RegexToolkit.RegexToolkitWidget.cs:223
 msgid "Input:"
@@ -13545,7 +13578,7 @@ msgstr "Izvajanje testa je bilo prekinjeno"
 msgid "Installation failed"
 msgstr "Namestitev je spodletela!"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:114
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:125
 #: ../src/addins/MonoDevelop.ConnectedServices/Gui.ServicesTab/ConfigurationSectionWidget.cs:136
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:117
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:259
@@ -13574,7 +13607,7 @@ msgstr "_Namesti E-Dodatke..."
 msgid "Installing…"
 msgstr "_Odstrani..."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:607
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:605
 #, fuzzy
 msgid "Instrumentation"
 msgstr "<b>Generator koda</b>"
@@ -13583,7 +13616,7 @@ msgstr "<b>Generator koda</b>"
 msgid "Instrumentation Monitor"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:608
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/Ide.cs:606
 msgid "Instrumentation service enabled"
 msgstr ""
 
@@ -13610,6 +13643,7 @@ msgid "Interface {0}. {1}"
 msgstr "Preimenuj datoteko"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:98
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:989
 #, fuzzy
 msgid "Internal"
 msgstr "Notranja napaka"
@@ -14169,7 +14203,7 @@ msgid "Library name must not exceed 100 characters."
 msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/AboutMonoDevelopTabPage.cs:80
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:336
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
 #, fuzzy
 msgid "License"
 msgstr "Pojdi v vrstico"
@@ -14242,6 +14276,11 @@ msgstr ""
 msgid "List of programs to open with"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:969
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:978
+msgid "Literal"
+msgstr ""
+
 #: ../src/addins/Deployment/MonoDevelop.Deployment.Linux/MonoDevelop.Deployment.Linux/DesktopInfo.xml:103
 msgid "Literature software"
 msgstr ""
@@ -14299,8 +14338,8 @@ msgstr "Nalagam..."
 msgid "Loading data…"
 msgstr "Nalagam..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:296
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:193
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:323
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:202
 #, fuzzy
 msgid "Loading package list..."
 msgstr "Nalagam..."
@@ -14339,20 +14378,20 @@ msgstr "Nalagam '{0}' E-Dodatek"
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/SelectRepositoryDialog.cs:287
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.Views.LogWidget.cs:73
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring/QuickFixMenuHandler.cs:48
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:639
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:653
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1272
 #: ../external/fsharpbinding/MonoDevelop.FSharpBinding/RefactoringOperationsHandler.fs:767
 msgid "Loading..."
 msgstr "Nalagam..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:93
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:100
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:909
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/LoadingObjectValueNode.cs:33
 #, fuzzy
 msgid "Loading…"
 msgstr "Nalagam..."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:194
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:203
 #, fuzzy
 msgid "Local"
 msgstr "Lokalna kopija reference"
@@ -14695,12 +14734,12 @@ msgstr ""
 msgid "Manage Branches and Remotes"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:83
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:85
 #, fuzzy
 msgid "Manage NuGet Packages – Solution"
 msgstr "Izberite ciljno nastavitev za vsako rešitev:"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:160
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:187
 #, fuzzy
 msgid "Manage NuGet Packages – {0}"
 msgstr "Paketi"
@@ -15028,6 +15067,11 @@ msgstr ""
 msgid "Metadata"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:977
+#, fuzzy
+msgid "Method"
+msgstr "Preimenuj datoteko"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/RoslynSearchCategory.DeclaredSymbolInfoResult.cs:60
 #, fuzzy
 msgid "Method {0}. {1}"
@@ -15289,7 +15333,7 @@ msgid ""
 "custom commands which will be available in the project or solution menu."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:350
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:348
 #, fuzzy
 msgid "MonoDevelop failed to start"
 msgstr "Datoteke rešitve"
@@ -15312,12 +15356,12 @@ msgstr "Datoteke rešitve"
 msgid "More"
 msgstr "_Premakni"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:658
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:656
 #, fuzzy
 msgid "More Information"
 msgstr "Informacije o rešitvi"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:667
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:681
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinInfoView.cs:170
 #, fuzzy
 msgid "More information"
@@ -15626,6 +15670,7 @@ msgstr ""
 #: ../src/addins/MonoDevelop.AssemblyBrowser/MonoDevelop.AssemblyBrowser/AssemblyBrowserWidget.cs:510
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:64
 #: ../src/addins/Xml/Editor/XmlSchemasPanelWidget.cs:119
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:979
 #, fuzzy
 msgid "Namespace"
 msgstr "Imenski prostor:"
@@ -15814,7 +15859,7 @@ msgstr "Dodaj skupino"
 msgid "New Group..."
 msgstr "Nova skupina akcij..."
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:368
+#: ../src/addins/MacPlatform/MacPlatform.cs:373
 #, fuzzy
 msgid "New Instance"
 msgstr "Novo ime:"
@@ -15867,7 +15912,7 @@ msgstr "Novo opravilo"
 msgid "New Tool"
 msgstr "Novo orodje"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:419
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:438
 #, fuzzy
 msgid "New Version:"
 msgstr "Različica:"
@@ -16018,7 +16063,7 @@ msgstr "Dokumentacija"
 
 #: ../src/addins/MonoDevelop.WebReferences/Gui/MonoDevelop.WebReferences.Dialogs.WCFConfigWidget.cs:111
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.OptionProvider/StyleViewModel.cs:1278
-#: ../src/addins/MacPlatform/MacPlatform.cs:400
+#: ../src/addins/MacPlatform/MacPlatform.cs:405
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/Style/AbstractCodeStyleOptionViewModel.cs:105
 #: ../external/xwt/Xwt/Xwt/Command.cs:63
 #, fuzzy
@@ -16055,7 +16100,7 @@ msgstr "Kopiraj označeno vsebino..."
 msgid "No applicable frameworks for this selection!"
 msgstr ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:168
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:165
 msgid "No changes were available to stash"
 msgstr ""
 
@@ -16124,7 +16169,7 @@ msgstr ""
 msgid "No matches"
 msgstr "{0} zadetek"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:208
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:217
 #, fuzzy
 msgid "No matching packages found."
 msgstr "Ni bilo zaznanih regresij. "
@@ -16247,7 +16292,7 @@ msgstr ""
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:72
 #: ../src/addins/AspNet/Execution/XspOptionsPanelWidget.cs:79
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNode.cs:149
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:384
 #: ../external/fsharpbinding/MonoDevelop.FSharp.Gui/MonoDevelop.FSharp.Gui.FSharpCompilerOptionsWidget.cs:189
 #: ../src/addins/MonoDevelop.Packaging/MonoDevelop.Packaging.Gui/GtkNuGetPackageMetadataOptionsPanelWidget.cs:279
 msgid "None"
@@ -16388,6 +16433,16 @@ msgstr ""
 msgid "O_pen Containing Folder"
 msgstr "Nov imenik"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:270
+#, fuzzy
+msgid "Object Name"
+msgstr "Projekt je bil shranjen."
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:194
+#, fuzzy
+msgid "Object Value"
+msgstr "Mesto"
+
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.CodeTemplates/MonoDevelop-templates.xml:834
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:472
 #: ../src/addins/AspNet/Razor/Razor-templates.xml:493
@@ -16508,6 +16563,15 @@ msgstr "_Ciljni imenik"
 msgid "Open NuGet.Config file..."
 msgstr "Odpri datoteko..."
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectNameView.cs:95
+msgid "Open Preview Visualizer"
+msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:980
+#, fuzzy
+msgid "Open Resource Folder"
+msgstr "Nov imenik"
+
 #: ../src/addins/MonoDevelop.ConnectedServices/Properties/MonoDevelop.ConnectedServices.addin.xml:45
 #, fuzzy
 msgid "Open Service Details"
@@ -16525,6 +16589,11 @@ msgstr "Nov imenik"
 #: ../src/addins/MonoDevelop.AspNetCore/MonoDevelop.AspNetCore/AspNetCoreRunConfigurationEditor.cs:103
 msgid "Open URL in web browser when app starts:"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:85
+#, fuzzy
+msgid "Open Value Visualizer"
+msgstr "_Ponovno naloži datoteko"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/FileSelectorDialog.cs:82
 #: ../src/addins/MacPlatform/Dialogs/MacOpenFileDialogHandler.cs:197
@@ -16713,6 +16782,15 @@ msgstr ""
 msgid "Original (msgid):"
 msgstr ""
 
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:119
+#, fuzzy
+msgid "Original Revision"
+msgstr "Različica"
+
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:96
+msgid "Original Revision Editor"
+msgstr ""
+
 #: ../src/addins/MonoDevelop.Gettext/Gui/MonoDevelop.Gettext.POEditorWidget.cs:404
 msgid "Original plural (msgid_plural):"
 msgstr ""
@@ -16884,7 +16962,7 @@ msgstr "Projektve nastavitve"
 msgid "Pack"
 msgstr "Paket"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:305
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:300
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:97
 #: ../src/addins/Deployment/MonoDevelop.Deployment/MonoDevelop.Deployment/PackageBuilder.cs:63
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:43
@@ -16925,7 +17003,7 @@ msgstr "Paketi"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:45
 #, fuzzy
-msgid "Package Id."
+msgid "Package ID."
 msgstr "Paket"
 
 #: ../src/addins/MonoDevelop.Autotools/Gui/MonoDevelop.Autotools.MakefileOptionPanelWidget.cs:818
@@ -16933,7 +17011,7 @@ msgstr "Paket"
 msgid "Package References"
 msgstr "Reference"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:140
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:148
 #, fuzzy
 msgid "Package Search"
 msgstr "Paketi"
@@ -16982,6 +17060,11 @@ msgstr "Operacija se je izvedla z opozorili."
 msgid "Package retargeting required."
 msgstr "Paketi"
 
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:102
+#, fuzzy
+msgid "Package source"
+msgstr "Upravitelj E-_Dodatkov..."
+
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:149
 msgid "Package that provides this reference."
 msgstr ""
@@ -16993,6 +17076,7 @@ msgstr "Paketi"
 
 #: ../src/addins/Deployment/MonoDevelop.Deployment/Gui/MonoDevelop.Deployment.Gui.DeployDialog.cs:453
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/ProjectPackagesFolderNode.cs:117
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:190
 #: ../src/addins/MonoDevelop.ConnectedServices/ConnectedServiceDependency.cs:25
 msgid "Packages"
 msgstr "Paketi"
@@ -17018,6 +17102,11 @@ msgid ""
 "installed in projects targeting multiple frameworks. The MSBuild targets and "
 "props files have been ignored."
 msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:642
+#, fuzzy
+msgid "Packages loaded"
+msgstr "Paketi"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:160
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:170
@@ -17230,7 +17319,7 @@ msgstr ""
 msgid "Performance Diagnostics"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2027
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2037
 msgid "Performing main compilation…"
 msgstr ""
 
@@ -17259,7 +17348,7 @@ msgstr "Izhodna pot"
 msgid "Pin results pad"
 msgstr "Prikaži okence rezultatov"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:59
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:57
 #, fuzzy
 msgid "Pin to the editor"
 msgstr "Urejevalnik besedila"
@@ -17466,7 +17555,7 @@ msgstr ""
 msgid "Policies to set or replace:"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:557
+#: ../src/addins/MacPlatform/MacPlatform.cs:570
 #, fuzzy
 msgid "Policies..."
 msgstr "Prevajalnik:"
@@ -17669,7 +17758,7 @@ msgstr "NUnit nastavitve"
 msgid "Preferences"
 msgstr "Reference"
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:556
+#: ../src/addins/MacPlatform/MacPlatform.cs:569
 #, fuzzy
 msgid "Preferences..."
 msgstr "Reference"
@@ -17724,7 +17813,7 @@ msgstr ""
 msgid "Press the key combination you want to assign to the accelerator..."
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:644
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:654
 msgid "Press ‘{0}’ to search"
 msgstr ""
 
@@ -17812,6 +17901,11 @@ msgstr "Prioriteta:"
 msgid "Privacy Statement"
 msgstr ""
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:988
+#, fuzzy
+msgid "Private"
+msgstr "Natisnij izvorno kodo"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/XwtCredentialsDialog.cs:300
 #, fuzzy
 msgid "Private Key Files"
@@ -17832,7 +17926,7 @@ msgstr "Natisnij izvorno kodo"
 msgid "Private sources only"
 msgstr "Natisnij izvorno kodo"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:222
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:228
 #, fuzzy
 msgid "Pro_jects"
 msgstr "Projekti"
@@ -17906,10 +18000,10 @@ msgstr "Lastnosti"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Pads/ErrorListPad.cs:680
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultWidget.cs:139
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/ProjectReferencePanel.cs:79
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:307
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:302
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/NamespaceSynchronisationPanel.cs:268
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.GenerateType/GenerateTypeDialog.cs:173
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:257
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:279
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:77
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:68
 msgid "Project"
@@ -18011,7 +18105,7 @@ msgstr "Projekt je bil shranjen."
 msgid "Project Options"
 msgstr "Projektne nastavitve"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:350
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:364
 #, fuzzy
 msgid "Project Page"
 msgstr "Projektne datoteke"
@@ -18185,13 +18279,14 @@ msgstr "Projektve nastavitve"
 #: ../src/addins/MonoDevelop.GtkCore/MonoDevelop.GtkCore.GuiBuilder/PropertiesWidget.cs:57
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.CodeGeneration/PropertyGenerator.cs:50
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp.ClassOutline/OutlineSettings.cs:65
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:221
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:258
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.addin.xml:51
 msgid "Properties"
 msgstr "Lastnosti"
 
 #: ../src/addins/MonoDevelop.GtkCore/libsteticui/PropertyTree.cs:34
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.Refactoring.Options/UI/GridOptionPreviewControl.cs:116
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:975
 #, fuzzy
 msgid "Property"
 msgstr "Lastnosti"
@@ -18216,6 +18311,10 @@ msgstr "Lastnost {0} : {1}"
 #: ../src/addins/MonoDevelop.UnitTesting/MonoDevelop.UnitTesting.addin.xml:75
 msgid "Proportional time scale"
 msgstr "Proporcionalen časovni interval"
+
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:991
+msgid "Protected"
+msgstr ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/Gui/MonoDevelop.VersionControl.UrlBasedRepositoryEditor.cs:116
 msgid "Protocol:"
@@ -18288,7 +18387,7 @@ msgstr ""
 msgid "Publish your app to a folder or a file share"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:310
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:322
 #, fuzzy
 msgid "Published"
 msgstr "Objavi..."
@@ -18443,7 +18542,7 @@ msgstr ""
 msgid "Quiet"
 msgstr ""
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:257
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:251
 #, fuzzy
 msgid "Quit"
 msgstr "I_zhod"
@@ -18637,7 +18736,7 @@ msgstr ""
 msgid "React.js and Redux"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:647
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:661
 msgid "Read More…"
 msgstr ""
 
@@ -18728,12 +18827,12 @@ msgstr "Šablone koda"
 msgid "Recent _Files"
 msgstr "Prejšnje _datoteke"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:323
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:302
 #, fuzzy
 msgid "Recently used"
 msgstr "Urejevalnik besedila"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:433
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:412
 #, fuzzy
 msgid "Recently used templates"
 msgstr "Šablone koda"
@@ -18773,7 +18872,7 @@ msgstr "Pred_ogled tiskanja"
 msgid "Refactory Operations"
 msgstr "Operacije 'Refactory'"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:180
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:186
 #: ../src/addins/CSharpBinding/MonoDevelop.CSharp/SignatureMarkupCreator.cs:985
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:45
 #: ../src/addins/MonoDevelop.DesignerSupport/MonoDevelop.DesignerSupport.Projects/ProjectReferenceDescriptor.cs:57
@@ -18866,7 +18965,7 @@ msgstr "Osveži"
 msgid "Refresh the tree"
 msgstr "Osveži"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:69
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectPinView.cs:67
 #, fuzzy
 msgid "Refresh value"
 msgstr "Osveži"
@@ -19166,7 +19265,7 @@ msgstr "Shrani vse odprte datoteke"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:67
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:147
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:787
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
 #, fuzzy
 msgid "Removing {0} packages..."
 msgstr "Paketi"
@@ -19191,7 +19290,7 @@ msgstr "Shranjujem..."
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:196
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects.OptionPanels/SolutionRunConfigurationsPanel.cs:262
 #: ../src/core/MonoDevelop.Ide/Gui/MonoDevelop.Ide.Projects.OptionPanels.CombineEntryConfigurationsPanelWidget.cs:81
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:973
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacObjectValueTreeView.cs:981
 msgid "Rename"
 msgstr "Preimenuj"
 
@@ -19545,7 +19644,7 @@ msgstr "Sredstva"
 msgid "Resources"
 msgstr "Sredstva"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:258
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:252
 #, fuzzy
 msgid "Restart"
 msgstr "Odpiram '{0}'"
@@ -19565,7 +19664,7 @@ msgstr "Razhroščevanje"
 msgid "Restart Without Debugging"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:399
+#: ../src/addins/MacPlatform/MacPlatform.cs:404
 #, fuzzy
 msgid "Restart and enable"
 msgstr "Uporabniški vmesnik"
@@ -19709,7 +19808,7 @@ msgstr ""
 msgid "Retrieving history…"
 msgstr "Registriraj omrežni repozitorij"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:274
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ComparisonWidget.cs:283
 #, fuzzy
 msgid "Retrieving revision {0}..."
 msgstr "Različica"
@@ -19767,21 +19866,11 @@ msgstr ""
 msgid "Revert changes margin"
 msgstr "ChangeLog"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert left changes button"
-msgstr "ChangeLog"
-
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertCommand.cs:91
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl/RevertRevisionsCommands.cs:133
 #, fuzzy
 msgid "Revert operation completed."
 msgstr "Shranjevanje ni uspelo."
-
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:483
-#, fuzzy
-msgid "Revert right changes button"
-msgstr "ChangeLog"
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:121
 #, fuzzy
@@ -19801,17 +19890,29 @@ msgstr ""
 msgid "Revert unsaved changes to document '{0}'?"
 msgstr "_Ne shrani sprememb v odprtih dokumentih"
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:486
-msgid "Revert {0} inserted lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:485
+msgid "Revert {0} inserted line starting at {1}"
+msgid_plural "Revert {0} inserted lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:488
-msgid "Revert {0} removed lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:487
+msgid "Revert {0} removed line starting at {1}"
+msgid_plural "Revert {0} removed lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:490
-msgid "Revert {0} replaced lines starting at {1}"
-msgstr ""
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/EditorCompareWidgetBase.MiddleArea.cs:489
+msgid "Revert {0} replaced line starting at {1}"
+msgid_plural "Revert {0} replaced lines starting at {1}"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
 
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl.Subversion.Unix/MonoDevelop.VersionControl.Subversion.Unix/SvnClient.cs:1362
 #: ../src/addins/VersionControl/Subversion.Win32/SvnSharpClient.cs:767
@@ -20568,10 +20669,11 @@ msgstr "Označi kot zagonski projekt"
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:168
 #: ../src/addins/MacPlatform/MainToolbar/SearchBar.cs:193
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/SearchPackagesSearchCategory.cs:43
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:147
 msgid "Search"
 msgstr "Iskanje"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:520
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:515
 #, fuzzy
 msgid "Search ({0})"
 msgstr "Iskanje"
@@ -20641,6 +20743,7 @@ msgid "Search cancelled"
 msgstr "Iskanje je bilo prekinjeno."
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.FindInFiles/SearchResultPad.cs:132
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:643
 #, fuzzy
 msgid "Search completed"
 msgstr "Iskanje zaključeno."
@@ -20730,7 +20833,7 @@ msgstr "Vzorec iskanja ni veljaven."
 msgid "Search pattern not found"
 msgstr "Iskalni niz brez zadetkov:"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:645
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Components.MainToolbar/MainToolbarController.cs:655
 #, fuzzy
 msgid "Search solution"
 msgstr "Išči v:"
@@ -20759,7 +20862,7 @@ msgstr "Iskanje"
 msgid "Searching member..."
 msgstr "Shranjujem..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:298
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:325
 #, fuzzy
 msgid "Searching packages..."
 msgstr "Shranjujem..."
@@ -21144,7 +21247,7 @@ msgstr ""
 msgid "Select policy, current: {0}"
 msgstr "Izberi imenik"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:452
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:481
 #, fuzzy
 msgid "Select projects and a version for a consolidation."
 msgstr "Izberite ciljno lokacijo"
@@ -21794,8 +21897,8 @@ msgstr ""
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:79
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/CommonAboutDialog.cs:88
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1050
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:238
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:1065
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger.VSTextView/ExceptionCaught/ExceptionCaughtAdornmentManager.cs:267
 #, fuzzy
 msgid "Show Details"
 msgstr "Podrobnosti"
@@ -21864,8 +21967,8 @@ msgstr "MonoDevelop nastavitve"
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1214
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:856
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:76
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:158
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:355
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:159
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:358
 #, fuzzy
 msgid "Show More"
 msgstr "Prikaži napake"
@@ -21956,16 +22059,16 @@ msgstr "Prikaži čas testiranja"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1199
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:843
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:150
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:349
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:151
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:352
 #, fuzzy
 msgid "Show Value"
 msgstr "Premor"
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1216
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:858
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:160
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:357
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:161
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:360
 #, fuzzy
 msgid "Show Values"
 msgstr "Nove datoteke"
@@ -22099,7 +22202,7 @@ msgstr "Prikaži izhod"
 msgid "Show page setup"
 msgstr "_Prikaži ob zagonu"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:445
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:465
 #, fuzzy
 msgid "Show pre-release packages"
 msgstr "Izberi razred: "
@@ -22851,7 +22954,7 @@ msgstr "Izpis sklada"
 msgid "Stack trace:"
 msgstr "Izpis sklada"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:320
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:322
 #, fuzzy
 msgid "Stacktrace"
 msgstr "Izpis sklada"
@@ -22991,7 +23094,7 @@ msgstr "Ne morem ustvariti datoteke tipa '{0}'"
 msgid "Start tool {0}"
 msgstr "Zaženi orodje"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:271
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/IdeStartup.cs:269
 #, fuzzy
 msgid "Starting {0}"
 msgstr "Odpiram '{0}'"
@@ -23033,8 +23136,8 @@ msgstr "_Shrani in zapri"
 msgid "Stash not applied."
 msgstr "Shranjevanje ni uspelo."
 
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:177
-#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:211
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:174
+#: ../src/addins/VersionControl/MonoDevelop.VersionControl.Git/MonoDevelop.VersionControl.Git/Commands.cs:207
 #, fuzzy
 msgid "Stash operation failed"
 msgstr "Shranjevanje ni uspelo."
@@ -23071,6 +23174,11 @@ msgstr "Dodajanje datotek..."
 msgid "State"
 msgstr "Shrani"
 
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:971
+#, fuzzy
+msgid "Static"
+msgstr "Shrani"
+
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/StatusView.cs:191
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Dialogs/CommitDialog.cs:67
 #: ../src/addins/VersionControl/MonoDevelop.VersionControl/MonoDevelop.VersionControl.Views/ChangeSetView.cs:91
@@ -23083,7 +23191,7 @@ msgstr ""
 msgid "Status against revision: '{0}'"
 msgstr ""
 
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:567
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:568
 #, fuzzy
 msgid "Status of the current operation"
 msgstr "Ustavi trenutno opravilo"
@@ -24668,8 +24776,8 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeView.cs:1179
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Gtk/GtkObjectValueTreeView.cs:826
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:132
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:335
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:133
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/Mac/MacDebuggerObjectValueView.cs:338
 #, fuzzy
 msgid "The name '{0}' does not exist in the current context."
 msgstr "Datoteke '{0}' ni bilo možno odpreti."
@@ -24842,7 +24950,7 @@ msgid ""
 "project directory."
 msgstr "Datoteke '{0}' ni bilo možno odpreti."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:796
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:826
 msgid "The project could not be created"
 msgstr "Projekta ni bilo mogoče ustvariti"
 
@@ -25607,7 +25715,7 @@ msgstr ""
 msgid "There must be at least one configuration."
 msgstr "Obstajati mora vsaj ena nastavitev."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:273
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Composition/CompositionManager.cs:267
 msgid ""
 "There was a problem loading one or more extensions and {0} needs to be "
 "restarted."
@@ -26455,7 +26563,7 @@ msgstr "_Pomakni označeno vsebino nazaj"
 msgid "Uninstall"
 msgstr "_Odstrani..."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:933
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:983
 #, fuzzy
 msgid "Uninstall Package"
 msgid_plural "Uninstall Packages"
@@ -26648,8 +26756,8 @@ msgstr "Izberite ciljno nastavitev za vsako rešitev:"
 msgid "Update Identifiers"
 msgstr "Posodobi"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:929
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:935
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:979
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:985
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.addin.xml:57
 #, fuzzy
 msgid "Update Package"
@@ -26734,7 +26842,7 @@ msgstr[3] "Uredi reference..."
 
 #: ../src/core/MonoDevelop.Ide/ExtensionModel/GlobalOptionsDialog.addin.xml:14
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Updater/AddinsUpdateHandler.cs:91
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:122
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:131
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:125
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinManagerDialog.cs:373
 #: ../external/mono-addins/Mono.Addins.Gui/Gui/Mono.Addins.Gui.AddinManagerDialog.cs:223
@@ -26808,7 +26916,7 @@ msgstr[3] "Uredi reference..."
 msgid "Updating {0}"
 msgstr "Odpiram '{0}'"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:811
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:859
 #, fuzzy
 msgid "Updating {0} packages..."
 msgstr "Paketi"
@@ -27141,6 +27249,7 @@ msgstr "Premor"
 
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Components/EnvVarList.cs:53
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Components/EnvironmentVariableCollectionEditor.cs:54
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:982
 #, fuzzy
 msgid "Variable"
 msgstr "Preimenuj datoteko"
@@ -27193,7 +27302,8 @@ msgstr "Nadzor različic"
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/AssemblyReferencePanel.cs:109
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/PackageReferencePanel.cs:96
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.NodeBuilders/PackageReferenceNodeDescriptor.cs:51
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:266
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:293
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:659
 #: ../src/addins/MonoDevelop.DotNetCore/MonoDevelop.DotNetCore.NodeBuilders/PackageDependencyNodeDescriptor.cs:48
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinTreeWidget.cs:143
 #: ../external/mono-addins/Mono.Addins.Gui/Mono.Addins.Gui/AddinInfoView.cs:290
@@ -27350,7 +27460,7 @@ msgid "View ChangeLog..."
 msgstr "ChangeLog"
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/LicenseAcceptanceDialog.cs:135
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:341
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
 #, fuzzy
 msgid "View License"
 msgstr "Seznam prikaza"
@@ -27382,9 +27492,14 @@ msgstr "Pogled"
 msgid "Visibility"
 msgstr ""
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:355
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:369
 msgid "Visit Page"
 msgstr ""
+
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.UI.cs:371
+#, fuzzy
+msgid "Visit Project Page"
+msgstr "Projektne datoteke"
 
 #: ../src/addins/VBNetBinding/VBNetBinding.addin.xml:54
 #, fuzzy
@@ -27459,6 +27574,7 @@ msgstr ""
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/MimeTypePolicyOptionsSection.cs:119
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Gui.Dialogs/PolicyOptionsPanel.cs:95
 #: ../src/addins/MonoDevelop.Refactoring/MonoDevelop.AnalysisCore/Gui/ResultTooltipProvider.cs:101
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ObjectValue/ObjectValueTreeViewController.cs:1002
 #: ../external/xwt/Xwt/Xwt/MessageDialog.cs:90
 #, fuzzy
 msgid "Warning"
@@ -27850,8 +27966,9 @@ msgstr ""
 
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:139
 #: ../src/addins/MonoDevelop.AspNetCore/Properties/MonoDevelop.AspNetCore.addin.xml:308
-msgid "Worker"
-msgstr ""
+#, fuzzy
+msgid "Worker Service"
+msgstr "Spletna storitev"
 
 #: ../src/addins/MonoDevelop.Debugger/Gui/MonoDevelop.Debugger.DebugApplicationDialog.cs:111
 #, fuzzy
@@ -28098,7 +28215,7 @@ msgstr ""
 "funkcionalnosti, ki jih ponujajo le-ti, ne bodo na voljo.\n"
 "Želite nadaljevati?"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:781
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:811
 msgid "You do not have permission to create to {0}"
 msgstr "Nimate zadosti pravid, da bi lahko ustvarili imenik v {0}"
 
@@ -28181,7 +28298,7 @@ msgid "Zooms view out"
 msgstr ""
 
 #: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/StackTracePad.cs:269
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:604
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:618
 #, fuzzy
 msgid "[External Code]"
 msgstr "<b>Naloži</b>"
@@ -28441,7 +28558,7 @@ msgstr "Namestitev E-Dodatka"
 msgid "_Add to project:"
 msgstr "Dodaj obstoječ _projekt"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:208
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:214
 #, fuzzy
 msgid "_All"
 msgstr "_Označi vse"
@@ -29164,7 +29281,7 @@ msgstr "Brez"
 msgid "_Normal Size"
 msgstr "Normalna"
 
-#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:404
+#: ../src/addins/MonoDevelop.Debugger/MonoDevelop.Debugger/ExceptionCaughtDialog.cs:413
 msgid "_Only show my code."
 msgstr ""
 
@@ -29240,7 +29357,7 @@ msgstr "Trenutna datoteka"
 msgid "_Package name:"
 msgstr "Paket"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:215
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/SelectReferenceDialog.cs:221
 #, fuzzy
 msgid "_Packages"
 msgstr "Paketi"
@@ -30557,7 +30674,7 @@ msgstr[3] "{0} Opozoril"
 msgid "{0} condition"
 msgstr "Nastavitve"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:827
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:875
 #, fuzzy
 msgid "{0} consolidated with warnings."
 msgstr "Operacija se je izvedla z opozorili."
@@ -30598,11 +30715,11 @@ msgstr[3] "pred {0} dnevom"
 msgid "{0} declaration"
 msgstr "Pojdi do deklaracije"
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2032
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2042
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1318
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1849
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:364
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:253
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:254
 msgid "{0} error"
 msgid_plural "{0} errors"
 msgstr[0] "{0} Napaka"
@@ -30620,7 +30737,7 @@ msgstr "{0} Napaka"
 msgid "{0} errors and {1} warnings"
 msgstr "Ignoriraj opozorila"
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:92
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:739
 #, fuzzy
 msgid "{0} failed to create"
 msgstr "Ne morem ustvariti imenika '{0}'"
@@ -30642,7 +30759,7 @@ msgstr[1] ""
 msgstr[2] ""
 msgstr[3] ""
 
-#: ../src/addins/MacPlatform/MacPlatform.cs:398
+#: ../src/addins/MacPlatform/MacPlatform.cs:403
 msgid ""
 "{0} has detected an assistive technology (such as VoiceOver) is running. Do "
 "you want to restart {0} and enable the accessibility features?"
@@ -30776,14 +30893,14 @@ msgstr ""
 msgid "{0} packages added with warnings."
 msgstr "Ignoriraj opozorila"
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:835
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:883
 #, fuzzy
 msgid "{0} packages consolidated with warnings."
 msgstr "Operacija se je izvedla z opozorili."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:70
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:150
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:790
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:838
 #, fuzzy
 msgid "{0} packages removed with warnings."
 msgstr "Ignoriraj opozorila"
@@ -30798,14 +30915,14 @@ msgstr "Operacija se je izvedla z opozorili."
 msgid "{0} packages successfully added."
 msgstr "Operacija se je uspešno izvedla."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:833
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:881
 #, fuzzy
 msgid "{0} packages successfully consolidated."
 msgstr "Operacija se je uspešno izvedla."
 
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:68
 #: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement/ProgressMonitorStatusMessageFactory.cs:148
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:788
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:836
 #, fuzzy
 msgid "{0} packages successfully removed."
 msgstr "Operacija se je uspešno izvedla."
@@ -30815,12 +30932,12 @@ msgstr "Operacija se je uspešno izvedla."
 msgid "{0} packages successfully retargeted."
 msgstr "Operacija se je uspešno izvedla."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:812
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:860
 #, fuzzy
 msgid "{0} packages successfully updated."
 msgstr "Operacija se je uspešno izvedla."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:814
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:862
 #, fuzzy
 msgid "{0} packages updated with warnings."
 msgstr "Operacija se je izvedla z opozorili."
@@ -30915,12 +31032,12 @@ msgstr ""
 msgid "{0} successfully added."
 msgstr "Operacija se je uspešno izvedla."
 
-#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:825
+#: ../src/addins/MonoDevelop.PackageManagement/MonoDevelop.PackageManagement.Gui/ManagePackagesDialog.cs:873
 #, fuzzy
 msgid "{0} successfully consolidated."
 msgstr "Operacija se je uspešno izvedla."
 
-#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/GtkNewProjectDialogBackend.cs:94
+#: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide.Projects/NewProjectController.cs:749
 #, fuzzy
 msgid "{0} successfully created"
 msgstr "Operacija se je uspešno izvedla."
@@ -30976,11 +31093,11 @@ msgstr[3] "Nove nadgradnje E-Dodatkov so na voljo:"
 msgid "{0} updated with warnings."
 msgstr "Operacija se je izvedla z opozorili."
 
-#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2033
+#: ../src/core/MonoDevelop.Core/MonoDevelop.Projects/Project.cs:2043
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1319
 #: ../src/core/MonoDevelop.Ide/MonoDevelop.Ide/ProjectOperations.cs:1850
 #: ../src/addins/MonoDevelop.SourceEditor2/MonoDevelop.SourceEditor.QuickTasks/QuickTaskOverviewMode.cs:362
-#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:251
+#: ../src/addins/MacPlatform/MainToolbar/StatusBar.cs:252
 msgid "{0} warning"
 msgid_plural "{0} warnings"
 msgstr[0] "{0} Opozorilo"
@@ -32049,10 +32166,6 @@ msgstr ""
 
 #~ msgid "Choose _encoding"
 #~ msgstr "Izberi _format"
-
-#, fuzzy
-#~ msgid "Class"
-#~ msgstr "Razredi"
 
 #, fuzzy
 #~ msgid "Class declaration"
@@ -33237,10 +33350,6 @@ msgstr ""
 #~ msgstr "_Argumenti:"
 
 #, fuzzy
-#~ msgid "Exceptions"
-#~ msgstr "Nastavitve"
-
-#, fuzzy
 #~ msgid "Exceptions..."
 #~ msgstr "Nastavitve..."
 
@@ -33313,10 +33422,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Failed to start debug tests."
 #~ msgstr "Spodleteli testi"
-
-#, fuzzy
-#~ msgid "Field"
-#~ msgstr "Najdi"
 
 #, fuzzy
 #~ msgid "File '{0}' can't be modified"
@@ -33976,10 +34081,6 @@ msgstr ""
 #~ msgstr "{0} Obvestilo"
 
 #, fuzzy
-#~ msgid "Method"
-#~ msgstr "Preimenuj datoteko"
-
-#, fuzzy
 #~ msgid "Method Signatures"
 #~ msgstr "Pojdi do deklaracije"
 
@@ -34248,10 +34349,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "O_pen with terminal"
 #~ msgstr "Odpri v terminalu"
-
-#, fuzzy
-#~ msgid "Object allocation"
-#~ msgstr "Mesto"
 
 #, fuzzy
 #~ msgid "Objective C Files"
@@ -34602,9 +34699,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Redundant using directive"
 #~ msgstr "Preklopi prelomno točko"
-
-#~ msgid "Refactoring project {0}"
-#~ msgstr "Preoblikujem projekt '{0}'"
 
 #, fuzzy
 #~ msgid "Refactory"
@@ -35321,6 +35415,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Reverse 'for' loop'"
 #~ msgstr "MonoDevelop"
+
+#, fuzzy
+#~ msgid "Revert left changes button"
+#~ msgstr "ChangeLog"
+
+#, fuzzy
+#~ msgid "Revert right changes button"
+#~ msgstr "ChangeLog"
 
 #, fuzzy
 #~ msgid "Revision {0}\t{1}\t{2}"
