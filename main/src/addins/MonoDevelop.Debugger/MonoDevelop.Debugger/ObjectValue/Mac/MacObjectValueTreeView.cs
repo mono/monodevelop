@@ -32,6 +32,7 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 
+using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
 using MonoDevelop.Core;
@@ -778,7 +779,7 @@ namespace MonoDevelop.Debugger
 			if (SelectedRowCount == 0)
 				return;
 
-			var str = new StringBuilder ();
+			var builder = new StringBuilder ();
 			var needsNewLine = false;
 
 			var selectedRows = SelectedRows;
@@ -791,7 +792,7 @@ namespace MonoDevelop.Debugger
 					break;
 
 				if (needsNewLine)
-					str.AppendLine ();
+					builder.AppendLine ();
 
 				needsNewLine = true;
 
@@ -807,22 +808,27 @@ namespace MonoDevelop.Debugger
 							var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
 							opt.EllipsizeStrings = false;
 
-							var rawValue = (string) objVal.GetRawValue (opt);
+							var rawValue = objVal.GetRawValue (opt);
+							var str = rawValue as string;
 
-							value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawValue) + '"';
+							if (str == null && rawValue is RawValueString rawValueString)
+								str = rawValueString.Value;
+
+							if (str != null)
+								value = '"' + ExpressionEvaluator.EscapeString (str) + '"';
 						} catch (EvaluatorException) {
 							// fall back to using the DisplayValue that we would have used anyway...
 						}
 					}
 				}
 
-				str.Append (value);
+				builder.Append (value);
 			}
 
 			var clipboard = NSPasteboard.GeneralPasteboard;
 
 			clipboard.ClearContents ();
-			clipboard.SetStringForType (str.ToString (), NSPasteboard.NSPasteboardTypeString);
+			clipboard.SetStringForType (builder.ToString (), NSPasteboard.NSPasteboardTypeString);
 
 			//Gtk.Clipboard.Get (Gdk.Selection.Clipboard).Text = str.ToString ();
 		}
