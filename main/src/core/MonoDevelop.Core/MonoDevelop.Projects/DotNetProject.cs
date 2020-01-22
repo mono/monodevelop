@@ -1505,7 +1505,10 @@ namespace MonoDevelop.Projects
 
 		public ExecutionCommand CreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration, ProjectRunConfiguration runConfiguration)
 		{
-			return ProjectExtension.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			var command = ProjectExtension.OnCreateExecutionCommand (configSel, configuration, runConfiguration);
+			if (command != null)
+				command.RunTarget ??= this;
+			return command;
 		}
 
 		internal protected virtual ExecutionCommand OnCreateExecutionCommand (ConfigurationSelector configSel, DotNetProjectConfiguration configuration)

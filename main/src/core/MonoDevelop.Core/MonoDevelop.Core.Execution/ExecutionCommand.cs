@@ -24,7 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using MonoDevelop.Projects;
 
 namespace MonoDevelop.Core.Execution
 {
@@ -46,5 +46,11 @@ namespace MonoDevelop.Core.Execution
 		/// Execution target. For example, a specific device.
 		/// </summary>
 		public ExecutionTarget Target { get; set; }
+
+		/// <summary>
+		/// IRunTarget item associated with this execution command. This allows the DebuggerSession to be
+		/// associated with an IRunTarget (typically a Project).
+		/// </summary>
+		public IRunTarget RunTarget { get; set; }
 	}
 }

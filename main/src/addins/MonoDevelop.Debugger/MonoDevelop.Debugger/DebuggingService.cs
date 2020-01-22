@@ -149,6 +149,26 @@ namespace MonoDevelop.Debugger
 			return sessions.Keys.ToArray ();
 		}
 
+		public static DebuggerSession GetSession (IRunTarget runTarget)
+		{
+			foreach (KeyValuePair<DebuggerSession, SessionManager> item in sessions.ToArray ()) {
+				if (item.Value.RunTarget == runTarget) {
+					return item.Key;
+				}
+			}
+			return null;
+		}
+
+		public static IRunTarget GetRunTarget (DebuggerSession session)
+		{
+			foreach (KeyValuePair<DebuggerSession, SessionManager> item in sessions.ToArray ()) {
+				if (item.Key == session) {
+					return item.Value.RunTarget;
+				}
+			}
+			return null;
+		}
+
 		public static ProcessInfo [] GetProcesses ()
 		{
 			return sessions.Keys.Where (s => !s.IsRunning).SelectMany (s => s.GetProcesses ()).ToArray ();
@@ -721,6 +741,7 @@ namespace MonoDevelop.Debugger
 				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer);
 			else
 				sessionManager = new SessionManager (session, c, factory, timer);
+			sessionManager.RunTarget = cmd.RunTarget;
 			SetupSession (sessionManager);
 
 			SetDebugLayout ();
@@ -757,6 +778,7 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
+			internal IRunTarget RunTarget { get; set; }
 			internal ITimeTracker<DebuggerStartMetadata> StartTimer { get; set; }
 
 			internal bool TrackActionTelemetry { get; set; }
