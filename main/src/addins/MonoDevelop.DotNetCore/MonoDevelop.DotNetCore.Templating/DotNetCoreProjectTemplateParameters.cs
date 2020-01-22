@@ -59,7 +59,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			Name = name;
 		}
 
-		public static IList<AuthenticationParameter> CreateSupportedParameterList (IReadOnlyDictionary<string, string> parameterChoices)
+		public static IReadOnlyList<AuthenticationParameter> CreateSupportedParameterList (IReadOnlyDictionary<string, string> parameterChoices)
 		{
 			return parameterChoices.Where (choice => supportedParameters.Contains (choice.Key))
 				.Select (parameter => new AuthenticationParameter (parameter.Key))
@@ -69,7 +69,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 	class DotNetCoreProjectTemplateParameters
 	{
-		public static IList<AuthenticationParameter> GetAuthenticationParameters (string templateId)
+		public static IReadOnlyList<AuthenticationParameter> GetAuthenticationParameters (string templateId)
 		{
 			if (IdeServices.TemplatingService.GetSolutionTemplate (templateId) is MicrosoftTemplateEngineSolutionTemplate template) {
 				if (template.IsSupportedParameter (AuthenticationParameter.ParameterName)) {

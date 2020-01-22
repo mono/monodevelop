@@ -43,7 +43,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		public DotNetCoreProjectTemplateWizardPage (
 			DotNetCoreProjectTemplateWizard wizard,
 			List<TargetFramework> targetFrameworks,
-			IList<AuthenticationParameter> supportedAuthentications)
+			IReadOnlyList<AuthenticationParameter> supportedAuthentications)
 		{
 			this.wizard = wizard;
 			this.targetFrameworks = targetFrameworks;
@@ -118,7 +118,7 @@ namespace MonoDevelop.DotNetCore.Templating
 				wizard.Parameters [parameter] = "true";
 		}
 
-        public IList<AuthenticationParameter> SupportedAuthentications { get; }
+		public IReadOnlyList<AuthenticationParameter> SupportedAuthentications { get; }
 
 		int selectedAuthenticationIndex;
 

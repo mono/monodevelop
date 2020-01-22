@@ -52,7 +52,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		internal IList<TargetFramework> TargetFrameworks => targetFrameworks;
 
-		internal IList<AuthenticationParameter> SupportedAuthentications { get; private set; }
+		internal IReadOnlyList<AuthenticationParameter> SupportedAuthentications { get; private set; }
 
 		/// <summary>
 		/// When only .NET Core 2.0 is installed there is only one option in the drop down
