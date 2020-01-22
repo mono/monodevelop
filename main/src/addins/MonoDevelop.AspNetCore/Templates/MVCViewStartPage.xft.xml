@@ -10,7 +10,7 @@
 		<_Category>ASP.NET Core</_Category>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>_ViewStart</DefaultFilename>
-		<_Description>Creates a MVC View Start Page.</_Description>
+		<_Description>Creates a Razor View Start Page.</_Description>
 	</TemplateConfiguration>
 
 	<Conditions>
