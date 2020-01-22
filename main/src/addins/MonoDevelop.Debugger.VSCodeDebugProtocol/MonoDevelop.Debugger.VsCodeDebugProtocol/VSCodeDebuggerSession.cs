@@ -219,7 +219,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 				currentExceptionState = hasCustomExceptions;
 				var exceptionRequest = new SetExceptionBreakpointsRequest (
 					Capabilities.ExceptionBreakpointFilters.Where (f => hasCustomExceptions || (f.Default ?? false)).Select (f => f.Filter).ToList ());
-				exceptionRequest.ExceptionOptions = new List<ExceptionOptions> () {new ExceptionOptions(ExceptionBreakMode.UserUnhandled)};
+				exceptionRequest.ExceptionOptions = new List<ExceptionOptions> () {new ExceptionOptions (ExceptionBreakMode.UserUnhandled), new ExceptionOptions (ExceptionBreakMode.Unhandled)};
 				protocolClient.SendRequest (exceptionRequest, null);
 				unhandleExceptionRegistered = true;
 			}
@@ -466,7 +466,7 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 							stackFrame = (VsCodeStackFrame)backtrace.GetFrame (0);
 						}
 						var response = protocolClient.SendRequestSync (new ExceptionInfoRequest (body.ThreadId ?? -1));
-						if (response.BreakMode.Equals (ExceptionBreakMode.UserUnhandled)) {
+						if (response.BreakMode.Equals (ExceptionBreakMode.UserUnhandled) || response.BreakMode.Equals (ExceptionBreakMode.Unhandled)) {
 							args = new TargetEventArgs (TargetEventType.UnhandledException);
 						} else {
 							if (!breakpoints.Select (b => b.Key).OfType<Catchpoint> ().Any (c => ShouldStopOnExceptionCatchpoint (c, stackFrame.frameId))) {
