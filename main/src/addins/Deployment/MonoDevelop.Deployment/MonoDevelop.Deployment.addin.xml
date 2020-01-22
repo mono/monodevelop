@@ -141,7 +141,7 @@
 	</Extension>
 
 	<Extension path = "/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid = "md-package-project" resource = "project-package-32.png" size = "Dnd" />
+		<StockIcon stockid = "md-package-project" resource = "package-project.png" size = "Dnd" />
 	</Extension>
 
 	<Extension path = "/MonoDevelop/ProjectModel/Gui/ItemOptionPanels">
@@ -163,6 +163,6 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-package-project" resource="project-package-template.png" />
+		<Image id="md-package-project" resource="package-sidebar.png" />
 	</Extension>
 </ExtensionModel>
