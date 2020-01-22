@@ -71,7 +71,6 @@ namespace MonoDevelop.DotNetCore.Gui
 			// Do not use a width request for the configuration box so the left hand side of the
 			// wizard page can expand to fit its contents.
 			configurationVBox.WidthRequest = -1;
-			targetFrameworkLabel.WidthRequest = -1;
 
 			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-netcore.png");
 			backgroundImageView = new ImageView (backgroundImage);
@@ -87,11 +86,13 @@ namespace MonoDevelop.DotNetCore.Gui
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 
 			if (wizardPage.TargetFrameworks.Count > 1) {
+				targetFrameworkLabel.WidthRequest = -1;
 				PopulateTargetFrameworks ();
 				targetFrameworkComboBox.Changed += TargetFrameworkComboBoxChanged;
 			}
 
 			if (wizardPage.SupportedAuthentications.Count > 0) {
+				authenticationLabel.WidthRequest = -1;
 				PopulateAuthentications ();
 				authenticationComboBox.Changed += AuthenticationsComboBoxChanged;
 			}
@@ -118,11 +119,13 @@ namespace MonoDevelop.DotNetCore.Gui
 			}
 
 			authenticationComboBox.Active = wizardPage.SelectedAuthenticationIndex;
+			authenticationInformationLabel.LabelProp = wizardPage.SupportedAuthentications [wizardPage.SelectedAuthenticationIndex].Information;
 		}
 
 		void AuthenticationsComboBoxChanged (object sender, EventArgs e)
 		{
 			wizardPage.SelectedAuthenticationIndex = authenticationComboBox.Active;
+			authenticationInformationLabel.LabelProp = wizardPage.SupportedAuthentications [wizardPage.SelectedAuthenticationIndex].Information;
 		}
 
 		protected virtual void Build ()
@@ -276,7 +279,6 @@ namespace MonoDevelop.DotNetCore.Gui
 			authenticationInformationLabel.Name = "authenticationInformationLabel";
 			authenticationInformationLabel.Xpad = 5;
 			authenticationInformationLabel.Xalign = 0F;
-			authenticationInformationLabel.LabelProp = GettextCatalog.GetString ("Select authentication options for your project.");
 			authenticationInformationLabel.Justify = (Justification)1;
 			configurationTable.Add (authenticationInformationLabel);
 

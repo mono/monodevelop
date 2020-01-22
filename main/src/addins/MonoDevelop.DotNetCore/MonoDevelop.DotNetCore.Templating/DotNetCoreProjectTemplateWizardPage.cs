@@ -30,7 +30,6 @@ using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.DotNetCore.Gui;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.Templating
 {

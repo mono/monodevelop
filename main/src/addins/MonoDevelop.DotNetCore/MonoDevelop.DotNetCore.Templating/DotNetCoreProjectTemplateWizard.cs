@@ -52,21 +52,21 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		internal IList<TargetFramework> TargetFrameworks => targetFrameworks;
 
-        internal IList<AuthenticationParameter> SupportedAuthentications { get; private set; }
+		internal IList<AuthenticationParameter> SupportedAuthentications { get; private set; }
 
-        /// <summary>
-        /// When only .NET Core 2.0 is installed there is only one option in the drop down
-        /// list for the target framework for .NET Core projects so there is no point in displaying
-        /// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
-        /// least two options available. If the .NET Standard project template is selected then there
-        /// are multiple options available. So here a check is made to see if more than one target
-        /// framework is available. If not then the wizard will not be displayed.
-        /// </summary>
-        int GetTotalPages ()
+		/// <summary>
+		/// When only .NET Core 2.0 is installed there is only one option in the drop down
+		/// list for the target framework for .NET Core projects so there is no point in displaying
+		/// the wizard since nothing can be changed. If .NET Core 1.0 is installed then there is at
+		/// least two options available. If the .NET Standard project template is selected then there
+		/// are multiple options available. So here a check is made to see if more than one target
+		/// framework is available. If not then the wizard will not be displayed.
+		/// </summary>
+		int GetTotalPages ()
 		{
-			GetSupportedAuthentifications ();
+			GetSupportedAuthentications ();
 			GetTargetFrameworks ();
-			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any())
+			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any ())
 				return 1;
 
 			ConfigureDefaultParameters ();
@@ -74,7 +74,7 @@ namespace MonoDevelop.DotNetCore.Templating
 			return 0;
 		}
 
-		void GetSupportedAuthentifications ()
+		void GetSupportedAuthentications ()
 		{
 			var templateId = Parameters ["TemplateId"];
 			SupportedAuthentications = DotNetCoreProjectTemplateParameters.GetAuthenticationParameters (templateId);
