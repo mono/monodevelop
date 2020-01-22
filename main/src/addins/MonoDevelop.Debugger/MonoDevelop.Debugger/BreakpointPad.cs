@@ -218,6 +218,12 @@ namespace MonoDevelop.Debugger
 			}
 		}
 
+		[CommandUpdateHandler (LocalCommands.Properties)]
+		protected void OnUpdateProperties (CommandInfo info)
+		{
+			info.Enabled = !DebuggingService.IsDebugging && tree.Selection.CountSelectedRows () == 1 ;
+		}
+
 		string GetIconId (BreakEvent bp)
 		{
 			if (bp is Catchpoint)
@@ -323,7 +329,6 @@ namespace MonoDevelop.Debugger
 		}
 
 		[CommandUpdateHandler (LocalCommands.GoToFile)]
-		[CommandUpdateHandler (LocalCommands.Properties)]
 		protected void UpdateBpCommand (CommandInfo cmd)
 		{
 			cmd.Enabled = tree.Selection.CountSelectedRows () == 1;
