@@ -929,12 +929,49 @@ namespace MonoDevelop.Ide
 				resourceList.Sort (); // sort resources by name
 			}
 
-			return resourceList.Where (r => r.StartsWith (baseName) && r.EndsWith (ext));
+			return GetFinalFilelist (resourceList, baseName, ext);
 		}
+
+		IEnumerable<string> GetFinalFilelist (IEnumerable<string> source, string baseName, string ext)
+		{
+			foreach (var name in source) {
+				if (name.StartsWith (baseName) && name.EndsWith (ext)) {
+					yield return name;
+
+					// to avoid duplicate resource entries in project files, add virtual file mappings for
+					// high contrast icons in selected state.
+					// note: we include the "." to ensure that we match "~dark~sel" exactly and not "~dark~sel~xyz".
+					int start = baseName.Length;
+					int length = name.Length - baseName.Length - ext.Length + 1;
+					if (name.IndexOf ("~dark~sel.", start, length, StringComparison.Ordinal) == start ||
+						name.IndexOf ("~dark~sel@2x.", start, length, StringComparison.Ordinal) == start)
+					{
+						var map = name.Replace ("~dark~sel", "~contrast~dark~sel");
+						if (virtualMappings == null) {
+							virtualMappings = new Dictionary<string, string> ();
+						}
+						if (!virtualMappings.ContainsKey (map)) {
+							virtualMappings.Add (map, name);
+						}
+						yield return map;
+					} else {
+						// remove existing mapping if a resource with the same name exists.
+						// note: we know that the source is sorted
+						virtualMappings?.Remove (name);
+					}
+				}
+			}
+		}
+
+		Dictionary<string, string> virtualMappings;
 
 		public Stream LoadImage (string fileName)
 		{
-			return addin.GetResource (fileName, true);
+			// load original resource if a mapping exists
+			if (virtualMappings != null && virtualMappings.TryGetValue (fileName, out var mapsTo))
+				return addin.GetResource (mapsTo, true);
+			else
+				return addin.GetResource (fileName, true);
 		}
 	}
 }
