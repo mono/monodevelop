@@ -72,8 +72,8 @@ namespace MonoDevelop.Debugger
 		static readonly BreakpointStore breakpoints = new BreakpointStore ();
 		static readonly DebugExecutionHandlerFactory executionHandlerFactory;
 
-		static Dictionary<long, SourceLocation> nextStatementLocations = new Dictionary<long, SourceLocation> ();
-		static Dictionary<DebuggerSession, SessionManager> sessions = new Dictionary<DebuggerSession, SessionManager> ();
+		static ConcurrentDictionary<long, SourceLocation> nextStatementLocations = new ConcurrentDictionary<long, SourceLocation> ();
+		static ConcurrentDictionary<DebuggerSession, SessionManager> sessions = new ConcurrentDictionary<DebuggerSession, SessionManager> ();
 		static Backtrace currentBacktrace;
 		static SessionManager currentSession;
 		static int currentFrame;
@@ -154,6 +154,24 @@ namespace MonoDevelop.Debugger
 			return sessions.Keys.ToArray ();
 		}
 
+		public static DebuggerSession GetSession (IRunTarget runTarget)
+		{
+			foreach (KeyValuePair<DebuggerSession, SessionManager> item in sessions) {
+				if (item.Value.RunTarget == runTarget) {
+					return item.Key;
+				}
+			}
+			return null;
+		}
+
+		public static IRunTarget GetRunTarget (DebuggerSession session)
+		{
+			if (sessions.TryGetValue (session, out SessionManager sessionManager)) {
+				return sessionManager.RunTarget;
+			}
+			return null;
+		}
+
 		public static ProcessInfo [] GetProcesses ()
 		{
 			return sessions.Keys.Where (s => !s.IsRunning).SelectMany (s => s.GetProcesses ()).ToArray ();
@@ -162,8 +180,8 @@ namespace MonoDevelop.Debugger
 		public static BreakEventStatus GetBreakpointStatus (Breakpoint bp)
 		{
 			var result = BreakEventStatus.Disconnected;
-			foreach (var sesion in sessions.Keys.ToArray ()) {
-				var status = bp.GetStatus (sesion);
+			foreach (var session in sessions.Keys) {
+				var status = bp.GetStatus (session);
 				if (status == BreakEventStatus.Bound)
 					return BreakEventStatus.Bound;
 				else
@@ -403,7 +421,7 @@ namespace MonoDevelop.Debugger
 
 		static void SetupSession (SessionManager sessionManager)
 		{
-			sessions.Add (sessionManager.Session, sessionManager);
+			sessions [sessionManager.Session] = sessionManager;
 			isBusy = false;
 			var session = sessionManager.Session;
 			session.Breakpoints = breakpoints;
@@ -448,7 +466,7 @@ namespace MonoDevelop.Debugger
 					currentBacktrace = null;
 				}
 				busyStatusIcon = null;
-				sessions.Remove (sessionManager.Session);
+				sessions.TryRemove (sessionManager.Session, out _);
 				pinnedWatches.InvalidateAll ();
 			}
 
@@ -534,7 +552,7 @@ namespace MonoDevelop.Debugger
 
 		public static void Pause ()
 		{
-			foreach (var session in sessions.Keys.ToArray ()) {
+			foreach (var session in sessions.Keys) {
 				if (session.IsRunning)
 					session.Stop ();
 			}
@@ -562,7 +580,7 @@ namespace MonoDevelop.Debugger
 			if (HandleStopQueue ())
 				return;
 
-			foreach (var session in sessions.Keys.ToArray ()) {
+			foreach (var session in sessions.Keys) {
 				if (!session.IsRunning)
 					session.Continue ();
 			}
@@ -680,7 +698,7 @@ namespace MonoDevelop.Debugger
 			PropertyService.Set ("Monodevelop.StackTrace.ShowLineNumber", options.EvaluationOptions.StackFrameFormat.Line);
 			PropertyService.Set ("Monodevelop.StackTrace.ShowExternalCode", options.EvaluationOptions.StackFrameFormat.ExternalCode);
 
-			foreach (var session in sessions.Keys.ToArray ()) {
+			foreach (var session in sessions.Keys) {
 				session.Options.EvaluationOptions = GetUserOptions ().EvaluationOptions;
 			}
 			if (EvaluationOptionsChanged != null)
@@ -726,6 +744,7 @@ namespace MonoDevelop.Debugger
 				sessionManager = new SessionManager (session, IdeApp.Workbench.ProgressMonitors.GetRunProgressMonitor (System.IO.Path.GetFileNameWithoutExtension (startInfo.Command)).Console, factory, timer);
 			else
 				sessionManager = new SessionManager (session, c, factory, timer);
+			sessionManager.RunTarget = cmd.RunTarget;
 			SetupSession (sessionManager);
 
 			SetDebugLayout ();
@@ -762,6 +781,7 @@ namespace MonoDevelop.Debugger
 			public readonly DebuggerSession Session;
 			public readonly DebugAsyncOperation debugOperation;
 			public readonly DebuggerEngine Engine;
+			internal IRunTarget RunTarget { get; set; }
 			internal ITimeTracker<DebuggerStartMetadata> StartTimer { get; set; }
 
 			internal bool TrackActionTelemetry { get; set; }
@@ -1116,7 +1136,7 @@ namespace MonoDevelop.Debugger
 			if (!IsDebugging)
 				return;
 
-			foreach (var pair in sessions.ToArray ()) {
+			foreach (var pair in sessions) {
 				pair.Key.Exit ();
 				Cleanup (pair.Value);
 			}
