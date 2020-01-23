@@ -73,9 +73,10 @@ namespace MonoDevelop.DotNetCore.Gui
 			configurationVBox.WidthRequest = -1;
 
 			backgroundImage = Xwt.Drawing.Image.FromResource ("preview-netcore.png");
-			backgroundImageView = new ImageView (backgroundImage);
-			backgroundImageView.Xalign = 1.0f;
-			backgroundImageView.Yalign = 0.5f;
+			backgroundImageView = new ImageView (backgroundImage) {
+				Xalign = 1.0f,
+				Yalign = 0.5f
+			};
 			backgroundLargeImageVBox.PackStart (backgroundImageView, true, true, 0);
 
 			backgroundColor = Styles.NewProjectDialog.ProjectConfigurationLeftHandBackgroundColor.ToGdkColor ();
@@ -86,13 +87,11 @@ namespace MonoDevelop.DotNetCore.Gui
 			backgroundLargeImageEventBox.ModifyBg (StateType.Normal, backgroundColor);
 
 			if (wizardPage.TargetFrameworks.Count > 1) {
-				targetFrameworkLabel.WidthRequest = -1;
 				PopulateTargetFrameworks ();
 				targetFrameworkComboBox.Changed += TargetFrameworkComboBoxChanged;
 			}
 
 			if (wizardPage.SupportedAuthentications.Count > 0) {
-				authenticationLabel.WidthRequest = -1;
 				PopulateAuthentications ();
 				authenticationComboBox.Changed += AuthenticationsComboBoxChanged;
 			}
@@ -135,40 +134,36 @@ namespace MonoDevelop.DotNetCore.Gui
 
 			Name = "MonoDevelop.DotNetCore.Gui.GtkDotNetCoreProjectTemplateWizardPageWidget";
 
-			mainHBox = new HBox ();
-			mainHBox.Name = "mainHBox";
+			mainHBox = new HBox {
+				Name = "mainHBox"
+			};
 
-			leftBorderEventBox = new EventBox ();
-			leftBorderEventBox.WidthRequest = 30;
-			leftBorderEventBox.Name = "leftBorderEventBox";
-			mainHBox.Add (leftBorderEventBox);
+			leftBorderEventBox = new EventBox {
+				WidthRequest = 30,
+				Name = "leftBorderEventBox"
+			};
+			mainHBox.PackStart (leftBorderEventBox, false, true, 0);
 
-			var w1 = (Box.BoxChild)mainHBox [leftBorderEventBox];
-			w1.Position = 0;
-			w1.Expand = false;
+			configurationVBox = new VBox {
+				WidthRequest = 440,
+				Name = "configurationVBox"
+			};
 
-			configurationVBox = new VBox ();
-			configurationVBox.WidthRequest = 440;
-			configurationVBox.Name = "configurationVBox";
-
-			configurationTopEventBox = new EventBox ();
-			configurationTopEventBox.Name = "configurationTopEventBox";
-			configurationVBox.Add (configurationTopEventBox);
-
-			var w2 = (Box.BoxChild)configurationVBox [configurationTopEventBox];
-			w2.Position = 0;
-
-			configurationTableEventBox = new EventBox ();
-			configurationTableEventBox.Name = "configurationTableEventBox";
+			configurationTopEventBox = new EventBox {
+				Name = "configurationTopEventBox"
+			};
+			configurationVBox.PackStart (configurationTopEventBox, true, true, 0);
 
 			var showFrameworkSelection = wizardPage.TargetFrameworks.Count > 1;
 			var showAuthenticationSelection = wizardPage.SupportedAuthentications.Count > 0;
 
+			// Create the table of configurable options
 			uint tableRows =  (uint)(showFrameworkSelection && showAuthenticationSelection ? 4 : 2);
-			configurationTable = new Table (tableRows, 3, false);
-			configurationTable.Name = "configurationTable";
-			configurationTable.RowSpacing = 7;
-			configurationTable.ColumnSpacing = 6;
+			configurationTable = new Table (tableRows, 3, false) {
+				Name = "configurationTable",
+				RowSpacing = 7,
+				ColumnSpacing = 6
+			};
 
 			if (showFrameworkSelection)
 				AddFrameworkSelection ();
@@ -176,35 +171,27 @@ namespace MonoDevelop.DotNetCore.Gui
 			if (showAuthenticationSelection)
 				AddAuthenticationSelection ((uint)(showFrameworkSelection ? 2 : 0));
 
+			configurationTableEventBox = new EventBox {
+				Name = "configurationTableEventBox"
+			};
 			configurationTableEventBox.Add (configurationTable);
-			configurationVBox.Add (configurationTableEventBox);
+			configurationVBox.PackStart (configurationTableEventBox, false, false, 0);
 
-			var w7 = (Box.BoxChild)configurationVBox [configurationTableEventBox];
-			w7.Position = 1;
-			w7.Expand = false;
-			w7.Fill = false;
+			configurationBottomEventBox = new EventBox {
+				Name = "configurationBottomEventBox"
+			};
+			configurationVBox.PackStart (configurationBottomEventBox);
+			mainHBox.PackStart (configurationVBox);
 
-			configurationBottomEventBox = new EventBox ();
-			configurationBottomEventBox.Name = "configurationBottomEventBox";
-			configurationVBox.Add (configurationBottomEventBox);
-
-			var w8 = (Box.BoxChild)configurationVBox [configurationBottomEventBox];
-			w8.Position = 2;
-			mainHBox.Add (configurationVBox);
-
-			var w9 = (Box.BoxChild)mainHBox [configurationVBox];
-			w9.Position = 1;
-
-			backgroundLargeImageEventBox = new EventBox ();
-			backgroundLargeImageEventBox.Name = "backgroundLargeImageEventBox";
-
-			backgroundLargeImageVBox = new VBox ();
-			backgroundLargeImageVBox.Name = "backgroundLargeImageVBox";
+			// Add the image
+			backgroundLargeImageEventBox = new EventBox {
+				Name = "backgroundLargeImageEventBox"
+			};
+			backgroundLargeImageVBox = new VBox {
+				Name = "backgroundLargeImageVBox"
+			};
 			backgroundLargeImageEventBox.Add (backgroundLargeImageVBox);
-			mainHBox.Add (backgroundLargeImageEventBox);
-
-			var w11 = (Box.BoxChild)mainHBox [backgroundLargeImageEventBox];
-			w11.Position = 2;
+			mainHBox.PackStart (backgroundLargeImageEventBox);
 
 			Add (mainHBox);
 
@@ -218,94 +205,56 @@ namespace MonoDevelop.DotNetCore.Gui
 		void AddFrameworkSelection()
 		{
 			targetFrameworkComboBox = ComboBox.NewText ();
-			targetFrameworkComboBox.WidthRequest = 250;
+			targetFrameworkComboBox.WidthRequest = 350;
 			targetFrameworkComboBox.Name = "targetFrameworkComboBox";
-			configurationTable.Add (targetFrameworkComboBox);
+			configurationTable.Attach (targetFrameworkComboBox, 1, 2, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 
-			var w3 = (Table.TableChild)configurationTable [targetFrameworkComboBox];
-			w3.TopAttach = 1;
-			w3.BottomAttach = 2;
-			w3.LeftAttach = 1;
-			w3.RightAttach = 2;
-			w3.XOptions = (AttachOptions)4;
-			w3.YOptions = (AttachOptions)4;
+			targetFrameworkInformationLabel = new Label {
+				WidthRequest = 350,
+				Name = "targetFrameworkInformationLabel",
+				Xpad = 5,
+				Xalign = 0F,
+				LabelProp = GettextCatalog.GetString ("Select the target framework for your project."),
+				Justify = Justification.Left,
+				Wrap = true
+			};
+			configurationTable.Attach (targetFrameworkInformationLabel, 1, 2, 0, 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 
-			targetFrameworkInformationLabel = new Label ();
-			targetFrameworkInformationLabel.Name = "targetFrameworkInformationLabel";
-			targetFrameworkInformationLabel.Xpad = 5;
-			targetFrameworkInformationLabel.Xalign = 0F;
-			targetFrameworkInformationLabel.LabelProp = GettextCatalog.GetString ("Select the target framework for your project.");
-			targetFrameworkInformationLabel.Justify = (Justification)1;
-			configurationTable.Add (targetFrameworkInformationLabel);
-
-			var w4 = (Table.TableChild)configurationTable [targetFrameworkInformationLabel];
-			w4.LeftAttach = 1;
-			w4.RightAttach = 2;
-			w4.XOptions = (AttachOptions)4;
-			w4.YOptions = (AttachOptions)4;
-
-			targetFrameworkLabel = new Label ();
-			targetFrameworkLabel.WidthRequest = 132;
-			targetFrameworkLabel.Name = "targetFrameworkLabel";
-			targetFrameworkLabel.Xpad = 5;
-			targetFrameworkLabel.Xalign = 1F;
-			targetFrameworkLabel.LabelProp = GettextCatalog.GetString ("Target Framework:");
-			targetFrameworkLabel.Justify = (Justification)1;
-			configurationTable.Add (targetFrameworkLabel);
-
-			var w5 = (Table.TableChild)configurationTable [targetFrameworkLabel];
-			w5.TopAttach = 1;
-			w5.BottomAttach = 2;
-			w5.XOptions = (AttachOptions)4;
-			w5.YOptions = (AttachOptions)4;
+			targetFrameworkLabel = new Label {
+				Name = "targetFrameworkLabel",
+				Xpad = 5,
+				Xalign = 1F,
+				LabelProp = GettextCatalog.GetString ("Target Framework:"),
+				Justify = Justification.Right
+			};
+			configurationTable.Attach (targetFrameworkLabel, 0, 1, 1, 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 		}
 
 		void AddAuthenticationSelection(uint primaryRow)
 		{
 			authenticationComboBox = ComboBox.NewText ();
-			authenticationComboBox.WidthRequest = 250;
+			authenticationComboBox.WidthRequest = 350;
 			authenticationComboBox.Name = "authenticationComboBox";
-			configurationTable.Add (authenticationComboBox);
+			configurationTable.Attach (authenticationComboBox, 1, 2, primaryRow, primaryRow + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 
-			var authenticationComboBoxCell = (Table.TableChild)configurationTable [authenticationComboBox];
-			authenticationComboBoxCell.TopAttach = primaryRow;
-			authenticationComboBoxCell.BottomAttach = primaryRow + 1;
-			authenticationComboBoxCell.LeftAttach = 1;
-			authenticationComboBoxCell.RightAttach = 2;
-			authenticationComboBoxCell.XOptions = (AttachOptions)4;
-			authenticationComboBoxCell.YOptions = (AttachOptions)4;
+			authenticationInformationLabel = new Label {
+				WidthRequest = 350,
+				Name = "authenticationInformationLabel",
+				Xpad = 5,
+				Xalign = 0F,
+				Justify = Justification.Left,
+				Wrap = true
+			};
+			configurationTable.Attach (authenticationInformationLabel, 1, 2, primaryRow + 1, primaryRow + 2, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 
-			authenticationInformationLabel = new Label ();
-			authenticationInformationLabel.Name = "authenticationInformationLabel";
-			authenticationInformationLabel.Xpad = 5;
-			authenticationInformationLabel.Xalign = 0F;
-			authenticationInformationLabel.Justify = (Justification)1;
-			configurationTable.Add (authenticationInformationLabel);
-
-			var authenticationInformationLabelCell = (Table.TableChild)configurationTable [authenticationInformationLabel];
-			authenticationInformationLabelCell.TopAttach = primaryRow + 1;
-			authenticationInformationLabelCell.BottomAttach = primaryRow + 2;
-			authenticationInformationLabelCell.LeftAttach = 1;
-			authenticationInformationLabelCell.RightAttach = 2;
-			authenticationInformationLabelCell.XOptions = (AttachOptions)4;
-			authenticationInformationLabelCell.YOptions = (AttachOptions)4;
-
-			authenticationLabel = new Label ();
-			authenticationLabel.WidthRequest = 132;
-			authenticationLabel.Name = "authenticationLabel";
-			authenticationLabel.Xpad = 5;
-			authenticationLabel.Xalign = 1F;
-			authenticationLabel.LabelProp = GettextCatalog.GetString ("Authentication:");
-			authenticationLabel.Justify = (Justification)1;
-			configurationTable.Add (authenticationLabel);
-
-			var authenticationLabelCell = (Table.TableChild)configurationTable [authenticationLabel];
-			authenticationLabelCell.TopAttach = primaryRow;
-			authenticationLabelCell.BottomAttach = primaryRow + 1;
-			authenticationLabelCell.LeftAttach = 0;
-			authenticationLabelCell.RightAttach = 1;
-			authenticationLabelCell.XOptions = (AttachOptions)4;
-			authenticationLabelCell.YOptions = (AttachOptions)4;
+			authenticationLabel = new Label {
+				Name = "authenticationLabel",
+				Xpad = 5,
+				Xalign = 1F,
+				LabelProp = GettextCatalog.GetString ("Authentication:"),
+				Justify = Justification.Right
+			};
+			configurationTable.Attach (authenticationLabel, 0, 1, primaryRow, primaryRow + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
 		}
 	}
 }

@@ -61,9 +61,11 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		public static IReadOnlyList<AuthenticationParameter> CreateSupportedParameterList (IReadOnlyDictionary<string, string> parameterChoices)
 		{
-			return parameterChoices.Where (choice => supportedParameters.Contains (choice.Key))
+			var filteredList = parameterChoices.Where (choice => supportedParameters.Contains (choice.Key))
 				.Select (parameter => new AuthenticationParameter (parameter.Key))
 				.ToList ();
+
+			return (filteredList.Count == 1 && filteredList.First ().Name == "None") ? new List<AuthenticationParameter> () : filteredList;
 		}
 	}
 
@@ -73,8 +75,8 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			if (IdeServices.TemplatingService.GetSolutionTemplate (templateId) is MicrosoftTemplateEngineSolutionTemplate template) {
 				if (template.IsSupportedParameter (AuthenticationParameter.ParameterName)) {
-					var supportedAuth = template.GetParameterChoices (AuthenticationParameter.ParameterName);
-					return AuthenticationParameter.CreateSupportedParameterList (supportedAuth);
+					var parameterChoices = template.GetParameterChoices (AuthenticationParameter.ParameterName);
+					return AuthenticationParameter.CreateSupportedParameterList (parameterChoices);
 				}
 			}
 
