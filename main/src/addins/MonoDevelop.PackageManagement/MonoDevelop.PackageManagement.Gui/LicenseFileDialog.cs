@@ -69,6 +69,10 @@ namespace MonoDevelop.PackageManagement
 		void LicenseFileTextPropertyChanged (object sender, PropertyChangedEventArgs e)
 		{
 			LoadText ();
+
+			// Need to refresh the dialog after the license text has been loaded. Otherwise when using the
+			// native toolkit the vertical scrollbar is not enabled unless you re-size the dialog.
+			OnReallocate ();
 		}
 
 		void LoadText ()
