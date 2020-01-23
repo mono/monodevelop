@@ -339,42 +339,42 @@
     "3.1.0": [
       {
         "PackageId": "Microsoft.VisualStudio.Web.CodeGeneration.Design",
-        "MinVersion": "3.1.0-preview1-19509-03",
-        "MaxVersion": "3.1.0-preview1-19509-03"
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0"
       },
       {
         "PackageId": "Microsoft.EntityFrameworkCore.SqlServer",
-        "MinVersion": "3.1.0-preview1.19506.2",
-        "MaxVersion": "3.1.0-preview1.19506.2",
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0",
         "IsOptionalEfPackage": "true"
       },
       {
         "PackageId": "Microsoft.EntityFrameworkCore.Tools",
-        "MinVersion": "3.1.0-preview1.19506.2",
-        "MaxVersion": "3.1.0-preview1.19506.2",
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0",
         "IsOptionalEfPackage": "true"
       },
       {
         "PackageId": "Microsoft.Extensions.Logging.Debug",
-        "MinVersion": "3.1.0-preview1.19506.1",
-        "MaxVersion": "3.1.0-preview1.19506.1"
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0"
       },
       {
         "PackageId": "Microsoft.AspNetCore.Identity.UI",
-        "MinVersion": "3.1.0-preview1.19508.20",
-        "MaxVersion": "3.1.0-preview1.19508.20",
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0",
         "IsOptionalIdentityPackage": "true"
       },
       {
         "PackageId": "Microsoft.AspNetCore.Identity.EntityFrameworkCore",
-        "MinVersion": "3.1.0-preview1.19508.20",
-        "MaxVersion": "3.1.0-preview1.19508.20",
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0",
         "IsOptionalIdentityPackage": "true"
       },
       {
         "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
-        "MinVersion": "3.1.0-preview1.19506.2",
-        "MaxVersion": "3.1.0-preview1.19506.2",
+        "MinVersion": "3.1.0",
+        "MaxVersion": "3.1.0",
         "IsOptionalIdentityPackage": "true",
         "IsOptionalEfPackage": "true"
       }
