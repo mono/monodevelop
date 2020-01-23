@@ -69,7 +69,7 @@ namespace MonoDevelop.Debugger.Gdb
 		object eventLock = new object ();
 		object gdbLock = new object ();
 		
-		public GdbSession ()
+		public GdbSession (BreakpointStore breakpoints) : base (breakpoints)
 		{
 			logGdb = !string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("MONODEVELOP_GDB_LOG"));
 		}

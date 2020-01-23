@@ -37,6 +37,6 @@ namespace MonoDevelop.Debugger
 		bool CanDebugCommand (ExecutionCommand cmd);
 		DebuggerStartInfo CreateDebuggerStartInfo (ExecutionCommand cmd);
 		ProcessInfo[] GetAttachableProcesses ();
-		DebuggerSession CreateSession ();
+		DebuggerSession CreateSession (BreakpointStore breakpoints);
 	}
 }

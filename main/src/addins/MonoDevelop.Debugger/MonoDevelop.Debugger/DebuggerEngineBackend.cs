@@ -64,7 +64,7 @@ namespace MonoDevelop.Debugger
 			return null;
 		}
 
-		public abstract DebuggerSession CreateSession ();
+		public abstract DebuggerSession CreateSession (BreakpointStore breakpoints);
 	}
 
 	#pragma warning disable 618
@@ -97,9 +97,9 @@ namespace MonoDevelop.Debugger
 			return engine.GetAttachableProcesses ();
 		}
 
-		public override DebuggerSession CreateSession ()
+		public override DebuggerSession CreateSession (BreakpointStore breakpoints)
 		{
-			return engine.CreateSession ();
+			return engine.CreateSession (breakpoints);
 		}
 	}
 	#pragma warning restore 618

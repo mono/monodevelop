@@ -64,6 +64,10 @@ namespace MonoDevelop.Debugger.VsCodeDebugProtocol
 			return isEnum;
 		}
 
+		protected VSCodeDebuggerSession (BreakpointStore breakpoints) : base (breakpoints)
+		{
+		}
+
 		protected override void OnContinue ()
 		{
 			try {
