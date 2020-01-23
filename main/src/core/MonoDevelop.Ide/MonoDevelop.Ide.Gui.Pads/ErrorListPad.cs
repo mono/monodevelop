@@ -875,6 +875,7 @@ namespace MonoDevelop.Ide.Gui.Pads
 				view.ScrollToPoint (0, 0);
 			store.Clear ();
 			tasks.Clear ();
+			logView.Clear ();
 			UpdateErrorsNum ();
 			UpdateWarningsNum ();
 			UpdateMessagesNum ();
