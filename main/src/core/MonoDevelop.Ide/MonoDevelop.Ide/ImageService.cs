@@ -938,10 +938,14 @@ namespace MonoDevelop.Ide
 				if (name.StartsWith (baseName) && name.EndsWith (ext)) {
 					yield return name;
 
-					var tagPortion = name.Substring (baseName.Length, name.Length - baseName.Length - ext.Length);
 					// to avoid duplicate resource entries in project files, add virtual file mappings for
-					// high contrast icons in selected state
-					if (tagPortion == "~dark~sel" || tagPortion == "~dark~sel@2x") {
+					// high contrast icons in selected state.
+					// note: we include the "." to ensure that we match "~dark~sel" exactly and not "~dark~sel~xyz".
+					int start = baseName.Length;
+					int length = name.Length - baseName.Length - ext.Length + 1;
+					if (name.IndexOf ("~dark~sel.", start, length, StringComparison.Ordinal) == start ||
+						name.IndexOf ("~dark~sel@2x.", start, length, StringComparison.Ordinal) == start)
+					{
 						var map = name.Replace ("~dark~sel", "~contrast~dark~sel");
 						if (virtualMappings == null) {
 							virtualMappings = new Dictionary<string, string> ();
