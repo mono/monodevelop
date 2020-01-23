@@ -426,6 +426,7 @@ namespace MonoDevelop.Ide
 			try {
 				await entry.SaveAsync (monitor);
 				monitor.ReportSuccess (GettextCatalog.GetString ("Project saved."));
+			} catch (OperationCanceledException) {
 			} catch (Exception ex) {
 				monitor.ReportError (GettextCatalog.GetString ("Save failed."), ex);
 			} finally {

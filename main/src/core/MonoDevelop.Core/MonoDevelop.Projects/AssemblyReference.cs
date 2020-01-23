@@ -139,6 +139,10 @@ namespace MonoDevelop.Projects
 
 		public SolutionItem GetReferencedItem (Solution parentSolution)
 		{
+			if (parentSolution is null) {
+				throw new ArgumentNullException (nameof (parentSolution));
+			}
+
 			var projectPath = GetMetadata ("MSBuildSourceProjectFile");
 			if (!string.IsNullOrEmpty (projectPath)) {
 				var project = parentSolution.FindSolutionItem (projectPath);
