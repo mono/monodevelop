@@ -242,27 +242,6 @@ namespace MonoDevelop.Ide
 			var desktopService = Runtime.GetService<DesktopService> ().Result;
 			desktopService.SetGlobalMenu (commandService, DefaultWorkbench.MainMenuPath, DefaultWorkbench.AppMenuPath);
 
-			// Run the main loop
-			Gtk.Application.Invoke ((s, e) => {
-				MainLoop (options, startupInfo).Ignore ();
-			});
-			Gtk.Application.Run ();
-
-			IdeApp.IsRunning = false;
-
-			IdeApp.Customizer.OnIdeShutdown ();
-
-			instanceConnection.Dispose ();
-
-			lockupCheckRunning = false;
-			Runtime.Shutdown ();
-
-			IdeApp.Customizer.OnCoreShutdown ();
-
-			InstrumentationService.Stop ();
-
-			MonoDevelop.Components.GtkWorkarounds.Terminate ();
-
 			return 0;
 		}
 
@@ -401,6 +380,46 @@ namespace MonoDevelop.Ide
 			GLib.Idle.Add (OnIdle);
 
 			return 0;
+		}
+
+		int Run (MonoDevelopOptions options, bool controlMainLoop)
+		{
+			var ret = Run (options);
+			if (ret != 0) {
+				return ret;
+			}
+
+			if (controlMainLoop) {
+				// Run the main loop
+				Gtk.Application.Invoke ((s, e) => {
+					MainLoop (options, startupInfo).Ignore ();
+				});
+				Gtk.Application.Run ();
+
+				Shutdown ();
+				return 0;
+			} else {
+				MainLoop (options, startupInfo).Ignore ();
+				return 0;
+			}
+		}
+
+		internal void Shutdown ()
+		{
+			IdeApp.IsRunning = false;
+
+			IdeApp.Customizer.OnIdeShutdown ();
+
+			instanceConnection.Dispose ();
+
+			lockupCheckRunning = false;
+			Runtime.Shutdown ();
+
+			IdeApp.Customizer.OnCoreShutdown ();
+
+			InstrumentationService.Stop ();
+
+			GtkWorkarounds.Terminate ();
 		}
 
 		void RegisterServices ()
@@ -723,6 +742,11 @@ namespace MonoDevelop.Ide
 		
 		public static int Main (string[] args, IdeCustomizer customizer = null)
 		{
+			return Main (args, true, customizer);
+		}
+
+		public static int Main (string[] args, bool controlMainLoop, IdeCustomizer customizer)
+		{
 
 			IdeStartupTracker.StartupTracker.Start ();
 
@@ -752,7 +776,7 @@ namespace MonoDevelop.Ide
 				IdeStartupTracker.StartupTracker.MarkSection ("mainInitialization");
 
 				var app = new IdeStartup ();
-				ret = app.Run (options);
+				ret = app.Run (options, controlMainLoop);
 			} catch (Exception ex) {
 				LoggingService.LogFatalError (
 					string.Format (
@@ -761,7 +785,9 @@ namespace MonoDevelop.Ide
 						BrandingService.ApplicationName
 					), ex);
 			} finally {
-				Runtime.Shutdown ();
+				if (controlMainLoop) {
+					Runtime.Shutdown ();
+				}
 			}
 
 			LoggingService.Shutdown ();
