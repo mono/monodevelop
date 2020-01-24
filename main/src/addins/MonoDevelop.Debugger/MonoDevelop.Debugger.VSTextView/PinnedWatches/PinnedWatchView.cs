@@ -30,6 +30,8 @@ using AppKit;
 
 using Mono.Debugging.Client;
 
+using MonoDevelop.Ide;
+
 namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 {
 	sealed class PinnedWatchView : NSView
@@ -57,6 +59,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			controller.AllowExpanding = false;
 
 			treeView = controller.GetMacControl (ObjectValueTreeViewFlags.PinnedWatchFlags);
+			treeView.SetCustomFont (IdeApp.Preferences.CustomPadFont);
 			treeView.UIElementName = "PinnedWatch";
 			controller.PinnedWatch = watch;
 
@@ -77,6 +80,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			widthConstraint = WidthAnchor.ConstraintEqualToConstant (treeView.Frame.Width);
 			widthConstraint.Active = true;
 
+			IdeApp.Preferences.CustomPadFont.Changed += OnFontChanged;
 			DebuggingService.ResumedEvent += OnDebuggerResumed;
 			DebuggingService.PausedEvent += OnDebuggerPaused;
 			treeView.Resized += OnTreeViewResized;
@@ -138,6 +142,12 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 			}
 		}
 
+		void OnFontChanged (object sender, EventArgs e)
+		{
+			treeView.SetCustomFont (IdeApp.Preferences.CustomPadFont);
+			treeView.QueueResize ();
+		}
+
 		void OnTreeViewResized (object sender, EventArgs e)
 		{
 			//const string CocoaTextViewScrollView = "CocoaTextViewScrollView";
@@ -182,6 +192,7 @@ namespace MonoDevelop.Debugger.VSTextView.PinnedWatches
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && !disposed) {
+				IdeApp.Preferences.CustomPadFont.Changed -= OnFontChanged;
 				DebuggingService.ResumedEvent -= OnDebuggerResumed;
 				DebuggingService.PausedEvent -= OnDebuggerPaused;
 				treeView.Resized -= OnTreeViewResized;

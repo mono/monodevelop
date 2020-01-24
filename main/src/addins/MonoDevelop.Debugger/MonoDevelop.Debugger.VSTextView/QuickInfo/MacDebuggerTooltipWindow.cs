@@ -30,6 +30,8 @@ using AppKit;
 
 using Mono.Debugging.Client;
 
+using MonoDevelop.Ide;
+
 namespace MonoDevelop.Debugger
 {
 	sealed class MacDebuggerTooltipWindow : NSPopover
@@ -53,6 +55,7 @@ namespace MonoDevelop.Debugger
 			controller.PinnedWatchLocation = location;
 
 			treeView = controller.GetMacControl (ObjectValueTreeViewFlags.TooltipFlags);
+			treeView.SetCustomFont (IdeApp.Preferences.CustomPadFont);
 			treeView.UIElementName = "Tooltip";
 			treeView.NodePinned += OnPinStatusChanged;
 			treeView.StartEditing += OnStartEditing;
@@ -76,6 +79,7 @@ namespace MonoDevelop.Debugger
 			heightConstraint = scrollView.HeightAnchor.ConstraintEqualToConstant (treeView.Frame.Height);
 			heightConstraint.Active = true;
 
+			IdeApp.Preferences.CustomPadFont.Changed += OnFontChanged;
 			treeView.Resized += OnTreeViewResized;
 		}
 
@@ -87,6 +91,12 @@ namespace MonoDevelop.Debugger
 		public DebuggerSession GetDebuggerSession ()
 		{
 			return controller.GetStackFrame ()?.DebuggerSession;
+		}
+
+		void OnFontChanged (object sender, EventArgs e)
+		{
+			treeView.SetCustomFont (IdeApp.Preferences.CustomPadFont);
+			treeView.QueueResize ();
 		}
 
 		static nfloat GetMaxHeight (NSWindow window)
@@ -151,6 +161,7 @@ namespace MonoDevelop.Debugger
 		{
 			if (disposing && !disposed) {
 				//PreviewWindowManager.WindowClosed -= PreviewWindowManager_WindowClosed;
+				IdeApp.Preferences.CustomPadFont.Changed -= OnFontChanged;
 				treeView.Resized -= OnTreeViewResized;
 				treeView.NodePinned -= OnPinStatusChanged;
 				treeView.StartEditing -= OnStartEditing;
