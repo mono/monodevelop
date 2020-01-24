@@ -1,3 +1,4 @@
+!Contents/MonoBundle
 !Contents/Resources/lib/monodevelop/AddIns/designer/Xamarin.iOSDesigner/MonoTouchDesignServer.app
 !Contents/Resources/lib/monodevelop/AddIns/designer/Xamarin.iOSDesigner/MonoTouchDesignServerTVOS.app
 !Contents/Resources/lib/monodevelop/AddIns/designer/Xamarin.iOSDesigner/MonoTouchDesignServerUnified.app
