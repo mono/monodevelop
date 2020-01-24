@@ -51,8 +51,6 @@ namespace MonoDevelop.PackageManagement
 		{
 			var res = new TaskCompletionSource<bool> ();
 			IdeApp.RunWhenIdle (() => {
-				// Note that using native toolkit means hyperlinks from complicated license expressions cannot be
-				// clicked with the Xamarin.Mac LabelBackend
 				Xwt.Toolkit.NativeEngine.Invoke (delegate {
 					using (LicenseAcceptanceDialog dialog = CreateLicenseAcceptanceDialog (licenses)) {
 						res.SetResult (dialog.Run (MessageService.RootWindow));

@@ -28,6 +28,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
@@ -171,19 +172,26 @@ namespace MonoDevelop.PackageManagement
 
 		static void AddLicenseExpressionLabel (PackageLicenseViewModel package, VBox parentVBox)
 		{
-			var licenseLabel = new Label ();
-			var builder = new LicenseLinkMarkupBuilder ();
-			licenseLabel.Markup = builder.GetMarkup (package.LicenseLinks);
-			licenseLabel.Wrap = WrapMode.None;
-
-			// Does not work. LabelBackend for Xamarin.Mac implementation does not ILabelEventSink.OnLinkClicked
-			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
-
+			// Using the HBox as an accessibility group since the license will have multiple parts.
+			// Cannot use a single label with markup for the license expression since it is not accessible,
+			// also when using the native toolkit the hyperlinks cannot be clicked.
 			var hbox = new HBox ();
+			hbox.Spacing = 0;
+			hbox.Accessible.Role = Xwt.Accessibility.Role.Group;
+			hbox.Accessible.Label = GettextCatalog.GetString ("License Expression");
 
-			if (builder.Warnings.Any ()) {
+			// Get any warnings.
+			List<WarningText> warnings = null;
+			foreach (IText textLink in package.LicenseLinks) {
+				if (textLink is WarningText warning) {
+					warnings ??= new List<WarningText> ();
+					warnings.Add (warning);
+				}
+			}
+
+			if (warnings?.Any () == true) {
 				var warningTextBuilder = StringBuilderCache.Allocate ();
-				foreach (WarningText warning in builder.Warnings) {
+				foreach (WarningText warning in warnings) {
 					warningTextBuilder.Append (warning.Text);
 					warningTextBuilder.Append (' ');
 				}
@@ -191,6 +199,7 @@ namespace MonoDevelop.PackageManagement
 				var warningWidget = new MonoDevelop.Components.InformationPopoverWidget ();
 				warningWidget.Severity = Ide.Tasks.TaskSeverity.Warning;
 				warningWidget.Message = StringBuilderCache.ReturnAndFree (warningTextBuilder).TrimEnd ();
+				warningWidget.MarginRight = 6;
 
 				// Disable focus. With focus enabled the info popup ends up being displayed and focused
 				// if it is the first package license on opening the dialog. Unable to set focus to a
@@ -200,9 +209,26 @@ namespace MonoDevelop.PackageManagement
 				hbox.PackStart (warningWidget);
 			}
 
-			hbox.PackStart (licenseLabel, true);
+			foreach (IText textLink in package.LicenseLinks) {
+				if (textLink is LicenseText licenseText) {
+					var label = new LinkLabel (licenseText.Text);
+					label.TextAlignment = Alignment.Start;
+					label.Uri = licenseText.Link;
+					label.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+					hbox.PackStart (label, false, false);
+				} else if (textLink is WarningText warning) {
+					// Ignore.
+				} else if (textLink is LicenseFileText licenseFileText) {
+					// Should not happen. A license expression should not contain a license file.
+					LoggingService.LogError ("Unexpected LicenseFileText when building licence expression {0}", licenseFileText.Text);
+				} else {
+					var label = new Label (textLink.Text);
+					label.TextAlignment = Alignment.Start;
+					hbox.PackStart (label, false, false);
+				}
+			}
 
-			parentVBox.PackStart (hbox);
+			parentVBox.PackStart (hbox, false, false);
 		}
 
 		static void AddFileLicenseLinkLabel (LicenseFileText licenseFileText, VBox parentVBox)
