@@ -127,18 +127,20 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackage (PackageLicenseViewModel package)
 		{
+			var label = new Label {
+				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
+			};
 			var titleBox = new VBox ();
 			titleBox.Spacing = 0;
 			titleBox.MarginBottom = 4;
-			titleBox.PackStart (new Label {
-				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
-			});
+			titleBox.PackStart (label);
 			AddLicenseInfo (package, titleBox);
 
 			var rowBox = new HBox ();
 			rowBox.Margin = rowMargin;
 
 			var icon = new ImageView (ImageService.GetIcon ("md-package", Gtk.IconSize.Dnd));
+			icon.Accessible.LabelWidget = label;
 
 			if (package.IconUrl != null && !string.IsNullOrEmpty (package.IconUrl.AbsoluteUri))
 				imageLoader.LoadFrom (package.IconUrl, icon);
