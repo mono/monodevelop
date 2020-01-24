@@ -93,6 +93,12 @@ namespace MonoDevelop.VersionControl
 			base.Dispose ();
 			mainView = null;
 			vcInfo = null;
+			diffView = null;
+			blameView = null;
+			logView = null;
+			mergeView = null;
+			project = null;
+			repo = null;
 		}
 
 		void VersionControlService_FileStatusChanged (object sender, FileUpdateEventArgs args)
