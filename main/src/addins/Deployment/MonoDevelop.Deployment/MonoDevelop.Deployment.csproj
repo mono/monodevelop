@@ -167,19 +167,19 @@
     <EmbeddedResource Include="icons\package-48~sel.png" />
     <EmbeddedResource Include="icons\package-48~sel%402x.png" />
 
-    <EmbeddedResource Include="templates\images\project-package-32.png" />
-    <EmbeddedResource Include="templates\images\project-package-32%402x.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~dark.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~dark%402x.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~dark~sel.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~dark~sel%402x.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~sel.png" />
-    <EmbeddedResource Include="templates\images\project-package-32~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\package-project.png" />
+    <EmbeddedResource Include="templates\images\package-project%402x.png" />
+    <EmbeddedResource Include="templates\images\package-project~dark.png" />
+    <EmbeddedResource Include="templates\images\package-project~dark%402x.png" />
+    <EmbeddedResource Include="templates\images\package-project~dark~sel.png" />
+    <EmbeddedResource Include="templates\images\package-project~dark~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\package-project~sel.png" />
+    <EmbeddedResource Include="templates\images\package-project~sel%402x.png" />
+    <EmbeddedResource Include="templates\images\package-sidebar.png" />
+    <EmbeddedResource Include="templates\images\package-sidebar%402x.png" />
+    <EmbeddedResource Include="templates\images\package-sidebar~dark.png" />
+    <EmbeddedResource Include="templates\images\package-sidebar~dark%402x.png" />
 
-    <EmbeddedResource Include="templates\images\project-package-template.png" />
-    <EmbeddedResource Include="templates\images\project-package-template%402x.png" />
-    <EmbeddedResource Include="templates\images\project-package-template~dark.png" />
-    <EmbeddedResource Include="templates\images\project-package-template~dark%402x.png" />
     <EmbeddedResource Include="templates\PackagingProject.xpt.xml" />
 
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml" />

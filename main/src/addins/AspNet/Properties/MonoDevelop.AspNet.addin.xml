@@ -419,10 +419,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-aspnet-empty-project" resource="project-aspnet-template.png" />
+		<Image id="md-aspnet-empty-project" resource="aspnet-sidebar.png" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-aspnet-empty-project" resource="project-aspnet-32.png" size="Dnd" />
+		<StockIcon stockid="md-aspnet-empty-project" resource="aspnet-project.png" size="Dnd" />
 	</Extension>
 </ExtensionModel>

@@ -1543,19 +1543,19 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-netcore-empty-project" resource="project-netcore-template.png" />
-		<Image id="md-netcore-console-project" resource="project-netcore-console-template.png" />
-		<Image id="md-netcore-library-project" resource="project-netcore-library-template.png" />
-		<Image id="md-netcore-test-project" resource="project-netcore-test-template.png" />
-		<Image id="md-crossplatform-library-project" resource="project-crossplatform-library-template.png" />
+		<Image id="md-netcore-empty-project" resource="netcore-sidebar.png" />
+		<Image id="md-netcore-console-project" resource="netcore-console-sidebar.png" />
+		<Image id="md-netcore-library-project" resource="netcore-library-sidebar.png" />
+		<Image id="md-netcore-test-project" resource="netcore-test-sidebar.png" />
+		<Image id="md-crossplatform-library-project" resource="crossplatform-library-sidebar.png" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-netcore-empty-project" resource="project-netcore-32.png" size="Dnd" />
-		<StockIcon stockid="md-netcore-console-project" resource="project-netcore-console-32.png" size="Dnd" />
-		<StockIcon stockid="md-netcore-library-project" resource="project-netcore-library-32.png" size="Dnd" />
-		<StockIcon stockid="md-netcore-test-project" resource="project-netcore-test-32.png" size="Dnd" />
-		<StockIcon stockid="md-crossplatform-library-project" resource="project-crossplatform-library-32.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-empty-project" resource="netcore-project.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-console-project" resource="netcore-console-project.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-library-project" resource="netcore-library-project.png" size="Dnd" />
+		<StockIcon stockid="md-netcore-test-project" resource="netcore-test-project.png" size="Dnd" />
+		<StockIcon stockid="md-crossplatform-library-project" resource="crossplatform-library-project.png" size="Dnd" />
 	</Extension>
 
 	<Extension path="/MonoDevelop/ProjectModel/MSBuildGlobalPropertyProviders">
