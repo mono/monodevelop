@@ -637,5 +637,28 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsTrue (wizard.Parameters.GetBoolValue ("UseNetCore21"));
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore20"));
 		}
+
+		[Test]
+		public void RazorClassLib_SupportPagesAndViews ()
+		{
+			CreateWizard ();
+			AddSupportedParameters (DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName);
+			DotNetCoreRuntimesInstalled ("3.1.0");
+			DotNetCoreSdksInstalled ("3.1.101");
+
+			int pages = wizard.TotalPages;
+
+			Assert.AreEqual (1, pages);
+
+			var page = wizard.GetPage (1) as DotNetCoreProjectTemplateWizardPage;
+
+			// Enable support for pages and views
+			page.SupportPagesAndViews = true;
+			Assert.IsTrue (wizard.Parameters.GetBoolValue (DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName));
+
+			// Disable support for pages and views
+			page.SupportPagesAndViews = false;
+			Assert.IsFalse (wizard.Parameters.GetBoolValue (DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName));
+		}
 	}
 }

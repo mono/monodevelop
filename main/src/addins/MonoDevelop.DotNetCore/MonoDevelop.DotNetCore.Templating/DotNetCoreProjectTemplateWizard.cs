@@ -36,6 +36,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		const string defaultParameterNetCore30 = "UseNetCore30";
 		const string defaultParameterNetCore20 = "UseNetCore20";
 		const string defaultParameterNetCore1x = "UseNetCore1x";
+		internal const string SupportPagesAndViewsParameterName = "SupportPagesAndViews";
 
 		List<TargetFramework> targetFrameworks;
 
@@ -66,7 +67,7 @@ namespace MonoDevelop.DotNetCore.Templating
 		{
 			GetSupportedAuthentications ();
 			GetTargetFrameworks ();
-			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any ())
+			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any () || IsSupportedParameter (SupportPagesAndViewsParameterName))
 				return 1;
 
 			ConfigureDefaultParameters ();

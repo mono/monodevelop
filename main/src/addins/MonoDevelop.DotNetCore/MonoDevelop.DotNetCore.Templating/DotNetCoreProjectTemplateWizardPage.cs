@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Core.Assemblies;
+using MonoDevelop.Core.StringParsing;
 using MonoDevelop.DotNetCore.Gui;
 using MonoDevelop.Ide.Templates;
 
@@ -128,6 +129,13 @@ namespace MonoDevelop.DotNetCore.Templating
 				selectedAuthenticationIndex = value;
 				wizard.Parameters [AuthenticationParameter.ParameterName] = SupportedAuthentications [selectedAuthenticationIndex].Name;
 			}
+		}
+
+		public bool HasSupportPagesAndViewsParameter => wizard.IsSupportedParameter (DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName);
+
+		public bool SupportPagesAndViews {
+			get => wizard.Parameters.GetBoolValue (DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName);
+			set => wizard.Parameters [DotNetCoreProjectTemplateWizard.SupportPagesAndViewsParameterName] = value ? bool.TrueString : bool.FalseString;
 		}
 	}
 }

@@ -58,6 +58,8 @@ namespace MonoDevelop.DotNetCore.Gui
 		Label authenticationInformationLabel;
 		Label authenticationLabel;
 
+		CheckButton supportPagesAndViewsCheckButton;
+
 		EventBox configurationBottomEventBox;
 		EventBox backgroundLargeImageEventBox;
 		VBox backgroundLargeImageVBox;
@@ -95,6 +97,11 @@ namespace MonoDevelop.DotNetCore.Gui
 				PopulateAuthentications ();
 				authenticationComboBox.Changed += AuthenticationsComboBoxChanged;
 			}
+
+			if (wizardPage.HasSupportPagesAndViewsParameter) {
+				supportPagesAndViewsCheckButton.Active = wizardPage.SupportPagesAndViews;
+				supportPagesAndViewsCheckButton.Toggled += SupportPagesAndViewsCheckButtonToggled;
+			}
 		}
 
 		void PopulateTargetFrameworks ()
@@ -109,6 +116,11 @@ namespace MonoDevelop.DotNetCore.Gui
 		void TargetFrameworkComboBoxChanged (object sender, EventArgs e)
 		{
 			wizardPage.SelectedTargetFrameworkIndex = targetFrameworkComboBox.Active;
+		}
+
+		void SupportPagesAndViewsCheckButtonToggled (object sender, EventArgs args)
+		{
+			wizardPage.SupportPagesAndViews = supportPagesAndViewsCheckButton.Active;
 		}
 
 		void PopulateAuthentications ()
@@ -156,6 +168,7 @@ namespace MonoDevelop.DotNetCore.Gui
 
 			var showFrameworkSelection = wizardPage.TargetFrameworks.Count > 1;
 			var showAuthenticationSelection = wizardPage.SupportedAuthentications.Count > 0;
+			var showSupportPagesAndViews = wizardPage.HasSupportPagesAndViewsParameter;
 
 			// Create the table of configurable options
 			uint tableRows =  (uint)(showFrameworkSelection && showAuthenticationSelection ? 4 : 2);
@@ -165,11 +178,20 @@ namespace MonoDevelop.DotNetCore.Gui
 				ColumnSpacing = 6
 			};
 
-			if (showFrameworkSelection)
+			uint primaryRow = 0;
+			if (showFrameworkSelection) {
 				AddFrameworkSelection ();
+				primaryRow += 2;
+			}
 
-			if (showAuthenticationSelection)
-				AddAuthenticationSelection ((uint)(showFrameworkSelection ? 2 : 0));
+			if (showAuthenticationSelection) {
+				AddAuthenticationSelection (primaryRow);
+				primaryRow += 2;
+			}
+
+			if (showSupportPagesAndViews) {
+				AddSupportPagesAndViewsSelection (primaryRow);
+			}
 
 			configurationTableEventBox = new EventBox {
 				Name = "configurationTableEventBox"
@@ -255,6 +277,38 @@ namespace MonoDevelop.DotNetCore.Gui
 				Justify = Justification.Right
 			};
 			configurationTable.Attach (authenticationLabel, 0, 1, primaryRow, primaryRow + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+		}
+
+		void AddSupportPagesAndViewsSelection (uint primaryRow)
+		{
+			var sectionLabel = new Label {
+				Name = "advancedSectionLabel",
+				Xpad = 5,
+				Xalign = 1F,
+				LabelProp = GettextCatalog.GetString ("Advanced:"),
+				Justify = Justification.Right
+			};
+			configurationTable.Attach (sectionLabel, 0, 1, primaryRow, primaryRow + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+
+			supportPagesAndViewsCheckButton = new CheckButton (GettextCatalog.GetString ("Support pages and views")) {
+				WidthRequest = 350,
+				Name = "supportPagesAndViewsCheckButton",
+				Xalign = 0F,
+				TooltipText = GettextCatalog.GetString ("Whether to support adding traditional Razor pages and Views in addition to components to this library")
+			};
+			configurationTable.Attach (supportPagesAndViewsCheckButton, 1, 2, primaryRow, primaryRow + 1, AttachOptions.Fill, AttachOptions.Fill, 0, 0);
+		}
+
+		public override void Dispose ()
+		{
+			if (targetFrameworkComboBox != null)
+				targetFrameworkComboBox.Changed -= TargetFrameworkComboBoxChanged;
+			if (authenticationComboBox != null)
+				authenticationComboBox.Changed -= AuthenticationsComboBoxChanged;
+			if (supportPagesAndViewsCheckButton != null)
+				supportPagesAndViewsCheckButton.Toggled -= SupportPagesAndViewsCheckButtonToggled;
+
+			base.Dispose ();
 		}
 	}
 }
