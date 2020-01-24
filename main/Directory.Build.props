@@ -17,7 +17,7 @@
     <NuGetVersionMicrosoftTestPlatform>16.2.0</NuGetVersionMicrosoftTestPlatform>
     <NuGetVersionMonoDevelopAnalyzers>0.1.0.2</NuGetVersionMonoDevelopAnalyzers>
     <NuGetVersionNewtonsoftJson>12.0.2</NuGetVersionNewtonsoftJson>
-    <NuGetVersionNuGet>5.3.0-rtm.6192</NuGetVersionNuGet>
+    <NuGetVersionNuGet>5.4.0</NuGetVersionNuGet>
     <NuGetVersionNUnit2>2.7.0</NuGetVersionNUnit2>
     <NuGetVersionNUnit3>3.9.0</NuGetVersionNUnit3>
     <NuGetVersionVSCodeDebugProtocol>15.8.20719.1</NuGetVersionVSCodeDebugProtocol>

@@ -195,7 +195,7 @@ namespace MonoDevelop.SourceEditor
 
 		private SourceEditorView (DocumentAndLoaded doc)
 		{
-			Counters.LoadedEditors++;
+			Counters.LoadedEditors.Inc (1);
 			breakpoints = DebuggingService.Breakpoints;
 
 			widget = new SourceEditorWidget (this, doc.Document);
@@ -906,7 +906,7 @@ namespace MonoDevelop.SourceEditor
 		{
 			var document = Document;
 			if (document == null)
-				return TaskUtil.Default<object> ();
+				return Task.CompletedTask;
 			document.TextChanged -= OnTextReplaced;
 
 			if (warnOverwrite) {
@@ -970,7 +970,7 @@ namespace MonoDevelop.SourceEditor
 			//document.AddMarker (7, new MyExtendingLineMarker ());
 			//document.AddMarker (10, new MyExtendingLineMarker ());
 
-			return TaskUtil.Default<object> ();
+			return Task.CompletedTask;
 		}
 
 		void HandleTextEditorVAdjustmentChanged (object sender, EventArgs e)
@@ -1056,7 +1056,7 @@ namespace MonoDevelop.SourceEditor
 
 			StoreSettings ();
 
-			Counters.LoadedEditors--;
+			Counters.LoadedEditors.Dec (1);
 
 			/*	if (messageBubbleHighlightPopupWindow != null)
 					messageBubbleHighlightPopupWindow.Destroy ();*/

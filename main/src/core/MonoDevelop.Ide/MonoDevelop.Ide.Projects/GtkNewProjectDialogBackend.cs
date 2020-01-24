@@ -78,23 +78,7 @@ namespace MonoDevelop.Ide.Projects
 			actionHandler.PerformShowMenu += PerformShowMenu;
 		}
 
-		void ProjectCreationFailed (object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (true);
-		void ProjectCreated(object obj, EventArgs args) => ShowProjectCreationAccessibityNotification (false);
 		async void NextButtonClicked (object sender, EventArgs e) => await MoveToNextPage ();
-
-		void ShowProjectCreationAccessibityNotification (bool hasError)
-		{
-			var projectTemplate = controller.SelectedTemplate;
-
-			string messageText;
-
-			if (hasError)
-				messageText = GettextCatalog.GetString ("{0} failed to create", projectTemplate.Name);
-			else
-				messageText = GettextCatalog.GetString ("{0} successfully created", projectTemplate.Name);
-
-			this.Accessible.MakeAccessibilityAnnouncement (messageText);
-		}
 
 		public void ShowDialog ()
 		{
@@ -114,8 +98,6 @@ namespace MonoDevelop.Ide.Projects
 		public void RegisterController (INewProjectDialogController controller)
 		{
 			this.controller = controller;
-			controller.ProjectCreationFailed += ProjectCreationFailed;
-			controller.ProjectCreated += ProjectCreated;
 			languageCellRenderer.SelectedLanguage = controller.SelectedLanguage;
 			topBannerLabel.Text = controller.BannerText;
 			LoadTemplates ();
@@ -298,9 +280,6 @@ namespace MonoDevelop.Ide.Projects
 
 			if (!controller.IsLastPage)
 				projectConfigurationWidget.Destroy ();
-
-			controller.ProjectCreationFailed -= ProjectCreationFailed;
-			controller.ProjectCreated -= ProjectCreated;
 
 			base.OnDestroyed ();
 		}
@@ -611,8 +590,12 @@ namespace MonoDevelop.Ide.Projects
 			if (controller.IsLastPage) {
 				try {
 					CanMoveToNextPage = false;
+					// disable all controls on this dialog to prevent users actions
+					VBox.Sensitive = false;
 					await controller.Create ();
 				} catch {
+					// if something goes wrong, we need to enable dialog contols
+					VBox.Sensitive = true;
 					throw;
 				} finally {
 					CanMoveToNextPage = true;

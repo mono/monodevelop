@@ -6,6 +6,7 @@ using Mono.Addins.Description;
 [assembly:Addin ("UnitTesting", 
 	Namespace = "MonoDevelop",
 	Version = MonoDevelop.BuildInfo.Version,
+	CompatVersion = "8.5",
 	Category = "Testing")]
 
 [assembly:AddinName ("Unit Testing core support")]

@@ -421,7 +421,7 @@ namespace MonoDevelop.VersionControl.Git
 			try {
 				monitor.BeginTask (GettextCatalog.GetString ("Pushing Tag"), 1);
 				monitor.Log.WriteLine (GettextCatalog.GetString ("Pushing Tag '{0}' to '{1}'", tagName, repo.Url));
-				await repo.PushTagAsync (tagName);
+				await repo.PushTagAsync (tagName, destroyTokenSource.Token);
 				monitor.Step (1);
 				monitor.EndTask ();
 			} catch (Exception ex) {
@@ -449,7 +449,7 @@ namespace MonoDevelop.VersionControl.Git
 			if (string.IsNullOrEmpty(remoteName))
 				return;
 
-			var monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote..."));
+			var monitor = VersionControlService.GetProgressMonitor (GettextCatalog.GetString ("Fetching remote...")).WithCancellationSource (destroyTokenSource);
 			try {
 				await repo.FetchAsync (monitor, remoteName);
 			} catch (Exception ex) {

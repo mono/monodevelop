@@ -67,7 +67,7 @@ namespace MonoDevelop.PackageManagement
 
 		public Task SaveProjectAsync (CancellationToken token)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		public Task<bool> ExecutePackageInitScriptAsync (
@@ -88,7 +88,7 @@ namespace MonoDevelop.PackageManagement
 			bool throwOnFailure,
 			CancellationToken token)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 	}
 }

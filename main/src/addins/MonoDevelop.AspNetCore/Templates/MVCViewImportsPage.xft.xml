@@ -5,12 +5,12 @@
 	lastModified="2017/06/01">
 
 	<TemplateConfiguration>
-		<_Name>MVC View Imports Page</_Name>
+		<_Name>Razor View Imports</_Name>
 		<Icon>md-html-file-icon</Icon>
 		<_Category>ASP.NET Core</_Category>
 		<LanguageName>C#</LanguageName>
 		<DefaultFilename>_ViewImports</DefaultFilename>
-		<_Description>Creates a MVC View Import Page.</_Description>
+		<_Description>Creates a Razor View Import Page.</_Description>
 	</TemplateConfiguration>
 
 	<Conditions>

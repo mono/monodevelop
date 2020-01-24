@@ -116,6 +116,7 @@ namespace MonoDevelop.Ide.TypeSystem
 			}
 
 			FileService.FileChanged += FileService_FileChanged;
+			FileService.FileRemoved += FileService_FileRemoved;
 
 			desktopService = await serviceProvider.GetService<DesktopService> ();
 
@@ -125,6 +126,7 @@ namespace MonoDevelop.Ide.TypeSystem
 		protected override Task OnDispose ()
 		{
 			FileService.FileChanged -= FileService_FileChanged;
+			FileService.FileRemoved -= FileService_FileRemoved;
 			if (rootWorkspace != null)
 				rootWorkspace.ActiveConfigurationChanged -= HandleActiveConfigurationChanged;
 			FinalizeTrackedProjectHandling ();
@@ -171,6 +173,48 @@ namespace MonoDevelop.Ide.TypeSystem
 					});
 				} catch (Exception) { }
 			});
+		}
+
+		void FileService_FileRemoved (object sender, FileEventArgs e)
+		{
+			try {
+				foreach (var file in e) {
+					if (file.FileName.FileName == ".editorconfig") {
+						OnEditorConfigDocumentRemoved (file.FileName);
+					}
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError ("TypeSystemService.FileService_FileRemoved error", ex);
+			}
+		}
+
+		void OnEditorConfigDocumentRemoved (FilePath fileName)
+		{
+			foreach (var workspace in AllWorkspaces) {
+				var mdWorkspace = workspace as MonoDevelopWorkspace;
+				if (mdWorkspace == null)
+					continue;
+
+				var projects = new HashSet<Project> ();
+				foreach (var mdProject in mdWorkspace.MonoDevelopSolution.GetAllProjects ()) {
+					foreach (var projectId in mdWorkspace.GetProjectIds (mdProject)) {
+						var docId = mdWorkspace.GetDocumentId (projectId, fileName);
+						if (docId != null) {
+							projects.Add (mdProject);
+							try {
+								mdWorkspace.OnAnalyzerConfigDocumentRemoved (docId);
+							} catch (Exception ex) {
+								// Ignore error so other projects can be updated.
+								LoggingService.LogError ("OnAnalyzerConfigDocumentRemoved error", ex);
+							}
+						}
+					}
+				}
+
+				foreach (var mdProject in projects) {
+					mdProject.NotifyModified ("CoreCompileFiles");
+				}
+			}
 		}
 
 		internal async Task<MonoDevelopWorkspace> CreateEmptyWorkspace ()

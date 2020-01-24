@@ -222,10 +222,17 @@ namespace MonoDevelop.Debugger
 		{
 			var backtrace = DebuggingService.CurrentCallStack;
 			var result = new List<(StackFrame frame, string text)> ();
-			for (int i = 0; i < backtrace.FrameCount; i++) {
-				var frame = backtrace.GetFrame (i);
-				result.Add ((frame, frame.FullStackframeText));
+
+			if (backtrace.FrameCount > 0) {
+				using (var timer = backtrace.DebuggerSession.StackTraceStats.StartTimer ()) {
+					for (int i = 0; i < backtrace.FrameCount; i++) {
+						var frame = backtrace.GetFrame (i);
+						result.Add ((frame, frame.FullStackframeText));
+					}
+					timer.Success = true;
+				}
 			}
+
 			return result;
 		}
 

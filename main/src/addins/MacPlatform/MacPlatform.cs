@@ -287,6 +287,18 @@ namespace MonoDevelop.MacIntegration
 		{
 			oldHandler = NSGetUncaughtExceptionHandler ();
 			NSSetUncaughtExceptionHandler (uncaughtHandler);
+
+			ObjCRuntime.Runtime.MarshalManagedException += (sender, args) => {
+				LoggingService.LogInternalError (args.Exception);
+			};
+
+			ObjCRuntime.Runtime.MarshalObjectiveCException += (sender, args) => {
+				try {
+					throw new MarshalledObjCException (args.Exception);
+				} catch (MarshalledObjCException e) {
+					LoggingService.LogInternalError ("MarshalObjCException", e);
+				}
+			};
 		}
 
 		public override Xwt.Toolkit LoadNativeToolkit ()
@@ -352,10 +364,15 @@ namespace MonoDevelop.MacIntegration
 
 			// At this point, Cocoa should have been initialized; it is initialized along with Gtk+ at the beginning of IdeStartup.Run
 			// If LaunchReason is still Unknown at this point, it means we have missed the NSApplicationDidLaunch notification for some reason and
-			// we fall back to it being a Normal startup to unblock anything waiting for that notification.
+			// we fall back to the AppDelegate's version to unblock anything waiting for that notification.
 			if (IdeApp.LaunchReason == IdeApp.LaunchType.Unknown) {
-				LoggingService.LogWarning ("Missed NSApplicationDidLaunch notification, assuming normal startup");
-				IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+				if (appDelegate.LaunchReason != AppDelegate.LaunchType.Unknown) {
+					IdeApp.LaunchReason = appDelegate.LaunchReason == AppDelegate.LaunchType.Normal ? IdeApp.LaunchType.Normal : IdeApp.LaunchType.LaunchedFromFileManager;
+				} else {
+					// Fall back to Normal if even the app delegate doesn't know
+					LoggingService.LogWarning ("Unknown startup reason, assuming Normal");
+					IdeApp.LaunchReason = IdeApp.LaunchType.Normal;
+				}
 			}
 
 			ideAppleEvents = new MacIdeAppleEvents ();
@@ -416,6 +433,14 @@ namespace MonoDevelop.MacIntegration
 			default:
 				break;
 			}
+		}
+
+		internal override void MakeAccessibilityAnnouncement (string text)
+		{
+			using var message = new NSString (text);
+			using var dictionary = new NSDictionary (NSAccessibilityNotificationUserInfoKeys.AnnouncementKey, message,
+													 NSAccessibilityNotificationUserInfoKeys.PriorityKey, NSAccessibilityPriorityLevel.High);
+			NSAccessibility.PostNotification (NSApplication.SharedApplication.AccessibilityMainWindow, NSAccessibilityNotifications.AnnouncementRequestedNotification, dictionary);
 		}
 
 		protected override string OnGetMimeTypeForUri (string uri)
@@ -1136,7 +1161,8 @@ namespace MonoDevelop.MacIntegration
 		bool HasAnyDockWindowFocused ()
 		{
 			foreach (var window in Gtk.Window.ListToplevels ()) {
-				if (!window.HasToplevelFocus) {
+				// Gtk.Window.HasToplevelFocus may return false for a window that embeds a Cocoa view
+				if (!window.HasToplevelFocus && GtkQuartz.GetWindow (window) != NSApplication.SharedApplication.KeyWindow) {
 					continue;
 				}
 				if (window is Components.Docking.DockFloatingWindow floatingWindow) {

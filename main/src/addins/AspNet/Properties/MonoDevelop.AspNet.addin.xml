@@ -196,7 +196,11 @@
 		            _label = "HTML Files"
 		            extensions = "*.htm,*.html"/>
 	</Extension>
-
+	
+	<Extension path="/MonoDevelop/TextEditor/LegacyEditorSupport">
+        <LegacyEditorSupport id="aspx" extensions=".aspx,.ashx,.asmx,.ascx,.master,.asax" />
+    </Extension>
+	
 	<Extension path = "/MonoDevelop/ProjectModel/ProjectModelExtensions">
 		<ProjectFlavor
 			guid="{603C0E0B-DB56-11DC-BE95-000D561079B0}"
@@ -415,10 +419,10 @@
 	</Extension>
 
 	<Extension path="/MonoDevelop/Ide/TemplateImages">
-		<Image id="md-aspnet-empty-project" resource="project-aspnet-template.png" />
+		<Image id="md-aspnet-empty-project" resource="aspnet-sidebar.png" />
 	</Extension>
 	
 	<Extension path="/MonoDevelop/Core/StockIcons">
-		<StockIcon stockid="md-aspnet-empty-project" resource="project-aspnet-32.png" size="Dnd" />
+		<StockIcon stockid="md-aspnet-empty-project" resource="aspnet-project.png" size="Dnd" />
 	</Extension>
 </ExtensionModel>

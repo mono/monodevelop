@@ -86,18 +86,8 @@ namespace MonoDevelop.Components.MainToolbar
 			return list;
 		}
 
-		string [] validTags = new [] { "file", "f" };
-
-		public override string [] Tags {
-			get {
-				return validTags;
-			}
-		}
-
-		public override bool IsValidTag (string tag)
-		{
-			return validTags.Any (t => t == tag);
-		}
+		public override string [] Tags { get; } = { "file", "f" };
+		public override bool IsValidTag (string tag) => Array.IndexOf (Tags, tag) >= 0;
 
 		static List<Tuple<string, string, ProjectFile>> allFilesCache;
 		static SemaphoreSlim allFilesLock = new SemaphoreSlim (1, 1);

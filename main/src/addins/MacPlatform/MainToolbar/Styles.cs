@@ -55,15 +55,15 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 				BaseBackgroundColor = Ide.Gui.Styles.BaseBackgroundColor;
 				BaseForegroundColor = Ide.Gui.Styles.BaseForegroundColor;
 				DisabledForegroundColor = Xwt.Mac.Util.ToXwtColor (AppKit.NSColor.DisabledControlText); //Ide.Gui.Styles.SecondaryTextColor;
-				StatusErrorTextColor = Color.FromName ("#fa5433");
-				StatusWarningTextColor = Color.FromName ("#e8bd0d");
+				StatusErrorTextColor = Color.FromName ("#c42c3e");
+				StatusWarningTextColor = Color.FromName ("#8a5522");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");
 			} else {
 				BaseBackgroundColor = Color.FromName ("#000000");
 				BaseForegroundColor = Color.FromName ("#ffffff");
 				DisabledForegroundColor = Color.FromName ("#e1e1e1");
-				StatusErrorTextColor = Color.FromName ("#fa5433");
-				StatusWarningTextColor = Color.FromName ("#e8bd0d");
+				StatusErrorTextColor = Color.FromName ("#ffb3bc");
+				StatusWarningTextColor = Color.FromName ("#ffb269");
 				StatusReadyTextColor = Color.FromName ("#7f7f7f");
 
 				DarkBorderColor = Color.FromName ("#8f8f8f");

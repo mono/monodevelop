@@ -262,7 +262,7 @@ namespace MonoDevelop.Autotools
 			using (StreamWriter sw = new StreamWriter (fileName))
 				sw.Write (content);
 
-			UpdatedMakefiles++;
+			UpdatedMakefiles.Inc (1);
 		}
 		
 		void ThrowMakefileVarNotFound (string var)

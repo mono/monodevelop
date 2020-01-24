@@ -33,8 +33,8 @@ namespace MonoDevelop.Projects
 {
 	public class ConditionedPropertyCollection
 	{
-		Dictionary<string, ImmutableList<string>> props = new Dictionary<string, ImmutableList<string>> ();
-		Dictionary<KeySet, ImmutableList<ValueSet>> combinedProps = new Dictionary<KeySet, ImmutableList<ValueSet>> (StructEqualityComparer<KeySet>.Instance);
+		Dictionary<string, ImmutableArray<string>> props = new Dictionary<string, ImmutableArray<string>> ();
+		Dictionary<KeySet, ImmutableArray<ValueSet>> combinedProps = new Dictionary<KeySet, ImmutableArray<ValueSet>> (StructEqualityComparer<KeySet>.Instance);
 
 		/// <summary>
 		/// A set of strings, which can be compared to other sets ignoring the order.
@@ -178,14 +178,14 @@ namespace MonoDevelop.Projects
 			foreach (var e in other.props) {
 				var otherList = e.Value;
 				var key = e.Key;
-				ImmutableList<string> list;
+				ImmutableArray<string> list;
 				if (props.TryGetValue (key, out list)) {
 					var lb = list.ToBuilder ();
 					foreach (var c in otherList) {
 						if (!lb.Contains (c))
 							lb.Add (c);
 					}
-					props [key] = lb.ToImmutableList ();
+					props [key] = lb.ToImmutable ();
 				} else
 					props [key] = otherList;
 			}
@@ -193,7 +193,7 @@ namespace MonoDevelop.Projects
 			foreach (var e in other.combinedProps) {
 				var otherList = e.Value;
 				var key = e.Key;
-				ImmutableList<ValueSet> thisList;
+				ImmutableArray<ValueSet> thisList;
 				if (combinedProps.TryGetValue (key, out thisList)) {
 					var list = thisList.ToBuilder ();
 					foreach (var c in otherList) {
@@ -210,13 +210,13 @@ namespace MonoDevelop.Projects
 		internal void AddPropertyValues (IList<string> names, IList<string> values)
 		{
 			var key = new KeySet (names);
-			ImmutableList<ValueSet> list;
+			ImmutableArray<ValueSet> list;
 			ValueSet valueSet;
 
 			// First register the combination of values
 
 			if (!combinedProps.TryGetValue (key, out list)) {
-				list = ImmutableList<ValueSet>.Empty;
+				list = ImmutableArray<ValueSet>.Empty;
 				valueSet = new ValueSet (names, names, values);
 			} else {
 				// If there is already a list, there must be at least one item.
@@ -229,12 +229,12 @@ namespace MonoDevelop.Projects
 
 			// Now register each value individually
 
-			ImmutableList<string> valList;
+			ImmutableArray<string> valList;
 			for (int n = 0; n < names.Count; n++) {
 				var name = names [n];
 				var val = values [n];
 				if (!props.TryGetValue (name, out valList))
-					valList = ImmutableList<string>.Empty;
+					valList = ImmutableArray<string>.Empty;
 				if (!valList.Contains (val))
 					props[name] = valList.Add (val);
 			}
@@ -252,12 +252,12 @@ namespace MonoDevelop.Projects
 		/// <summary>
 		/// Gets the values used in conditions for the given property
 		/// </summary>
-		public ImmutableList<string> GetAllPropertyValues (string property)
+		public ImmutableArray<string> GetAllPropertyValues (string property)
 		{
-			ImmutableList<string> list;
+			ImmutableArray<string> list;
 			if (props.TryGetValue (property, out list))
 				return list;
-			return ImmutableList<string>.Empty;
+			return ImmutableArray<string>.Empty;
 		}
 
 		/// <summary>
@@ -266,12 +266,12 @@ namespace MonoDevelop.Projects
 		/// Platform, it will return values for those properties specified in conditions that reference both
 		/// Configuration and Platform.
 		/// </summary>
-		public ImmutableList<ValueSet> GetCombinedPropertyValues (params string[] properties)
+		public ImmutableArray<ValueSet> GetCombinedPropertyValues (params string[] properties)
 		{
-			ImmutableList<ValueSet> list;
+			ImmutableArray<ValueSet> list;
 			if (combinedProps.TryGetValue (new KeySet (properties), out list))
 				return list;
-			return ImmutableList<ValueSet>.Empty;
+			return ImmutableArray<ValueSet>.Empty;
 		}
 	}
 }

@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MonoDevelop.Core;
+using MonoDevelop.Core.FeatureConfiguration;
 using MonoDevelop.Ide;
 
 namespace MonoDevelop.PackageManagement
@@ -37,6 +38,9 @@ namespace MonoDevelop.PackageManagement
 	{
 		public Task<bool> AcceptLicenses (IEnumerable<NuGetPackageLicense> licenses)
 		{
+			if (FeatureSwitchService.IsFeatureEnabled ("NuGetLicenseAcceptanceDialog") == false)
+				return Task.FromResult (true);
+
 			if (Runtime.IsMainThread)
 				return ShowLicenseAcceptanceDialog (licenses);
 

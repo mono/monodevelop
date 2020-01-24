@@ -57,6 +57,7 @@ namespace MonoDevelop.Debugger
 			public Color TreeSelectedBackgroundColor { get; internal set; }
 			public Color TreeSelectedTextColor { get; internal set; }
 			public Color ValueTreeBackgroundColor { get; internal set; }
+			public Color BottomPaddingBackgroundColor { get; internal set; }
 		}
 
 		static Styles ()
@@ -86,6 +87,7 @@ namespace MonoDevelop.Debugger
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#707070");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#707070");
 				ExceptionCaughtDialog.ValueTreeBackgroundColor = Color.FromName ("#ffffff");
+				ExceptionCaughtDialog.BottomPaddingBackgroundColor = Color.FromName ("#ececec");
 
 				BreakpointPropertiesSecondaryTextColor = Color.FromName ("#707070");
 			} else {
@@ -99,6 +101,7 @@ namespace MonoDevelop.Debugger
 				ExceptionCaughtDialog.LineNumberTextColor = Color.FromName ("#b4b4b4");
 				ExceptionCaughtDialog.ExternalCodeTextColor = Color.FromName ("#b4b4b4");
 				ExceptionCaughtDialog.ValueTreeBackgroundColor = Color.FromName ("#525252");
+				ExceptionCaughtDialog.BottomPaddingBackgroundColor = ObjectValueTreeActiveBackgroundColor;
 
 				BreakpointPropertiesSecondaryTextColor = Color.FromName ("#b4b4b4");
 			}

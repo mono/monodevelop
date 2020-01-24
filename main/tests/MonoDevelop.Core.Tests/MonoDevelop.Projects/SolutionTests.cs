@@ -1055,6 +1055,40 @@ namespace MonoDevelop.Projects
 				WorkspaceObject.UnregisterCustomExtension (en);
 			}
 		}
+
+		[Test]
+		public async Task MultiRunConfig_ReloadProject_ProjectRunConfigUpdatedInMultiRunConfig ()
+		{
+			string solFile = Util.GetSampleProject ("test-multi-run-config-reload", "test-multi-run-config-reload.sln");
+
+			using (var sol = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solFile)) {
+				var projectA = (DotNetProject)sol.FindProjectByName ("ProjectA");
+				var projectB = (DotNetProject)sol.FindProjectByName ("ProjectB");
+				Assert.IsNotNull (projectA);
+				Assert.IsNotNull (projectB);
+
+				var multiRunConfig = new MultiItemSolutionRunConfiguration ("MultiTestId", "multi");
+				var startupItem1 = new StartupItem (projectA, projectA.RunConfigurations.Single ());
+				multiRunConfig.Items.Add (startupItem1);
+
+				var startupItem2 = new StartupItem (projectB, projectB.RunConfigurations.Single ());
+				multiRunConfig.Items.Add (startupItem2);
+
+				sol.MultiStartupRunConfigurations.Add (multiRunConfig);
+
+				await sol.RootFolder.ReloadItem (Util.GetMonitor (), projectA);
+
+				// Ensure latest project instance is used by getting them from the solution again.
+				projectA = (DotNetProject)sol.FindProjectByName ("ProjectA");
+				projectB = (DotNetProject)sol.FindProjectByName ("ProjectB");
+
+				var runConfigA = multiRunConfig.Items.Single (item => item.SolutionItem == projectA);
+				Assert.AreEqual (projectA.RunConfigurations.Single (), runConfigA.RunConfiguration, "Multi-run config does not match project's run config (ProjectA)");
+
+				var runConfigB = multiRunConfig.Items.Single (item => item.SolutionItem == projectB);
+				Assert.AreEqual (projectB.RunConfigurations.Single (), runConfigB.RunConfiguration, "Multi-run config does not match project's run config (ProjectB)");
+			}
+		}
 	}
 
 	class SomeItem: SolutionItem

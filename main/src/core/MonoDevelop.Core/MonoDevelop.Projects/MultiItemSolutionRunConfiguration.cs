@@ -75,8 +75,12 @@ namespace MonoDevelop.Projects
 		internal void ReplaceItem (SolutionItem oldItem, SolutionItem newItem)
 		{
 			foreach (var si in Items)
-				if (si.SolutionItem == oldItem)
+				if (si.SolutionItem == oldItem) {
 					si.SolutionItem = newItem;
+
+					// SolutionItem's RunConfiguration will have been reloaded. Ensure the new run config is used.
+					si.ResolveRunConfiguration ();
+				}
 		}
 
 		internal void RemoveItem (SolutionItem item)
@@ -159,13 +163,18 @@ namespace MonoDevelop.Projects
 				SolutionItem = sol.GetSolutionItem (ItemId) as SolutionItem;
 				if (SolutionItem == null)
 					SolutionItem = sol.FindProjectByName (ItemName) as SolutionItem;
-				if (SolutionItem != null && ConfigurationId != null)
-					RunConfiguration = SolutionItem.GetRunConfigurations ().FirstOrDefault (c => c.Id == ConfigurationId);
+				ResolveRunConfiguration ();
 				ItemId = null;
 				ConfigurationId = null;
 			}
 		}
-	
+
+		internal void ResolveRunConfiguration ()
+		{
+			if (SolutionItem != null && ConfigurationId != null)
+				RunConfiguration = SolutionItem.GetRunConfigurations ().FirstOrDefault (c => c.Id == ConfigurationId);
+		}
+
 		public SolutionItem SolutionItem { get; internal set; }
 		public SolutionItemRunConfiguration RunConfiguration { get; internal set; }
 	}

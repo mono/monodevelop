@@ -72,11 +72,6 @@
       <Name>MonoDevelop.Xml</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -101,20 +96,27 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\MonoDevelop.AspNet.addin.xml" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-template.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-template%402x.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-template~dark%402x.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32%402x.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark%402x.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~sel%402x.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel.png" />
-    <EmbeddedResource Include="Templates\images\project-aspnet-32~dark~sel%402x.png" />
+
     <EmbeddedResource Include="Templates\images\aspnet-wizard-page.png" />
     <EmbeddedResource Include="Templates\images\aspnet-wizard-page%402x.png" />
+
+    <EmbeddedResource Include="Templates\images\aspnet-project.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~contrast.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~contrast%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~contrast~dark.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~contrast~dark%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~dark.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~dark%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~dark~sel.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~dark~sel%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~sel.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-project~sel%402x.png" />
+
+    <EmbeddedResource Include="Templates\images\aspnet-sidebar.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-sidebar%402x.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-sidebar~dark.png" />
+    <EmbeddedResource Include="Templates\images\aspnet-sidebar~dark%402x.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Html\HtmlSchemaService.cs" />
@@ -248,7 +250,7 @@
   <ItemGroup>
     <ExtensionContent Include="Razor\Razor-templates.xml" />
     <ExtensionContent Include="CodeTemplates\**\*.*" />
-    <ExtensionContent Include="Templates\**\*.*" />
+    <ExtensionContent Include="Templates\**\*.*" Exclude="**\*.png" />
     <ExtensionContent Include="Html\Schemas\**\*.*" />
   </ItemGroup>
   <ItemGroup>

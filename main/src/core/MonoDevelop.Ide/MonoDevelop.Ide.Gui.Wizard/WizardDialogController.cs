@@ -125,14 +125,16 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		public bool RunWizard ()
 		{
-			var dialog = new WizardDialog (this);
-			return dialog.Run (Xwt.MessageDialog.RootWindow);
+			using (var dialog = new WizardDialog (this)) {
+				return dialog.Run (Xwt.MessageDialog.RootWindow);
+			}
 		}
 
 		public bool RunWizard (Xwt.WindowFrame parentWindow)
 		{
-			var dialog = new WizardDialog (this);
-			return dialog.Run (parentWindow);
+			using (var dialog = new WizardDialog (this)) {
+				return dialog.Run (parentWindow);
+			}
 		}
 
 		public event EventHandler Completed;
@@ -141,7 +143,7 @@ namespace MonoDevelop.Ide.Gui.Wizard
 
 		protected virtual Task OnCompleted (CancellationToken token)
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		protected virtual void OnPropertyChanged (string propertyName)

@@ -28,6 +28,9 @@
 
 using System;
 using System.IO;
+using NuGet.Common;
+using NuGet.Configuration;
+using NuGet.Protocol.Plugins;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -47,6 +50,7 @@ namespace MonoDevelop.PackageManagement
 		//static readonly AnalyzerPackageMonitor analyzerPackageMonitor;
 		static readonly MonoDevelopHttpUserAgent userAgent = new MonoDevelopHttpUserAgent ();
 		static readonly NuGetConfigFileChangedMonitor nuGetConfigFileChangedMonitor = new NuGetConfigFileChangedMonitor ();
+		static readonly PluginManager pluginManager;
 
 		static PackageManagementServices()
 		{
@@ -65,6 +69,8 @@ namespace MonoDevelop.PackageManagement
 
 			workspace = new PackageManagementWorkspace ();
 
+			pluginManager = CreatePluginManager ();
+
 			credentialService = new PackageManagementCredentialService ();
 			credentialService.Initialize ();
 
@@ -74,6 +80,23 @@ namespace MonoDevelop.PackageManagement
 
 			//analyzerPackageMonitor = new AnalyzerPackageMonitor ();
 			MonoDevelop.Refactoring.PackageInstaller.PackageInstallerServiceFactory.PackageServices = new MonoDevelop.PackageManagement.Refactoring.NuGetPackageServicesProxy ();
+		}
+
+		static PluginManager CreatePluginManager ()
+		{
+			return new PluginManager (
+				EnvironmentVariableWrapper.Instance,
+				new Lazy<IPluginDiscoverer> (InitializeDiscoverer),
+				(TimeSpan idleTimeout) => new MonoDevelopPluginFactory (idleTimeout),
+				new Lazy<string> (() => SettingsUtility.GetPluginsCacheFolder ()));
+		}
+
+		static PluginDiscoverer InitializeDiscoverer ()
+		{
+			var verifier = EmbeddedSignatureVerifier.Create ();
+
+			string pluginPaths = EnvironmentVariableWrapper.Instance.GetEnvironmentVariable ("NUGET_PLUGIN_PATHS");
+			return new PluginDiscoverer (pluginPaths, verifier);
 		}
 
 		internal static void InitializeCredentialService ()
@@ -115,6 +138,10 @@ namespace MonoDevelop.PackageManagement
 
 		internal static ProjectTargetFrameworkMonitor ProjectTargetFrameworkMonitor {
 			get { return projectTargetFrameworkMonitor;  }
+		}
+
+		internal static IPluginManager PluginManager {
+			get { return pluginManager; }
 		}
 	}
 }

@@ -92,7 +92,7 @@ namespace MonoDevelop.AspNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return DotNetCoreSupportsObject (item) && IsWebProject ((DotNetProject)item);
+			return DotNetCoreSupportsObject (item) && SupportsLaunchSettings ((DotNetProject)item);
 		}
 
 		protected override bool IsSupportedFramework (TargetFrameworkMoniker framework)
@@ -178,26 +178,30 @@ namespace MonoDevelop.AspNetCore
 
 		protected override IEnumerable<ExecutionTarget> OnGetExecutionTargets (OperationContext ctx, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfig)
 		{
-			var result = new ExecutionTargetGroup (GettextCatalog.GetString ("Browser"), "MonoDevelop.AspNetCore.BrowserExecutionTargets");
-			foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost", Ide.Desktop.DesktopApplicationRole.Viewer)) {
-				if (browser.IsDefault) {
-					if (Project.HasMultipleTargetFrameworks) {
-						result.InsertRange (0, GetMultipleTargetFrameworkExecutionTargets (browser));
+			if (IsWeb) {
+				var result = new ExecutionTargetGroup (GettextCatalog.GetString ("Browser"), "MonoDevelop.AspNetCore.BrowserExecutionTargets");
+				foreach (var browser in IdeServices.DesktopService.GetApplications ("https://localhost", Ide.Desktop.DesktopApplicationRole.Viewer)) {
+					if (browser.IsDefault) {
+						if (Project.HasMultipleTargetFrameworks) {
+							result.InsertRange (0, GetMultipleTargetFrameworkExecutionTargets (browser));
+						} else {
+							result.Insert (0, new AspNetCoreExecutionTarget (browser));
+						}
 					} else {
-						result.Insert (0, new AspNetCoreExecutionTarget (browser));
-					}
-				} else {
-					if (Project.HasMultipleTargetFrameworks) {
-						result.AddRange (GetMultipleTargetFrameworkExecutionTargets (browser));
-					} else {
-						result.Add (new AspNetCoreExecutionTarget (browser));
+						if (Project.HasMultipleTargetFrameworks) {
+							result.AddRange (GetMultipleTargetFrameworkExecutionTargets (browser));
+						} else {
+							result.Add (new AspNetCoreExecutionTarget (browser));
+						}
 					}
 				}
-			}
 
-			return result.Count > 0
-				? new ExecutionTarget [] { result }
-				: base.OnGetExecutionTargets (ctx, configuration, runConfig);
+				return result.Count > 0
+					? new ExecutionTarget [] { result }
+					: base.OnGetExecutionTargets (ctx, configuration, runConfig);
+			} else {
+				return base.OnGetExecutionTargets (ctx, configuration, runConfig);
+			}
 		}
 
 		IEnumerable<ExecutionTarget> GetMultipleTargetFrameworkExecutionTargets (DesktopApplication browser)

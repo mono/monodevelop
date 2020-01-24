@@ -490,17 +490,17 @@ namespace MonoDevelop.Ide.Gui
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
 			InformationForegroundColor = Color.FromName ("#5785bd");
 
-			StatusWarningBackgroundColor = Color.FromName ("#f1c40f");
+			StatusWarningBackgroundColor = Color.FromName ("#ffb269");
 			StatusWarningTextColor = Color.FromName ("#000000");
 			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
 			WarningBoxForegroundColor = Color.FromName ("#000000");
-			WarningForegroundColor = Color.FromName ("#986923");
+			WarningForegroundColor = Color.FromName ("#8a5522");
 
-			StatusErrorBackgroundColor = Color.FromName ("#f56d4f");
-			StatusErrorTextColor = Color.FromName ("#000000");
+			StatusErrorBackgroundColor = Color.FromName ("#c42c3e");
+			StatusErrorTextColor = Color.FromName ("#ffffff");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
-			ErrorBoxForegroundColor = Color.FromName ("#000000");
-			ErrorForegroundColor = Color.FromName ("#db6246");
+			ErrorBoxForegroundColor = StatusErrorTextColor;
+			ErrorForegroundColor = Color.FromName ("#c42c3e");
 
 			// Tabs
 
@@ -614,17 +614,17 @@ namespace MonoDevelop.Ide.Gui
 			InformationBoxBackgroundColor = StatusInformationBackgroundColor;
 			InformationForegroundColor = Color.FromName ("#9cc8ff");
 
-			StatusWarningBackgroundColor = Color.FromName ("#ffcf0f");
+			StatusWarningBackgroundColor = Color.FromName ("#ffb269");
 			StatusWarningTextColor = Color.FromName ("#000000");
 			WarningBoxBackgroundColor = StatusWarningBackgroundColor;
 			WarningBoxForegroundColor = Color.FromName ("#000000");
-			WarningForegroundColor = Color.FromName ("#ffd21c");
+			WarningForegroundColor = Color.FromName ("#ffb269");
 
-			StatusErrorBackgroundColor = Color.FromName ("#ff7152");
+			StatusErrorBackgroundColor = Color.FromName ("#ffb3bc");
 			StatusErrorTextColor = Color.FromName ("#000000");
 			ErrorBoxBackgroundColor = StatusErrorBackgroundColor;
-			ErrorBoxForegroundColor = Color.FromName ("#000000");
-			ErrorForegroundColor = Color.FromName ("#ff866b");
+			ErrorBoxForegroundColor = StatusErrorTextColor;
+			ErrorForegroundColor = StatusErrorTextColor;
 
 			// Tabs
 

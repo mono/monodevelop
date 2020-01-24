@@ -32,6 +32,7 @@ using AppKit;
 using Foundation;
 using CoreGraphics;
 
+using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
 using MonoDevelop.Core;
@@ -141,6 +142,10 @@ namespace MonoDevelop.Debugger
 				"sublayers", NSNull.Null,
 				"transform", NSNull.Null,
 				"bounds", NSNull.Null);
+		}
+
+		public string UIElementName {
+			get; set;
 		}
 
 		public ObjectValueTreeViewController Controller {
@@ -451,6 +456,8 @@ namespace MonoDevelop.Debugger
 			}
 
 			NodePinned?.Invoke (this, new ObjectValueNodeEventArgs (node));
+
+			Counters.PinnedWatch.Inc (1);
 		}
 
 		public void Pin (ObjectValueNode node)
@@ -475,6 +482,12 @@ namespace MonoDevelop.Debugger
 
 		internal bool ShowVisualizer (ObjectValueNode node)
 		{
+			var metadata = new Dictionary<string, object> ();
+			metadata["UIElementName"] = UIElementName;
+			metadata["ObjectValue.Type"] = node.TypeName;
+
+			Counters.OpenedVisualizer.Inc (1, null, metadata);
+
 			var args = new ObjectValueNodeEventArgs (node);
 			NodeShowVisualiser?.Invoke (this, args);
 			return args.Response is bool b && b;
@@ -563,6 +576,19 @@ namespace MonoDevelop.Debugger
 				// TODO: all this scrolling kind of seems awkward
 				//if (path != null)
 				//	ScrollToCell (path, expCol, true, 0f, 0f);
+
+				var parent = node.Parent;
+				int level = 0;
+				while (parent != null) {
+					parent = parent.Parent;
+					level++;
+				}
+
+				var metadata = new Dictionary<string, object> ();
+				metadata["UIElementName"] = UIElementName;
+				metadata["NodeLevel"] = level;
+
+				Counters.ExpandedNode.Inc (1, null, metadata);
 			}
 		}
 
@@ -753,7 +779,7 @@ namespace MonoDevelop.Debugger
 			if (SelectedRowCount == 0)
 				return;
 
-			var str = new StringBuilder ();
+			var builder = new StringBuilder ();
 			var needsNewLine = false;
 
 			var selectedRows = SelectedRows;
@@ -766,7 +792,7 @@ namespace MonoDevelop.Debugger
 					break;
 
 				if (needsNewLine)
-					str.AppendLine ();
+					builder.AppendLine ();
 
 				needsNewLine = true;
 
@@ -782,22 +808,27 @@ namespace MonoDevelop.Debugger
 							var opt = DebuggerService.Frame.GetStackFrame ().DebuggerSession.Options.EvaluationOptions.Clone ();
 							opt.EllipsizeStrings = false;
 
-							var rawValue = (string) objVal.GetRawValue (opt);
+							var rawValue = objVal.GetRawValue (opt);
+							var str = rawValue as string;
 
-							value = '"' + Mono.Debugging.Evaluation.ExpressionEvaluator.EscapeString (rawValue) + '"';
+							if (str == null && rawValue is RawValueString rawValueString)
+								str = rawValueString.Value;
+
+							if (str != null)
+								value = '"' + ExpressionEvaluator.EscapeString (str) + '"';
 						} catch (EvaluatorException) {
 							// fall back to using the DisplayValue that we would have used anyway...
 						}
 					}
 				}
 
-				str.Append (value);
+				builder.Append (value);
 			}
 
 			var clipboard = NSPasteboard.GeneralPasteboard;
 
 			clipboard.ClearContents ();
-			clipboard.SetStringForType (str.ToString (), NSPasteboard.NSPasteboardTypeString);
+			clipboard.SetStringForType (builder.ToString (), NSPasteboard.NSPasteboardTypeString);
 
 			//Gtk.Clipboard.Get (Gdk.Selection.Clipboard).Text = str.ToString ();
 		}
@@ -883,6 +914,11 @@ namespace MonoDevelop.Debugger
 
 			foreach (var expression in expressions)
 				DebuggingService.AddWatch (expression);
+
+			var metadata = new Dictionary<string, object> ();
+			metadata["ExpressionCount"] = expressions.Count;
+
+			Counters.AddedWatchFromLocals.Inc (1, null, metadata);
 		}
 
 		void OnAddWatch (object sender, EventArgs args)

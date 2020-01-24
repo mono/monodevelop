@@ -85,7 +85,7 @@ namespace MonoDevelop.Projects
 			configurations = new SolutionItemConfigurationCollection (this);
 			configurations.ConfigurationAdded += OnConfigurationAddedToCollection;
 			configurations.ConfigurationRemoved += OnConfigurationRemovedFromCollection;
-			Counters.ItemsLoaded++;
+			Counters.ItemsLoaded.Inc (1);
 			fileStatusTracker = new FileStatusTracker<SolutionItemEventArgs> (this, OnReloadRequired, new SolutionItemEventArgs (this));
 		}
 
@@ -123,7 +123,7 @@ namespace MonoDevelop.Projects
 
 			fileStatusTracker.Dispose ();
 			base.OnDispose ();
-			Counters.ItemsLoaded--;
+			Counters.ItemsLoaded.Dec (1);
 
 			// items = null;
 			// wildcardItems = null;
@@ -1080,7 +1080,7 @@ namespace MonoDevelop.Projects
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		protected virtual Task OnExecute (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		/// <summary>
@@ -1105,7 +1105,7 @@ namespace MonoDevelop.Projects
 		[Obsolete ("Use overload that takes a RunConfiguration")]
 		protected virtual Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration)
 		{
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 
 		bool DoGetCanExecute (ExecutionContext context, ConfigurationSelector configuration, SolutionItemRunConfiguration runConfiguration)

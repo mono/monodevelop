@@ -75,7 +75,7 @@ namespace MonoDevelop.DotNetCore
 
 		protected override bool SupportsObject (WorkspaceObject item)
 		{
-			return DotNetCoreSupportsObject (item) && !IsWebProject ((DotNetProject)item);
+			return DotNetCoreSupportsObject (item) && !SupportsLaunchSettings ((DotNetProject)item);
 		}
 
 		protected bool DotNetCoreSupportsObject (WorkspaceObject item)
@@ -404,7 +404,13 @@ namespace MonoDevelop.DotNetCore
 
 		public bool HasSdk => Project.MSBuildProject.GetReferencedSDKs ().Length > 0;
 
-		protected bool IsWebProject (DotNetProject project)
+		protected static bool SupportsLaunchSettings (DotNetProject project)
+		{
+			return IsWebProject (project) ||
+				project.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Worker", StringComparison.OrdinalIgnoreCase) != -1) != null;
+		}
+
+		protected static bool IsWebProject (DotNetProject project)
 		{
 			return (project.MSBuildProject.GetReferencedSDKs ().FirstOrDefault (x => x.IndexOf ("Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase) != -1) != null);
 		}

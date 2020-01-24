@@ -80,7 +80,7 @@ namespace MonoDevelop.Projects
 		internal Solution (bool loading)
 		{
 			loadingFromConstructor = loading;
-			Counters.SolutionsLoaded++;
+			Counters.SolutionsLoaded.Inc (1);
 			configurations = new SolutionConfigurationCollection (this);
 			runConfigurations = new MultiItemSolutionRunConfigurationCollection (this);
 			format = MSBuildFileFormat.DefaultFormat;
@@ -592,7 +592,7 @@ namespace MonoDevelop.Projects
 			// Dispose the root folder after we dispose the base item, as we need the root folder
 			// to contain the items when unregistering from the file watcher service.
 			RootFolder.Dispose ();
-			Counters.SolutionsLoaded--;
+			Counters.SolutionsLoaded.Dec (1);
 		}
 
 		internal bool IsSolutionItemEnabled (string solutionItemPath)
@@ -925,7 +925,7 @@ namespace MonoDevelop.Projects
 
 		/*protected virtual*/ Task OnPrepareExecution (ProgressMonitor monitor, ExecutionContext context, ConfigurationSelector configuration, SolutionRunConfiguration runConfiguration)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 
 		/*protected virtual*/ void OnStartupItemChanged(EventArgs e)

@@ -585,7 +585,8 @@ namespace MonoDevelop.Projects
 			// the original file still exists.
 			if (File.Exists (e.OldFullPath))
 				FileService.NotifyFileChanged (e.OldFullPath);
-			else
+			// Handle odd file watcher events which look like a folder being renamed to a file.
+			else if (!Directory.Exists (e.OldFullPath))
 				FileService.NotifyFileRemoved (e.OldFullPath);
 		}
 

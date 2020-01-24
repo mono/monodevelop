@@ -43,6 +43,7 @@ namespace MonoDevelop.UnitTesting
 	public abstract class UnitTest: IDisposable
 	{
 		string name;
+		string title;
 		IResultsStore resultsStore;
 		internal UnitTestResult lastResult;
 		UnitTest parent;
@@ -190,7 +191,8 @@ namespace MonoDevelop.UnitTesting
 		}
 		
 		public virtual string Title {
-			get { return Name; }
+			get { return title ?? name; }
+			set { title = value; }
 		}
 		
 		public TestStatus Status {
@@ -286,7 +288,7 @@ namespace MonoDevelop.UnitTesting
 		// Forces the reloading of tests, if they have changed
 		public virtual Task Refresh (CancellationToken ct)
 		{
-			return Task.FromResult (0);
+			return Task.CompletedTask;
 		}
 		
 		public UnitTestResult Run (TestContext testContext)
@@ -336,7 +338,7 @@ namespace MonoDevelop.UnitTesting
 		{
 			if (parent != null)
 				return parent.Build ();
-			return Task.FromResult (true);
+			return Task.CompletedTask;
 		}
 		
 		public void RegisterResult (TestContext context, UnitTestResult result)

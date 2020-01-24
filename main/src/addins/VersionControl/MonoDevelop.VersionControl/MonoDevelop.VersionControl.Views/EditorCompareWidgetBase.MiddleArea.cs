@@ -480,14 +480,13 @@ namespace MonoDevelop.VersionControl.Views
 					Accessible.PerformPress += PerformPress;
 
 					Accessible.SetRole (AtkCocoa.Roles.AXButton);
-					Accessible.Label = widget.useLeft ? GettextCatalog.GetString ("Revert left changes button") : GettextCatalog.GetString ("Revert right changes button");
 
 					if (hunk.Inserted > 0) {
-						Accessible.Label = GettextCatalog.GetString ("Revert {0} inserted lines starting at {1}", hunk.Inserted, hunk.InsertStart);
+						Accessible.Label = GettextCatalog.GetPluralString ("Revert {0} inserted line starting at {1}", "Revert {0} inserted lines starting at {1}", hunk.Inserted, hunk.Inserted, hunk.InsertStart);
 					} else if (hunk.Removed > 0) {
-						Accessible.Label = GettextCatalog.GetString ("Revert {0} removed lines starting at {1}", hunk.Removed, hunk.RemoveStart);
+						Accessible.Label = GettextCatalog.GetPluralString ("Revert {0} removed line starting at {1}", "Revert {0} removed lines starting at {1}", hunk.Removed, hunk.Removed, hunk.RemoveStart);
 					} else {
-						Accessible.Label = GettextCatalog.GetString ("Revert {0} replaced lines starting at {1}", hunk.Removed, hunk.InsertStart);
+						Accessible.Label = GettextCatalog.GetPluralString ("Revert {0} replaced line starting at {1}", "Revert {0} replaced lines starting at {1}", hunk.Removed, hunk.Removed, hunk.InsertStart);
 					}
 				}
 

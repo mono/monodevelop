@@ -60,7 +60,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		{
 			this.buildOutput = buildOutput;
 			DocumentTitle = $"{GettextCatalog.GetString ("Build Output")} {DateTime.Now.ToString ("h:mm tt yyyy-MM-dd")}.binlog";
-			Counters.OpenedFromIDE++;
+			Counters.OpenedFromIDE.Inc (1);
 		}
 
 		protected override async Task OnInitialize (ModelDescriptor modelDescriptor, Properties status)
@@ -70,7 +70,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 			if (modelDescriptor is FileDescriptor file) {
 				FilePath = file.FilePath;
 				loadedFromFile = true;
-				Counters.OpenedFromFile++;
+				Counters.OpenedFromFile.Inc (1);
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace MonoDevelop.Ide.BuildOutputView
 		[CommandHandler (FileCommands.Save)]
 		protected override Task OnSave ()
 		{
-			Counters.SavedToFile++;
+			Counters.SavedToFile.Inc (1);
 			return control.SaveAs ();
 		}
 

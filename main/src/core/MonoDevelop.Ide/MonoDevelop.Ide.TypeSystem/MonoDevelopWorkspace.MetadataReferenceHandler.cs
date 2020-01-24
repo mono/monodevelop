@@ -107,6 +107,8 @@ namespace MonoDevelop.Ide.TypeSystem
 			async Task<bool> AddReferences (AddReferencesData data)
 			{
 				try {
+					if (data.Project.ParentSolution == null)
+						return false;
 					var referencedAssemblies = await data.Project.GetReferencedAssemblies (data.ConfigurationSelector, true).ConfigureAwait (false);
 					foreach (var file in referencedAssemblies) {
 						if (file.IsProjectReference) {

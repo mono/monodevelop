@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Linq;
 using System.Reflection;
 using MonoDevelop.Core.StringParsing;
 using MonoDevelop.DotNetCore.Templating;
@@ -319,6 +320,20 @@ namespace MonoDevelop.DotNetCore.Tests
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetCore1x"));
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard20"));
 			Assert.IsFalse (wizard.Parameters.GetBoolValue ("UseNetStandard1x"));
+		}
+
+		[Test]
+		public void NetCoreApp_UnsupportedSDKInstalled_TemplateDoesNotShowUnsupported ()
+		{
+			CreateWizard ();
+			DotNetCoreRuntimesInstalled ("2.1.14", "2.2.8", "3.0.1", "3.1.0", $"{DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion.Major}.{DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion.Minor}.0");
+			DotNetCoreSdksInstalled ("2.1.702", "2.2.402", "3.0.101", "3.1.100", $"{DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion.Major}.{DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion.Minor}.0");
+
+			int pages = wizard.TotalPages;
+
+			Assert.AreEqual (1, pages);
+			Assert.AreEqual (4, wizard.TargetFrameworks.Count);
+			Assert.False (wizard.TargetFrameworks.Any (x => x.Id.IsNetCoreAppOrHigher (DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion)));
 		}
 
 		[Test]

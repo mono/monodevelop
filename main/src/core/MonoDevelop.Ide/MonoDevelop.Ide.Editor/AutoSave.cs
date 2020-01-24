@@ -111,7 +111,7 @@ namespace MonoDevelop.Ide.Editor
 				if (File.Exists (autosaveFileName))
 					File.Delete (autosaveFileName);
 				content.WriteTextTo (autosaveFileName);
-				Counters.AutoSavedFiles++;
+				Counters.AutoSavedFiles.Inc (1);
 			} catch (Exception e) {
 				LoggingService.LogError ("Error in auto save while creating: " + fileName +". Disableing auto save.", e);
 				DisableAutoSave ();
@@ -158,20 +158,20 @@ namespace MonoDevelop.Ide.Editor
 				}
 			}
 		}
-		static Task finishedTask = Task.FromResult (true);
+
 		internal static Task InformAutoSaveThread (ITextSource content, string fileName, bool isDirty)
 		{
 			if (content == null)
 				throw new ArgumentNullException (nameof (content));
 			if (!autoSaveEnabled || string.IsNullOrEmpty (fileName))
-				return finishedTask;
+				return Task.CompletedTask;
 			if (isDirty) {
 				return Task.Run (() => {
 					CreateAutoSave (fileName, content);
 				});
 			} else {
 				RemoveAutoSaveFile (fileName);
-				return finishedTask;
+				return Task.CompletedTask;
 			}
 		}
 

@@ -29,8 +29,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 
 using MonoDevelop.Ide.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem;
-using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using MonoDevelop.Projects;
 using MonoDevelop.Core.Text;
 
@@ -55,62 +53,6 @@ namespace MonoDevelop.VersionControl.Views
 		public override System.Threading.Tasks.Task<ParsedDocument> Parse (ParseOptions parseOptions, System.Threading.CancellationToken cancellationToken)
 		{
 			ParsedDocument doc = new DefaultParsedDocument (parseOptions.FileName);
-			
-			DefaultUnresolvedTypeDefinition currentFile = null;
-			DefaultUnresolvedProperty currentRegion = null;
-			
-			string eol = Environment.NewLine;
-			string content = parseOptions.Content.Text;
-			Match eolMatch = eolExpression.Match (content);
-			if (eolMatch != null && eolMatch.Success)
-				eol = eolMatch.Groups ["eol"].Value;
-			
-			string[] lines = content.Split (new string[]{eol}, StringSplitOptions.None);
-			int linenum = 1;
-			Match lineMatch;
-			foreach (string line in lines) {
-				lineMatch = fileHeaderExpression.Match (line.Trim ());
-				if (lineMatch != null && lineMatch.Success) {
-					if (currentFile != null) // Close out previous file region
-						currentFile.BodyRegion = new DomRegion (currentFile.BodyRegion.BeginLine,
-						                                        currentFile.BodyRegion.BeginColumn,
-						                                        linenum - 1, int.MaxValue);
-					if (currentRegion != null) // Close out previous chunk region
-						currentRegion.BodyRegion = new DomRegion (currentRegion.BodyRegion.BeginLine,
-						                                          currentRegion.BodyRegion.BeginColumn,
-						                                          linenum - 1, int.MaxValue);
-					
-					// Create new file region
-					currentFile = new DefaultUnresolvedTypeDefinition (string.Empty, string.Empty);
-					currentFile.Region = currentFile.BodyRegion = new DomRegion (lastToken (lineMatch.Groups ["filepath"].Value), linenum, line.Length + 1, linenum, int.MaxValue);
-					// doc.TopLevelTypeDefinitions.Add (currentFile);
-				} else {
-					lineMatch = chunkExpression.Match (line);
-					if (lineMatch != null && lineMatch.Success && currentFile != null) {
-						if (currentRegion != null) // Close out previous chunk region
-							currentRegion.BodyRegion = new DomRegion (currentRegion.BodyRegion.BeginLine,
-							                                          currentRegion.BodyRegion.BeginColumn,
-							                                          linenum - 1, int.MaxValue);
-						
-						// Create new chunk region
-						currentRegion = new DefaultUnresolvedProperty (currentFile, lineMatch.Groups ["chunk"].Value);
-						currentRegion.Region = currentRegion.BodyRegion = new DomRegion (currentFile.Region.FileName, linenum, line.Length + 1, linenum, int.MaxValue);
-						currentFile.Members.Add (currentRegion);
-					}
-				}
-				++linenum;
-			}
-			
-			// Close out trailing regions
-			if (currentFile != null)
-				currentFile.BodyRegion = new DomRegion (currentFile.BodyRegion.BeginLine,
-				                                        currentFile.BodyRegion.BeginColumn, 
-				                                        Math.Max (1, linenum - 2), int.MaxValue);
-			if (currentRegion != null)
-				currentRegion.BodyRegion = new DomRegion (currentRegion.BodyRegion.BeginLine,
-				                                          currentRegion.BodyRegion.BeginColumn, 
-				                                          Math.Max (1, linenum - 2), int.MaxValue);
-			
 			return System.Threading.Tasks.Task.FromResult (doc);
 		}
 		

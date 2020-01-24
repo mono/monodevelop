@@ -136,7 +136,7 @@
 			<Template
 				id="Microsoft.Worker.Empty.CSharp"
 				templateId="Microsoft.Worker.Empty.CSharp.3.1"
-				_overrideName="Worker"
+				_overrideName="Worker Service"
 				_overrideDescription="An empty project template for creating a worker service."
 				path="${DotNetCoreSdk.3.1.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -144,7 +144,7 @@
 				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="AspNetCoreWorker"
 				condition="UseNetCore31=true"
-				category="netcore/app/aspnet"
+				category="netcore/app/general"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"
@@ -305,7 +305,7 @@
 			<Template
 				id="Microsoft.Worker.Empty.CSharp"
 				templateId="Microsoft.Worker.Empty.CSharp.3.0"
-				_overrideName="Worker"
+				_overrideName="Worker Service"
 				_overrideDescription="An empty project template for creating a worker service."
 				path="${DotNetCoreSdk.3.0.Templates.Web.ProjectTemplates.nupkg}"
 				icon="md-netcore-empty-project"
@@ -313,7 +313,7 @@
 				wizard="MonoDevelop.AspNetCore.ProjectTemplateWizard"
 				supportedParameters="AspNetCoreWorker"
 				condition="UseNetCore30=true"
-				category="netcore/app/aspnet"
+				category="netcore/app/general"
 				defaultParameters="IncludeLaunchSettings=true" />
 			<Template
 				id="Microsoft.Web.RazorPages.CSharp"

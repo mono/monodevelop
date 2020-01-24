@@ -47,6 +47,7 @@
     <Compile Include="Features\Completion\AbstractCSharpCompletionProviderTests.cs" />
     <Compile Include="Features\Completion\ProtocolMemberCompletionTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpCompletionTextEditorTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CSharpCompilerParametersTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpProjectPropertiesTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpTextEditorIndentationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\FindMemberVisitorTests.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="MonoDevelop.CSharpBinding\AutoFormatIntegrationTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding\CSharpDocumentOptionsProviderTests.cs" />
     <Compile Include="MonoDevelop.CSharpBinding.Debugging\DebuggerCompletionControllerTests.cs" />
+    <Compile Include="MonoDevelop.CSharpBinding\CustomProjectRuleSetTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\addins\CSharpBinding\CSharpBinding.csproj">

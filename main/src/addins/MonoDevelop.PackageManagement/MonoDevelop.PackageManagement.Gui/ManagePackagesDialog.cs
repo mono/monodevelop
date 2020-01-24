@@ -747,14 +747,17 @@ namespace MonoDevelop.PackageManagement
 				GetPackagesCountForAddPackagesButtonLabel (),
 				viewModel.PageSelected);
 
-			using (var dialog = new SelectProjectsDialog (selectProjectsViewModel)) {
-				Command result = dialog.ShowWithParent ();
-				if (result == Command.Ok) {
-					return dialog.GetSelectedProjects ();
-				} else {
-					return Enumerable.Empty<IDotNetProject> ();
+			return Toolkit.NativeEngine.Invoke (() => {
+				using (var dialog = new SelectProjectsDialog (selectProjectsViewModel)) {
+					Command result = dialog.Run (this);
+					if (result == Command.Ok) {
+						return dialog.GetSelectedProjects ();
+					} else {
+						return Enumerable.Empty<IDotNetProject> ();
+					}
 				}
-			}
+			});
+
 		}
 
 		/// <summary>
@@ -1153,7 +1156,7 @@ namespace MonoDevelop.PackageManagement
 			UpdatePackageResultsLabel (ManagePackagesPage.Consolidate, consolidateLabel);
 		}
 
-		void UpdatePackageResultsLabel (ManagePackagesPage page, Label label)
+		void UpdatePackageResultsLabel (ManagePackagesPage page, CustomButtonLabel label)
 		{
 			string text = (string)label.Tag;
 			if (page == viewModel.PageSelected) {
@@ -1165,7 +1168,7 @@ namespace MonoDevelop.PackageManagement
 			}
 		}
 
-		static void UpdatePackageResultsLabelA11y (Label label, bool active)
+		static void UpdatePackageResultsLabelA11y (Widget label, bool active)
 		{
 			if (label.Surface.ToolkitEngine.Type == ToolkitType.Gtk) {
 				var widget = label.Surface.NativeWidget as Gtk.Widget;

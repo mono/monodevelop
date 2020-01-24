@@ -83,7 +83,7 @@ namespace MonoDevelop.CSharp.Navigation
 		Task FindImplementingSymbols (Compilation compilation, RefactoringSymbolInfo info, CancellationTokenSource cancellationTokenSource)
 		{
 			if (!TryGetInterfaceType (info, out var interfaceType, out var implementingType))
-				return Task.FromResult (0);
+				return Task.CompletedTask;
 
 			return Task.Run (delegate {
 				var searchMonitor = IdeApp.Workbench.ProgressMonitors.GetSearchProgressMonitor (true, true);

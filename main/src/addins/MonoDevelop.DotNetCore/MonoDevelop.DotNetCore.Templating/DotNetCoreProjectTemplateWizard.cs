@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core.Assemblies;
 using MonoDevelop.Ide.Templates;
-using MonoDevelop.Projects;
 
 namespace MonoDevelop.DotNetCore.Templating
 {
@@ -42,7 +41,7 @@ namespace MonoDevelop.DotNetCore.Templating
 
 		public override WizardPage GetPage (int pageNumber)
 		{
-			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks);
+			var page = new DotNetCoreProjectTemplateWizardPage (this, targetFrameworks, SupportedAuthentications);
 			targetFrameworks = null;
 			return page;
 		}
@@ -52,6 +51,8 @@ namespace MonoDevelop.DotNetCore.Templating
 		public override string Id => "MonoDevelop.DotNetCore.ProjectTemplateWizard";
 
 		internal IList<TargetFramework> TargetFrameworks => targetFrameworks;
+
+		internal IReadOnlyList<AuthenticationParameter> SupportedAuthentications { get; private set; }
 
 		/// <summary>
 		/// When only .NET Core 2.0 is installed there is only one option in the drop down
@@ -63,13 +64,20 @@ namespace MonoDevelop.DotNetCore.Templating
 		/// </summary>
 		int GetTotalPages ()
 		{
+			GetSupportedAuthentications ();
 			GetTargetFrameworks ();
-			if (targetFrameworks.Count > 1)
+			if (targetFrameworks.Count > 1 || SupportedAuthentications.Any ())
 				return 1;
 
 			ConfigureDefaultParameters ();
 
 			return 0;
+		}
+
+		void GetSupportedAuthentications ()
+		{
+			var templateId = Parameters ["TemplateId"];
+			SupportedAuthentications = DotNetCoreProjectTemplateParameters.GetAuthenticationParameters (templateId);
 		}
 
 		void GetTargetFrameworks ()
@@ -87,6 +95,8 @@ namespace MonoDevelop.DotNetCore.Templating
 			} else {
 				targetFrameworks = DotNetCoreProjectSupportedTargetFrameworks.GetNetCoreAppTargetFrameworksWithSdkSupport ().ToList ();
 
+				RemoveUnsupportedNetCoreAppTargetFrameworks (targetFrameworks);
+
 				if (!SupportsNetCore2x ()) {
 					RemoveUnsupportedNetCoreApp2xTargetFrameworks (targetFrameworks);
 				}
@@ -103,6 +113,11 @@ namespace MonoDevelop.DotNetCore.Templating
 		static void RemoveUnsupportedNetStandardTargetFrameworksForFSharp (List<TargetFramework> targetFrameworks)
 		{
 			targetFrameworks.RemoveAll (framework => framework.IsLowerThanNetStandard16 ());
+		}
+
+		static void RemoveUnsupportedNetCoreAppTargetFrameworks (List<TargetFramework> targetFrameworks)
+		{
+			targetFrameworks.RemoveAll (framework => framework.IsNetCoreAppOrHigher (DotNetCoreSdk.DotNetCoreUnsupportedTargetFrameworkVersion));
 		}
 
 		/// <summary>

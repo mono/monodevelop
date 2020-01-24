@@ -28,7 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -46,7 +46,7 @@ namespace MonoDevelop.CSharp.Project
 	public class CSharpCompilerParameters : DotNetCompilerParameters
 	{
 		// Configuration parameters
-
+		FilePath codeAnalysisRuleSet;
 		int? warninglevel = 4;
 
 		[ItemProperty ("NoWarn", DefaultValue = "")]
@@ -113,6 +113,7 @@ namespace MonoDevelop.CSharp.Project
 			optimize = pset.GetValue ("Optimize", (bool?)null);
 			warninglevel = pset.GetValue<int?> ("WarningLevel", null);
 			outputType = pset.GetValue ("OutputType", "Library");
+			codeAnalysisRuleSet = pset.GetPathValue ("CodeAnalysisRuleSet");
 		}
 
 		static MetadataReferenceResolver CreateMetadataReferenceResolver (IMetadataService metadataService, string projectDirectory, string outputDirectory)
@@ -141,7 +142,7 @@ namespace MonoDevelop.CSharp.Project
 					ParentConfiguration.OutputDirectory
 			);
 
-			var outputKind = OutputTypeToOutputKind (outputType);
+			var outputKind = outputType == null ? GetOutputKindFromProject (project) : OutputTypeToOutputKind (outputType);
 			bool isLibrary = outputKind == OutputKind.DynamicallyLinkedLibrary;
 			string mainTypeName = project.MainClass;
 			if (isLibrary || mainTypeName == string.Empty) {
@@ -174,6 +175,20 @@ namespace MonoDevelop.CSharp.Project
 			return options;
 		}
 
+		static OutputKind GetOutputKindFromProject (CSharpProject project)
+		{
+			switch (project.CompileTarget) {
+			case CompileTarget.Exe:
+				return OutputKind.ConsoleApplication;
+			case CompileTarget.WinExe:
+				return OutputKind.WindowsApplication;
+			case CompileTarget.Module:
+				return OutputKind.NetModule;
+			default:
+				return OutputKind.DynamicallyLinkedLibrary;
+			}
+		}
+
 		static OutputKind OutputTypeToOutputKind (string outputType)
 		{
 			switch (outputType.ToLowerInvariant ()) {
@@ -191,16 +206,41 @@ namespace MonoDevelop.CSharp.Project
 		Dictionary<string, ReportDiagnostic> GetSpecificDiagnosticOptions ()
 		{
 			var result = new Dictionary<string, ReportDiagnostic> ();
-			foreach (var warning in GetSuppressedWarnings ())
-				result [warning] = ReportDiagnostic.Suppress;
 
 			var globalRuleSet = IdeApp.TypeSystemService.RuleSetManager.GetGlobalRuleSet ();
 			if (globalRuleSet != null) {
-				foreach (var kv in globalRuleSet.SpecificDiagnosticOptions) {
-					result [kv.Key] = kv.Value;
-				}
+				AddSpecificDiagnosticOptions (result, globalRuleSet);
 			}
+
+			var ruleSet = GetRuleSet (codeAnalysisRuleSet);
+			if (ruleSet != null) {
+				AddSpecificDiagnosticOptions (result, ruleSet);
+			}
+
+			foreach (var warning in GetSuppressedWarnings ()) {
+				result [warning] = ReportDiagnostic.Suppress;
+			}
+
 			return result;
+		}
+
+		static RuleSet GetRuleSet (FilePath ruleSetFileName)
+		{
+			try {
+				if (ruleSetFileName.IsNotNull && File.Exists (ruleSetFileName)) {
+					return RuleSet.LoadEffectiveRuleSetFromFile (ruleSetFileName);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogError (string.Format ("Unable to load ruleset from file: {0}", ruleSetFileName), ex);
+			}
+			return null;
+		}
+
+		static void AddSpecificDiagnosticOptions (Dictionary<string, ReportDiagnostic> result, RuleSet ruleSet)
+		{
+			foreach (var kv in ruleSet.SpecificDiagnosticOptions) {
+				result [kv.Key] = kv.Value;
+			}
 		}
 
 		Microsoft.CodeAnalysis.Platform GetPlatform ()
