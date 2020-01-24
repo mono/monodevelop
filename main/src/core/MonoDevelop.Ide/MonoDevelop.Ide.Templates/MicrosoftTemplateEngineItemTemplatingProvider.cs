@@ -69,7 +69,10 @@ namespace MonoDevelop.Ide.Templates
 					AddFileToProject (project, fullPath);
 				}
 
-				IdeApp.Workbench.OpenDocument (fullPath, project).Ignore ();
+				// IdeApp could be not initialized when running tests
+				if (IdeApp.IsInitialized) {
+					IdeApp.Workbench.OpenDocument (fullPath, project).Ignore ();
+				}
 
 				if (project != null) {
 					await InstallNuGetPackages (project, result.ResultInfo);
