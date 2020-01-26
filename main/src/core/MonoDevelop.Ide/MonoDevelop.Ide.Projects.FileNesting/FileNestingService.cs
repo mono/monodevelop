@@ -187,9 +187,6 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 				initialized = true;
 
 				fileNestingEnabled = FileNestingService.IsEnabledForProject (Project);
-				foreach (var file in Project.Files) {
-					AddFile (file);
-				}
 			}
 		}
 
@@ -296,7 +293,12 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (!fileNestingEnabled)
 				return null;
 
-			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Parent : null;
+			if (!projectFiles.TryGetValue (inputFile, out var nestingInfo)) {
+				// Not found, so retrieve this file's information
+				nestingInfo = AddFile (inputFile);
+			}
+
+			return nestingInfo?.Parent;
 		}
 
 		public ProjectFileCollection GetChildrenForFile (ProjectFile inputFile)
@@ -305,7 +307,12 @@ namespace MonoDevelop.Ide.Projects.FileNesting
 			if (!fileNestingEnabled)
 				return null;
 
-			return projectFiles.TryGetValue (inputFile, out var nestingInfo) ? nestingInfo.Children : null;
+			if (!projectFiles.TryGetValue (inputFile, out var nestingInfo)) {
+				// Not found, so retrieve this file's information
+				nestingInfo = AddFile (inputFile);
+			}
+
+			return nestingInfo?.Children;
 		}
 
 		public void Dispose ()
