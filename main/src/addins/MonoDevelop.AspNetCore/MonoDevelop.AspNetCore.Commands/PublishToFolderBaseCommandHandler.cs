@@ -13,6 +13,7 @@ using MonoDevelop.DotNetCore;
 using MonoDevelop.Core.ProgressMonitoring;
 using Xwt;
 using MonoDevelop.Core.Instrumentation;
+using System.Threading;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
@@ -85,23 +86,20 @@ namespace MonoDevelop.AspNetCore.Commands
 							counterMetadata.SetFailure ();
 							return;
 						}
-						var dotnetPath = DotNetCoreRuntime.FileName;
+
 						progressMonitor.BeginTask ("dotnet publish", 1);
-						var process = Runtime.ProcessService.StartConsoleProcess (
-							dotnetPath,
+
+						int publishExitCode = await RunPublishCommand (
 							BuildArgs (item),
 							item.Project.BaseDirectory,
-							consoleMonitor.Console);
-
-						using (progressMonitor.CancellationToken.Register (process.Cancel)) {
-							await process.Task;
-						}
+							consoleMonitor.Console,
+							progressMonitor.CancellationToken);
 
 						if (!progressMonitor.CancellationToken.IsCancellationRequested) {
-							if (process.ExitCode != 0) {
+							if (publishExitCode != 0) {
 								counterMetadata.SetFailure ();
-								progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", process.ExitCode));
-								LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {process.ExitCode}");
+								progressMonitor.ReportError (GettextCatalog.GetString ("dotnet publish returned: {0}", publishExitCode));
+								LoggingService.LogError ($"Unknown exit code returned from 'dotnet publish --output {item.Profile.PublishUrl}': {publishExitCode}");
 							} else {
 								counterMetadata.SetSuccess ();
 								OpenFolder (item.Profile.PublishUrl);
@@ -123,6 +121,17 @@ namespace MonoDevelop.AspNetCore.Commands
 					}
 				}
 			}
+		}
+
+		public async Task<int> RunPublishCommand (string args, string wokingDirectory, OperationConsole console, CancellationToken сancellationToken)
+		{
+			var process = Runtime.ProcessService.StartConsoleProcess (DotNetCoreRuntime.FileName, args, wokingDirectory, console);
+
+			using (сancellationToken.Register (process.Cancel)) {
+				await process.Task;
+			}
+
+			return process.ExitCode;
 		}
 
 		void OpenFolder (string path)
