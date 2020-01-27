@@ -80,7 +80,12 @@ namespace Microsoft.WebTools.Scaffolding.Core.Config
 				httpClient.Timeout = TimeSpan.FromSeconds (2);
 
 				try {
-					stream = await httpClient.GetStreamAsync (packageVersionsUrl);
+					var scaffoldingVersionsFile = Environment.GetEnvironmentVariable ("ScaffoldingPackageVersionsFile");
+					if (scaffoldingVersionsFile != null) {
+						stream = File.OpenRead (scaffoldingVersionsFile);
+					} else {
+						stream = await httpClient.GetStreamAsync (packageVersionsUrl);
+					}
 				} catch {
 					// fallback to embedded resource
 					stream = typeof (ScaffoldingConfig).Assembly.GetManifestResourceStream ("ScaffoldingPackageVersions.json");
