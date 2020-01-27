@@ -24,11 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
+using System.Text;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.AspNetCore.Commands;
+using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore.Tests
@@ -42,19 +46,74 @@ namespace MonoDevelop.AspNetCore.Tests
 		public async Task SetUp ()
 		{
 			publishToFolderCommandHandler = new PublishToFolderCommandHandler ();
-			await Simulate ();
 		}
 
 		[Test]
-		[TestCase ("aspnetcore-empty-22", "aspnetcore-empty-22.sln", "publish --output bin/Release/netcoreapp/publish")]
-		public async Task PublishToFolder (string projectName, string projectItem, string publishArgs)
+		// .NET Core 2.2, regular
+		[TestCase ("aspnetcore-empty-22", "publish --output bin/Release/netcoreapp/publish")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Debug --output bin/debug-22")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --output bin/release-22")]
+		// .NET Core 2.2, self-contained
+		// OSX
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime osx-x64 --output bin/release-22-self-contained-osx")]
+		// Windows
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime win-x64 --output bin/release-22-self-contained-win-x64")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime win-x86 --output bin/release-22-self-contained-win-x86")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime win-arm --output bin/release-22-self-contained-win-arm")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime win-arm64 --output bin/release-22self-contained-win-arm64")]
+		// Linux
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime linux-x64 --output bin/release-22-self-contained-linux-x64")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime linux-musl-x64 --output bin/release-22-self-contained-linux-musl-x64")]
+		[TestCase ("aspnetcore-empty-22", "publish --configuration Release --self-contained --runtime linux-arm --output bin/release-22-self-contained-linux-arm")]
+		// .NET Core 3.0, regular
+		[TestCase ("aspnetcore-empty-30", "publish --output bin/Release/netcoreapp/publish")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Debug --output bin/debug-22")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --output bin/release-22")]
+		// .NET Core 3.0, self-contained
+		// OSX
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime osx-x64 --output bin/release-22-self-contained-osx")]
+		// Windows
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime win-x64 --output bin/release-22-self-contained-win-x64")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime win-x86 --output bin/release-22-self-contained-win-x86")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime win-arm --output bin/release-22-self-contained-win-arm")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime win-arm64 --output bin/release-22self-contained-win-arm64")]
+		// Linux
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime linux-x64 --output bin/release-22-self-contained-linux-x64")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime linux-musl-x64 --output bin/release-22-self-contained-linux-musl-x64")]
+		[TestCase ("aspnetcore-empty-30", "publish --configuration Release --self-contained --runtime linux-arm --output bin/release-22-self-contained-linux-arm")]
+		public async Task PublishToFolder (string solutionName, string publishArgs)
 		{
-			var projectFileName = Util.GetSampleProject (projectName, projectItem);
-			using var project = (DotNetProject)await Services.ProjectService.ReadSolutionItem (Util.GetMonitor (), projectFileName);
+			var solutionFileName = Util.GetSampleProject (solutionName, $"{solutionName}.sln");
+			var solution = (Solution)await Services.ProjectService.ReadWorkspaceItem (Util.GetMonitor (), solutionFileName);
+			var project = (DotNetProject)solution.GetAllProjects ().Single ();
+			var operationConsole = new MockOperationConsole ();
 
-			int exitCode = await publishToFolderCommandHandler.RunPublishCommand (publishArgs, project.BaseDirectory, null, CancellationToken.None);
+			int exitCode = await publishToFolderCommandHandler.RunPublishCommand (publishArgs, project.BaseDirectory, operationConsole, CancellationToken.None);
 
 			Assert.AreEqual (0, exitCode, "Publish to Folder command exit code must be 0");
+		}
+
+		class MockOperationConsole : OperationConsole
+		{
+			readonly TextReader textReader = new MockTextReader ();
+			readonly TextWriter textWriter = new MockTextWriter ();
+
+			public override TextReader In => textReader;
+
+			public override TextWriter Out => textWriter;
+
+			public override TextWriter Error => textWriter;
+
+			public override TextWriter Log => textWriter;
+
+			class MockTextReader : TextReader
+			{
+			}
+
+			class MockTextWriter : TextWriter
+			{
+				public override Encoding Encoding => Encoding.Default;
+			}
 		}
 	}
 }

@@ -218,5 +218,8 @@
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Fields\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="MonoDevelop.AspNetCore.Tests" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -123,7 +123,7 @@ namespace MonoDevelop.AspNetCore.Commands
 			}
 		}
 
-		public async Task<int> RunPublishCommand (string args, string wokingDirectory, OperationConsole console, CancellationToken сancellationToken)
+		internal async Task<int> RunPublishCommand (string args, string wokingDirectory, OperationConsole console, CancellationToken сancellationToken)
 		{
 			var process = Runtime.ProcessService.StartConsoleProcess (DotNetCoreRuntime.FileName, args, wokingDirectory, console);
 
