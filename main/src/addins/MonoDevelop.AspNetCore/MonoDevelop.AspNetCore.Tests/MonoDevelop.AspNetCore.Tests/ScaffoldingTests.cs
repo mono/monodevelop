@@ -101,8 +101,8 @@ namespace MonoDevelop.AspNetCore.Tests
 			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
 			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
-			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
-			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
+			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd();
+			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage PageName --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName --useSqlite", commandLineArgs);
 		}
 
 		[Test]
@@ -119,8 +119,8 @@ namespace MonoDevelop.AspNetCore.Tests
 			scaffolder.GetField ("DbContext class to use:").SelectedValue = "DataContext";
 			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
-			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ");
-			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName", commandLineArgs);
+			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd();
+			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" razorpage --model ModelClass --dataContext DataContext --referenceScriptLibraries --no-build -outDir ""/MyProject/Pages"" --namespaceName ProjectName --useSqlite", commandLineArgs);
 		}
 
 		[Test]
@@ -183,7 +183,7 @@ namespace MonoDevelop.AspNetCore.Tests
 			var wizard = CreateWizard (args, project);
 			var commandLineArgs = wizard.GetArguments (args);
 			commandLineArgs = Regex.Replace (commandLineArgs, @"\s+", " ").TrimEnd ();
-			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller --model ModelClass --dataContext DataContext -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName", commandLineArgs);
+			Assert.AreEqual (@"aspnet-codegenerator --project ""ProjectName.csproj"" controller --model ModelClass --dataContext DataContext -name --no-build -outDir ""/MyProject/Controllers"" --controllerNamespace ProjectName --useSqlite", commandLineArgs);
 		}
 
 		[Test]

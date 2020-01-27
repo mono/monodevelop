@@ -37,6 +37,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public RazorPageEntityFrameworkScaffolder (ScaffolderArgs args): base(args)
 		{
 			this.args = args;
+			DefaultArgs.Add (new CommandLineArg ("--useSqlite"));
 		}
 
 		public override string Name => GettextCatalog.GetString("Razor Page using Entity Framework");

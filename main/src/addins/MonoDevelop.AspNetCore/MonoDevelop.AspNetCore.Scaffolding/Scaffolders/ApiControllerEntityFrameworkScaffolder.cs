@@ -33,6 +33,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public ApiControllerEntityFrameworkScaffolder (ScaffolderArgs args) : base (args)
 		{
 			this.args = args;
+			DefaultArgs.Add (new CommandLineArg ("--useSqlite"));
 		}
 
 		public override string Name => GettextCatalog.GetString("API Controller with actions using Entity Framework");
@@ -47,8 +48,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 			fields = new ScaffolderField [] {
 				GetModelField(args),
 				GetDbContextField(args),
-new StringField ("-name", GettextCatalog.GetString("Controller name:")),
-
+				new StringField ("-name", GettextCatalog.GetString("Controller name:")),
 			};
 
 			return fields;

@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using System.Threading;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.AspNetCore.Scaffolding
@@ -36,6 +35,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 		public RazorPageEntityFrameworkCrudScaffolder (ScaffolderArgs args) : base (args)
 		{
 			this.args = args;
+			DefaultArgs.Add (new CommandLineArg ("--useSqlite"));
 		}
 
 		public override string Name => GettextCatalog.GetString("Razor Page using Entity Framework (CRUD)");
