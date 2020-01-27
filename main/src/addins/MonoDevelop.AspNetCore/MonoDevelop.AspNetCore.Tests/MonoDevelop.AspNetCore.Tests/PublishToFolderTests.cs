@@ -24,15 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
-using System.Text;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IdeUnitTests;
 using NUnit.Framework;
 using UnitTests;
 using MonoDevelop.AspNetCore.Commands;
-using MonoDevelop.Core.Execution;
 using MonoDevelop.Projects;
 
 namespace MonoDevelop.AspNetCore.Tests
@@ -91,29 +89,6 @@ namespace MonoDevelop.AspNetCore.Tests
 			int exitCode = await publishToFolderCommandHandler.RunPublishCommand (publishArgs, project.BaseDirectory, operationConsole, CancellationToken.None);
 
 			Assert.AreEqual (0, exitCode, "Publish to Folder command exit code must be 0");
-		}
-
-		class MockOperationConsole : OperationConsole
-		{
-			readonly TextReader textReader = new MockTextReader ();
-			readonly TextWriter textWriter = new MockTextWriter ();
-
-			public override TextReader In => textReader;
-
-			public override TextWriter Out => textWriter;
-
-			public override TextWriter Error => textWriter;
-
-			public override TextWriter Log => textWriter;
-
-			class MockTextReader : TextReader
-			{
-			}
-
-			class MockTextWriter : TextWriter
-			{
-				public override Encoding Encoding => Encoding.Default;
-			}
 		}
 	}
 }
