@@ -129,9 +129,7 @@ namespace MonoDevelop.AspNetCore.Scaffolding
 
 			if (SupportPolicyVersion.TryCreateFromVersionString (frameworkVersion, out var policyVersion)) {
 				if (scaffoldingConfig.TryGetPackagesForSupportPolicyVersion (policyVersion, out PackageDescription [] packageDescriptions)) {
-					return packageDescriptions
-						// We don't support Identity scaffolders yet
-						.Where (p => !p.IsOptionalIdentityPackage);
+					return packageDescriptions;
 				}
 			}
 			return Enumerable.Empty<PackageDescription> ();
