@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using MonoDevelop.Components.Commands;
@@ -12,8 +12,6 @@ using MonoDevelop.AspNetCore.Dialogs;
 using MonoDevelop.DotNetCore;
 using MonoDevelop.Core.ProgressMonitoring;
 using Xwt;
-using MonoDevelop.Core.Instrumentation;
-using System.Threading;
 
 namespace MonoDevelop.AspNetCore.Commands
 {
