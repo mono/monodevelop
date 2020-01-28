@@ -123,6 +123,7 @@ namespace MonoDevelop.TextEditor
 			("Comment", "Comment"),
 			("Excluded Code", "Excluded Code"),
 			("Keyword", "Keyword"),
+			("keyword - control", "Keyword (Jump)"),
 			("Preprocessor Keyword", "Preprocessor"),
 			("Operator", "Keyword(Operator)"),
 			("Literal", "Number"),
