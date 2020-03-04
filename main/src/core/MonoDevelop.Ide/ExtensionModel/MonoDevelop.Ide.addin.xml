@@ -2,10 +2,10 @@
 	<Runtime>
 		<Import assembly="Microsoft.VisualStudio.CodingConventions.dll" />
 		<Import assembly="Microsoft.VisualStudio.Composition.dll" />
-		<Import assembly="Microsoft.VisualStudio.CoreUtility.dll" />
+		<!-- <Import assembly="Microsoft.VisualStudio.CoreUtility.dll" /> -->
 		<Import assembly="Microsoft.VisualStudio.Language.dll" />
 		<Import assembly="Microsoft.VisualStudio.Language.Intellisense.dll" />
-		<Import assembly="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+		<!-- <Import assembly="Microsoft.VisualStudio.Language.StandardClassification.dll" /> -->
 		<Import assembly="Microsoft.VisualStudio.Text.Data.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.Logic.dll" />
 		<Import assembly="Microsoft.VisualStudio.Text.UI.dll" />
@@ -433,7 +433,7 @@
 		<Assembly file="Microsoft.CodeAnalysis.Workspaces.MSBuild.dll" />
 		<Assembly file="Microsoft.VisualStudio.CodingConventions.dll" />
 		<Assembly file="Microsoft.VisualStudio.Language.dll" />
-		<Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/>
+		<!-- <Assembly file="Microsoft.VisualStudio.Language.StandardClassification.dll"/> -->
 		<Assembly file="Microsoft.VisualStudio.Text.Logic.dll"/>
 		<Assembly file="Microsoft.VisualStudio.Text.UI.dll"/>
 		<Assembly file="MonoDevelop.Ide.dll"/>

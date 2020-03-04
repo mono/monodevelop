@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2E1FB0DF-F9BB-4909-9F32-2D9D022A8E57}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <RootNamespace>Microsoft.WindowsAPICodePack</RootNamespace>
     <AssemblyName>Microsoft.WindowsAPICodePack</AssemblyName>
     <OutputPath>..\..\..\..\..\build\AddIns\WindowsPlatform</OutputPath>

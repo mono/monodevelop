@@ -7,7 +7,7 @@
     <ProjectGuid>{F3AC14B0-3D1F-4B9B-95E8-384056060F33}</ProjectGuid>
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -78,7 +78,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />
   </Target>

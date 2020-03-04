@@ -8,13 +8,13 @@
 		<_IsSdkStyleProject>false</_IsSdkStyleProject>
 		<_IsSdkStyleProject Condition="'$(Configurations)' != '' and '$(Platforms)' != ''">true</_IsSdkStyleProject>
 		<!-- target framework for the core and addins -->
-		<MDFrameworkVersion>v4.7.2</MDFrameworkVersion>
-		<MDTargetFramework>net472</MDTargetFramework>
+		<MDTargetFramework>netstandard2.1</MDTargetFramework>
+		<MDTargetFrameworkNet5>netstandard2.1</MDTargetFrameworkNet5>
 		<!--
 		for sdk-style projects we can set the value directly.
 		old-style projects need to set it themselves or some IDE stuff breaks.
 		-->
-		<TargetFramework Condition="'$(_IsSdkStyleProject)'=='true'">$(MDTargetFramework)</TargetFramework>
+		
 	</PropertyGroup>
 
 	<!-- set some common AssemblyInfo values so SDK-style projects don't have to set them -->

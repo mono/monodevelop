@@ -47,5 +47,5 @@
     </CreateItem>
     <Error Text="Something failed: $(TestProp) $(GenProp) @(GenItem)" />
   </Target>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

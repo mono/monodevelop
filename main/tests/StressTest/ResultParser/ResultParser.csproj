@@ -47,5 +47,5 @@
   <ItemGroup>
     <Folder Include="Serialization\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

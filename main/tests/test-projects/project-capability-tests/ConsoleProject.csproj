@@ -39,5 +39,5 @@
   <ItemGroup>
     <ProjectCapability Include="Zero" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

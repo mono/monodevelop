@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E2CAB397-D00C-4D11-8F5F-E3A052092969}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\VersionControl</OutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -66,7 +66,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MonoDevelop.VersionControl.Subversion.Tests" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(NativeBinaries)" DestinationFolder="$(OutputPath)\" SkipUnchangedFiles="true" />
   </Target>

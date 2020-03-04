@@ -4,7 +4,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CD31F051-9012-487B-B7E8-4CDDEA68B3AF}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>    
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>  
     <TestRunnerCommand>..\..\..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\..\..\build\tests</OutputPath>
@@ -60,5 +62,5 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

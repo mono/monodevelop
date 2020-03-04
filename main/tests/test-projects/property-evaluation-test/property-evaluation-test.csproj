@@ -68,6 +68,6 @@
     <Compile Include="Program10_$(AAA" />
     <Compile Include="Program11_$(HHH).cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Import Project="imported.targets" />
 </Project>

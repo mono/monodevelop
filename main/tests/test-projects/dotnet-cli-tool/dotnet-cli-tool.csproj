@@ -37,5 +37,5 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
     <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.9.406" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -1,12 +1,11 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F870E2E7-FA64-4B2F-968A-90B36AB7AAA9}</ProjectGuid>
     <RootNamespace>Stetic</RootNamespace>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.GtkCore</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -261,5 +260,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

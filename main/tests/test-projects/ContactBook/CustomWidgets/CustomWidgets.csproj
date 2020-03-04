@@ -49,5 +49,5 @@
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

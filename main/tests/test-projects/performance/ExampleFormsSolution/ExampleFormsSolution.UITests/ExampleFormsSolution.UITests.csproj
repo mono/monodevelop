@@ -53,5 +53,5 @@
     <Compile Include="Pages/NewItemPage.cs" />
     <Compile Include="AppInitializer.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

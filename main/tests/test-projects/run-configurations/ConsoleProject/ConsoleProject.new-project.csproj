@@ -4,5 +4,5 @@
     <ProjectGuid>{3A83F683-760F-486C-8844-B0F079B30B25}</ProjectGuid>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

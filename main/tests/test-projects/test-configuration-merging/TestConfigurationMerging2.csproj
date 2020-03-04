@@ -32,5 +32,5 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Test|More' ">
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -1,25 +1,57 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <Import Project="..\..\..\MonoDevelop.props" />
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(ReferencesGtk)" />
   <Import Project="$(ReferencesVSEditor)" />
-  <PropertyGroup>
+  <PropertyGroup>  
+    <MonoDevelopRootDir>$(MSBuildThisFileDirectory)</MonoDevelopRootDir>
+		<CustomBeforeMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.BeforeCommon.targets</CustomBeforeMicrosoftCommonTargets>
+		<CustomAfterMicrosoftCommonTargets>$(MonoDevelopRootDir)\msbuild\MonoDevelop.AfterCommon.targets</CustomAfterMicrosoftCommonTargets>
+		<MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+		<Features>strict</Features>
+		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{27096E7F-C91C-4AC6-B289-6897A701DF21}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
     <OutputPath>..\..\..\build\bin</OutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>    
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>    
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>  
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo> 
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup> 
+  <Import Project="/Users/thaysgrazia/VSMacOnNetCoreMono/monodevelop_net5/main/msbuild/MonoDevelop.AfterCommon.props" /> 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
     <DefineConstants>LINUX</DefineConstants>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
     <DefineConstants>LINUX</DefineConstants>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMac|AnyCPU' ">
+    <DebugType></DebugType>
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <DefineConstants>TRACE;DEBUGMAC;NETCOREAPP;NETCOREAPP3_0;MAC</DefineConstants>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU' ">
+    <DebugType></DebugType>
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <DefineConstants>TRACE;RELEASEMAC;NETCOREAPP;NETCOREAPP3_0;MAC</DefineConstants>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="monodoc, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756" />
     <Reference Include="PresentationCore" Condition=" '$(Configuration)' == 'DebugWin32' Or '$(Configuration)' == 'ReleaseWin32' " />
@@ -49,11 +81,7 @@
     when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
     Prefer referencing msbuild 15.* assemblies over 14.1 . At runtime, we use correct one anyway
     -->
-    <Reference Include="Microsoft.Build">
-      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework">
+     <Reference Include="Microsoft.Build.Framework">
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Framework.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -64,7 +92,27 @@
     <PackageReference Include="Microsoft.TemplateEngine.Edge" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.TemplateEngine.Orchestrator.RunnableProjects" Version="$(NuGetVersionMicrosoftTemplateEngine)" PrivateAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading" Version="16.3.0.0" />
     <PackageReference Include="YamlDotNet.Signed" Version="5.2.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="9.9.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="3.4.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Features" Version="3.4.0" /> 
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Wpf" Version="9.9.0-beta3-19305-01" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="9.9.0-beta3-19305-01" />
+    <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures.Text" Version="9.9.0-beta3-19305-01" />
+    <PackageReference Include="Microsoft.Build" Version="16.4.0" />
+    <Reference Include="System.Runtime.Remoting">
+    <Private>true</Private>
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\6.4.0\lib\mono\4.0-api\System.Runtime.Remoting.dll</HintPath>
+    </Reference>
+    <Reference Include="monodoc">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\6.4.0\lib\mono\gac\monodoc\1.0.0.0__0738eb9f132ed756\monodoc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\6.4.0\lib\mono\msbuild\15.0\bin\Microsoft.Build.dll</HintPath>
+    </Reference>
     <IncludeCopyLocal Include="ICSharpCode.NRefactory.Cecil.dll" />
     <IncludeCopyLocal Include="ICSharpCode.NRefactory.CSharp.dll" />
     <IncludeCopyLocal Include="ICSharpCode.NRefactory.dll" />
@@ -81,54 +129,47 @@
     <IncludeCopyLocal Include="Xwt.Gtk.dll" />
     <IncludeCopyLocal Include="Xwt.XamMac.dll" />
     <IncludeCopyLocal Include="YamlDotNet.dll" />
+    <Reference Include="gdk-sharp">
+      <HintPath>..\..\..\external\mono-addins\Mono.Addins.Gui\bin\DebugMac\netstandard2.1\gdk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="glib-sharp">
+      <HintPath>..\..\..\external\mono-addins\Mono.Addins.Gui\bin\DebugMac\netstandard2.1\glib-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp">
+      <HintPath>..\..\..\external\mono-addins\Mono.Addins.Gui\bin\DebugMac\netstandard2.1\gtk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="atk-sharp">
+      <HintPath>..\..\..\external\mono-addins\Mono.Addins.Gui\bin\DebugMac\netstandard2.1\atk-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cairo">
+      <HintPath>..\..\..\external\mono-addins\Mono.Addins.Gui\bin\DebugMac\netstandard2.1\Mono.Cairo.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
-      <Project>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</Project>
-      <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.CSharp\ICSharpCode.NRefactory.CSharp.csproj">
-      <Project>{53DCA265-3C3C-42F9-B647-F72BA678122B}</Project>
-      <Name>ICSharpCode.NRefactory.CSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt\Xwt.csproj">
-      <Project>{92494904-35FA-4DC9-BDE9-3A3E87AC49D3}</Project>
-      <Name>Xwt</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt.Gtk\Xwt.Gtk.csproj">
-      <Project>{C3887A93-B2BD-4097-8E2F-3A063EFF32FD}</Project>
-      <Name>Xwt.Gtk</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Setup\Mono.Addins.Setup.csproj">
-      <Project>{A85C9721-C054-4BD8-A1F3-0227615F0A36}</Project>
-      <Name>Mono.Addins.Setup</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins.Gui\Mono.Addins.Gui.csproj">
-      <Project>{FEC19BDA-4904-4005-8C09-68E82E8BEF6A}</Project>
-      <Name>Mono.Addins.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
-      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-      <Name>Mono.Debugging</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\nrefactory\ICSharpCode.NRefactory.Cecil\ICSharpCode.NRefactory.Cecil.csproj">
-      <Project>{2B8F4F83-C2B3-4E84-A27B-8DEE1BE0E006}</Project>
-      <Name>ICSharpCode.NRefactory.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\xwt\Xwt.XamMac\Xwt.XamMac.csproj" Condition=" '$(Configuration)' == 'DebugMac' Or '$(Configuration)' == 'ReleaseMac' ">
-      <Project>{B7C1673E-5124-4BE5-8D21-EC8B12F85B6B}</Project>
-      <Name>Xwt.XamMac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -715,22 +756,22 @@
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9%402x.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark.png" />
     <EmbeddedResource Include="MonoDevelop.Components.Docking\icons\pad-dock-9~dark%402x.png" />
-    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\Commands.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\DefaultPolicyPanels.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\GlobalOptionsDialog.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\ItemOptionPanels.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\MainMenu.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\MainToolbar.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\MimeTypes.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\Pads.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\StockIcons.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\Templates.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\MonoDevelop.Ide.addin.xml" />
-    <EmbeddedResource Include="ExtensionModel\Policies.addin.xml" />
-    <EmbeddedResource Include="MonoDevelop.Components.Commands\CommandsExtensionModel.addin.xml" />
-    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml" />
-    <EmbeddedResource Include="MonoDevelop.Ide.BuildOutputView\BuildOutputExtension.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ProjectPad\ProjectPadContextMenu.addin.xml" LogicalName="teste" />
+    <EmbeddedResource Include="ExtensionModel\Commands.addin.xml" LogicalName="teste2" />
+    <EmbeddedResource Include="ExtensionModel\DefaultPolicyPanels.addin.xml" LogicalName="teste3" />
+    <EmbeddedResource Include="ExtensionModel\GlobalOptionsDialog.addin.xml" LogicalName="teste4" />
+    <EmbeddedResource Include="ExtensionModel\ItemOptionPanels.addin.xml" LogicalName="teste5" />
+    <EmbeddedResource Include="ExtensionModel\MainMenu.addin.xml" LogicalName="teste6" />
+    <EmbeddedResource Include="ExtensionModel\MainToolbar.addin.xml" LogicalName="teste7" />
+    <EmbeddedResource Include="ExtensionModel\MimeTypes.addin.xml" LogicalName="teste8" />
+    <EmbeddedResource Include="ExtensionModel\Pads.addin.xml" LogicalName="teste9" />
+    <EmbeddedResource Include="ExtensionModel\StockIcons.addin.xml" LogicalName="teste10" />
+    <EmbeddedResource Include="ExtensionModel\Templates.addin.xml" LogicalName="teste11" />
+    <EmbeddedResource Include="ExtensionModel\MonoDevelop.Ide.addin.xml" LogicalName="teste12" />
+    <EmbeddedResource Include="ExtensionModel\Policies.addin.xml" LogicalName="teste13" />
+    <EmbeddedResource Include="MonoDevelop.Components.Commands\CommandsExtensionModel.addin.xml" LogicalName="teste14" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Gui.Pads.ClassPad\ClassPadContextMenu.addin.xml" LogicalName="teste15" />
+    <EmbeddedResource Include="MonoDevelop.Ide.BuildOutputView\BuildOutputExtension.addin.xml" LogicalName="teste16" />
     <EmbeddedResource Include="icons\feedback-16.png" />
     <EmbeddedResource Include="icons\feedback-16%402x.png" />
     <EmbeddedResource Include="icons\feedback-16~dark.png" />
@@ -3055,7 +3096,7 @@
     <EmbeddedResource Include="icons\browser-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\browser-16~sel.png" />
     <EmbeddedResource Include="icons\browser-16~sel%402x.png" />
-    <EmbeddedResource Include="MonoDevelop.Ide.Projects.FileNesting\FileNestingExtensionModel.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Ide.Projects.FileNesting\FileNestingExtensionModel.addin.xml" LogicalName="gfdgdfgdf" />
     <EmbeddedResource Include="icons\add-16~contrast.png" />
     <EmbeddedResource Include="icons\add-16~contrast%402x.png" />
     <EmbeddedResource Include="icons\bug-16~contrast.png" />
@@ -3104,6 +3145,9 @@
     <EmbeddedResource Include="icons\add-16~dark~sel%402x.png" />
     <EmbeddedResource Include="icons\add-16~sel.png" />
     <EmbeddedResource Include="icons\add-16~sel%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Main.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonoDevelop.Components.Commands\ICustomCommandTarget.cs" />
@@ -4392,6 +4436,7 @@
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\OSSREADME.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\language-configuration.json" />
     <None Include="MonoDevelop.Ide.Editor.Highlighting\VSCodeImport\objective-c\package.json" />
+    <None Include="**/*" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="gtkrc">
@@ -4456,7 +4501,6 @@
     <Folder Include="MonoDevelop.Components\Shared\" />
     <Folder Include="MonoDevelop.Ide.Projects.FileNesting\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <Copy SourceFiles="@(Data)" DestinationFolder="..\..\..\build\data\%(Data.RelativeDir)" SkipUnchangedFiles="true" />
   </Target>

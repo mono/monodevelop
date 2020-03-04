@@ -1,11 +1,10 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F5390DA4-08B7-47E3-B6F3-D50683316AB4}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Debugger.Soft</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU'  " />
@@ -19,68 +18,42 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.csproj">
-      <Project>{3D363F0C-5731-42AA-9022-B7F4657F298A}</Project>
-      <Name>MonoDevelop.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.Debugger\MonoDevelop.Debugger.csproj">
-      <Project>{2357AABD-08C7-4808-A495-8FF2D3CDFDB0}</Project>
-      <Name>MonoDevelop.Debugger</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Deployment\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
-      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
-      <Name>MonoDevelop.Deployment</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.SourceEditor2\MonoDevelop.SourceEditor.csproj">
-      <Project>{F8F92AA4-A376-4679-A9D4-60E7B7FBF477}</Project>
-      <Name>MonoDevelop.SourceEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging\Mono.Debugging.csproj">
-      <Project>{90C99ADB-7D4B-4EB4-98C2-40BD1B14C7D2}</Project>
-      <Name>Mono.Debugging</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugging.Soft\Mono.Debugging.Soft.csproj">
-      <Project>{DE40756E-57F6-4AF2-B155-55E3A88CCED8}</Project>
-      <Name>Mono.Debugging.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\debugger-libs\Mono.Debugger.Soft\Mono.Debugger.Soft.csproj">
-      <Project>{372E8E3E-29D5-4B4D-88A2-4711CD628C4E}</Project>
-      <Name>Mono.Debugger.Soft</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\AspNet\MonoDevelop.AspNet.csproj">
-      <Project>{1CF94D07-5480-4D10-A3CD-2EBD5E87B02E}</Project>
-      <Name>MonoDevelop.AspNet</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Xml\MonoDevelop.Xml.csproj">
-      <Project>{86DFC74A-B0B6-4C73-9E05-9098DA8FA5F1}</Project>
-      <Name>MonoDevelop.Xml</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -88,5 +61,5 @@
     <Compile Include="AspNetSoftDebuggerEngine.cs" />
     <Compile Include="AddinInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

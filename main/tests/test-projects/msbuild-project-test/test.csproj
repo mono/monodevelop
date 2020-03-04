@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -67,8 +67,8 @@
     </Transformed>
   </ItemGroup>
   <Target Name="Conditioned" Condition="false"></Target>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <!-- Imported twice for verification -->
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Import Project="extra.csproj" />
 </Project>

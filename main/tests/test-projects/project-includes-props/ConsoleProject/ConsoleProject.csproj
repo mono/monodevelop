@@ -22,5 +22,5 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
 
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

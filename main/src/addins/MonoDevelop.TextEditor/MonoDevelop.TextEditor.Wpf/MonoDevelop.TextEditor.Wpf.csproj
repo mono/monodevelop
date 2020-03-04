@@ -10,9 +10,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DiagnosticMargin" Version="1.0.1" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- <PackageReference Include="Microsoft.VisualStudio.CoreUtility" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" /> -->
     <PackageReference Include="Microsoft.VisualStudio.Imaging" Version="16.0.27828" PrivateAssets="all" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
+    <!-- <PackageReference Include="Microsoft.VisualStudio.Text.Data" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" /> -->
     <PackageReference Include="Microsoft.VisualStudio.Text.Internal" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Text.Logic" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.VisualStudio.Text.UI" Version="$(NuGetVersionVSEditor)" PrivateAssets="all" ExcludeAssets="runtime" />

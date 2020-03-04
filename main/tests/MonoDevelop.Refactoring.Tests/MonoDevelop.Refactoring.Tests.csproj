@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BCC3A6AE-EC45-40AD-BA3E-59F6401D588C}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <TestRunnerCommand>..\..\build\bin\mdtool.exe</TestRunnerCommand>
     <TestRunnerArgs>run-md-tests</TestRunnerArgs>
     <OutputPath>..\..\build\tests</OutputPath>
@@ -76,5 +76,5 @@
     <Compile Include="CodeActionEditorExtensionTestBase.cs" />
     <Compile Include="MonoDevelop.Refactoring\RenameRefactoringTests.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

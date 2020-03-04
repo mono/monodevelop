@@ -1,11 +1,10 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6224D87E-2AC1-4D9F-91ED-714F797297BF}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\build\AddIns\MonoDevelop.UnitTesting</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -18,28 +17,18 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.UnitTesting\MonoDevelop.UnitTesting.csproj">
-      <Project>{A7A4246D-CEC4-42DF-A3C1-C31B9F51C4EC}</Project>
-      <Name>MonoDevelop.UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.PackageManagement\MonoDevelop.PackageManagement.csproj">
-      <Project>{F218643D-2E74-4309-820E-206A54B7133F}</Project>
-      <Name>MonoDevelop.PackageManagement</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -73,5 +62,5 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="MonoDevelop.UnitTesting.NUnit\RemoteTestResult.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

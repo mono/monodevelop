@@ -1,5 +1,6 @@
 ﻿<ExtensionModel>
 	<Runtime>
+	
 		<Import assembly="../../../bin/Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.Implementation.dll" />
 		<Import assembly="../../../bin/Microsoft.VisualStudio.Language.Utilities.dll" />

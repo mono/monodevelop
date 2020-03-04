@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B3E73DE7-8AFC-429A-9B68-5699B1E63A02}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <TemplatesVersion1x>1.0.0-beta2-20170430-208</TemplatesVersion1x>
     <TemplatesVersion20>1.0.0-beta2-20170727-301</TemplatesVersion20>
     <OutputPath>..\..\..\build\AddIns\AspNetCore</OutputPath>
@@ -218,5 +218,5 @@
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Fields\" />
     <Folder Include="MonoDevelop.AspNetCore.Scaffolding\Configuration\" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

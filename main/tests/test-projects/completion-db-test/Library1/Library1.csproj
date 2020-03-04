@@ -44,5 +44,5 @@
     <Compile Include="SharedNamespace.cs" />
     <Compile Include="GenericSubclassing.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

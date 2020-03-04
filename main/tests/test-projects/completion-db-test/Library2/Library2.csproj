@@ -38,7 +38,7 @@
     <Compile Include="SharedNamespace.cs" />
     <Compile Include="GenericSubclassing.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <ItemGroup>
     <ProjectReference Include="..\Library3\Library3.csproj">
       <Project>{63573B20-8544-4FA8-A9B2-AF97BAD39285}</Project>

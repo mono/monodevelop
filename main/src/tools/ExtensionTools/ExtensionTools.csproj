@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E33F7901-AA45-4C25-9868-DBB6CC8DC40C}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <RootNamespace>MonoDevelop.ExtensionTools</RootNamespace>
   </PropertyGroup>
@@ -52,5 +52,5 @@
   <ItemGroup>
     <EmbeddedResource Include="MonoDevelop.ExtensionTools.addin.xml" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

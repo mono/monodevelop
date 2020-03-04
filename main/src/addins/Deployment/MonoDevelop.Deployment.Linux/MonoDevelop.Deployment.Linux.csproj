@@ -1,11 +1,10 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BA9020AD-A2D1-47C8-9A7C-756162C38296}</ProjectGuid>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <OutputPath>..\..\..\..\build\AddIns\MonoDevelop.Deployment</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
@@ -14,28 +13,18 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseGnome|AnyCPU' " />
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
-      <Project>{7525BB88-6142-4A26-93B9-A30C6983390A}</Project>
-      <Name>MonoDevelop.Core</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Ide\MonoDevelop.Ide.csproj">
-      <Project>{27096E7F-C91C-4AC6-B289-6897A701DF21}</Project>
-      <Name>MonoDevelop.Ide</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\MonoDevelop.Deployment\MonoDevelop.Deployment.csproj">
-      <Project>{9BC670A8-1851-40EC-9685-279F4C98433D}</Project>
-      <Name>MonoDevelop.Deployment</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\MonoDevelop.DesignerSupport\MonoDevelop.DesignerSupport.csproj">
-      <Project>{2C24D515-4A2C-445C-8419-C09231913CFA}</Project>
-      <Name>MonoDevelop.DesignerSupport</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\external\mono-addins\Mono.Addins\Mono.Addins.csproj">
-      <Project>{91DD5A2D-9FE3-4C3C-9253-876141874DAD}</Project>
-      <Name>Mono.Addins</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -67,5 +56,5 @@
     <Compile Include="Gui\MonoDevelop.Deployment.Linux.DotDesktopViewWidget.cs" />
     <Compile Include="Gui\MonoDevelop.Deployment.Linux.MenuCategorySelectorDialog.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

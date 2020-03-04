@@ -39,7 +39,7 @@
     <Compile Include="PartialTest2.cs" />
     <Compile Include="NamespaceTest.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <ItemGroup>
     <ProjectReference Include="..\Library1\Library1.csproj">
       <Project>{728501FB-8FE6-4838-B475-FC377AECA606}</Project>

@@ -34,7 +34,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <ItemGroup>
     <ProjectReference Include="..\PortableLibrary\PortableLibrary.csproj">
       <Project>{E54D2645-07DB-4D2C-9507-1AF788E81383}</Project>

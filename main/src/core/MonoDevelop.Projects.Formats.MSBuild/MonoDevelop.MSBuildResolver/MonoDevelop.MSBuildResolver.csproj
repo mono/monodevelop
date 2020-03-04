@@ -1,12 +1,12 @@
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\MonoDevelop.props" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BD432AE0-B262-4F63-A695-7B86D11B644F}</ProjectGuid>
-    <!-- this is loaded by MSBuild, so framework should match MSBuild -->
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkVersion Condition="'$(VisualStudioVersion)'=='16.0'">v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
+    <TargetFrameworks>$(MDTargetFrameworkNet5)</TargetFrameworks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>   
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>           
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
 	 when building with msbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/msbuild/*/bin`
@@ -19,12 +19,22 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>..\..\..\..\build\bin\MSBuild</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
+    <OutputPath>..\..\..\..\build\bin\MSBuild</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>..\..\..\..\build\bin\MSBuild</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseWin32|AnyCPU' ">
+    <OutputPath>..\..\..\..\build\bin\MSBuild</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Microsoft.Build">
@@ -47,5 +57,5 @@
       <Link>SdkVersion.cs</Link>
     </Compile>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

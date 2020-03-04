@@ -37,5 +37,5 @@
   <ItemGroup>
     <Compile Remove="c1.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

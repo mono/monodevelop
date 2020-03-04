@@ -38,7 +38,7 @@
     <Content Include="*.txt" Exclude="*2.txt"/>
     <Content Include="Extra\**\*.txt" Exclude="Extra\No\**\*.txt;**\p6.txt"/>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
   <Target Name="Test">
   	<Message Text="@(Compile);@(Content)" />
   </Target>

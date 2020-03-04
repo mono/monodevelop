@@ -7,7 +7,7 @@
     <ProjectGuid>{D0B5AF2B-4BC1-4EB4-81D3-E5B85DDCE925}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Mono.Instrumentation.Monitor</RootNamespace>
-    <TargetFrameworkVersion>$(MDFrameworkVersion)</TargetFrameworkVersion>
+<TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <OutputPath>..\..\..\build\bin</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
@@ -78,5 +78,5 @@
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

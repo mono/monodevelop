@@ -36,5 +36,5 @@
   <ItemGroup>
     <PackageReference Include="LibLog" Version="5.0.0" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -35,5 +35,5 @@
   <ItemGroup>
     <Content Include="test.txt" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+
 </Project>
