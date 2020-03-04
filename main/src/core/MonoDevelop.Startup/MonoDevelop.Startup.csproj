@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\MonoDevelop.props" />
-  <PropertyGroup>
+    <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AssemblyName>MonoDevelop</AssemblyName>
     <ApplicationIcon>..\..\..\theme-icons\Windows\monodevelop.ico</ApplicationIcon>
     <Commandlineparameters>-no-redirect</Commandlineparameters>
     <OutputPath>..\..\..\build\bin</OutputPath>
-    <TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>    
+    <TargetFramework>netcoreapp3.0</TargetFramework>    
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>    
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>        
     <EnvironmentVariables>
@@ -16,6 +15,8 @@
         <Variable name="MONODEVELOP_LOCALE_PATH" value="../locale" />
       </EnvironmentVariables>
     </EnvironmentVariables>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo> 
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' " />
@@ -25,6 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' " />
   <PropertyGroup Condition="'$(OS)' != 'Unix'">
     <LargeAddressAware>true</LargeAddressAware>
+        <OutputType>Exe</OutputType>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>

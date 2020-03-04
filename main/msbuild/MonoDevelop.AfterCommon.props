@@ -14,7 +14,7 @@
 		for sdk-style projects we can set the value directly.
 		old-style projects need to set it themselves or some IDE stuff breaks.
 		-->
-		<TargetFramework Condition="'$(_IsSdkStyleProject)'=='true'">$(MDTargetFramework)</TargetFramework>
+		
 	</PropertyGroup>
 
 	<!-- set some common AssemblyInfo values so SDK-style projects don't have to set them -->

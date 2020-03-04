@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\MonoDevelop.props" />
   <Import Project="$(ReferencesGtk)" />
   <PropertyGroup>
     <ReferencesVSEditorCopyToOutput>true</ReferencesVSEditorCopyToOutput>
-  </PropertyGroup>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup> 
   <Import Project="$(ReferencesVSEditor)" />
 
   <PropertyGroup>
@@ -18,7 +18,7 @@
     <FullBuildInfo>fullbuildinfo</FullBuildInfo>
     <MonoLauncher Condition=" '$(VisualStudioVersion)' == '' ">mono </MonoLauncher>
     <OutputPath>..\..\..\build\bin\</OutputPath>
-    <TargetFramework>$(MDTargetFrameworkNet5)</TargetFramework>    
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>    
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>    
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>   
@@ -51,9 +51,23 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETSTANDARD;NETSTANDARD2_1</DefineConstants>
+    <DocumentationFile>..\..\..\build\bin\MonoDevelop.Core.xml</DocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugWin32|AnyCPU' ">
+    <OutputPath>..\..\..\teste2\bin\Debug\netcoreapp3.0</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <NoStdLib>true</NoStdLib>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -64,14 +78,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Build">
-      <Private>False</Private>
-      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Build.Framework">
-      <Private>False</Private>
-      <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Framework.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build.Utilities.Core">
       <Private>False</Private>
       <HintPath>$(MSBuildToolsPath)\Microsoft.Build.Utilities.Core.dll</HintPath>
@@ -89,7 +95,9 @@
     <!-- disable this for now, it's absurdly noisy
     <PackageReference Include="ClrHeapAllocationAnalyzer" Version="1.0.0.9" />
     -->
-    <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" PrivateAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Locator" Version="1.1.2" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Build.Framework" Version="16.4.0" ExcludeAssets="runtime" />
     <PackageReference Include="Microsoft.CodeAnalysis.EditorFeatures" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" />
     <!-- <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="$(NuGetVersionRoslyn)" PrivateAssets="runtime" /> -->
     <PackageReference Include="Microsoft.VisualStudio.CodingConventions" Version="1.1.20180503.2" PrivateAssets="runtime" />
@@ -111,12 +119,76 @@
     <!-- update this to a version that doesn't crash -->
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.3.52" ExcludeAssets="all" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0-preview9.19423.4" PrivateAssets="runtime" />
+    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+    <PackageReference Include="System.CodeDom" />
+    <PackageReference Include="Microsoft.Win32.Registry" />    
+    <PackageReference Include="System.ServiceModel.Security" />      
+    <PackageReference Include="System.Runtime" />        
+    <PackageReference Include="System.Diagnostics.Debug" />            
+    <Reference Include="System.Runtime.Remoting">
+    <Private>true</Private>
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\6.4.0\lib\mono\4.0-api\System.Runtime.Remoting.dll</HintPath>
+    </Reference>
+    <Reference Include="monodoc">
+      <HintPath>..\..\..\..\..\..\..\..\Library\Frameworks\Mono.framework\Versions\6.4.0\lib\mono\gac\monodoc\1.0.0.0__0738eb9f132ed756\monodoc.dll</HintPath>
+    </Reference>
+    <PackageReference Include="System.ServiceModel.Primitives" Version="4.7.0" />
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.EditorFeatures.Text">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.EditorFeatures.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Elfie">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Elfie.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.FlowAnalysis.Utilities">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.FlowAnalysis.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Scripting">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.EditorFeatures">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.VisualBasic.EditorFeatures.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Features">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.VisualBasic.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\..\..\build\bin\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="monodoc">
+      <HintPath>..\..\..\..\..\..\mono_everyday\mono\mcs\class\lib\net_4_x-macos\monodoc.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <IncludeCopyLocal Include="Humanizer.dll" />
     <IncludeCopyLocal Include="ICSharpCode.Decompiler.dll" />
     <IncludeCopyLocal Include="ICSharpCode.SharpZipLib.dll" />
-    <IncludeCopyLocal Include="Microsoft.Build.Locator.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.EditorFeatures.dll" />
     <IncludeCopyLocal Include="Microsoft.CodeAnalysis.CSharp.Features.dll" />
