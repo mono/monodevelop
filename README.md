@@ -24,7 +24,7 @@ Compiling
 
 If you are building from Git, make sure that you initialize the submodules
 that are part of this repository by executing:
-`git submodule update --init --recursive`
+`git submodule sync ; git submodule update --init --recursive`
 
 If you are running a parallel mono installation, make sure to run all the following steps
 while having sourced your mono installation script. (source path/to/my-environment-script)
