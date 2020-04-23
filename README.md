@@ -1,7 +1,10 @@
-**MonoDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
+**PLEASE NOTE!**
 
-The MonoDevelop core is also the foundation for Visual Studio for Mac.
-Feel free to file bugs against Visual Studio for Mac here as well.
+This is an effort to get monodevelop open sourced again.
+Currently this repo **DOES NOT CONTAIN COMPILABLE CODE!**
+
+
+**DotDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
 
 See http://www.monodevelop.com for more info.
 
@@ -126,11 +129,5 @@ References
 Discussion, Bugs, Patches
 -------------------------
 
-monodevelop-list@lists.ximian.com *(questions and discussion)*
-
-monodevelop-patches-list@lists.ximian.com *(track commits to MonoDevelop)*
-
-monodevelop-bugs@lists.ximian.com *(track MonoDevelop bugzilla component)*
-
-https://github.com/mono/monodevelop/issues/new *(submit bugs and patches here)*
+https://github.com/dotdevelop/dotdevelop/issues/new *(submit bugs and patches here)*
 
