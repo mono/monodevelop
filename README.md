@@ -6,11 +6,9 @@ Currently this repo **DOES NOT CONTAIN COMPILABLE CODE!**
 
 **DotDevelop** will hopefully a full-featured integrated development environment (IDE) for .dotnet using Gtk#.
 
-See http://www.monodevelop.com for more info.
+**Contributors**
 
-[![Build Status](http://jenkins.mono-project.com/job/test-monodevelop-mainline/badge/icon)](http://jenkins.mono-project.com/job/test-monodevelop-mainline/)
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mono/monodevelop?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+have a look here: http://source.monodevelop.com/
 
 Directory organization
 ----------------------
