@@ -4,7 +4,7 @@ This is an effort to get monodevelop open sourced again.
 Currently this repo **DOES NOT CONTAIN COMPILABLE CODE!**
 
 
-**DotDevelop** is a full-featured integrated development environment (IDE) for mono using Gtk#.
+**DotDevelop** will hopefully a full-featured integrated development environment (IDE) for .dotnet using Gtk#.
 
 See http://www.monodevelop.com for more info.
 
