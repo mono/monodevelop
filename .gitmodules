@@ -42,13 +42,13 @@
 	url = git://github.com/mono/sharpsvn-binary.git
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git://github.com/mono/xwt
-	branch = master
+	url = git://github.com/dotdevelop/xwt
+	branch = dotdevelop
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
 	url = https://github.com/xamarin/Xamarin.PropertyEditing
 	branch = master
 [submodule "main/external/vs-editor-api"]
 	path = main/external/vs-editor-api
-	url = https://github.com/microsoft/vs-editor-api.git
-	branch = master
+	url = https://github.com/dotdevelop/vs-editor-api.git
+	branch = dotdevelop
