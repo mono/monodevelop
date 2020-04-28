@@ -104,6 +104,8 @@ namespace MonoDevelop.Ide.Updater
 
 		static void OpenAddinManagerWindow ()
 		{
+#if DD_Mac_TODO
+
 			if (!IdeApp.Workbench.RootWindow.Visible && WelcomePage.WelcomePageService.WelcomeWindow.nativeWidget is AppKit.NSWindow parentNsWindow) {
 				var dlg = AddinManagerWindow.Create ();
 
@@ -125,7 +127,10 @@ namespace MonoDevelop.Ide.Updater
 				} finally {
 					dlg.Destroy ();
 				}
-			} else {
+			} else 
+#endif
+
+			{
 				AddinManagerWindow.Run (IdeApp.Workbench.RootWindow);
 			}
 		}

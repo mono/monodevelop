@@ -511,7 +511,7 @@ namespace MonoDevelop.Components.Commands
 			bool complete;
 			// KeyboardShortcut[] accels = 
 			KeyBindingManager.AccelsFromKey (e.Event, out complete);
-
+#if DD_Mac_TODO
 			if (currentEvent != null &&
 				currentEvent.Type == AppKit.NSEventType.KeyUp &&
 				firstResponder is AppKit.NSView view &&
@@ -521,7 +521,9 @@ namespace MonoDevelop.Components.Commands
 				SimulateViewKeyActionBehaviour (view, currentEvent);
 				retVal = true;
 			}
-
+#else
+			var retVal = true;
+#endif
 			if (!complete) {
 				// incomplete accel
 				NotifyIncompleteKeyReleased (e.Event);
@@ -1414,17 +1416,17 @@ namespace MonoDevelop.Components.Commands
 		internal bool ShowContextMenu (Xwt.Widget parent, int x, int y, CommandEntrySet entrySet,
 			object initialCommandTarget = null)
 		{
-			#if MAC
+#if MAC
 			var menu = CreateNSMenu (entrySet, initialCommandTarget ?? parent);
 			if (parent.Surface.NativeWidget is AppKit.NSView view)
 				ContextMenuExtensionsMac.ShowContextMenu (view, x, y, menu);
 			else
 				ContextMenuExtensionsMac.ShowContextMenu ((Gtk.Widget)parent.Surface.NativeWidget, x, y, menu);
-			#else
+#else
 			var menu = CreateMenu (entrySet);
 			if (menu != null)
 				ShowContextMenu ((Gtk.Widget)parent.Surface.NativeWidget, x, y, menu, initialCommandTarget);
-			#endif
+#endif
 
 			return true;
 		}
@@ -2259,7 +2261,7 @@ namespace MonoDevelop.Components.Commands
 				cmdTarget = ((ICommandRouter)cmdTarget).GetNextCommandTarget ();
 			else if (cmdTarget is Gtk.Widget)
 				cmdTarget = ((Gtk.Widget)cmdTarget).Parent;
-			#if MAC
+#if MAC
 			else if (cmdTarget is AppKit.NSView) {
 				var v = (AppKit.NSView) cmdTarget;
 				if (v.Superview != null && IsRootGdkQuartzView (v.Superview))
@@ -2269,7 +2271,7 @@ namespace MonoDevelop.Components.Commands
 				else
 					cmdTarget = v.Superview;
 			}
-			#endif
+#endif
 			else
 				cmdTarget = null;
 			
@@ -2353,7 +2355,7 @@ namespace MonoDevelop.Components.Commands
 			Control widget = win;
 			if (win != null) {
 
-				#if MAC
+#if MAC
 				var nw = win.nativeWidget as AppKit.NSWindow;
 				if (nw != null) {
 					var v = nw.FirstResponder as AppKit.NSView;
@@ -2370,14 +2372,14 @@ namespace MonoDevelop.Components.Commands
 						return v;
 					}
 				}
-				#endif
+#endif
 
-				#if WINDOWS
+#if WINDOWS
 				var wpfWidget = GetFocusedWpfWidget();
 				if (wpfWidget != null) {
 					return wpfWidget;
 				}
-				#endif
+#endif
 
 				widget = GetFocusedChild (widget);
 			}
@@ -2424,8 +2426,11 @@ namespace MonoDevelop.Components.Commands
 		Gtk.Widget GetFocusedChild (Control widget)
 		{
 			Gtk.Container container;
+#if DD_Mac_TODO
+
 			if (widget?.nativeWidget is AppKit.NSWindow window)
 				widget = Mac.GtkMacInterop.GetGtkWindow (window)?.Child;
+#endif
 			do {
 				container = widget?.nativeWidget is Gtk.Container ? widget.GetNativeWidget<Gtk.Container> () : null;
 				if (container != null) {
@@ -2470,7 +2475,7 @@ namespace MonoDevelop.Components.Commands
 				return IsEmbeddedNSView (view.Superview);
 			return false;
 		}
-		#endif
+#endif
 
 		bool UpdateStatus ()
 		{

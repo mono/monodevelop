@@ -253,14 +253,20 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			foreach (Components.Window window in IdeApp.CommandService.TopLevelWindowStack) {
-#if !WINDOWS
+#if !WINDOWS 
+
 				//we don't want include hidden windows
-				if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
+				if (!window.IsRealized || !window.IsVisible
+#if DD_Mac_TODO
+
+				|| Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window)
+#endif
+						)
 					continue;
 #endif
 
-				//Create CommandInfo object
-				var commandInfo = new CommandInfo ();
+					//Create CommandInfo object
+					var commandInfo = new CommandInfo ();
 				commandInfo.Text = window.Title.Replace ("_", "__").Replace ("-", "\u2013").Replace (" \u2013 " + BrandingService.ApplicationName, "");
 
 				if (string.IsNullOrEmpty (commandInfo.Text)) {
