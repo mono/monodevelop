@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{BD432AE0-B262-4F63-A695-7B86D11B644F}</ProjectGuid>
     <!-- this is loaded by MSBuild, so framework should match MSBuild -->
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkVersion Condition="'$(VisualStudioVersion)'=='16.0'">v4.7.2</TargetFrameworkVersion>
     <MSBuild_OSS_BinDir Condition="'$(OS)' == 'Windows_NT'">$(MSBuildToolsPath)\</MSBuild_OSS_BinDir>
     <!-- when building with xbuild on Unix, $(MSBuildToolsPath) is like `$prefix/lib/mono/xbuild/*/bin`
