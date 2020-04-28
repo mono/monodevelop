@@ -1,0 +1,77 @@
+<Project>
+
+  <PropertyGroup>
+    <ReferencesVSEditorCopyToOutput Condition="$(ReferencesVSEditorCopyToOutput) == ''">false</ReferencesVSEditorCopyToOutput>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">runtime</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorPrivateAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">none</ReferencesVSEditorPrivateAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) == 'true'">none</ReferencesVSEditorExcludeAssets>
+    <ReferencesVSEditorExcludeAssets Condition="$(ReferencesVSEditorCopyToOutput) != 'true'">runtime</ReferencesVSEditorExcludeAssets>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(ReferencesVSEditorCopyToOutput)' == 'true' ">
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.CoreUtilityImplementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Data.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Cocoa.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.ToolTip.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Cocoa.View.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Language.StandardClassification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.BufferUndoManager.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Commanding.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorOperations.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.EditorPrimitives.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.TextAndAdornmentSequencer.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.Classification.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.PatternMatching.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Outlining.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.MultiCaret.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Model.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Logic.Utilities.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Implementation.StandaloneUndo.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Formatting.RtfBuilderService.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.EditorOptions.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Differencing.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.BraceCompletion.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Tagging.Aggregator.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Navigation.NavigationProviders.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Find.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.LookUp.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Logic.Text.Classification.Aggregator.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.Wpf.GlyphMargin.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.Structure.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.Text.UI.Cocoa.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.AdornmentLibrary.VisibleWhitespace.Implementation.dll" />
+    <IncludeCopyLocal Include="Microsoft.VisualStudio.UI.Text.CurrentLineHighlighter.Implementation.dll" />
+  </ItemGroup>
+
+  <Import Project="$(VSEditorApiDirectory)build\Environment.props" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Def.projitems" />
+  <Import Project="$(VSEditorApiDirectory)src\OpenSource.Impl.projitems" />
+
+  <!-- MSBuild doesn't copy the FPF references as they match BCL assembly names -->
+  <Target Name="CopyFPFAssemblies" AfterTargets="_CopyFilesMarkedCopyLocal" Condition="'$(ReferencesVSEditorCopyToOutput)'=='true'">
+    <PropertyGroup>
+      <FPFConfiguration>Release</FPFConfiguration>
+      <FPFConfiguration Condition="$(Configuration.Contains('Debug'))">Debug</FPFConfiguration>
+      <FPFOutputPath>$(VSEditorApiDirectory)bin\FPF\$(FPFConfiguration)\net472\</FPFOutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+      <FPFOutputFiles Include="$(FPFOutputPath)PresentationCore.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)PresentationFramework.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationClient.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationProvider.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)UIAutomationTypes.*" />
+      <FPFOutputFiles Include="$(FPFOutputPath)WindowsBase.*" />
+      <FileWrites Include="@(FPFOutputFiles)" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(FPFOutputFiles)"
+      DestinationFolder="$(OutputPath)"
+      SkipUnchangedFiles="true" />
+  </Target>
+</Project>
