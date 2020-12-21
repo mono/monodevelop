@@ -173,7 +173,7 @@ namespace MonoDevelop.Platform
 			ProcessWrapper proc = new ProcessWrapper ();
 			if (terminal_command.Contains ("gnome-terminal")) {
 				var parameter = String.Format ("--app-id {0}", GenerateAppId (consoleGuid));
-				var terminalProcessStartInfo = new ProcessStartInfo ("/usr/lib/gnome-terminal/gnome-terminal-server", parameter) {
+				var terminalProcessStartInfo = new ProcessStartInfo ("/usr/libexec/gnome-terminal-server", parameter) {
 					CreateNoWindow = true,
 					UseShellExecute = false,
 				};
