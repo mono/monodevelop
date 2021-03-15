@@ -166,9 +166,8 @@ bash pause on exit trick
 				appleScript = string.Format ("tell app \"{0}\" to do script \"bash -c '{1}'; exit\"", TERMINAL_APP, Escape (sb.ToString ()));
 			}
 			var ret = AppleScript.Run (appleScript);
-			int i = ret.IndexOf ("of", StringComparison.Ordinal);
-			tabId = ret.Substring (0, i -1);
-			windowId = ret.Substring (i + 3);
+			tabId = $"tab {ret ["indx"]}";
+			windowId = $"window id {ret ["ID  "]}";
 
 			//rename tab and give it focus
 			sb.Clear ();
@@ -207,11 +206,6 @@ end tell", TERMINAL_APP, windowId);
 			} catch (AppleScriptException) {
 				//it may already have closed
 			}
-		}
-
-		static bool TabExists (string tabId, string windowId)
-		{
-			return AppleScript.Run ("tell app \"{0}\" to get exists of {1} of {2}", TERMINAL_APP, tabId, windowId) == "true";
 		}
 
 		#endregion
