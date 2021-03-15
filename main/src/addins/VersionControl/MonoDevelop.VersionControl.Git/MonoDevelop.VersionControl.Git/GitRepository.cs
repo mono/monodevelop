@@ -1509,12 +1509,13 @@ namespace MonoDevelop.VersionControl.Git
 
 			var repo = (GitRepository)changeSet.Repository;
 			var addedFiles = await GetAddedLocalPathItems (changeSet, monitor.CancellationToken).ConfigureAwait (false);
+			var stagedFilesNotInChangeset = await GetStagedFilesNotInChangeset (changeSet, monitor.CancellationToken);
 
 			await RunBlockingOperationAsync ((token) => {
 				try {
 					// Unstage added files not included in the changeSet
-					if (addedFiles.Any ())
-						LibGit2Sharp.Commands.Unstage (RootRepository, addedFiles.ToPathStrings ());
+					if (stagedFilesNotInChangeset.Any ())
+						LibGit2Sharp.Commands.Unstage (RootRepository, stagedFilesNotInChangeset.ToPathStrings ());
 				} catch (Exception ex) {
 					LoggingService.LogInternalError ("Failed to commit.", ex);
 					return;
@@ -1534,8 +1535,8 @@ namespace MonoDevelop.VersionControl.Git
 					LoggingService.LogInternalError ("Failed to commit.", ex);
 				} finally {
 					// Always at the end, stage again the unstage added files not included in the changeSet
-					if (addedFiles.Any ())
-						LibGit2Sharp.Commands.Stage (RootRepository, addedFiles.ToPathStrings ());
+					if (stagedFilesNotInChangeset.Any ())
+						LibGit2Sharp.Commands.Stage (RootRepository, stagedFilesNotInChangeset.ToPathStrings ());
 				}
 			}, cancellationToken: monitor.CancellationToken).ConfigureAwait (false);
 		}
@@ -1556,6 +1557,26 @@ namespace MonoDevelop.VersionControl.Git
 				LoggingService.LogInternalError ("Could not get added VersionInfo items.", ex);
 			}
 			return addedLocalPathItems;
+		}
+
+		async Task<HashSet<FilePath>> GetStagedFilesNotInChangeset (ChangeSet changeSet, CancellationToken cancellationToken)
+		{
+			var result = new HashSet<FilePath> ();
+			var includedFiles = new HashSet<FilePath> (changeSet.Items.Select (i => i.LocalPath));
+			try {
+				var directoryVersionInfo = await GetDirectoryVersionInfoAsync (changeSet.BaseLocalPath, false, true, cancellationToken);
+				const VersionStatus sheduledMask = VersionStatus.ScheduledAdd | VersionStatus.ScheduledDelete | VersionStatus.ScheduledReplace;
+
+				foreach (var item in directoryVersionInfo) {
+					if ((item.Status & sheduledMask) == 0)
+						continue;
+					if (!includedFiles.Contains (item.LocalPath))
+						result.Add (item.LocalPath);
+				}
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Could not get added VersionInfo items.", ex);
+			}
+			return result;
 		}
 
 		public bool IsUserInfoDefault ()
@@ -2425,6 +2446,15 @@ namespace MonoDevelop.VersionControl.Git
 				File.WriteAllText (RootPath + Path.DirectorySeparatorChar + ".gitignore", sb.ToString ());
 				LibGit2Sharp.Commands.Stage (RootRepository, ".gitignore");
 			}, cancellationToken).ConfigureAwait (false);
+		}
+
+		public override VersionStatus GetVirtualStatusViewStatus (VersionInfo versionInfo, bool includedInCommit)
+		{
+			if (versionInfo == null)
+				throw new ArgumentNullException (nameof (versionInfo));
+			if (includedInCommit && versionInfo.Status == VersionStatus.Unversioned)
+				return VersionStatus.ScheduledAdd | VersionStatus.Versioned;
+			return versionInfo.Status;
 		}
 	}
 

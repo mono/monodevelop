@@ -606,32 +606,33 @@ namespace MonoDevelop.VersionControl.Views
 			}
 		}
 
-		TreeIter AppendFileInfo (VersionInfo n, bool expanded)
+		TreeIter AppendFileInfo (VersionInfo info, bool expanded)
 		{
-			Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus(n.Status);
-			string lstatus = VersionControlService.GetStatusLabel (n.Status);
+			Xwt.Drawing.Image statusicon = VersionControlService.LoadIconForStatus (info.Status);
+			string lstatus = VersionControlService.GetStatusLabel (info.Status);
 
-			Xwt.Drawing.Image rstatusicon = VersionControlService.LoadIconForStatus(n.RemoteStatus);
-			string rstatus = VersionControlService.GetStatusLabel (n.RemoteStatus);
+			Xwt.Drawing.Image rstatusicon = VersionControlService.LoadIconForStatus(info.RemoteStatus);
+			string rstatus = VersionControlService.GetStatusLabel (info.RemoteStatus);
 
-			string scolor = n.HasLocalChanges && n.HasRemoteChanges ? "red" : null;
+			string scolor = info.HasLocalChanges && info.HasRemoteChanges ? "red" : null;
 
-			string localpath = n.LocalPath.ToRelative (filepath);
+			string localpath = info.LocalPath.ToRelative (filepath);
 			if (localpath.Length > 0 && localpath[0] == Path.DirectorySeparatorChar) localpath = localpath.Substring(1);
 			if (localpath == "") { localpath = "."; } // not sure if this happens
 
-			bool hasComment = GetCommitMessage (n.LocalPath).Length > 0;
-			bool commit = changeSet.ContainsFile (n.LocalPath);
+			bool hasComment = GetCommitMessage (info.LocalPath).Length > 0;
+			bool commit = changeSet.ContainsFile (info.LocalPath);
 
 			Xwt.Drawing.Image fileIcon;
-			if (n.IsDirectory)
+			if (info.IsDirectory)
 				fileIcon = ImageService.GetIcon (MonoDevelop.Ide.Gui.Stock.ClosedFolder, Gtk.IconSize.Menu);
 			else
-				fileIcon = IdeServices.DesktopService.GetIconForFile (n.LocalPath, Gtk.IconSize.Menu);
-
-			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, n.LocalPath.ToString (), true, hasComment, fileIcon, n.HasLocalChanges, rstatusicon, scolor, n.HasRemoteChange (VersionStatus.Modified));
-			if (!n.IsDirectory)
-				filestore.AppendValues (it, statusicon, "", new string[0], "", false, true, n.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
+				fileIcon = IdeServices.DesktopService.GetIconForFile (info.LocalPath, Gtk.IconSize.Menu);
+			if (info.Status == VersionStatus.Unversioned)
+				commit = false;
+			TreeIter it = filestore.AppendValues (statusicon, lstatus, GLib.Markup.EscapeText (localpath).Split ('\n'), rstatus, commit, false, info.LocalPath.ToString (), true, hasComment, fileIcon, info.HasLocalChanges || info.Status == VersionStatus.Unversioned, rstatusicon, scolor, info.HasRemoteChange (VersionStatus.Modified));
+			if (!info.IsDirectory)
+				filestore.AppendValues (it, statusicon, "", Array.Empty<string> (), "", false, true, info.LocalPath.ToString (), false, false, fileIcon, false, null, null, false);
 			if (expanded)
 				filelist.ExpandRow (filestore.GetPath (it), open_all: false);
 
@@ -755,15 +756,23 @@ namespace MonoDevelop.VersionControl.Views
 		void ToggleCommitStatus(TreeIter pos)
 		{
 			string localpath = (string) filestore.GetValue (pos, ColFullPath);
+			var vi = GetVersionInfo (localpath);
 
 			if (changeSet.ContainsFile (localpath)) {
 				changeSet.RemoveFile (localpath);
 			} else {
-				VersionInfo vi = GetVersionInfo (localpath);
 				if (vi != null)
 					changeSet.AddFile (vi);
 			}
-			filestore.SetValue (pos, ColCommit, changeSet.ContainsFile (localpath));
+			var containsFile = changeSet.ContainsFile (localpath);
+			if (vi != null) {
+				var virtualStatus = vc.GetVirtualStatusViewStatus (vi, containsFile);
+				var statusicon = VersionControlService.LoadIconForStatus (virtualStatus);
+				filestore.SetValue (pos, ColIcon, statusicon);
+				var lstatus = VersionControlService.GetStatusLabel (virtualStatus);
+				filestore.SetValue (pos, ColStatus, lstatus);
+			}
+			filestore.SetValue (pos, ColCommit, containsFile);
 			UpdateSelectionStatus ();
 		}
 
@@ -1104,15 +1113,12 @@ namespace MonoDevelop.VersionControl.Views
 
 		static bool FileVisible (VersionInfo vinfo)
 		{
-			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges);
+			return vinfo != null && (vinfo.HasLocalChanges || vinfo.HasRemoteChanges || vinfo.Status == VersionStatus.Unversioned && vinfo.CanAdd) ;
 		}
 
 		List<DiffData> GetDiffData (bool remote)
 		{
-			if (remote)
-				return remoteDiff;
-			else
-				return localDiff;
+			return remote ? remoteDiff : localDiff;
 		}
 
 		void FillDiffInfo (TreeIter iter, string file, List<DiffData> ddata)
