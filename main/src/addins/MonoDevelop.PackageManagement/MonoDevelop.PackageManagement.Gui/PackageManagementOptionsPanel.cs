@@ -27,24 +27,73 @@
 //
 
 using MonoDevelop.Components;
+using MonoDevelop.Core;
 using MonoDevelop.Ide.Gui.Dialogs;
+using Xwt;
 
 namespace MonoDevelop.PackageManagement.Gui
 {
-	internal class PackageManagementOptionsPanel : OptionsPanel
+	class PackageManagementOptionsPanel : OptionsPanel
 	{
-		PackageManagementOptionsViewModel optionsViewModel;
+		readonly PackageManagementOptionsViewModel optionsViewModel = new PackageManagementOptionsViewModel ();
 
-		public override Control CreatePanelWidget()
+		public override Control CreatePanelWidget ()
 		{
-			optionsViewModel = new PackageManagementOptionsViewModel ();
-			return new PackageManagementOptionsWidget (optionsViewModel);
+			var vbox = new VBox { Spacing = 12 };
+
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Restore") + "</b>" });
+
+			var restoreOnOpenCheck = new CheckBox {
+				Label = GettextCatalog.GetString ("_Automatically restore packages when opening a solution."),
+				MarginLeft = 12,
+				Active = optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled
+			};
+			restoreOnOpenCheck.Toggled += (sender, _) => {
+				optionsViewModel.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = ((CheckBox)sender).Active;
+			};
+			vbox.PackStart (restoreOnOpenCheck);
+
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Updates") + "</b>" });
+
+			var checkUpdatesOnOpenCheck = new CheckBox {
+				Label = GettextCatalog.GetString ("Check for package _updates when opening a solution."),
+				MarginLeft = 12,
+				Active = optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled
+			};
+			checkUpdatesOnOpenCheck.Toggled += (sender, _) => {
+				optionsViewModel.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = ((CheckBox)sender).Active;
+			};
+			vbox.PackStart (checkUpdatesOnOpenCheck);
+
+			vbox.PackStart (new Label { Markup = "<b>" + GettextCatalog.GetString ("Package Management") + "</b>" });
+
+			//FIXME: XWT doesn't allow mnemonics for labels
+			var defaultFormatLabel = new Label ("Default package management format:");
+			var defaultFormatCombo = new ComboBox {
+				TooltipText = GettextCatalog.GetString (
+				"The default format used for adding NuGet references to projects. " +
+				"PackageReference stores NuGet package references directly in the project file, and requires Visual Studio 2017 or later. " +
+				"packages.config is a legacy format that stores references in a separate file, and is backwards compatible with older versions of Visual Studio.")
+			};
+			defaultFormatCombo.Accessible.LabelWidget = defaultFormatLabel;
+			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackageReference, GettextCatalog.GetString ("PackageReference"));
+			defaultFormatCombo.Items.Add (PackageReferenceFormat.PackagesConfig, GettextCatalog.GetString ("packages.config"));
+			defaultFormatCombo.SelectedItem = optionsViewModel.DefaultPackageReferenceFormat;
+			defaultFormatCombo.SelectionChanged += (sender, _) => {
+				optionsViewModel.DefaultPackageReferenceFormat = (PackageReferenceFormat) ((ComboBox)sender).SelectedItem;
+			};
+
+			var defaultFormatBox = new HBox { MarginLeft = 12 };
+			defaultFormatBox.PackStart (defaultFormatLabel, false);
+			defaultFormatCombo.MarginLeft = 6;
+			defaultFormatBox.PackStart (defaultFormatCombo, false);
+
+			vbox.PackStart (defaultFormatBox);
+
+			return new XwtControl (vbox);
 		}
 		
-		public override void ApplyChanges()
-		{
-			optionsViewModel.SaveOptions ();
-		}
+		public override void ApplyChanges() => optionsViewModel.SaveOptions ();
 	}
 }
 

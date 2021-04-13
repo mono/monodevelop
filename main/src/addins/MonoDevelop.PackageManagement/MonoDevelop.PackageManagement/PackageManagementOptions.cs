@@ -1,4 +1,4 @@
-﻿// 
+// 
 // PackageManagementOptions.cs
 // 
 // Author:
@@ -34,6 +34,7 @@ namespace MonoDevelop.PackageManagement
 	{
 		const string AutomaticPackageRestoreOnOpeningSolutionPropertyName = "AutomaticPackageRestoreOnOpeningSolution";
 		const string CheckUpdatedPackagesOnOpeningSolutionPropertyName = "CheckUpdatedPackagesOnOpeningSolution";
+		const string DefaultPackageReferenceFormatPropertyName = "DefaultPackageReferenceFormat";
 
 		Properties properties;
 
@@ -48,13 +49,24 @@ namespace MonoDevelop.PackageManagement
 		}
 
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled {
-			get { return properties.Get(AutomaticPackageRestoreOnOpeningSolutionPropertyName, true); }
-			set { properties.Set(AutomaticPackageRestoreOnOpeningSolutionPropertyName, value); }
+			get => properties.Get(AutomaticPackageRestoreOnOpeningSolutionPropertyName, true);
+			set => properties.Set(AutomaticPackageRestoreOnOpeningSolutionPropertyName, value);
 		}
 
 		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled {
-			get { return properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true); }
-			set { properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value); }
+			get => properties.Get(CheckUpdatedPackagesOnOpeningSolutionPropertyName, true);
+			set => properties.Set(CheckUpdatedPackagesOnOpeningSolutionPropertyName, value);
 		}
+
+		public PackageReferenceFormat DefaultPackageReferenceFormat {
+			get => properties.Get (DefaultPackageReferenceFormatPropertyName, PackageReferenceFormat.PackageReference);
+			set => properties.Set (DefaultPackageReferenceFormatPropertyName, value);
+		}
+	}
+
+	enum PackageReferenceFormat
+	{
+		PackageReference,
+		PackagesConfig,
 	}
 }
