@@ -27,6 +27,9 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using NuGet.PackageManagement.UI;
 
 namespace MonoDevelop.PackageManagement
 {
@@ -53,6 +56,10 @@ namespace MonoDevelop.PackageManagement
 
 		public Uri IconUrl {
 			get { return packageLicense.IconUrl; }
+		}
+
+		public IReadOnlyList<IText> LicenseLinks {
+			get { return packageLicense.LicenseLinks; }
 		}
 	}
 }
