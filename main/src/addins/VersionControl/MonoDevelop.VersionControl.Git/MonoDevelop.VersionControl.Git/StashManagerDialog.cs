@@ -29,38 +29,44 @@ using MonoDevelop.Components;
 using MonoDevelop.Ide;
 using LibGit2Sharp;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	partial class StashManagerDialog : Gtk.Dialog
 	{
-		readonly GitRepository repository;
-		readonly ListStore store;
-		readonly StashCollection stashes;
+		GitRepository repository;
+		ListStore store;
+		StashCollection stashes;
 
-		public StashManagerDialog (GitRepository repo)
+		public StashManagerDialog ()
 		{
 			this.Build ();
 			this.UseNativeContextMenus ();
+		}
+
+		public async Task InitializeAsync(GitRepository repo, CancellationToken cancellationToken = default)
+		{
 			repository = repo;
+			stashes = await repo.GetStashesAsync (cancellationToken);
 
-			stashes = repo.GetStashes ();
+			await Runtime.RunInMainThread (delegate {
+				store = new ListStore (typeof (Stash), typeof (string), typeof (string));
+				list.Model = store;
+				list.SearchColumn = -1; // disable the interactive search
 
-			store = new ListStore (typeof(Stash), typeof(string), typeof(string));
-			list.Model = store;
-			list.SearchColumn = -1; // disable the interactive search
-
-			list.AppendColumn (GettextCatalog.GetString ("Date/Time"), new CellRendererText (), "text", 1);
-			list.AppendColumn (GettextCatalog.GetString ("Comment"), new CellRendererText (), "text", 2);
-			Fill ();
-			TreeIter it;
-			if (store.GetIterFirst (out it))
-				list.Selection.SelectIter (it);
-			UpdateButtons ();
-
-			list.Selection.Changed += delegate {
+				list.AppendColumn (GettextCatalog.GetString ("Date/Time"), new CellRendererText (), "text", 1);
+				list.AppendColumn (GettextCatalog.GetString ("Comment"), new CellRendererText (), "text", 2);
+				Fill ();
+				TreeIter it;
+				if (store.GetIterFirst (out it))
+					list.Selection.SelectIter (it);
 				UpdateButtons ();
-			};
+
+				list.Selection.Changed += delegate {
+					UpdateButtons ();
+				};
+			});
 		}
 
 		void Fill ()

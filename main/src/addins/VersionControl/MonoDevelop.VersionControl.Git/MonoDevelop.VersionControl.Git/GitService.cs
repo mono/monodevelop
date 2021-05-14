@@ -122,12 +122,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 		}
 
-		public static void ShowStashManager (GitRepository repo)
-		{
-			using (var dlg = new StashManagerDialog (repo))
-				MessageService.ShowCustomDialog (dlg);
-		}
-
 		public static async Task<bool> SwitchToBranchAsync (GitRepository repo, string branch)
 		{
 			var monitor = new MessageDialogProgressMonitor (true, false, false, true);
