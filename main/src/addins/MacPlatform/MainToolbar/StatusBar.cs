@@ -243,7 +243,12 @@ namespace MonoDevelop.MacIntegration.MainToolbar
 
 		public override void MouseDown (NSEvent theEvent)
 		{
-			IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ().BringToFront ();
+			try {
+				IdeApp.Workbench.GetPad<MonoDevelop.Ide.Gui.Pads.ErrorListPad> ()
+				.BringToFront ();
+			} catch (Exception ex) {
+				LoggingService.LogInternalError (ex);
+			}
 		}
 
 		string INSAccessibilityStaticText.AccessibilityValue {
