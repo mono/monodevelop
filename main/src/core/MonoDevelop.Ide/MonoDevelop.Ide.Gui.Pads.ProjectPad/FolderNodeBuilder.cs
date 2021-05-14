@@ -84,13 +84,9 @@ namespace MonoDevelop.Ide.Gui.Pads.ProjectPad
 			files = new List<ProjectFile> ();
 			folders = new List<string> ();
 			
-			foreach (ProjectFile file in project.Files)
-			{
+			foreach (ProjectFile file in project.GetVisibleFiles (IdeApp.Workspace.ActiveConfiguration)) {
 				string dir;
 
-				if (!file.Visible || file.Flags.HasFlag (ProjectItemFlags.Hidden))
-					continue;
-				
 				if (file.Subtype != Subtype.Directory) {
 					// If file depends on something other than a directory, continue
 					if ((file.DependsOnFile != null && file.DependsOnFile.Subtype != Subtype.Directory) || FileNestingService.HasParent (file))
