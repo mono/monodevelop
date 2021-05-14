@@ -121,6 +121,8 @@ namespace MonoDevelop.Ide.Gui
 		{
 			var taskSource = new TaskCompletionSource<T> ();
 			var regCancel = cancellationToken.Register (() => taskSource.TrySetCanceled ());
+			disposeTokenSource?.Token.Register (() => taskSource.TrySetCanceled ());
+
 			var regContent = RunWhenContentAdded<T> (c => {
 				taskSource.TrySetResult (c);
 			});
@@ -637,9 +639,14 @@ namespace MonoDevelop.Ide.Gui
 			Close ().Ignore ();
 		}
 
+		CancellationTokenSource disposeTokenSource = new CancellationTokenSource ();
+
 		void Dispose ()
 		{
 			DocumentRegistry.Remove (this);
+			disposeTokenSource?.Cancel ();
+			disposeTokenSource?.Dispose ();
+			disposeTokenSource = null;
 			callbackRegistration?.Dispose ();
 			var workspace = Runtime.PeekService<RootWorkspace> ();
 			if (workspace != null)
@@ -655,7 +662,10 @@ namespace MonoDevelop.Ide.Gui
 			window.CloseRequested -= Window_CloseRequested;
 			window = null;
 
+			contentCallbackRegistry?.Dispose ();
 			contentCallbackRegistry = null;
+
+			contentActiveViewCallbackRegistry?.Dispose ();
 			contentActiveViewCallbackRegistry = null;
 		}
 		#region document tasks
