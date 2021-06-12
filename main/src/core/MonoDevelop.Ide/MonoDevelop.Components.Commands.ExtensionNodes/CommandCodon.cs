@@ -72,6 +72,12 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 		[NodeAttribute("defaultHandler", "Class that handles this command. This property is optional.")]
 		string defaultHandler;
 
+		[NodeAttribute("noshellEnabled", "Makes the button enabled or not in shell")]
+		bool noshellEnabled = true;
+
+		[NodeAttribute ("noshellVisible", "Makes the button visible or not in shell")]
+		bool noshellVisible = true;
+
 		#pragma warning restore 649
 
 		public override object CreateInstance ()
@@ -150,6 +156,9 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			
 			cmd.Id = ParseCommandId (this);
 			cmd.Text = StringParserService.Parse (BrandingService.BrandApplicationName (label));
+			cmd.NoShellEnabled = noshellEnabled;
+			cmd.NoShellVisible = noshellVisible;
+
 			if (!String.IsNullOrWhiteSpace(_displayName))
 				cmd.DisplayName = StringParserService.Parse (BrandingService.BrandApplicationName (_displayName));
 			if ((_description != null) && (_description.Length > 0)){
@@ -174,9 +183,17 @@ namespace MonoDevelop.Components.Commands.ExtensionNodes
 			
 			// Assign the category of the command
 			CommandCategoryCodon cat = Parent as CommandCategoryCodon;
-			if (cat != null)
+			if (cat != null) {
 				cmd.Category = cat.Name;
-			
+
+				//category noshell properties fall into children when are enabled
+				if (!cat.NoShellEnabled) {
+					cmd.NoShellEnabled = false;
+				}
+				if (!cat.NoShellVisible) {
+					cmd.NoShellVisible = false;
+				}
+			}
 			return cmd;
 		}
 

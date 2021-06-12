@@ -47,11 +47,29 @@ namespace MonoDevelop.Components.Commands
 		internal void InternalUpdate (CommandInfo info)
 		{
 			Update (info);
+
+			if (Ide.IdeApp.Workbench.Visible)
+				return;
+
+			if (!info.NoShellEnabled)
+				info.Enabled = false;
+			if (!info.NoShellVisible)
+				info.Visible = false;
 		}
 	
 		internal void InternalUpdate (CommandArrayInfo info)
 		{
 			Update (info);
+
+			if (Ide.IdeApp.Workbench.Visible)
+				return;
+
+			foreach (var item in info) {
+				if (!item.NoShellEnabled || !(info.ParentCommandInfo?.NoShellEnabled ?? true))
+					item.Enabled = false;
+				if (!item.NoShellVisible || !(info.ParentCommandInfo?.NoShellVisible ?? true))
+					item.Visible = false;
+			}
 		}
 
 		/// <summary>

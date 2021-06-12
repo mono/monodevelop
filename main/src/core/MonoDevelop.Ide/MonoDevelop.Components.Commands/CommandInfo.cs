@@ -144,6 +144,9 @@ namespace MonoDevelop.Components.Commands
 			}
 		}
 
+		public bool NoShellEnabled { get; set; } = true;
+		public bool NoShellVisible { get; set; } = true;
+
 		/// <summary>
 		/// Disables the button in case of Shell locked
 		/// </summary>
