@@ -70,11 +70,11 @@ namespace MonoDevelop.Projects.MSBuild
 		/// Schedules this builder for disposal. The builder will be disposed after the provided time.
 		/// If disposal is cancelled, a TaskCancelledException will be thrown.
 		/// </summary>
-		internal async Task ScheduleForDisposal (int waitTime)
+		internal Task ScheduleForDisposal (int waitTime)
 		{
 			CancelScheduledDisposal ();
 			disposalCancelSource = new CancellationTokenSource ();
-			await Task.Delay (waitTime, disposalCancelSource.Token);
+			return Task.Delay (waitTime, disposalCancelSource.Token);
 		}
 
 		/// <summary>
@@ -109,48 +109,101 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <summary>
 		/// Gets or creates a project builder for the provided project
 		/// </summary>
-		/// <returns>The remote project builder.</returns>
+		/// <returns>The remote project builder, or null if for some reason the builder could not be created</returns>
 		/// <param name="projectFile">Project to build.</param>
-		public Task<RemoteProjectBuilder> GetRemoteProjectBuilder (string projectFile, bool addReference)
+		public Task<RemoteProjectBuilder> GetOrCreateRemoteProjectBuilder (string projectFile)
 		{
-			lock (remoteProjectBuilders) {
-				if (remoteProjectBuilders.TryGetValue (projectFile, out var builder)) {
-					if (addReference && builder.IsCompleted) {
-						if (builder.Result.AddReference ())
-							return builder;
-						else // Project builder is shutting down
-							remoteProjectBuilders.Remove (projectFile);
-					} else if (addReference) {
-						builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
-						return builder;
-					} else
-						return builder;
-				}
-
-				builder = CreateRemoteProjectBuilder (projectFile);
-				remoteProjectBuilders.Add (projectFile, builder);
-				if (addReference)
-					builder.ContinueWith (t => AddProjectBuilderReference (t.Result), TaskContinuationOptions.NotOnFaulted);
-				return builder;
-			}
+			return InternalGetRemoteProjectBuilder (projectFile, true);
 		}
 
-		void AddProjectBuilderReference (RemoteProjectBuilder remoteBuilder)
+		/// <summary>
+		/// Gets a project builder for the provided project
+		/// </summary>
+		/// <returns>The remote project builder, or null if the builder has been shut down</returns>
+		/// <param name="projectFile">Project to build.</param>
+		public Task<RemoteProjectBuilder> GetRemoteProjectBuilder (string projectFile)
 		{
-			if (!remoteBuilder.AddReference ())
-				RemoveBuilder (remoteBuilder);
+			return InternalGetRemoteProjectBuilder (projectFile, false);
+		}
+
+		readonly Task<RemoteProjectBuilder> nullRemoteBuilderTask = Task.FromResult<RemoteProjectBuilder> (null);
+
+		/// <summary>
+		/// Gets or creates a project builder for the provided project
+		/// </summary>
+		/// <returns>The remote project builder.</returns>
+		/// <param name="projectFile">Project to build.</param>
+		Task<RemoteProjectBuilder> InternalGetRemoteProjectBuilder (string projectFile, bool create)
+		{
+			if (IsShuttingDown)
+				return nullRemoteBuilderTask;
+
+			Task<RemoteProjectBuilder> currentBuilderTask;
+
+			lock (remoteProjectBuilders) {
+				if (remoteProjectBuilders.TryGetValue (projectFile, out currentBuilderTask)) {
+					if (currentBuilderTask.IsCompleted) {
+						var reusableBuilder = currentBuilderTask.Result;
+						if (reusableBuilder != null && reusableBuilder.AddReference ())
+							return currentBuilderTask;
+						else {
+							// Project builder is shutting down. Remove it from the reusable list and start a new one if requested
+							remoteProjectBuilders.Remove (projectFile);
+							currentBuilderTask = null;
+						}
+					}
+				}
+				if (currentBuilderTask == null) {
+					if (!create)
+						return nullRemoteBuilderTask;
+					currentBuilderTask = CreateRemoteProjectBuilder (projectFile);
+					remoteProjectBuilders.Add (projectFile, currentBuilderTask);
+				} else {
+					currentBuilderTask = currentBuilderTask.ContinueWith (t => {
+						var b = t.Result;
+						if (b == null || !b.AddReference ())
+							return null;
+
+						return b;
+					}, TaskScheduler.Default);
+				}
+			}
+
+			return GetBuilderFromTaskOrRecurse (currentBuilderTask, projectFile, create);
+		}
+
+		async Task<RemoteProjectBuilder> GetBuilderFromTaskOrRecurse (Task<RemoteProjectBuilder> currentBuilderTask, string projectFile, bool create)
+		{
+			var builder = await currentBuilderTask.ConfigureAwait (false);
+			if (builder != null) {
+				// The new builder already has a reference, either when created or added when the task is finished.
+				return builder;
+			}
+
+			// The builder was shutdown. Try again.
+			return await InternalGetRemoteProjectBuilder (projectFile, create).ConfigureAwait (false);
 		}
 
 		async Task<RemoteProjectBuilder> CreateRemoteProjectBuilder (string projectFile)
 		{
-			var pid = await LoadProject (projectFile).ConfigureAwait (false);
-			var pb = new RemoteProjectBuilder (projectFile, pid, this, connection);
+			try {
+				var pid = await LoadProject (projectFile).ConfigureAwait (false);
+				var pb = new RemoteProjectBuilder (projectFile, pid, this, connection);
 
-			// Unlikely, but it may happen
-			if (IsShuttingDown)
-				pb.Shutdown ();
-			
-			return pb;
+				// Unlikely, but it may happen
+				if (IsShuttingDown) {
+					pb.Shutdown ();
+					return null;
+				}
+
+				if (!pb.AddReference ())
+					return null;
+
+				return pb;
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Failed to create remote builder", ex);
+				return null;
+			}
 		}
 
 		async Task<int> LoadProject (string projectFile)
@@ -159,7 +212,7 @@ namespace MonoDevelop.Projects.MSBuild
 				var pid = (await connection.SendMessage (new LoadProjectRequest { ProjectFile = projectFile }).ConfigureAwait (false)).ProjectId;
 				return pid;
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -173,7 +226,7 @@ namespace MonoDevelop.Projects.MSBuild
 			} catch (Exception ex) {
 				if (alive)
 					LoggingService.LogError ("Project unloading failed", ex);
-				if (!await CheckDisconnected ())
+				if (!await CheckDisconnected ().ConfigureAwait (false))
 					throw;
 			}
 		}
@@ -199,7 +252,7 @@ namespace MonoDevelop.Projects.MSBuild
 					return;
 				IsShuttingDown = true;
 				foreach (var pb in remoteProjectBuilders.Values)
-					pb.ContinueWith (t => t.Result.Shutdown (), TaskContinuationOptions.NotOnFaulted);
+					pb.ContinueWith (t => t.Result?.Shutdown (), TaskContinuationOptions.NotOnFaulted);
 			}
 		}
 
@@ -216,9 +269,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task CancelTask (int taskId)
 		{
 			try {
-				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId });
+				await connection.SendMessage (new CancelTaskRequest { TaskId = taskId }).ConfigureAwait (false);
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -229,9 +282,9 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task SetGlobalProperties (Dictionary<string, string> properties)
 		{
 			try {
-				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties });
+				await connection.SendMessage (new SetGlobalPropertiesRequest { Properties = properties }).ConfigureAwait (false);
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -250,7 +303,7 @@ namespace MonoDevelop.Projects.MSBuild
 					EnabledLogEvents = logger != null ? logger.EnabledEvents : MSBuildEvent.None,
 					Verbosity = verbosity,
 					Configurations = configurations
-				});
+				}).ConfigureAwait (false);
 
 				monitor.LogObject (new BuildSessionStartedEvent {
 					SessionId = buildSessionLoggerId,
@@ -259,7 +312,7 @@ namespace MonoDevelop.Projects.MSBuild
 				});
 			} catch {
 				UnregisterLogger (buildSessionLoggerId);
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			}
 		}
@@ -271,15 +324,15 @@ namespace MonoDevelop.Projects.MSBuild
 		public async Task EndBuildOperation (ProgressMonitor monitor)
 		{
 			try {
-				await connection.SendMessage (new EndBuildRequest ());
-				await connection.ProcessPendingMessages ();
+				await connection.SendMessage (new EndBuildRequest ()).ConfigureAwait (false);
+				await connection.ProcessPendingMessages ().ConfigureAwait (false);
 
 				monitor.LogObject (new BuildSessionFinishedEvent {
 					SessionId = buildSessionLoggerId,
 					TimeStamp = DateTime.Now
 				});
 			} catch {
-				await CheckDisconnected ();
+				await CheckDisconnected ().ConfigureAwait (false);
 				throw;
 			} finally {
 				UnregisterLogger (buildSessionLoggerId);
@@ -293,7 +346,7 @@ namespace MonoDevelop.Projects.MSBuild
 		/// <returns>The ping.</returns>
 		public async Task Ping ()
 		{
-			await connection.SendMessage (new PingRequest ());
+			await connection.SendMessage (new PingRequest ()).ConfigureAwait (false);
 		}
 
 		async Task<bool> CheckAlive ()
@@ -301,7 +354,7 @@ namespace MonoDevelop.Projects.MSBuild
 			if (!alive)
 				return false;
 			try {
-				await Ping ();
+				await Ping ().ConfigureAwait (false);
 				return true;
 			} catch {
 				alive = false;
@@ -311,9 +364,9 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal async Task<bool> CheckDisconnected ()
 		{
-			if (!await CheckAlive ()) {
+			if (!await CheckAlive ().ConfigureAwait (false)) {
 				foreach (AsyncEventHandler d in Disconnected.GetInvocationList ())
-					await d (this, EventArgs.Empty);
+					await d (this, EventArgs.Empty).ConfigureAwait (false);
 				return true;
 			}
 			return false;
