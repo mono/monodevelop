@@ -42,9 +42,8 @@ There are two variables you can set when running `configure`:
 
 * The build profile: `--profile=profile-name`
 
-  * `stable`: builds the MonoDevelop core and some stable extra add-ins.
-  * `core`: builds the MonoDevelop core only.
-  * `all`: builds everything
+  * `gnome`: builds for Linux
+  * `windows`: builds for Windows
   * `mac`: builds for Mac OS X
 
 **PS:** You can also create your own profile by adding a file to the profiles directory containing a list of the directories to build.
