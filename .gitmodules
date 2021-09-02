@@ -1,48 +1,48 @@
 [submodule "main/external/debugger-libs"]
 	path = main/external/debugger-libs
-	url = git://github.com/mono/debugger-libs.git
+	url = https://github.com/mono/debugger-libs.git
 	branch = master
 [submodule "main/external/guiunit"]
 	path = main/external/guiunit
-	url = git://github.com/mono/guiunit.git
+	url = https://github.com/mono/guiunit.git
 [submodule "main/external/libgit-binary"]
 	path = main/external/libgit-binary
-	url = git://github.com/mono/libgit-binary.git
+	url = https://github.com/mono/libgit-binary.git
 	branch = vs-8.0-v0.26.8
 [submodule "main/external/libgit2"]
 	path = main/external/libgit2
-	url = git://github.com/mono/libgit2.git
+	url = https://github.com/mono/libgit2.git
 	branch = vs-8.0-v0.26.8
 [submodule "main/external/libgit2sharp"]
 	path = main/external/libgit2sharp
-	url = git://github.com/mono/libgit2sharp.git
+	url = https://github.com/mono/libgit2sharp.git
 	branch = vs-8.0-v0.26
 [submodule "main/external/macdoc"]
 	path = main/external/macdoc
-	url = git://github.com/xamarin/macdoc
+	url = https://github.com/xamarin/macdoc
 [submodule "main/external/mdtestharness"]
 	path = main/external/mdtestharness
-	url = git://github.com/mono/mdtestharness.git
+	url = https://github.com/mono/mdtestharness.git
 [submodule "main/external/mono-addins"]
 	path = main/external/mono-addins
-	url = git://github.com/mono/mono-addins.git
+	url = https://github.com/mono/mono-addins.git
 	branch = master
 [submodule "main/external/mono-tools"]
 	path = main/external/mono-tools
-	url = git://github.com/mono/mono-tools.git
+	url = https://github.com/mono/mono-tools.git
 [submodule "main/external/nrefactory"]
 	path = main/external/nrefactory
-	url = git://github.com/xamarin/NRefactory.git
+	url = https://github.com/xamarin/NRefactory.git
 [submodule "main/external/nuget-binary"]
 	path = main/external/nuget-binary
-	url = git://github.com/mono/nuget-binary.git
+	url = https://github.com/mono/nuget-binary.git
 	branch = master
 [submodule "main/external/sharpsvn-binary"]
 	path = main/external/sharpsvn-binary
-	url = git://github.com/mono/sharpsvn-binary.git
+	url = https://github.com/mono/sharpsvn-binary.git
 [submodule "main/external/xwt"]
 	path = main/external/xwt
-	url = git://github.com/mono/xwt
+	url = https://github.com/mono/xwt
 	branch = master
 [submodule "main/external/Xamarin.PropertyEditing"]
 	path = main/external/Xamarin.PropertyEditing
