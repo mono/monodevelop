@@ -172,4 +172,13 @@
     <binding command="Pad|MonoDevelop.Ide.Gui.Pads.TaskListPad" shortcut="Control+\|Control+T Control+W|T" />
     <binding command="Pad|OutputPad-MonoDevelop.Ide.ApplicationOutput-0" shortcut="Control+Alt+O Control+W|O" />
     <binding command="Pad|ProjectPad" shortcut="Control+Alt+L Control+W|S" />
+
+	<binding command="Xamarin.AndroidDesigner.AndroidPlatformCommands.ZoomFull" shortcut = "Control+Alt+." />
+	<binding command="Xamarin.AndroidDesigner.AndroidPlatformCommands.ShowGrid" shortcut = "Control+Alt+Shift+G" />
+	<binding command="Xamarin.AndroidDesigner.AndroidPlatformCommands.SetFocusToToolbar" shortcut = "Control+Shift+;" />
+	<binding command="Xamarin.AndroidDesigner.AndroidPlatformCommands.SetFocusToZoomBar" shortcut = "Control+Shift+'" />
+	<binding command="Xamarin.AndroidDesigner.AndroidPlatformCommands.SetFocusToSideBar" shortcut = "Control+Shift+\" />
+	<binding command="Xamarin.Designer.Forms.Preview.FormsPlatformCommands.ZoomFull" shortcut = "Control+Alt+."  />
+	<binding command="Xamarin.Designer.Forms.Preview.FormsPlatformCommands.SetFocusToToolbar" shortcut = "Control+Shift+;"  />
+	<binding command="Xamarin.Designer.Forms.Preview.FormsPlatformCommands.SetFocusToZoomBar" shortcut = "Control+Shift+'"  />
 </scheme>
