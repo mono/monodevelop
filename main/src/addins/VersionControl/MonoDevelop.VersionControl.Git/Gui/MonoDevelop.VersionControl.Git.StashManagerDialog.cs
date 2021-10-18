@@ -131,7 +131,6 @@ namespace MonoDevelop.VersionControl.Git
 			}
 			this.DefaultWidth = 575;
 			this.DefaultHeight = 367;
-			this.Show ();
 			this.buttonApplyRemove.Clicked += new global::System.EventHandler (this.OnButtonApplyRemoveClicked);
 			this.buttonApply.Clicked += new global::System.EventHandler (this.OnButtonApplyClicked);
 			this.buttonBranch.Clicked += new global::System.EventHandler (this.OnButtonBranchClicked);
