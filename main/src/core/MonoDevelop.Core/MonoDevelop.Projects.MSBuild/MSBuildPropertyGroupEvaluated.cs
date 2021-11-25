@@ -25,14 +25,14 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using System.Linq;
 using MonoDevelop.Core;
 
 namespace MonoDevelop.Projects.MSBuild
 {
 	class MSBuildPropertyGroupEvaluated: MSBuildNode, IMSBuildPropertyGroupEvaluated, IMSBuildProjectObject
 	{
-		protected Dictionary<string,IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
+		protected Dictionary<string, IMSBuildPropertyEvaluated> properties = new Dictionary<string, IMSBuildPropertyEvaluated> (StringComparer.OrdinalIgnoreCase);
 		MSBuildEngine engine;
 
 		internal MSBuildPropertyGroupEvaluated (MSBuildProject parent)
@@ -42,30 +42,41 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void Sync (MSBuildEngine engine, object item, bool clearProperties = true)
 		{
-			if (clearProperties)
-				properties.Clear ();
+			if (clearProperties) {
+				lock (properties) {
+					properties.Clear ();
+				}
+			}
 			this.engine = engine;
 			foreach (var propName in engine.GetItemMetadataNames (item)) {
 				var prop = new MSBuildPropertyEvaluated (ParentProject, propName, engine.GetItemMetadata (item, propName), engine.GetEvaluatedItemMetadata (item, propName));
-				properties [propName] = prop;
+				lock (properties) {
+					properties [propName] = prop;
+				}
 			}
 		}
 
 		public bool HasProperty (string name)
 		{
-			return properties.ContainsKey (name);
+			lock (properties) {
+				return properties.ContainsKey (name);
+			}
 		}
 
 		public IMSBuildPropertyEvaluated GetProperty (string name)
 		{
 			IMSBuildPropertyEvaluated prop;
-			properties.TryGetValue (name, out prop);
+			lock (properties) {
+				properties.TryGetValue (name, out prop);
+			}
 			return prop;
 		}
 
 		internal void SetProperty (string key, IMSBuildPropertyEvaluated value)
 		{
-			properties [key] = value;
+			lock (properties) {
+				properties [key] = value;
+			}
 		}
 
 		internal void SetProperties (Dictionary<string,IMSBuildPropertyEvaluated> properties)
@@ -75,12 +86,16 @@ namespace MonoDevelop.Projects.MSBuild
 
 		public IEnumerable<IMSBuildPropertyEvaluated> GetProperties ()
 		{
-			return properties.Values;
+			lock (properties) {
+				return properties.Values.ToArray ();
+			}
 		}
 
 		internal bool RemoveProperty (string name)
 		{
-			return properties.Remove (name);
+			lock (properties) {
+				return properties.Remove (name);
+			}
 		}
 
 		public string GetValue (string name, string defaultValue = null)
@@ -152,11 +167,15 @@ namespace MonoDevelop.Projects.MSBuild
 
 		internal void SyncCollection (MSBuildEngine e, object project)
 		{
-			properties.Clear ();
+			lock (properties) {
+				properties.Clear ();
+			}
 			foreach (var p in e.GetEvaluatedProperties (project)) {
 				string name, value, finalValue; bool definedMultipleTimes;
 				e.GetPropertyInfo (p, out name, out value, out finalValue, out definedMultipleTimes);
-				properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue, definedMultipleTimes);
+				lock (properties) {
+					properties [name] = new MSBuildPropertyEvaluated (ParentProject, name, value, finalValue, definedMultipleTimes);
+				}
 			}
 		}
 
@@ -243,7 +262,9 @@ namespace MonoDevelop.Projects.MSBuild
 		{
 			var p = new MSBuildPropertyEvaluated (ParentProject, name, null, null);
 			p.IsNew = true;
-			properties [name] = p;
+			lock (properties) {
+				properties [name] = p;
+			}
 			return p;
 		}
 
@@ -280,13 +301,19 @@ namespace MonoDevelop.Projects.MSBuild
 				//    that property group property.
 				if (ep.IsNew || !prop.IsNew) {
 					ep.IsNew = false;
-					properties.Remove (ep.Name);
+					lock (properties) {
+						properties.Remove (ep.Name);
+					}
 				}
 			}
 		}
 
 		public IEnumerable<IMSBuildPropertyEvaluated> Properties {
-			get { return properties.Values; }
+			get {
+				lock (properties) {
+					return properties.Values.ToArray ();
+				}
+			}
 		}
 	}
 

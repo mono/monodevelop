@@ -38,6 +38,7 @@ using MonoDevelop.Core.Serialization;
 using MonoDevelop.Projects;
 using System.Threading.Tasks;
 using MonoDevelop.Projects.MSBuild;
+using MonoDevelop.Projects.MSBuild.Conditions;
 using System.Xml;
 using MonoDevelop.Core.Instrumentation;
 using MonoDevelop.Core.Assemblies;
@@ -1214,6 +1215,36 @@ namespace MonoDevelop.Projects
 		public bool IsFileInProject (string fileName)
 		{
 			return files.GetFile (fileName) != null;
+		}
+
+		/// <summary>
+		/// Return non-hidden files based on the configuration.
+		/// </summary>
+		/// <param name="configuration">Configuration.</param>
+		/// <returns>Files that should be displayed in the Solution window for a project.</returns>
+		public IEnumerable<ProjectFile> GetVisibleFiles (ConfigurationSelector configuration)
+		{
+			MSBuildEvaluationContext ctx = null;
+
+			foreach (ProjectFile file in Files) {
+				if (!file.Visible || file.IsHidden) {
+					continue;
+				} else if (string.IsNullOrEmpty (file.Condition)) {
+					yield return file;
+					continue;
+				}
+
+				if (ctx == null) {
+					ctx = new MSBuildEvaluationContext ();
+					ctx.InitEvaluation (MSBuildProject);
+					var config = (ProjectConfiguration)GetConfiguration (configuration);
+					foreach (var prop in config.Properties.GetProperties ())
+						ctx.SetPropertyValue (prop.Name, prop.Value);
+				}
+
+				if (ConditionParser.ParseAndEvaluate (file.Condition, ctx))
+					yield return file;
+			}
 		}
 
 		/// <summary>
