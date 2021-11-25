@@ -49,7 +49,10 @@ namespace MonoDevelop.Components.Commands
 		bool disabledVisible;
 		internal string AccelPath;
 		internal object HandlerData; // Used internally when dispatching the command
-		
+
+		public bool NoShellEnabled { get; set; } = true;
+		public bool NoShellVisible { get; set; } = true;
+
 		public Command ()
 		{
 		}
