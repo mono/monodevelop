@@ -28,9 +28,11 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MonoDevelop.Core;
 using MonoDevelop.Ide;
+using NuGet.PackageManagement.UI;
 using Xwt;
 
 namespace MonoDevelop.PackageManagement
@@ -46,7 +48,6 @@ namespace MonoDevelop.PackageManagement
 		public LicenseAcceptanceDialog (LicenseAcceptanceViewModel viewModel)
 		{
 			Height = 350;
-			Resizable = false;
 			Padding = 0;
 			Title = GettextCatalog.GetString ("License Acceptance");
 			this.viewModel = viewModel;
@@ -126,21 +127,20 @@ namespace MonoDevelop.PackageManagement
 
 		void AddPackage (PackageLicenseViewModel package)
 		{
+			var label = new Label {
+				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
+			};
 			var titleBox = new VBox ();
 			titleBox.Spacing = 0;
 			titleBox.MarginBottom = 4;
-			titleBox.PackStart (new Label {
-				Markup = string.Format ("<span weight='bold'>{0}</span> – {1}", package.Id, package.Author),
-			});
-			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
-			licenseLabel.Uri = package.LicenseUrl;
-			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
-			titleBox.PackStart (licenseLabel);
+			titleBox.PackStart (label);
+			AddLicenseInfo (package, titleBox);
 
 			var rowBox = new HBox ();
 			rowBox.Margin = rowMargin;
 
 			var icon = new ImageView (ImageService.GetIcon ("md-package", Gtk.IconSize.Dnd));
+			icon.Accessible.LabelWidget = label;
 
 			if (package.IconUrl != null && !string.IsNullOrEmpty (package.IconUrl.AbsoluteUri))
 				imageLoader.LoadFrom (package.IconUrl, icon);
@@ -149,6 +149,108 @@ namespace MonoDevelop.PackageManagement
 			rowBox.PackStart (titleBox, true);
 
 			packagesList.PackStart (rowBox);
+		}
+
+		static void AddLicenseInfo (PackageLicenseViewModel package, VBox parentVBox)
+		{
+			if (package.LicenseLinks.Any ()) {
+				if (package.LicenseLinks.Count == 1) {
+					IText textLink = package.LicenseLinks [0];
+					if (textLink is LicenseText licenseText) {
+						AddLicenseLinkLabel (licenseText.Link, licenseText.Text, parentVBox);
+						return;
+					} else if (textLink is LicenseFileText licenseFileText) {
+						AddFileLicenseLinkLabel (licenseFileText, parentVBox);
+						return;
+					} else {
+						// Warning or free text fallback to showing an expression which will handle this.
+					}
+				}
+				AddLicenseExpressionLabel (package, parentVBox);
+			} else {
+				AddLicenseLinkLabel (package.LicenseUrl, GettextCatalog.GetString ("View License"), parentVBox);
+			}
+		}
+
+		static void AddLicenseExpressionLabel (PackageLicenseViewModel package, VBox parentVBox)
+		{
+			// Using the HBox as an accessibility group since the license will have multiple parts.
+			// Cannot use a single label with markup for the license expression since it is not accessible,
+			// also when using the native toolkit the hyperlinks cannot be clicked.
+			var hbox = new HBox ();
+			hbox.Spacing = 0;
+			hbox.Accessible.Role = Xwt.Accessibility.Role.Group;
+			hbox.Accessible.Label = GettextCatalog.GetString ("License Expression");
+
+			// Get any warnings.
+			List<WarningText> warnings = null;
+			foreach (IText textLink in package.LicenseLinks) {
+				if (textLink is WarningText warning) {
+					warnings ??= new List<WarningText> ();
+					warnings.Add (warning);
+				}
+			}
+
+			if (warnings?.Any () == true) {
+				var warningTextBuilder = StringBuilderCache.Allocate ();
+				foreach (WarningText warning in warnings) {
+					warningTextBuilder.Append (warning.Text);
+					warningTextBuilder.Append (' ');
+				}
+
+				var warningWidget = new MonoDevelop.Components.InformationPopoverWidget ();
+				warningWidget.Severity = Ide.Tasks.TaskSeverity.Warning;
+				warningWidget.Message = StringBuilderCache.ReturnAndFree (warningTextBuilder).TrimEnd ();
+				warningWidget.MarginRight = 6;
+
+				// Disable focus. With focus enabled the info popup ends up being displayed and focused
+				// if it is the first package license on opening the dialog. Unable to set focus to a
+				// dialog button.
+				warningWidget.CanGetFocus = false;
+
+				hbox.PackStart (warningWidget);
+			}
+
+			foreach (IText textLink in package.LicenseLinks) {
+				if (textLink is LicenseText licenseText) {
+					var label = new LinkLabel (licenseText.Text);
+					label.TextAlignment = Alignment.Start;
+					label.Uri = licenseText.Link;
+					label.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+					hbox.PackStart (label, false, false);
+				} else if (textLink is WarningText warning) {
+					// Ignore.
+				} else if (textLink is LicenseFileText licenseFileText) {
+					// Should not happen. A license expression should not contain a license file.
+					LoggingService.LogError ("Unexpected LicenseFileText when building licence expression {0}", licenseFileText.Text);
+				} else {
+					var label = new Label (textLink.Text);
+					label.TextAlignment = Alignment.Start;
+					hbox.PackStart (label, false, false);
+				}
+			}
+
+			parentVBox.PackStart (hbox, false, false);
+		}
+
+		static void AddFileLicenseLinkLabel (LicenseFileText licenseFileText, VBox parentVBox)
+		{
+			var licenseLabel = new LinkLabel (GettextCatalog.GetString ("View License"));
+			licenseLabel.Uri = licenseFileText.CreateLicenseFileUri ();
+			licenseLabel.Tag = licenseFileText;
+			licenseLabel.NavigateToUrl += (sender, e) => {
+				e.SetHandled ();
+				ShowFileDialog ((LinkLabel)sender);
+			};
+			parentVBox.PackStart (licenseLabel);
+		}
+
+		static void AddLicenseLinkLabel (Uri licenseUrl, string labelText, VBox parentVBox)
+		{
+			var licenseLabel = new LinkLabel (labelText);
+			licenseLabel.Uri = licenseUrl;
+			licenseLabel.LinkClicked += (sender, e) => IdeServices.DesktopService.ShowUrl (e.Target.AbsoluteUri);
+			parentVBox.PackStart (licenseLabel);
 		}
 
 		public new bool Run (WindowFrame parentWindow)
@@ -161,6 +263,16 @@ namespace MonoDevelop.PackageManagement
 			if (disposing)
 				imageLoader.Dispose ();
 			base.Dispose (disposing);
+		}
+
+		static void ShowFileDialog (LinkLabel label)
+		{
+			var licenseFileText = (LicenseFileText)label.Tag;
+			Xwt.Toolkit.NativeEngine.Invoke (delegate {
+				using (var dialog = new LicenseFileDialog (licenseFileText)) {
+					dialog.Run (label.ParentWindow);
+				}
+			});
 		}
 	}
 }

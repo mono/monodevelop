@@ -47,6 +47,7 @@ namespace MonoDevelop.PackageManagement
 		PackageItemListViewModel viewModel;
 		PackageDetailControlModel packageDetailModel;
 		PackageDependencyMetadata[] dependencies;
+		IReadOnlyList<IText> licenseLinks;
 		string summary;
 		bool isChecked;
 
@@ -383,6 +384,7 @@ namespace MonoDevelop.PackageManagement
 					if (metadata != null) {
 						viewModel.Published = metadata.Published;
 						dependencies = GetCompatibleDependencies ().ToArray ();
+						licenseLinks = PackageLicenseUtilities.GenerateLicenseLinks (metadata);
 						OnPropertyChanged ("Dependencies");
 					}
 				}
@@ -466,6 +468,16 @@ namespace MonoDevelop.PackageManagement
 		public string GetCurrentPackageVersionAdditionalText ()
 		{
 			return parent.GetCurrentPackageVersionAdditionalText (Id);
+		}
+
+		public bool HasLicenseMetadata {
+			get { return packageDetailModel?.PackageMetadata?.LicenseMetadata != null; }
+		}
+
+		public IReadOnlyList<IText> GetLicenseLinks ()
+		{
+			licenseLinks ??= new List<IText> ();
+			return licenseLinks;
 		}
 	}
 }
