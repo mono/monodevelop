@@ -127,7 +127,7 @@ namespace MonoDevelop.Ide.Desktop
 				LoggingService.LogError ("Failed to add item to recent files list.", e);
 			}
 		}
-		
+
 		public override void NotifyFileRemoved (string fileName)
 		{
 			try {
@@ -212,6 +212,32 @@ namespace MonoDevelop.Ide.Desktop
 				string.Format ("{0} [{1}]", Path.GetFileName (fileName), projectName) 
 				: Path.GetFileName (fileName);
 			AddFile (fileName, displayName);
+		}
+
+		public void ReorderFavoriteProject (FilePath from, FilePath to)
+		{
+			try {
+				if (!favoriteFiles.Any ())
+					return;
+
+				int fromIndex = favoriteFiles.IndexOf (from);
+
+				if (fromIndex < 0)
+					throw new ArgumentException ("The project is not on the list.", nameof (from));
+
+				int toIndex = favoriteFiles.IndexOf (to);
+
+				if (toIndex < 0)
+					throw new ArgumentException ("The project is not on the list.", nameof (to));
+
+				favoriteFiles.RemoveAt (fromIndex);
+				favoriteFiles.Insert (toIndex, from);
+
+				PropertyService.Set (FavoritesConfigKey, favoriteFiles);
+				PropertyService.SaveProperties ();
+			} catch (Exception e) {
+				LoggingService.LogInternalError ("Failed to reorder favorite item from recent files list.", e);
+			}
 		}
 
 		internal void SetFavoriteFile (FilePath file, bool favorite)
