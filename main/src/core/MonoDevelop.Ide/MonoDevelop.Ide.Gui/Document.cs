@@ -130,16 +130,22 @@ namespace MonoDevelop.Ide.Gui
 
 		public T GetContent<T> (bool forActiveView) where T : class
 		{
+			if (IsDisposed)
+				return null;
 			return (T)GetContent (forActiveView, typeof (T));
 		}
 
 		public T GetContent<T> () where T : class
 		{
+			if (IsDisposed)
+				return null;
 			return GetContent<T> (false);
 		}
 
 		public IEnumerable<T> GetContents<T> (bool forActiveView) where T : class
 		{
+			if (IsDisposed)
+				return Enumerable.Empty<T> ();
 			if (forActiveView)
 				return view.GetActiveControllerHierarchy ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
 			return GetControllersForContentCheck ().Select (controller => controller.GetContents<T> ()).SelectMany (c => c);
@@ -147,6 +153,8 @@ namespace MonoDevelop.Ide.Gui
 
 		public IEnumerable<T> GetContents<T> () where T : class
 		{
+			if (IsDisposed)
+				return Enumerable.Empty<T> ();
 			return GetContents<T> (false);
 		}
 
@@ -637,8 +645,11 @@ namespace MonoDevelop.Ide.Gui
 			Close ().Ignore ();
 		}
 
+		public bool IsDisposed { get; private set; }
+
 		void Dispose ()
 		{
+			IsDisposed = true;
 			DocumentRegistry.Remove (this);
 			callbackRegistration?.Dispose ();
 			var workspace = Runtime.PeekService<RootWorkspace> ();
