@@ -29,11 +29,22 @@ using LibGit2Sharp;
 using MonoDevelop.Ide.Projects;
 using MonoDevelop.Ide.Templates;
 using MonoDevelop.Core;
+using System;
 
 namespace MonoDevelop.VersionControl.Git
 {
 	public class ProjectTemplateHandler : IVersionControlProjectTemplateHandler
 	{
+		public bool CanCreateRepository (FilePath filePath)
+		{
+			try {
+				return String.IsNullOrEmpty (LibGit2Sharp.Repository.Discover (filePath.ResolveLinks ()));
+			} catch (Exception ex) {
+				LoggingService.LogInternalError ("Discovering Git repository failed", ex);
+				return false;
+			}
+		}
+
 		public void Run (NewProjectConfiguration config)
 		{
 			if (config.UseGit) {
