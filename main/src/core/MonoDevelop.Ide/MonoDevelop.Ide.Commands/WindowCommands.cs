@@ -253,26 +253,39 @@ namespace MonoDevelop.Ide.Commands
 		protected override void Update (CommandArrayInfo info)
 		{
 			foreach (Components.Window window in IdeApp.CommandService.TopLevelWindowStack) {
+
+				string title = null;
+				bool hasTopLevel = false;
+
+				try {
+					title = window.Title;
+					hasTopLevel = window.HasTopLevelFocus;
 #if !WINDOWS
-				//we don't want include hidden windows
-				if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
-					continue;
+					//we don't want include hidden windows
+					if (!window.IsRealized || !window.IsVisible || Components.Mac.GtkMacInterop.IsGdkQuartzWindow (window))
+						continue;
 #endif
+				} catch (System.Exception ex) {
+					LoggingService.LogInternalError (ex);
+					//we log the issue
+					continue;
+				}
+
 
 				//Create CommandInfo object
 				var commandInfo = new CommandInfo ();
-				commandInfo.Text = window.Title.Replace ("_", "__").Replace ("-", "\u2013").Replace (" \u2013 " + BrandingService.ApplicationName, "");
+				commandInfo.Text = title.Replace ("_", "__").Replace ("-", "\u2013").Replace (" \u2013 " + BrandingService.ApplicationName, "");
 
 				if (string.IsNullOrEmpty (commandInfo.Text)) {
 					commandInfo.Text = GettextCatalog.GetString ("No description");
 				}
 
-				if (window.HasTopLevelFocus) 
+				if (hasTopLevel) 
 					commandInfo.Checked = true;
 				commandInfo.Description = GettextCatalog.GetString ("Activate window '{0}'", commandInfo.Text);
 
 				//Add menu item
-				info.Add (commandInfo, window.Title);
+				info.Add (commandInfo, title);
 			}
 		}
 

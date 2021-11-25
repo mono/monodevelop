@@ -97,6 +97,7 @@ namespace MonoDevelop.Components.Commands
 
 #if MAC
 		Foundation.NSObject keyMonitor;
+		Foundation.NSObject closeWindowMonitor;
 		uint throttleLastEventTime = 0;
 #endif
 
@@ -124,6 +125,12 @@ namespace MonoDevelop.Components.Commands
 			ActionCommand c = new ActionCommand (CommandSystemCommands.ToolbarList, "Toolbar List", null, null, ActionType.Check);
 			c.CommandArray = true;
 			RegisterCommand (c);
+
+			closeWindowMonitor = Foundation.NSNotificationCenter.DefaultCenter.AddObserver (AppKit.NSWindow.WillCloseNotification, (s) => {
+				if (topLevelWindows.Any (h => h.nativeWidget == s.Object)) {
+					TopLevelDestroyed (s.Object, EventArgs.Empty);
+				}
+			});
 		}
 
 		/// <summary>
@@ -869,13 +876,18 @@ namespace MonoDevelop.Components.Commands
 		{
 			RegisterUserInteraction ();
 
-			Gtk.Window w = (Gtk.Window)o;
-			w.Destroyed -= TopLevelDestroyed;
-			w.KeyPressEvent -= OnKeyPressed;
-			w.KeyReleaseEvent -= OnKeyReleased;
-			w.ButtonPressEvent -= HandleButtonPressEvent;
-			topLevelWindows.Remove (w);
+			if (o is Gtk.Window w) {
+				w.Destroyed -= TopLevelDestroyed;
+				w.KeyPressEvent -= OnKeyPressed;
+				w.KeyReleaseEvent -= OnKeyReleased;
+				w.ButtonPressEvent -= HandleButtonPressEvent;
+				topLevelWindows.Remove (w);
+			}
 #if MAC
+			else if (o is AppKit.NSWindow nsWindow) {
+				topLevelWindows.Remove (nsWindow);
+			}
+
 			if (topLevelWindows.Count == 0) {
 				if (keyMonitor != null) {
 					AppKit.NSEvent.RemoveMonitor (keyMonitor);
@@ -884,7 +896,7 @@ namespace MonoDevelop.Components.Commands
 			}
 #endif
 
-			if (w == lastFocused?.nativeWidget)
+			if (o == lastFocused?.nativeWidget)
 				lastFocused = null;
 		}
 		
@@ -897,6 +909,11 @@ namespace MonoDevelop.Components.Commands
 			if (keyMonitor != null) {
 				AppKit.NSEvent.RemoveMonitor (keyMonitor);
 				keyMonitor = null;
+			}
+
+			if (closeWindowMonitor != null) {
+				AppKit.NSEvent.RemoveMonitor (closeWindowMonitor);
+				closeWindowMonitor = null;
 			}
 #endif
 
