@@ -151,21 +151,34 @@ namespace MonoDevelop.Projects.MSBuild
 			CheckShutDown ();
 
 			RemoteBuildEngine engine;
+
 			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
 				// Get a builder with the provided requirements
-				engine = await GetBuildEngine (runtime, minToolsVersion, solutionFile, "", buildSessionId, setBusy, allowBusy);
+				engine = await GetBuildEngine (runtime, minToolsVersion, solutionFile, "", buildSessionId, setBusy, allowBusy).ConfigureAwait (false);
 
 				// Add a reference to make sure the engine is alive while the builder is being used.
 				// This reference will be freed when ReleaseReference() is invoked on the builder.
-				engine.ReferenceCount++;
-				try {
-					return new RemoteProjectBuilderProxy (await engine.GetRemoteProjectBuilder (projectFile, true), setBusy);
-				} catch {
-					// Something went wrong, release the above engine reference, since it won't be possible to free it through the builder
-					ReleaseProjectBuilderNoLock (engine).Ignore ();
-					throw;
-				}
+				ReferenceProjectBuilderNoLock (engine);
 			}
+
+			// Get the project builder outside the buildersLock.
+			RemoteProjectBuilder builder;
+			try {
+				builder = await engine.GetOrCreateRemoteProjectBuilder (projectFile).ConfigureAwait (false);
+			} catch {
+				await ReleaseProjectBuilder (engine).ConfigureAwait (false);
+				throw;
+			}
+
+			if (builder == null) {
+				await ReleaseProjectBuilder (engine).ConfigureAwait (false);
+				if (engine.IsShuttingDown) {
+					// The engine was shut down. Try again, using a new engine.
+					return await GetRemoteProjectBuilder (projectFile, solutionFile, runtime, minToolsVersion, buildSessionId, setBusy, allowBusy).ConfigureAwait (false);
+				}
+				return null;
+			}
+			return new RemoteProjectBuilderProxy (builder, setBusy);
 		}
 
 		/// <summary>
@@ -275,7 +288,7 @@ namespace MonoDevelop.Projects.MSBuild
 					builder.SetBusy ();
 				if (buildSessionId != null) {
 					var si = (SessionInfo)buildSessionId;
-					await builder.BeginBuildOperation (si.Monitor, si.Logger, si.Verbosity, si.Configurations);
+					await builder.BeginBuildOperation (si.Monitor, si.Logger, si.Verbosity, si.Configurations).ConfigureAwait (false);
 				}
 				return builder;
 			});
@@ -294,13 +307,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public static async Task UnloadProject (string projectFile)
 		{
-			List<RemoteBuildEngine> projectBuilders;
-			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
-				if (shutDown) return;
-				projectBuilders = builders.GetAllBuilders ().Where (b => b.IsProjectLoaded (projectFile)).ToList ();
+			foreach (var remoteBuilder in await GetActiveBuilders (projectFile).ConfigureAwait (false)) {
+				try {
+					remoteBuilder.Shutdown ();
+				} finally {
+					remoteBuilder.ReleaseReference ();
+				}
 			}
-			foreach (var b in projectBuilders)
-				(await b.GetRemoteProjectBuilder (projectFile, false)).Shutdown ();
 		}
 
 		/// <summary>
@@ -320,13 +333,13 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public static async Task RefreshProject (string projectFile)
 		{
-			List<RemoteBuildEngine> projectBuilders;
-			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
-				if (shutDown) return;
-				projectBuilders = builders.GetAllBuilders ().Where (b => b.IsProjectLoaded (projectFile)).ToList ();
+			foreach (var remoteBuilder in await GetActiveBuilders (projectFile).ConfigureAwait (false)) {
+				try {
+					await remoteBuilder.Refresh ().ConfigureAwait (false);
+				} finally {
+					remoteBuilder.ReleaseReference ();
+				}
 			}
-			foreach (var b in projectBuilders)
-				await (await b.GetRemoteProjectBuilder (projectFile, false)).Refresh ();
 		}
 
 		/// <summary>
@@ -334,13 +347,38 @@ namespace MonoDevelop.Projects.MSBuild
 		/// </summary>
 		public static async Task RefreshProjectWithContent (string projectFile, string projectContent)
 		{
-			List<RemoteBuildEngine> projectBuilders;
-			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
-				if (shutDown) return;
-				projectBuilders = builders.GetAllBuilders ().Where (b => b.IsProjectLoaded (projectFile)).ToList ();
+			foreach (var remoteBuilder in await GetActiveBuilders (projectFile).ConfigureAwait (false)) {
+				try {
+					await remoteBuilder.RefreshWithContent (projectContent).ConfigureAwait (false);
+				} finally {
+					remoteBuilder.ReleaseReference ();
+				}
 			}
-			foreach (var b in projectBuilders)
-				await (await b.GetRemoteProjectBuilder (projectFile, false)).RefreshWithContent (projectContent);
+		}
+
+		static async Task<List<RemoteProjectBuilder>> GetActiveBuilders (string projectFile)
+		{
+			var result = new List<RemoteProjectBuilder> ();
+			List<RemoteBuildEngine> engines;
+
+			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
+				if (shutDown) return result;
+
+				engines = builders.GetAllBuilders ().Where (b => b.IsProjectLoaded (projectFile)).ToList ();
+
+				// Add a reference to each engine to make sure the engine is alive while the builder is being used.
+				// This reference will be freed when ReleaseReference() is invoked on the builder.
+				foreach (var engine in engines)
+					ReferenceProjectBuilderNoLock (engine);
+			}
+			foreach (var engine in engines) {
+				var b = await engine.GetRemoteProjectBuilder (projectFile).ConfigureAwait (false);
+				if (b != null)
+					result.Add (b);
+				else
+					await ReleaseProjectBuilder (engine).ConfigureAwait (false);
+			}
+			return result;
 		}
 
 		/// <summary>
@@ -392,7 +430,7 @@ namespace MonoDevelop.Projects.MSBuild
 						b.BuildSessionId = null;
 
 						var si = (SessionInfo)session;
-						await b.EndBuildOperation (si.Monitor);
+						await b.EndBuildOperation (si.Monitor).ConfigureAwait (false);
 					}
 			}
 		}
@@ -405,7 +443,7 @@ namespace MonoDevelop.Projects.MSBuild
 				if (shutDown) return;
 				var gpp = (IMSBuildGlobalPropertyProvider)sender;
 				foreach (var builder in builders.GetAllBuilders ())
-					await builder.SetGlobalProperties (new Dictionary<string, string> (gpp.GetGlobalProperties ()));
+					await builder.SetGlobalProperties (new Dictionary<string, string> (gpp.GetGlobalProperties ())).ConfigureAwait (false);
 			}
 		}
 
@@ -683,7 +721,7 @@ namespace MonoDevelop.Projects.MSBuild
 		internal static async Task ReleaseProjectBuilder (RemoteBuildEngine engine)
 		{
 			using (await buildersLock.EnterAsync ().ConfigureAwait (false)) {
-				await ReleaseProjectBuilderNoLock (engine);
+				ReleaseProjectBuilderNoLock (engine);
 			}
 		}
 
@@ -701,12 +739,16 @@ namespace MonoDevelop.Projects.MSBuild
 			}
 		}
 
-		static Task ReleaseProjectBuilderNoLock (RemoteBuildEngine engine)
+		static void ReferenceProjectBuilderNoLock (RemoteBuildEngine engine)
 		{
-			if (shutDown)
-				return Task.CompletedTask;
-			if (--engine.ReferenceCount != 0)
-				return Task.CompletedTask;
+			engine.ReferenceCount++;
+		}
+
+		static void ReleaseProjectBuilderNoLock (RemoteBuildEngine engine)
+		{
+			if (shutDown || --engine.ReferenceCount != 0)
+				return;
+
 			if (engine.IsShuttingDown) {
 				// If the engine is being shut down, dispose it now.
 				builders.Remove (engine);
@@ -728,7 +770,6 @@ namespace MonoDevelop.Projects.MSBuild
 					}
 				}, TaskContinuationOptions.NotOnCanceled);
 			}
-			return Task.CompletedTask;
 		}
 	}
 }
