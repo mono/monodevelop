@@ -1,4 +1,4 @@
-﻿// 
+// 
 // PackageManagementOptionsViewModel.cs
 // 
 // Author:
@@ -28,9 +28,9 @@
 
 namespace MonoDevelop.PackageManagement
 {
-	internal class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
+	class PackageManagementOptionsViewModel : ViewModelBase<PackageManagementOptionsViewModel>
 	{
-		PackageManagementOptions options;
+		readonly PackageManagementOptions options;
 
 		public PackageManagementOptionsViewModel ()
 			: this (PackageManagementServices.Options)
@@ -40,17 +40,20 @@ namespace MonoDevelop.PackageManagement
 		public PackageManagementOptionsViewModel (PackageManagementOptions options)
 		{
 			this.options = options;
-			this.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
-			this.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			IsAutomaticPackageRestoreOnOpeningSolutionEnabled = options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
+			IsCheckForPackageUpdatesOnOpeningSolutionEnabled = options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			DefaultPackageReferenceFormat = options.DefaultPackageReferenceFormat;
 		}
 
 		public bool IsAutomaticPackageRestoreOnOpeningSolutionEnabled { get; set; }
 		public bool IsCheckForPackageUpdatesOnOpeningSolutionEnabled { get; set; }
+		public PackageReferenceFormat DefaultPackageReferenceFormat { get; set; }
 
-		public void SaveOptions()
+		public void SaveOptions ()
 		{
 			options.IsAutomaticPackageRestoreOnOpeningSolutionEnabled = IsAutomaticPackageRestoreOnOpeningSolutionEnabled;
 			options.IsCheckForPackageUpdatesOnOpeningSolutionEnabled = IsCheckForPackageUpdatesOnOpeningSolutionEnabled;
+			options.DefaultPackageReferenceFormat = DefaultPackageReferenceFormat;
 		}
 	}
 }

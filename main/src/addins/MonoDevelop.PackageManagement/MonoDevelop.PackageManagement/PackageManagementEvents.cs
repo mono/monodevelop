@@ -1,4 +1,4 @@
-﻿// 
+// 
 // PackageManagementEvents.cs
 // 
 // Author:
@@ -39,27 +39,21 @@ namespace MonoDevelop.PackageManagement
 		
 		public void OnPackageOperationsStarting()
 		{
-			if (PackageOperationsStarting != null) {
-				PackageOperationsStarting(this, new EventArgs());
-			}
+			PackageOperationsStarting?.Invoke (this, new EventArgs ());
 		}
 
 		public event EventHandler PackageOperationsFinished;
 
 		public void OnPackageOperationsFinished()
 		{
-			if (PackageOperationsFinished != null) {
-				PackageOperationsFinished(this, new EventArgs());
-			}
+			PackageOperationsFinished?.Invoke (this, new EventArgs ());
 		}
 		
 		public event EventHandler<PackageOperationExceptionEventArgs> PackageOperationError;
 		
 		public void OnPackageOperationError(Exception ex)
 		{
-			if (PackageOperationError != null) {
-				PackageOperationError(this, new PackageOperationExceptionEventArgs(ex));
-			}
+			PackageOperationError?.Invoke (this, new PackageOperationExceptionEventArgs (ex));
 		}
 		
 		public event EventHandler<PackageOperationMessageLoggedEventArgs> PackageOperationMessageLogged;
@@ -88,27 +82,21 @@ namespace MonoDevelop.PackageManagement
 
 		public void OnPackagesRestored()
 		{
-			if (PackagesRestored != null) {
-				PackagesRestored(this, new EventArgs());
-			}
+			PackagesRestored?.Invoke (this, new EventArgs ());
 		}
 
 		public event EventHandler<FileEventArgs> FileChanged;
 
 		public void OnFileChanged (string path)
 		{
-			if (FileChanged != null) {
-				FileChanged (this, new FileEventArgs (new FilePath (path), false));
-			}
+			FileChanged?.Invoke (this, new FileEventArgs (new FilePath (path), false));
 		}
 
 		public event EventHandler UpdatedPackagesAvailable;
 
 		public void OnUpdatedPackagesAvailable ()
 		{
-			if (UpdatedPackagesAvailable != null) {
-				UpdatedPackagesAvailable (this, new EventArgs ());
-			}
+			UpdatedPackagesAvailable?.Invoke (this, new EventArgs ());
 		}
 
 		public event EventHandler<FileRemovingEventArgs> FileRemoving;
@@ -127,27 +115,21 @@ namespace MonoDevelop.PackageManagement
 
 		public void OnReferenceRemoving (ProjectReference reference)
 		{
-			if (ReferenceRemoving != null) {
-				ReferenceRemoving (this, new DotNetProjectReferenceEventArgs (reference));
-			}
+			ReferenceRemoving?.Invoke (this, new DotNetProjectReferenceEventArgs (reference));
 		}
 
 		public event EventHandler<DotNetProjectReferenceEventArgs> ReferenceAdding;
 
 		public void OnReferenceAdding (ProjectReference reference)
 		{
-			if (ReferenceAdding != null) {
-				ReferenceAdding (this, new DotNetProjectReferenceEventArgs (reference));
-			}
+			ReferenceAdding?.Invoke (this, new DotNetProjectReferenceEventArgs (reference));
 		}
 
 		public event EventHandler<DotNetProjectImportEventArgs> ImportRemoved;
 
 		public void OnImportRemoved (IDotNetProject project, string import)
 		{
-			if (ImportRemoved != null) {
-				ImportRemoved (this, new DotNetProjectImportEventArgs (project, import));
-			}
+			ImportRemoved?.Invoke (this, new DotNetProjectImportEventArgs (project, import));
 		}
 
 		public event EventHandler<PackageManagementEventArgs> PackageInstalled;
